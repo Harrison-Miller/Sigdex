@@ -25,6 +25,8 @@ function getAbilityIcon(type: string) {
   return iconMap[type.toLowerCase()] || 'star';
 }
 function formatAbilityText(text: string): string {
+  // Add newline before every bullet (•)
+  text = text.replace(/\s*•/g, '<br>•');
   // ***text*** => bullet bold with newline
   text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<br>• <b>$1</b>');
   // **text** => bold
@@ -36,7 +38,7 @@ function formatAbilityText(text: string): string {
 </script>
 <template>
   <div class="card ability-card">
-    <div class="card-header ability-header" :class="props.ability.color.toLowerCase()">
+    <div class="card-header ability-header" :class="(props.ability.color || 'black').toLowerCase()">
       <span class="icon">
         <font-awesome-icon :icon="getAbilityIcon(props.ability.type)" />
       </span>

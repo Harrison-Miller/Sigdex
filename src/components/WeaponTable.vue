@@ -8,6 +8,7 @@ const props = defineProps<{
     rend: string;
     damage: string;
   }>,
+  shortHeaders?: boolean;
 }>();
 </script>
 <template>
@@ -16,16 +17,21 @@ const props = defineProps<{
       <thead>
         <tr>
           <th>Name</th>
-          <th>Attacks</th>
-          <th>Hit</th>
-          <th>Wound</th>
-          <th>Rend</th>
-          <th>Damage</th>
+          <th>{{ props.shortHeaders ? 'A' : 'Attacks' }}</th>
+          <th>{{ props.shortHeaders ? 'Hit' : 'Hit' }}</th>
+          <th>{{ props.shortHeaders ? 'W' : 'Wound' }}</th>
+          <th>{{ props.shortHeaders ? 'R' : 'Rend' }}</th>
+          <th>{{ props.shortHeaders ? 'D' : 'Damage' }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="w in props.weapons" :key="w.name">
-          <td>{{ w.name }}</td>
+          <td>
+            <div>{{ w.name }}</div>
+            <div v-if="w.abilities && w.abilities.length" class="weapon-abilities">
+              <span v-for="(a, i) in w.abilities" :key="i">{{ a }}<span v-if="i < w.abilities.length - 1">, </span></span>
+            </div>
+          </td>
           <td>{{ w.attacks }}</td>
           <td>{{ w.hit }}</td>
           <td>{{ w.wound }}</td>
@@ -53,5 +59,10 @@ const props = defineProps<{
 }
 .weapon-table th {
   background: #f7f7f7;
+}
+.weapon-abilities {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 2px;
 }
 </style>

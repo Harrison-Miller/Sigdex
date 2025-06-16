@@ -7,6 +7,7 @@ import ListButton from '../components/ListButton.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
 import BackButton from '../components/BackButton.vue';
 import { isFavorite, saveFavorite, removeFavorite, getFavorites, getFavoriteToggleState, setFavoriteToggleState } from '../favorites';
+import { POSSIBLE_CATEGORIES, determineUnitCategory } from '../UnitData';
 
 // Accept army as a prop for this view
 const props = defineProps<{ army?: string }>();
@@ -16,17 +17,7 @@ const route = useRoute();
 const router = useRouter();
 const army = props.army ?? (route.params.army as string);
 
-const CATEGORY_ORDER = [
-  'Hero',
-  'Infantry',
-  'Cavalry',
-  'Beast',
-  'Monster',
-  'War Machine',
-  'Manifestation',
-  'Faction Terrain',
-  'Other',
-];
+const CATEGORY_ORDER = POSSIBLE_CATEGORIES;
 
 const categorizedUnits = ref<Record<string, Unit[]>>({});
 const unitFavorites = ref<string[]>([]);
@@ -50,15 +41,9 @@ onMounted(async () => {
         console.log(`Skipping Legends unit: ${unit.name}`);
         continue;
       }
-      let found = false;
-      for (const cat of CATEGORY_ORDER.slice(0, -1)) {
-        if (unit.keywords.some(k => k.toLowerCase() === cat.toLowerCase())) {
-          cats[cat].push(unit);
-          found = true;
-          break;
-        }
-      }
-      if (!found) cats['Other'].push(unit);
+      const cat = unit.category || determineUnitCategory(unit);
+      if (!cats[cat]) cats[cat] = [];
+      cats[cat].push(unit);
     }
     // Sort units alphabetically within each category
     for (const cat of CATEGORY_ORDER) {

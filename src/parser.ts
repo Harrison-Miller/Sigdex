@@ -2,6 +2,7 @@
 // XML parser for converting XML data to Unit classes
 import type { Unit } from './UnitData';
 import type { Ability } from './CommonData';
+import { determineUnitCategory } from './UnitData';
 
 // Add jsdom support for DOMParser in Vitest/node
 declare const global: any;
@@ -111,6 +112,10 @@ export function parseUnit(xml: string | Element): Unit {
       if (name === 'color') ability.color = a.textContent || '';
       if (name === 'type') ability.type = a.textContent || '';
     });
+    // If timing is empty and typeName contains 'passive', set timing to 'Passive'
+    if (!ability.timing && (profile.getAttribute('typeName') || '').toLowerCase().includes('passive')) {
+      ability.timing = 'Passive';
+    }
     abilities.push(ability);
   });
 
@@ -152,7 +157,7 @@ export function parseUnit(xml: string | Element): Unit {
   });
 
   // Compose unit
-  return {
+  const unit: Unit = {
     name: root.getAttribute('name') || '',
     stats,
     melee_weapons,
@@ -161,6 +166,8 @@ export function parseUnit(xml: string | Element): Unit {
     keywords,
     // points and unit_size can be added if present in XML
   };
+  unit.category = determineUnitCategory(unit);
+  return unit;
 }
 
 export function parseUnits(xml: string | Element): Unit[] {
@@ -176,7 +183,11 @@ export function parseUnits(xml: string | Element): Unit[] {
   const units: Unit[] = [];
   function findUnitEntries(node: any) {
     if (node.nodeType === 1 && node.tagName === 'selectionEntry' && node.getAttribute('type') === 'unit') {
-      units.push(parseUnit(node));
+      const unit = parseUnit(node);
+      // Exclude units with category 'Other' or with 'Legends' keyword
+      if (unit.category !== 'Other' && !unit.keywords.map(k => k.toLowerCase()).includes('legends')) {
+        units.push(unit);
+      }
     }
     if (node.childNodes) {
       for (let i = 0; i < node.childNodes.length; i++) {

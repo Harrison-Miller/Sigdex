@@ -52,5 +52,10 @@ const displayValue = computed(() => {
   color: #222;
   line-height: 1;
   text-align: center;
+  word-break: break-all;
+  max-width: 90%;
+  display: inline-block;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
 }
 </style>

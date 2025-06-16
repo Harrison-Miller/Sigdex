@@ -74,10 +74,10 @@ console.log('UnitDetailView: loaded unit', unit.value);
     </div>
     <div v-if="unit.melee_weapons && unit.melee_weapons.length" class="section-divider"></div>
     <h2 v-if="unit.melee_weapons && unit.melee_weapons.length" class="section-title">Melee Weapons</h2>
-    <WeaponTable v-if="unit.melee_weapons && unit.melee_weapons.length" :weapons="unit.melee_weapons" />
+    <WeaponTable v-if="unit.melee_weapons && unit.melee_weapons.length" :weapons="unit.melee_weapons" short-headers />
     <div v-if="unit.ranged_weapons && unit.ranged_weapons.length" class="section-divider"></div>
     <h2 v-if="unit.ranged_weapons && unit.ranged_weapons.length" class="section-title">Ranged Weapons</h2>
-    <WeaponTable v-if="unit.ranged_weapons && unit.ranged_weapons.length" :weapons="unit.ranged_weapons" />
+    <WeaponTable v-if="unit.ranged_weapons && unit.ranged_weapons.length" :weapons="unit.ranged_weapons" short-headers />
     <div v-if="unit.abilities && unit.abilities.length" class="section-divider"></div>
     <h2 v-if="unit.abilities && unit.abilities.length" class="section-title">Abilities</h2>
     <div v-if="unit.abilities && unit.abilities.length" class="abilities">
