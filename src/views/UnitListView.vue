@@ -122,7 +122,10 @@ watch(unitFavorites, favs => {
         <h2 class="section-title">{{ cat }}</h2>
         <ul>
           <li v-for="u in filteredUnits(cat)" :key="u.name">
-            <router-link :to="{ name: 'UnitDetail', params: { army, unit: u.name } }" custom v-slot="{ navigate, href }">
+            <router-link
+              :to="{ name: 'UnitDetail', params: { army, unit: u.name } }"
+              custom v-slot="{ navigate, href }"
+            >
               <ListButton
                 :label="u.name"
                 :favorite="unitFavorites.includes(u.name)"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import AbilityCard from '../components/AbilityCard.vue';
 import StatCircle from '../components/StatCircle.vue';
 import KeywordsBar from '../components/KeywordsBar.vue';
@@ -7,39 +8,29 @@ import WeaponTable from '../components/WeaponTable.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
 import BackButton from '../components/BackButton.vue';
 import { isFavorite, saveFavorite, removeFavorite, getFavorites } from '../favorites';
-import { ref } from 'vue';
+import { loadArmy } from '../army';
+import { MOCK_UNIT } from '../army';
 
+// Accept unit and army as props for detail view
+const props = defineProps<{ unit?: any; army?: string }>();
 const route = useRoute();
-const router = useRouter();
-const unitName = route.params.unit as string;
-// Mock unit data
-const unit = {
-  name: unitName,
-  stats: { move: '5"', health: 5, save: '4+', control: 2 },
-  melee_weapons: [
-    { name: 'Moon-slicer', abilities: [], attacks: '5', hit: '4+', wound: '4+', rend: '1', damage: 'D3' },
-  ],
-  ranged_weapons: [
-    { name: 'Spore Lobba', abilities: [], attacks: '1', hit: '5+', wound: '3+', rend: '0', damage: 'D3' },
-  ],
-  abilities: [
-    {
-      timing: 'Your Hero Phase',
-      color: 'yellow',
-      type: 'Special',
-      text: 'Roll a dice. On a 2+, pick one of the following effects...',
-      keywords: [],
-    },
-    {
-      timing: 'Reaction: Fight',
-      color: 'red',
-      type: 'Offensive',
-      text: 'Pick a friendly non-Hero Moonclan Infantry unit...',
-      keywords: ["Cool"],
-    },
-  ],
-  keywords: ['HERO', 'MOONCLAN', 'INFANTRY'],
-};
+
+const unitPropIsObject = typeof props.unit === 'object' && props.unit !== null;
+let unitName = unitPropIsObject ? props.unit.name : (props.unit ?? route?.params?.unit as string | undefined);
+let armyName = props.army ?? (route?.params?.army as string | undefined);
+
+const unit = ref(unitPropIsObject ? props.unit : null);
+
+onMounted(async () => {
+  if (!unit.value && armyName && unitName) {
+    try {
+      const armyData = await loadArmy(armyName);
+      unit.value = armyData.units.find(u => u.name === unitName) ?? MOCK_UNIT;
+    } catch (e) {
+      unit.value = MOCK_UNIT;
+    }
+  }
+});
 
 const unitFavorite = ref(isFavorite('unit', unitName));
 function toggleUnitFavoriteDetail(fav: boolean) {
@@ -54,9 +45,12 @@ const favoriteToggleSize = 36;
 function goBack() {
   router.back();
 }
+
+console.log('UnitDetailView: route params', { armyName, unitName });
+console.log('UnitDetailView: loaded unit', unit.value);
 </script>
 <template>
-  <div class="unit-detail">
+  <div v-if="unit && unit.stats" class="unit-detail">
     <div class="unit-detail-header">
       <BackButton :size="36" class="unit-detail-back" />
       <div class="unit-detail-fav">
@@ -93,6 +87,10 @@ function goBack() {
     <div class="section-divider"></div>
     <h2 class="section-title">Keywords</h2>
     <KeywordsBar :keywords="unit.keywords" />
+  </div>
+  <div v-else>
+    <p style="color: red;">Unit data is missing or incomplete.</p>
+    <pre>{{ unit }}</pre>
   </div>
 </template>
 <style src="./unit-detail.css" scoped></style>

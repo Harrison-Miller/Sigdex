@@ -54,3 +54,32 @@ export const armyList = [
   "Stormcast Eternals",
   "Sylvaneth"
 ];
+
+// Mock unit data for development/demo
+export const MOCK_UNIT = {
+  name: 'Skragrott the Loonking',
+  stats: { move: '5"', health: 5, save: '4+', control: 2 },
+  melee_weapons: [
+    { name: 'Moon-slicer', abilities: [], attacks: '5', hit: '4+', wound: '4+', rend: '1', damage: 'D3' },
+  ],
+  ranged_weapons: [
+    { name: 'Spore Lobba', abilities: [], attacks: '1', hit: '5+', wound: '3+', rend: '0', damage: 'D3' },
+  ],
+  abilities: [
+    {
+      timing: 'Your Hero Phase',
+      color: 'yellow',
+      type: 'Special',
+      text: 'Roll a dice. On a 2+, pick one of the following effects...',
+      keywords: [],
+    },
+    {
+      timing: 'Reaction: Fight',
+      color: 'red',
+      type: 'Offensive',
+      text: 'Pick a friendly non-Hero Moonclan Infantry unit...',
+      keywords: ['Cool'],
+    },
+  ],
+  keywords: ['HERO', 'MOONCLAN', 'INFANTRY'],
+};
