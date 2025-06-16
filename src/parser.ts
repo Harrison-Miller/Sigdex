@@ -9,13 +9,12 @@ import {
   findAllByTagAndAttrEndsWith,
   findAllByTag
 } from './domUtils';
+import { DOMParser as XmldomDOMParser } from 'xmldom';
 
 // Add jsdom support for DOMParser in Vitest/node
 declare const global: any;
 if (typeof window === 'undefined' && typeof global.DOMParser === 'undefined') {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { DOMParser } = require('xmldom');
-  global.DOMParser = DOMParser;
+  global.DOMParser = XmldomDOMParser;
 }
 
 // --- Parse stats ---

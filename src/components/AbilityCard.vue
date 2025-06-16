@@ -10,6 +10,7 @@ const props = defineProps<{
     keywords: string[];
     declare?: string;
     castingValue?: string;
+    cost?: string;
     name: string;
   }
 }>();

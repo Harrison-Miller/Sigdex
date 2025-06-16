@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { loadArmy } from '../army';
 import { ref, onMounted, watch, computed } from 'vue';
 import type { Unit } from '../UnitData';
 import ListButton from '../components/ListButton.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
 import BackButton from '../components/BackButton.vue';
-import { isFavorite, saveFavorite, removeFavorite, getFavorites, getFavoriteToggleState, setFavoriteToggleState } from '../favorites';
+import { saveFavorite, removeFavorite, getFavorites, getFavoriteToggleState, setFavoriteToggleState } from '../favorites';
 import { POSSIBLE_CATEGORIES, determineUnitCategory } from '../UnitData';
 
 // Accept army as a prop for this view
@@ -14,7 +14,6 @@ const props = defineProps<{ army?: string }>();
 
 // Use prop if provided, otherwise fallback to route param
 const route = useRoute();
-const router = useRouter();
 const army = props.army ?? (route.params.army as string);
 
 const CATEGORY_ORDER = POSSIBLE_CATEGORIES;
@@ -54,9 +53,6 @@ onMounted(async () => {
     categorizedUnits.value = {};
   }
 });
-function selectUnit(unit: string) {
-  router.push({ name: 'UnitDetail', params: { army, unit } });
-}
 function toggleUnitFavorite(unit: string, fav: boolean) {
   if (fav) {
     saveFavorite('unit', unit);

@@ -7,7 +7,7 @@ import KeywordsBar from '../components/KeywordsBar.vue';
 import WeaponTable from '../components/WeaponTable.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
 import BackButton from '../components/BackButton.vue';
-import { isFavorite, saveFavorite, removeFavorite, getFavorites } from '../favorites';
+import { isFavorite, saveFavorite, removeFavorite } from '../favorites';
 import { loadArmy } from '../army';
 import { MOCK_UNIT } from '../army';
 
@@ -42,9 +42,6 @@ function toggleUnitFavoriteDetail(fav: boolean) {
   }
 }
 const favoriteToggleSize = 36;
-function goBack() {
-  router.back();
-}
 
 console.log('UnitDetailView: route params', { armyName, unitName });
 console.log('UnitDetailView: loaded unit', unit.value);
