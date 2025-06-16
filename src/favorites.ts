@@ -53,3 +53,10 @@ export function getFavoriteToggleState(type: FavoriteType): boolean {
 export function setFavoriteToggleState(type: FavoriteType, value: boolean) {
   localStorage.setItem(`sigdex-${type}-fav-toggle`, String(value));
 }
+
+export function clearAllFavorites() {
+  localStorage.removeItem(FAVORITES_KEY);
+  // Optionally clear favorite toggle states
+  localStorage.removeItem('sigdex-army-fav-toggle');
+  localStorage.removeItem('sigdex-unit-fav-toggle');
+}

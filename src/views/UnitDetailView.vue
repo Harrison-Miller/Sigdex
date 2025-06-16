@@ -79,8 +79,8 @@ console.log('UnitDetailView: loaded unit', unit.value);
     <h2 v-if="unit.abilities && unit.abilities.length" class="section-title">Abilities</h2>
     <div v-if="unit.abilities && unit.abilities.length" class="abilities">
       <AbilityCard
-        v-for="(a, i) in unit.abilities"
-        :key="i"
+        v-for="(a, i) in [...unit.abilities].sort((a, b) => a.name.localeCompare(b.name))"
+        :key="a.name + i"
         :ability="a"
       />
     </div>

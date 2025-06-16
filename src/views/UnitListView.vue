@@ -110,6 +110,7 @@ watch(unitFavorites, favs => {
               <ListButton
                 :label="u.name"
                 :favorite="unitFavorites.includes(u.name)"
+                :showFavoriteToggle="true"
                 @click="navigate"
                 @toggle-favorite="fav => toggleUnitFavorite(u.name, fav)"
                 :href="href"

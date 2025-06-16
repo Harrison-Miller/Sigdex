@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { armyList } from '../army';
 import { saveFavorite, removeFavorite, getFavorites, getFavoriteToggleState, setFavoriteToggleState } from '../favorites';
 import ListButton from '../components/ListButton.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
+import SettingsButton from '../components/SettingsButton.vue';
 import { SIGDEX_VERSION } from '../version';
 const router = useRouter();
 const armyFavorites = ref<string[]>([]);
@@ -30,6 +31,9 @@ function updateShowOnlyFavoritesState(newVal: boolean) {
   showOnlyFavorites.value = newVal;
   setFavoriteToggleState('army', newVal);
 }
+function goToSettings() {
+  router.push({ name: 'Settings' });
+}
 
 const filteredArmyList = computed(() => {
   if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
@@ -47,7 +51,10 @@ watch(armyFavorites, favs => {
 </script>
 <template>
   <div class="list-container">
-    <h1>Select an Army</h1>
+    <div class="header-bar">
+      <SettingsButton class="settings-btn" :size="36" @click="goToSettings" />
+      <h1>Select an Army</h1>
+    </div>
     <div class="section-divider"></div>
     <div class="filters-bar">
       <FavoriteToggle
@@ -62,6 +69,7 @@ watch(armyFavorites, favs => {
         <ListButton
           :label="army"
           :favorite="armyFavorites.includes(army)"
+          :showFavoriteToggle="true"
           @click="selectArmy(army)"
           @toggle-favorite="fav => toggleArmyFavorite(army, fav)"
         />
@@ -72,6 +80,29 @@ watch(armyFavorites, favs => {
 </template>
 <style src="./list-shared.css" scoped></style>
 <style scoped>
+.header-bar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 1.2rem;
+}
+.settings-btn {
+  align-self: flex-end;
+  margin-bottom: 0.5rem;
+  position: static;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  box-shadow: none;
+  color: #555;
+  cursor: pointer;
+  z-index: 2;
+}
+.settings-btn:hover {
+  background: #e5e5e5;
+}
 .filters-bar {
   display: flex;
   align-items: center;
