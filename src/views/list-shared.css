@@ -1,0 +1,39 @@
+/* Shared style for ArmyListView and UnitListView */
+body {
+  background: #f9f9f6;
+}
+.list-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  text-align: center;
+  color: #222;
+}
+ul {
+  list-style: none;
+  padding: 0;
+}
+li {
+  margin: 0.5rem 0;
+}
+.button-standard {
+  width: 100%;
+  min-width: 220px;
+  max-width: 300px;
+  padding: 0.7rem 0;
+  font-size: 1.1rem;
+  border-radius: 4px;
+  border: 1.5px solid #222;
+  background: #fffefb;
+  color: #222;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  box-shadow: none;
+  margin: 0 auto;
+  display: block;
+  font-weight: 500;
+}
+.button-standard:hover {
+  background: #f3f3ef;
+  color: #111;
+  border: 1.5px solid #111;
+}
