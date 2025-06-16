@@ -24,6 +24,15 @@ const iconMap: Record<string, string> = {
 function getAbilityIcon(type: string) {
   return iconMap[type.toLowerCase()] || 'star';
 }
+function formatAbilityText(text: string): string {
+  // ***text*** => bullet bold with newline
+  text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<br>• <b>$1</b>');
+  // **text** => bold
+  text = text.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  // ^^text^^ => italics
+  text = text.replace(/\^\^(.+?)\^\^/g, '<i>$1</i>');
+  return text;
+}
 </script>
 <template>
   <div class="card ability-card">
@@ -31,11 +40,11 @@ function getAbilityIcon(type: string) {
       <span class="icon">
         <font-awesome-icon :icon="getAbilityIcon(props.ability.type)" />
       </span>
-      <span class="timing">{{ props.ability.timing }}</span>
+      <span class="timing" v-html="formatAbilityText(props.ability.timing)"></span>
     </div>
     <div class="card-title ability-title">{{ props.ability.type }}</div>
     <div class="card-body">
-      <div class="card-text ability-text">{{ props.ability.text }}</div>
+      <div class="card-text ability-text" v-html="formatAbilityText(props.ability.text)"></div>
       <KeywordsBar :keywords="props.ability.keywords" />
     </div>
   </div>

@@ -6,8 +6,8 @@ export interface Stats {
   move: string;
   health: number;
   save: string;
-  control?: number;
-  banishment?: number;
+  control?: string;
+  banishment?: string;
 }
 
 export interface Weapon {

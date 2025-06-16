@@ -1,14 +1,23 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
 const props = defineProps<{
-  value: string | number;
+  value: string | number | null | undefined;
   label: string;
 }>();
+const displayValue = computed(() => {
+  if (props.value === undefined || props.value === null || props.value === '' || props.value === '-') {
+    return '-';
+  }
+  return props.value;
+});
+console.log('StatCircle props.value:', props.value, 'displayValue:', displayValue.value);
 </script>
 <template>
   <div class="stat-circle-outer">
     <span class="stat-label">{{ props.label }}</span>
     <div class="stat-circle">
-      <span class="stat-value">{{ props.value }}</span>
+      <span class="stat-value">{{ displayValue }}</span>
     </div>
   </div>
 </template>

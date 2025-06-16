@@ -75,8 +75,14 @@ export function parseUnit(xml: string | Element): Unit {
         if (name === 'move') stats.move = c.textContent;
         if (name === 'health') stats.health = Number(c.textContent);
         if (name === 'save') stats.save = c.textContent;
-        if (name === 'control') stats.control = Number(c.textContent);
-        if (name === 'banishment') stats.banishment = Number(c.textContent);
+        if (name === 'control') {
+          const val = c.textContent.trim();
+          stats.control = val === '-' ? '-' : val;
+        }
+        if (name === 'banishment') {
+          const val = c.textContent.trim();
+          stats.banishment = val === '-' ? '-' : val;
+        }
       }
     });
   }
@@ -124,7 +130,7 @@ export function parseUnit(xml: string | Element): Unit {
       const name = c.getAttribute('name')?.toLowerCase();
       if (!name) return;
       if (name === 'atk' || name === 'attacks') weapon.attacks = c.textContent || '';
-      if (name === 'hit') weapon.hit = c.textContent || '';
+      if (name === 'hit' ) weapon.hit = c.textContent || '';
       if (name === 'wnd' || name === 'wound') weapon.wound = c.textContent || '';
       if (name === 'rnd' || name === 'rend') weapon.rend = c.textContent || '';
       if (name === 'dmg' || name === 'damage') weapon.damage = c.textContent || '';

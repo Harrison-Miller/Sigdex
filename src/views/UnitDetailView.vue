@@ -66,27 +66,30 @@ console.log('UnitDetailView: loaded unit', unit.value);
     <div class="stats-row">
       <StatCircle :value="unit.stats.move" label="Move" />
       <StatCircle :value="unit.stats.health" label="Health" />
-      <StatCircle :value="unit.stats.control ?? unit.stats.banishment" :label="unit.stats.control !== undefined ? 'Control' : 'Banishment'" />
+      <StatCircle
+        :value="unit.stats.control !== undefined ? unit.stats.control : (unit.stats.banishment !== undefined ? unit.stats.banishment : '-')"
+        :label="unit.stats.control !== undefined ? 'Control' : (unit.stats.banishment !== undefined ? 'Banishment' : 'Control')"
+      />
       <StatCircle :value="unit.stats.save" label="Save" />
     </div>
-    <div class="section-divider"></div>
-    <h2 class="section-title">Melee Weapons</h2>
-    <WeaponTable :weapons="unit.melee_weapons" />
-    <div class="section-divider"></div>
-    <h2 class="section-title">Ranged Weapons</h2>
-    <WeaponTable :weapons="unit.ranged_weapons" />
-    <div class="section-divider"></div>
-    <h2 class="section-title">Abilities</h2>
-    <div class="abilities">
+    <div v-if="unit.melee_weapons && unit.melee_weapons.length" class="section-divider"></div>
+    <h2 v-if="unit.melee_weapons && unit.melee_weapons.length" class="section-title">Melee Weapons</h2>
+    <WeaponTable v-if="unit.melee_weapons && unit.melee_weapons.length" :weapons="unit.melee_weapons" />
+    <div v-if="unit.ranged_weapons && unit.ranged_weapons.length" class="section-divider"></div>
+    <h2 v-if="unit.ranged_weapons && unit.ranged_weapons.length" class="section-title">Ranged Weapons</h2>
+    <WeaponTable v-if="unit.ranged_weapons && unit.ranged_weapons.length" :weapons="unit.ranged_weapons" />
+    <div v-if="unit.abilities && unit.abilities.length" class="section-divider"></div>
+    <h2 v-if="unit.abilities && unit.abilities.length" class="section-title">Abilities</h2>
+    <div v-if="unit.abilities && unit.abilities.length" class="abilities">
       <AbilityCard
         v-for="(a, i) in unit.abilities"
         :key="i"
         :ability="a"
       />
     </div>
-    <div class="section-divider"></div>
-    <h2 class="section-title">Keywords</h2>
-    <KeywordsBar :keywords="unit.keywords" />
+    <div v-if="unit.keywords && unit.keywords.length" class="section-divider"></div>
+    <h2 v-if="unit.keywords && unit.keywords.length" class="section-title">Keywords</h2>
+    <KeywordsBar v-if="unit.keywords && unit.keywords.length" :keywords="unit.keywords" />
   </div>
   <div v-else>
     <p style="color: red;">Unit data is missing or incomplete.</p>
