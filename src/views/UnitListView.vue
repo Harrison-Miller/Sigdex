@@ -8,9 +8,13 @@ import FavoriteToggle from '../components/FavoriteToggle.vue';
 import BackButton from '../components/BackButton.vue';
 import { isFavorite, saveFavorite, removeFavorite, getFavorites, getFavoriteToggleState, setFavoriteToggleState } from '../favorites';
 
+// Accept army as a prop for this view
+const props = defineProps<{ army?: string }>();
+
+// Use prop if provided, otherwise fallback to route param
 const route = useRoute();
 const router = useRouter();
-const army = route.params.army as string;
+const army = props.army ?? (route.params.army as string);
 
 const CATEGORY_ORDER = [
   'Hero',
