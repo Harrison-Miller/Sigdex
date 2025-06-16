@@ -11,7 +11,6 @@ const displayValue = computed(() => {
   }
   return props.value;
 });
-console.log('StatCircle props.value:', props.value, 'displayValue:', displayValue.value);
 </script>
 <template>
   <div class="stat-circle-outer">

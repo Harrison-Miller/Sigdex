@@ -91,6 +91,7 @@ export function parseUnit(xml: string | Element): Unit {
   const abilities: Ability[] = [];
   findAllElementsByTagAndAttr(root, 'profile', 'typeName', 'Ability').forEach((profile) => {
     const ability: Ability = {
+      name: profile.getAttribute('name') || '',
       timing: '',
       color: '',
       type: '',

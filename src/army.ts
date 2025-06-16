@@ -11,6 +11,13 @@ export class Army {
   }
 }
 
+function getArmyStorageKey(armyName: string) {
+  return `armyData:${armyName}`;
+}
+function getArmyTimestampKey(armyName: string) {
+  return `armyDataTimestamp:${armyName}`;
+}
+
 /**
  * Fetches army XML data from GitHub and returns an Army instance.
  * @param armyName The name of the army (e.g. "Gloomspite Gitz - Library.cat")
@@ -18,10 +25,32 @@ export class Army {
 export async function loadArmy(armyName: string): Promise<Army> {
   const fileName = `${armyName} - Library.cat`;
   const url = `${GITHUB_BASE_URL}/${GITHUB_REPO}/refs/heads/main/${encodeURIComponent(fileName)}`;
+  const storageKey = getArmyStorageKey(armyName);
+  const timestampKey = getArmyTimestampKey(armyName);
+  const weekMs = 7 * 24 * 60 * 60 * 1000;
+  try {
+    const cached = localStorage.getItem(storageKey);
+    const cachedTimestamp = localStorage.getItem(timestampKey);
+    if (cached && cachedTimestamp) {
+      const age = Date.now() - Number(cachedTimestamp);
+      if (age < weekMs) {
+        const units = JSON.parse(cached);
+        return new Army(units);
+      }
+    }
+  } catch (e) {
+    // ignore localStorage errors
+  }
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Failed to fetch army data: ${response.statusText}`);
   const xml = await response.text();
   const units = parseUnits(xml);
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(units));
+    localStorage.setItem(timestampKey, Date.now().toString());
+  } catch (e) {
+    // ignore localStorage errors
+  }
   return new Army(units);
 }
 

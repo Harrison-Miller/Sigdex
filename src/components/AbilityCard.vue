@@ -42,7 +42,7 @@ function formatAbilityText(text: string): string {
       </span>
       <span class="timing" v-html="formatAbilityText(props.ability.timing)"></span>
     </div>
-    <div class="card-title ability-title">{{ props.ability.type }}</div>
+    <div class="card-title ability-title">{{ props.ability.name }}</div>
     <div class="card-body">
       <div class="card-text ability-text" v-html="formatAbilityText(props.ability.text)"></div>
       <KeywordsBar :keywords="props.ability.keywords" />

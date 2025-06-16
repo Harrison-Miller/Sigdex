@@ -7,4 +7,5 @@ export interface Ability {
   type: string;
   text: string;
   keywords: string[];
+  name: string;
 }
