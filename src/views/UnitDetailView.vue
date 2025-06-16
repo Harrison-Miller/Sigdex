@@ -4,6 +4,10 @@ import AbilityCard from '../components/AbilityCard.vue';
 import StatCircle from '../components/StatCircle.vue';
 import KeywordsBar from '../components/KeywordsBar.vue';
 import WeaponTable from '../components/WeaponTable.vue';
+import FavoriteToggle from '../components/FavoriteToggle.vue';
+import { isFavorite, saveFavorite, removeFavorite, getFavorites } from '../favorites';
+import { ref } from 'vue';
+
 const route = useRoute();
 const unitName = route.params.unit as string;
 // Mock unit data
@@ -34,10 +38,31 @@ const unit = {
   ],
   keywords: ['HERO', 'MOONCLAN', 'INFANTRY'],
 };
+
+const unitFavorite = ref(isFavorite('unit', unitName));
+function toggleUnitFavoriteDetail(fav: boolean) {
+  unitFavorite.value = fav;
+  if (fav) {
+    saveFavorite('unit', unitName);
+  } else {
+    removeFavorite('unit', unitName);
+  }
+}
+const favoriteToggleSize = 36;
 </script>
 <template>
   <div class="unit-detail">
-    <h1>{{ unit.name }}</h1>
+    <div class="unit-detail-header">
+      <div class="unit-detail-fav">
+        <FavoriteToggle
+          :model-value="unitFavorite"
+          @update:modelValue="toggleUnitFavoriteDetail"
+          :size="favoriteToggleSize"
+          no-text
+        />
+      </div>
+      <h1>{{ unit.name }}</h1>
+    </div>
     <div class="stats-row">
       <StatCircle :value="unit.stats.move" label="Move" />
       <StatCircle :value="unit.stats.health" label="Health" />
@@ -65,3 +90,21 @@ const unit = {
   </div>
 </template>
 <style src="./unit-detail.css" scoped></style>
+<style scoped>
+.unit-detail-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  position: relative;
+}
+.unit-detail-fav {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+.unit-detail-header h1 {
+  margin-top: 2.2rem;
+}
+</style>

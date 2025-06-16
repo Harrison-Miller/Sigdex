@@ -65,3 +65,14 @@ button:hover {
   padding: 1rem;
   text-align: center;
 }
+
+.section-title {
+  text-align: left;
+  margin: 1.5rem 0 0.5rem 0;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+.section-divider {
+  border-top: 2px solid #ccc;
+  margin: 30px 0 20px 0;
+}
