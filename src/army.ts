@@ -1,8 +1,14 @@
 import { parseUnits } from './parser';
 import type { Unit } from './UnitData';
 
-export const GITHUB_BASE_URL = "https://raw.githubusercontent.com";
-export const GITHUB_REPO = "BSData/age-of-sigmar-4th";
+function getGithubBaseUrl() {
+  return localStorage.getItem('GITHUB_BASE_URL') || "https://raw.githubusercontent.com";
+}
+function getGithubRepo() {
+  return localStorage.getItem('GITHUB_REPO') || "BSData/age-of-sigmar-4th";
+}
+export const GITHUB_BASE_URL = getGithubBaseUrl();
+export const GITHUB_REPO = getGithubRepo();
 
 export class Army {
   units: Unit[];
@@ -52,6 +58,20 @@ export async function loadArmy(armyName: string): Promise<Army> {
     // ignore localStorage errors
   }
   return new Army(units);
+}
+
+export function clearBSData() {
+  Object.keys(localStorage)
+    .filter(k => k.startsWith('armyData:') || k.startsWith('armyDataTimestamp:'))
+    .forEach(k => localStorage.removeItem(k));
+}
+
+export function saveGithubBaseUrl(url: string) {
+  localStorage.setItem('GITHUB_BASE_URL', url);
+}
+
+export function saveGithubRepo(repo: string) {
+  localStorage.setItem('GITHUB_REPO', repo);
 }
 
 export const armyList = [
