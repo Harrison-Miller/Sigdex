@@ -73,7 +73,6 @@ export const armyList = [
   "Maggotkin of Nurgle",
   "Nighthaunt",
   "Ogor Mawtribes",
-  "Orruk Warclans",
   "Ossiarch Bonereapers",
   "Seraphon",
   "Skaven",
