@@ -1,37 +1,52 @@
 .card {
   border: 1px solid #ccc;
-  padding: 10px;
-  margin-bottom: 10px;
   background-color: #f0f0f0;
+  /* Remove fixed padding to allow content-fit */
+  padding: 0;
+  margin-bottom: 10px;
+  display: inline-block; /* Fit to content */
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
-.card-header {
-  margin: 0 0 5px 0;
+.card-header, .ability-header {
+  width: 100%;
+  box-sizing: border-box;
   font-size: 1em;
   color: #fff;
-  padding: 5px;
+  padding: 6px 12px;
   display: flex;
   align-items: center;
   gap: 8px;
-  border-radius: 3px;
+  border-radius: 6px 6px 0 0;
+  margin: 0;
 }
-.card-title {
+.card-header .timing, .ability-header .timing {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-left: 0.5em;
+}
+.icon {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+}
+.card-title, .ability-title {
+  text-align: left;
   font-weight: bold;
   font-size: 1.1em;
-  margin-bottom: 5px;
+  margin: 8px 12px 4px 12px;
+}
+.card-text, .ability-text {
+  text-align: left;
 }
 .card-body {
-  margin-top: 10px;
+  margin: 0 12px 10px 12px;
 }
 .card-body div {
   margin-bottom: 8px;
-}
-.icon {
-  width: 16px;
-  height: 16px;
-  display: inline-block;
-  background-size: contain;
-  background-repeat: no-repeat;
-  font-size: 1.1em;
 }
 .red { background-color: #8b0000; }
 .yellow { background-color: #b59f3b; }
@@ -48,4 +63,5 @@
   font-size: 0.9rem;
   color: #444;
   margin-top: 0.5rem;
+  display: inline-block;
 }

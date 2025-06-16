@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import KeywordsBar from './KeywordsBar.vue';
 const props = defineProps<{
   ability: {
     timing: string;
@@ -8,24 +10,33 @@ const props = defineProps<{
     keywords: string[];
   }
 }>();
-const icons = {
-  offensive: '⚔️', defensive: '🛡️', movement: '🏃', special: '✨', damage: '💥',
-  shooting: '🏹', rallying: '📯', control: '🎯'
+// Map ability types to Font Awesome icon names
+const iconMap: Record<string, string> = {
+  offensive: 'fist-raised',
+  defensive: 'shield-alt',
+  movement: 'running',
+  special: 'star',
+  damage: 'bolt',
+  shooting: 'crosshairs',
+  rallying: 'bullhorn',
+  control: 'bullseye',
 };
 function getAbilityIcon(type: string) {
-  return icons[type.toLowerCase()] || '✨';
+  return iconMap[type.toLowerCase()] || 'star';
 }
 </script>
 <template>
-  <div class="card">
-    <div class="card-header" :class="props.ability.color.toLowerCase()">
-      <span class="icon">{{ getAbilityIcon(props.ability.type) }}</span>
+  <div class="card ability-card">
+    <div class="card-header ability-header" :class="props.ability.color.toLowerCase()">
+      <span class="icon">
+        <font-awesome-icon :icon="getAbilityIcon(props.ability.type)" />
+      </span>
       <span class="timing">{{ props.ability.timing }}</span>
     </div>
-    <div class="card-title">{{ props.ability.type }}</div>
+    <div class="card-title ability-title">{{ props.ability.type }}</div>
     <div class="card-body">
-      <div class="card-text">{{ props.ability.text }}</div>
-      <div class="ability-keywords">{{ props.ability.keywords.join(', ') }}</div>
+      <div class="card-text ability-text">{{ props.ability.text }}</div>
+      <KeywordsBar :keywords="props.ability.keywords" />
     </div>
   </div>
 </template>

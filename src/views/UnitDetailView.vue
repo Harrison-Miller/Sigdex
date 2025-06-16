@@ -2,6 +2,8 @@
 import { useRoute } from 'vue-router';
 import AbilityCard from '../components/AbilityCard.vue';
 import StatCircle from '../components/StatCircle.vue';
+import KeywordsBar from '../components/KeywordsBar.vue';
+import WeaponTable from '../components/WeaponTable.vue';
 const route = useRoute();
 const unitName = route.params.unit as string;
 // Mock unit data
@@ -20,14 +22,14 @@ const unit = {
       color: 'yellow',
       type: 'Special',
       text: 'Roll a dice. On a 2+, pick one of the following effects...',
-      keywords: ['Hero', 'Moonclan'],
+      keywords: [],
     },
     {
       timing: 'Reaction: Fight',
       color: 'red',
       type: 'Offensive',
       text: 'Pick a friendly non-Hero Moonclan Infantry unit...',
-      keywords: ['Infantry'],
+      keywords: ["Cool"],
     },
   ],
   keywords: ['HERO', 'MOONCLAN', 'INFANTRY'],
@@ -42,25 +44,14 @@ const unit = {
       <StatCircle :value="unit.stats.control ?? unit.stats.banishment" :label="unit.stats.control !== undefined ? 'Control' : 'Banishment'" />
       <StatCircle :value="unit.stats.save" label="Save" />
     </div>
-    <h2>Melee Weapons</h2>
-    <table class="weapon-table">
-      <thead><tr><th>Name</th><th>Attacks</th><th>Hit</th><th>Wound</th><th>Rend</th><th>Damage</th></tr></thead>
-      <tbody>
-        <tr v-for="w in unit.melee_weapons" :key="w.name">
-          <td>{{ w.name }}</td><td>{{ w.attacks }}</td><td>{{ w.hit }}</td><td>{{ w.wound }}</td><td>{{ w.rend }}</td><td>{{ w.damage }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <h2>Ranged Weapons</h2>
-    <table class="weapon-table">
-      <thead><tr><th>Name</th><th>Attacks</th><th>Hit</th><th>Wound</th><th>Rend</th><th>Damage</th></tr></thead>
-      <tbody>
-        <tr v-for="w in unit.ranged_weapons" :key="w.name">
-          <td>{{ w.name }}</td><td>{{ w.attacks }}</td><td>{{ w.hit }}</td><td>{{ w.wound }}</td><td>{{ w.rend }}</td><td>{{ w.damage }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <h2>Abilities</h2>
+    <div class="section-divider"></div>
+    <h2 class="section-title">Melee Weapons</h2>
+    <WeaponTable :weapons="unit.melee_weapons" />
+    <div class="section-divider"></div>
+    <h2 class="section-title">Ranged Weapons</h2>
+    <WeaponTable :weapons="unit.ranged_weapons" />
+    <div class="section-divider"></div>
+    <h2 class="section-title">Abilities</h2>
     <div class="abilities">
       <AbilityCard
         v-for="(a, i) in unit.abilities"
@@ -68,8 +59,9 @@ const unit = {
         :ability="a"
       />
     </div>
-    <h2>Keywords</h2>
-    <div class="keywords-card">{{ unit.keywords.join(', ') }}</div>
+    <div class="section-divider"></div>
+    <h2 class="section-title">Keywords</h2>
+    <KeywordsBar :keywords="unit.keywords" />
   </div>
 </template>
 <style src="./unit-detail.css" scoped></style>
