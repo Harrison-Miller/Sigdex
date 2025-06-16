@@ -133,5 +133,7 @@ console.log('UnitDetailView: loaded unit', unit.value);
 }
 .unit-detail-header h1 {
   margin-top: 2.2rem;
+  text-align: center;
+  width: 100%;
 }
 </style>

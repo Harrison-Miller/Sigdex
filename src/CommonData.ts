@@ -8,4 +8,7 @@ export interface Ability {
   text: string;
   keywords: string[];
   name: string;
+  declare?: string;
+  castingValue?: string;
+  cost?: string;
 }

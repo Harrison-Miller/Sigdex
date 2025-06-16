@@ -68,7 +68,13 @@ export function parseUnit(xml: string | Element): Unit {
 
   // Parse stats
   const stats: any = {};
-  const statsProfile = findElementByTagAndAttr(root, 'profile', 'typeName', 'Unit');
+  // Try to find a profile with typeName 'Unit', otherwise fallback to first profile
+  let statsProfile = findElementByTagAndAttr(root, 'profile', 'typeName', 'Unit');
+  if (!statsProfile) {
+    // fallback: use first <profile> if present
+    const profiles = findAllElementsByTag(root, 'profile');
+    if (profiles.length > 0) statsProfile = profiles[0];
+  }
   if (statsProfile) {
     findAllElementsByTag(statsProfile, 'characteristic').forEach((c) => {
       const name = c.getAttribute('name')?.toLowerCase();
@@ -104,7 +110,10 @@ export function parseUnit(xml: string | Element): Unit {
       if (!name) return;
       if (name === 'timing') ability.timing = c.textContent || '';
       if (name === 'effect') ability.text = c.textContent || '';
-      if (name === 'keywords' && c.textContent) ability.keywords = c.textContent.split(',').map(k => k.trim());
+      if (name === 'declare') ability.declare = c.textContent || '';
+      if (name === 'casting value') ability.castingValue = c.textContent || '';
+      if (name === 'cost') ability.cost = c.textContent || '';
+      if (name === 'keywords' && c.textContent) ability.keywords = c.textContent.split(',').map((k: string) => k.trim());
     });
     findAllElementsByTag(profile, 'attribute').forEach((a) => {
       const name = a.getAttribute('name')?.toLowerCase();

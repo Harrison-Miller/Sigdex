@@ -2,6 +2,7 @@
 const props = defineProps<{
   weapons: Array<{
     name: string;
+    abilities: string[];
     attacks: string;
     hit: string;
     wound: string;
@@ -10,6 +11,12 @@ const props = defineProps<{
   }>,
   shortHeaders?: boolean;
 }>();
+
+function displayRend(rend: string) {
+  if (!rend || rend === '-' || rend === '0') return rend;
+  if (rend.startsWith('-')) return rend;
+  return '-' + rend;
+}
 </script>
 <template>
   <div class="weapon-table-wrapper">
@@ -35,7 +42,7 @@ const props = defineProps<{
           <td>{{ w.attacks }}</td>
           <td>{{ w.hit }}</td>
           <td>{{ w.wound }}</td>
-          <td>{{ w.rend }}</td>
+          <td>{{ displayRend(w.rend) }}</td>
           <td>{{ w.damage }}</td>
         </tr>
       </tbody>
