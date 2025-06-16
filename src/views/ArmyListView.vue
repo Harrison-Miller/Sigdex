@@ -5,6 +5,7 @@ import { armyList } from '../army';
 import { saveFavorite, removeFavorite, getFavorites, getFavoriteToggleState, setFavoriteToggleState } from '../favorites';
 import ListButton from '../components/ListButton.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
+import { SIGDEX_VERSION } from '../version';
 const router = useRouter();
 const armyFavorites = ref<string[]>([]);
 const showOnlyFavorites = ref(getFavoriteToggleState('army'));
@@ -66,6 +67,7 @@ watch(armyFavorites, favs => {
         />
       </li>
     </ul>
+    <div class="sigdex-version">Sigdex v{{ SIGDEX_VERSION }}</div>
   </div>
 </template>
 <style src="./list-shared.css" scoped></style>
@@ -94,5 +96,11 @@ watch(armyFavorites, favs => {
 }
 .favorite-toggle svg {
   vertical-align: middle;
+}
+.sigdex-version {
+  margin-top: 2rem;
+  text-align: center;
+  color: #888;
+  font-size: 0.95em;
 }
 </style>
