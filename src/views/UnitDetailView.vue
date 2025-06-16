@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import AbilityCard from '../components/AbilityCard.vue';
 import StatCircle from '../components/StatCircle.vue';
 import KeywordsBar from '../components/KeywordsBar.vue';
 import WeaponTable from '../components/WeaponTable.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
+import BackButton from '../components/BackButton.vue';
 import { isFavorite, saveFavorite, removeFavorite, getFavorites } from '../favorites';
 import { ref } from 'vue';
 
 const route = useRoute();
+const router = useRouter();
 const unitName = route.params.unit as string;
 // Mock unit data
 const unit = {
@@ -49,10 +51,14 @@ function toggleUnitFavoriteDetail(fav: boolean) {
   }
 }
 const favoriteToggleSize = 36;
+function goBack() {
+  router.back();
+}
 </script>
 <template>
   <div class="unit-detail">
     <div class="unit-detail-header">
+      <BackButton :size="36" class="unit-detail-back" />
       <div class="unit-detail-fav">
         <FavoriteToggle
           :model-value="unitFavorite"
@@ -103,6 +109,26 @@ const favoriteToggleSize = 36;
   right: 0;
   top: 0;
   z-index: 1;
+}
+.unit-detail-back {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.unit-detail-back:hover {
+  background: #e5e5e5;
 }
 .unit-detail-header h1 {
   margin-top: 2.2rem;

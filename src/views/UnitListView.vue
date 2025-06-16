@@ -5,6 +5,7 @@ import { ref, onMounted, watch, computed } from 'vue';
 import type { Unit } from '../UnitData';
 import ListButton from '../components/ListButton.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
+import BackButton from '../components/BackButton.vue';
 import { isFavorite, saveFavorite, removeFavorite, getFavorites, getFavoriteToggleState, setFavoriteToggleState } from '../favorites';
 
 const route = useRoute();
@@ -99,6 +100,7 @@ watch(unitFavorites, favs => {
 });
 </script>
 <template>
+  <BackButton :size="36" class="unit-list-back" />
   <div class="list-container">
     <h1>{{ army }}</h1>
     <div class="section-divider"></div>
@@ -154,5 +156,14 @@ watch(unitFavorites, favs => {
 }
 .favorite-toggle svg {
   vertical-align: middle;
+}
+.unit-list-header-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.unit-list-back {
+  margin-bottom: 0.5rem;
 }
 </style>
