@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router';
 import { loadArmy } from '../army';
 import { ref, onMounted, watch, computed } from 'vue';
-import type { Unit } from '../UnitData';
+import type { Unit } from '../common/UnitData';
 import ListButton from '../components/ListButton.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
 import BackButton from '../components/BackButton.vue';
@@ -13,7 +13,7 @@ import {
   getFavoriteToggleState,
   setFavoriteToggleState,
 } from '../favorites';
-import { POSSIBLE_CATEGORIES, determineUnitCategory } from '../UnitData';
+import { POSSIBLE_CATEGORIES } from '../common/UnitData';
 
 // Accept army as a prop for this view
 const props = defineProps<{ army?: string }>();
@@ -50,18 +50,18 @@ onMounted(async () => {
       'Faction Terrain': [],
       Other: [],
     };
+
     for (const unit of armyData.units) {
-      if (unit.keywords.map((k) => k.toLowerCase()).includes('legends')) {
-        // eslint-disable-next-line no-console
-        console.log(`Skipping Legends unit: ${unit.name}`);
-        continue;
-      }
-      const cat = unit.category || determineUnitCategory(unit);
+      const cat = unit.category;
+      if (!cat) continue; // Skip units without a category
       if (!cats[cat]) cats[cat] = [];
       cats[cat].push(unit);
     }
+
     // Sort units alphabetically within each category
     for (const cat of CATEGORY_ORDER) {
+      if (!cats[cat]) continue; // Skip if category has no units
+      if (cats[cat].length === 0) continue; // Skip empty categories
       cats[cat].sort((a, b) => a.name.localeCompare(b.name));
     }
     categorizedUnits.value = cats;
@@ -174,6 +174,7 @@ watch(unitFavorites, (favs) => {
   gap: 1.2rem;
   margin-bottom: 1.2rem;
 }
+
 .favorite-toggle {
   background: none;
   border: none;
@@ -187,21 +188,26 @@ watch(unitFavorites, (favs) => {
   border-radius: 4px;
   transition: background 0.2s;
 }
+
 .favorite-toggle.active {
   background: #ffe4f3;
 }
+
 .favorite-toggle svg {
   vertical-align: middle;
 }
+
 .unit-list-header-row {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 0.5rem;
 }
+
 .unit-list-back {
   margin-bottom: 0.5rem;
 }
+
 .sort-toggle {
   background: #fff;
   border: 1.5px solid #8b0000;
@@ -217,6 +223,7 @@ watch(unitFavorites, (favs) => {
     color 0.2s,
     border 0.2s;
 }
+
 .sort-toggle:hover {
   background: #8b0000;
   color: #fff;

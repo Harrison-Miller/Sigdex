@@ -1,5 +1,5 @@
-import { parseArmy } from './parser';
-import type { Army } from './ArmyData';
+import { parseArmy } from './parser/army';
+import type { Army } from './common/ArmyData';
 import { SIGDEX_VERSION } from './version';
 
 function getGithubBaseUrl() {
@@ -22,6 +22,21 @@ function getArmyTimestampKey(armyName: string) {
 export function needsMigration(): boolean {
   const storedVersion = localStorage.getItem('SIGDEX_VERSION');
   return storedVersion !== SIGDEX_VERSION;
+}
+
+function fetchXml(url: string): Promise<Element> {
+  return fetch(url)
+    .then((res) => {
+      if (!res.ok) throw new Error(`Failed to fetch XML: ${res.statusText}`);
+      return res.text();
+    })
+    .then((xmlText) => {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+      const errorNode = xmlDoc.querySelector('parsererror');
+      if (errorNode) throw new Error(`XML parsing error: ${errorNode.textContent}`);
+      return xmlDoc.documentElement;
+    });
 }
 
 /**
@@ -53,10 +68,20 @@ export async function loadArmy(armyName: string): Promise<Army> {
     // ignore localStorage errors
   }
 
-  console.log(`Loading army: ${armyName}`);
-  console.log(`Fetching army info from: ${armyInfoUrl}`);
-  console.log(`Fetching library from: ${libraryUrl}`);
-  const army = await parseArmy(armyInfoUrl, libraryUrl);
+  const unitLibrary = await fetchXml(libraryUrl);
+  if (!unitLibrary) {
+    throw new Error(`Failed to load unit library from ${libraryUrl}`);
+  }
+  const armyInfo = await fetchXml(armyInfoUrl);
+  if (!armyInfo) {
+    throw new Error(`Failed to load army info from ${armyInfoUrl}`);
+  }
+
+  const army = await parseArmy(unitLibrary, armyInfo);
+  if (!army) {
+    throw new Error(`Failed to parse army from ${armyInfoUrl}`);
+  }
+
   try {
     localStorage.setItem(storageKey, JSON.stringify(army));
     localStorage.setItem(timestampKey, Date.now().toString());
