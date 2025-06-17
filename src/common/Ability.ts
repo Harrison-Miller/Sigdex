@@ -8,4 +8,5 @@ export interface Ability {
   declare?: string;
   castingValue?: string;
   cost?: string;
+  points?: number;
 }

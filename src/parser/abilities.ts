@@ -4,6 +4,9 @@ import { findAllByTagAndAttrPrefix, findFirstByTagAndAttr } from './utils';
 export function parseAbilities(root: Element): Ability[] {
   const abilities: Ability[] = [];
 
+  const points = Number(
+    findFirstByTagAndAttr(root, 'cost', 'typeId', 'points')?.getAttribute('value')
+  );
   const abilityElements = findAllByTagAndAttrPrefix(root, 'profile', 'typeName', 'Ability');
   for (const element of abilityElements) {
     const ability: Ability = {
@@ -24,6 +27,7 @@ export function parseAbilities(root: Element): Ability[] {
         '',
       declare:
         findFirstByTagAndAttr(element, 'characteristic', 'name', 'Declare')?.textContent || '',
+      points: isNaN(points) || points === 0 ? undefined : points,
     };
     if (ability.name) {
       abilities.push(ability);
