@@ -1,6 +1,4 @@
-// UnitData.ts
-// Data classes for units, stats, and weapons
-import type { Ability } from './CommonData';
+import type { Ability } from './Ability';
 
 export interface Stats {
   move: string;
@@ -21,6 +19,7 @@ export interface Weapon {
 }
 
 export const POSSIBLE_CATEGORIES = [
+  'Legends',
   'Hero',
   'Infantry',
   'Cavalry',
@@ -44,9 +43,9 @@ export interface Unit {
   unit_size?: number;
 }
 
-export function determineUnitCategory(unit: Unit): string {
+export function determineUnitCategory(keywords: string[]): string {
   for (const cat of POSSIBLE_CATEGORIES.slice(0, -1)) {
-    if (unit.keywords.some((k) => k.toLowerCase() === cat.toLowerCase())) {
+    if (keywords.some((k) => k.toLowerCase() === cat.toLowerCase())) {
       return cat;
     }
   }
