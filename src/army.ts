@@ -27,15 +27,16 @@ export function needsMigration(): boolean {
 function fetchXml(url: string): Promise<Element> {
   return fetch(url)
     .then((res) => {
-      if (!res.ok) throw new Error(`Failed to fetch XML: ${res.statusText}`);
+      if (!res.ok) {
+        console.error(`Failed to fetch XML from ${url}: ${res.statusText}`);
+        throw new Error(`Failed to fetch XML: ${res.statusText}`);
+      }
       return res.text();
     })
     .then((xmlText) => {
       const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
-      const errorNode = xmlDoc.querySelector('parsererror');
-      if (errorNode) throw new Error(`XML parsing error: ${errorNode.textContent}`);
-      return xmlDoc.documentElement;
+      const doc = parser.parseFromString(xmlText, 'text/xml');
+      return doc.documentElement;
     });
 }
 
@@ -70,15 +71,18 @@ export async function loadArmy(armyName: string): Promise<Army> {
 
   const unitLibrary = await fetchXml(libraryUrl);
   if (!unitLibrary) {
+    console.error(`Failed to load unit library from ${libraryUrl}`);
     throw new Error(`Failed to load unit library from ${libraryUrl}`);
   }
   const armyInfo = await fetchXml(armyInfoUrl);
   if (!armyInfo) {
+    console.error(`Failed to load army info from ${armyInfoUrl}`);
     throw new Error(`Failed to load army info from ${armyInfoUrl}`);
   }
 
   const army = await parseArmy(unitLibrary, armyInfo);
   if (!army) {
+    console.error(`Failed to parse army from ${armyInfoUrl}`);
     throw new Error(`Failed to parse army from ${armyInfoUrl}`);
   }
 
