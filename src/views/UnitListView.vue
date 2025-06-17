@@ -21,6 +21,8 @@ const CATEGORY_ORDER = POSSIBLE_CATEGORIES;
 const categorizedUnits = ref<Record<string, Unit[]>>({});
 const unitFavorites = ref<string[]>([]);
 const showOnlyFavorites = ref(getFavoriteToggleState('unit'));
+const sortMode = ref<'alpha' | 'points'>('alpha');
+const sortLabel = computed(() => sortMode.value === 'alpha' ? 'A-Z' : 'Points');
 
 function updateShowOnlyFavoritesState(newVal: boolean) {
   showOnlyFavorites.value = newVal;
@@ -63,10 +65,29 @@ function toggleUnitFavorite(unit: string, fav: boolean) {
   }
 }
 
+function toggleSortMode() {
+  sortMode.value = sortMode.value === 'alpha' ? 'points' : 'alpha';
+}
+
 const filteredUnits = (cat: string) => {
-  const units = categorizedUnits.value?.[cat] || [];
+  let units = categorizedUnits.value?.[cat] || [];
   if (showOnlyFavorites.value && hasAnyFavoriteInArmy.value) {
-    return units.filter(x => unitFavorites.value.includes(x.name));
+    units = units.filter(x => unitFavorites.value.includes(x.name));
+  }
+  if (sortMode.value === 'points') {
+    units = [...units].sort((a, b) => {
+      if (typeof a.points === 'number' && typeof b.points === 'number') {
+        return a.points - b.points;
+      } else if (typeof a.points === 'number') {
+        return -1;
+      } else if (typeof b.points === 'number') {
+        return 1;
+      } else {
+        return a.name.localeCompare(b.name);
+      }
+    });
+  } else {
+    units = [...units].sort((a, b) => a.name.localeCompare(b.name));
   }
   return units;
 };
@@ -95,6 +116,9 @@ watch(unitFavorites, favs => {
         @update:modelValue="updateShowOnlyFavoritesState"
         :disabled="!hasAnyFavoriteInArmy"
       />
+      <button class="sort-toggle" @click="toggleSortMode" :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'">
+        Sort: {{ sortLabel }}
+      </button>
     </div>
     <div class="section-divider"></div>
     <template v-for="(cat, idx) in CATEGORY_ORDER" :key="cat">
@@ -111,6 +135,7 @@ watch(unitFavorites, favs => {
                 :label="u.name"
                 :favorite="unitFavorites.includes(u.name)"
                 :showFavoriteToggle="true"
+                :points="u.points"
                 @click="navigate"
                 @toggle-favorite="fav => toggleUnitFavorite(u.name, fav)"
                 :href="href"
@@ -157,5 +182,21 @@ watch(unitFavorites, favs => {
 }
 .unit-list-back {
   margin-bottom: 0.5rem;
+}
+.sort-toggle {
+  background: #fff;
+  border: 1.5px solid #8b0000;
+  color: #8b0000;
+  font-size: 1em;
+  font-weight: 500;
+  border-radius: 4px;
+  padding: 0.2em 1em;
+  margin-left: 0.5em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.sort-toggle:hover {
+  background: #8b0000;
+  color: #fff;
 }
 </style>

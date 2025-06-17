@@ -3,6 +3,7 @@
 import type { Unit } from './UnitData';
 import type { Ability } from './CommonData';
 import { determineUnitCategory } from './UnitData';
+import { Army } from './ArmyData';
 import {
   findFirstByTagAndAttr,
   findAllByTagAndAttr,
@@ -10,6 +11,7 @@ import {
   findAllByTag
 } from './domUtils';
 import { DOMParser as XmldomDOMParser } from 'xmldom';
+import { parsePoints } from './parsePoints';
 
 // Add jsdom support for DOMParser in Vitest/node
 declare const global: any;
@@ -99,7 +101,7 @@ function parseWeapons(root: Element): { melee_weapons: any[]; ranged_weapons: an
       const name = c.getAttribute('name')?.toLowerCase();
       if (!name) return;
       if (name === 'atk' || name === 'attacks') weapon.attacks = c.textContent || '';
-      if (name === 'hit' ) weapon.hit = c.textContent || '';
+      if (name === 'hit') weapon.hit = c.textContent || '';
       if (name === 'wnd' || name === 'wound') weapon.wound = c.textContent || '';
       if (name === 'rnd' || name === 'rend') weapon.rend = c.textContent || '';
       if (name === 'dmg' || name === 'damage') weapon.damage = c.textContent || '';
@@ -122,6 +124,25 @@ function parseKeywords(root: Element): string[] {
     if (name) keywords.push(name);
   });
   return keywords;
+}
+
+// New: parseArmy fetches both .cat and - Library.cat, parses points, then units with points
+export async function parseArmy(catUrl: string, libraryCatUrl: string): Promise<Army> {
+  // Fetch the army info file (cat)
+  const catRes = await fetch(catUrl);
+  if (!catRes.ok) throw new Error(`Failed to fetch army info: ${catRes.statusText}`);
+  const catXml = await catRes.text();
+  // Parse points from army info
+  const pointsMap = parsePoints(catXml);
+
+  // Fetch the army library file
+  const libRes = await fetch(libraryCatUrl);
+  if (!libRes.ok) throw new Error(`Failed to fetch army library: ${libRes.statusText}`);
+  const libXml = await libRes.text();
+
+  // Call parseUnits with pointsMap (to be added as a parameter)
+  const units = parseUnits(libXml, pointsMap);
+  return new Army(units);
 }
 
 export function parseUnit(xml: string | Element): Unit {
@@ -149,7 +170,8 @@ export function parseUnit(xml: string | Element): Unit {
   return unit;
 }
 
-export function parseUnits(xml: string | Element): Unit[] {
+// Update parseUnits to accept pointsMap and set unit.points
+export function parseUnits(xml: string | Element, pointsMap?: Map<string, number>): Unit[] {
   let root: Element;
   if (typeof xml === 'string') {
     const parser = new DOMParser();
@@ -162,6 +184,16 @@ export function parseUnits(xml: string | Element): Unit[] {
   function findUnitEntries(node: Element) {
     if (node.nodeType === 1 && node.tagName === 'selectionEntry' && node.getAttribute('type') === 'unit') {
       const unit = parseUnit(node);
+      if (pointsMap) {
+        const pts = pointsMap.get(unit.name);
+        if (typeof pts === 'number') {
+          unit.points = pts;
+        } else {
+          unit.points = 0;
+          // eslint-disable-next-line no-console
+          console.warn(`No points found for unit: ${unit.name}`);
+        }
+      }
       if (unit.category !== 'Other' && !unit.keywords.map(k => k.toLowerCase()).includes('legends')) {
         units.push(unit);
       }
