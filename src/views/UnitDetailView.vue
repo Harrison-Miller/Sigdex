@@ -84,6 +84,15 @@ console.log('UnitDetailView: loaded unit', unit.value);
         :ability="a"
       />
     </div>
+    <!-- Unit Details section: show only if points or unit_size is set and not 0 -->
+    <div v-if="(unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0)" class="section-divider"></div>
+    <div v-if="(unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0)" class="unit-detail-section" style="text-align: left;">
+      <h2 class="section-title">Unit Details</h2>
+      <div class="unit-detail-points" style="font-size: 0.95em; color: #666; text-align: left;">
+        <span v-if="unit.points && unit.points > 0">{{ unit.points }} Points</span>
+        <span v-if="unit.unit_size && unit.unit_size > 0" style="margin-left: 1.5em;">Unit Size: {{ unit.unit_size }}</span>
+      </div>
+    </div>
     <div v-if="unit.keywords && unit.keywords.length" class="section-divider"></div>
     <h2 v-if="unit.keywords && unit.keywords.length" class="section-title">Keywords</h2>
     <KeywordsBar v-if="unit.keywords && unit.keywords.length" :keywords="unit.keywords" />

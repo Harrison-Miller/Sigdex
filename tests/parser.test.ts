@@ -131,6 +131,7 @@ describe('parseUnits', () => {
           </characteristics>
         </profile>
       </profiles>
+      <categoryLinks><categoryLink name="Hero" /></categoryLinks>
     </selectionEntry>
     <selectionEntry type="unit" name="UnitB">
       <profiles>
@@ -142,18 +143,22 @@ describe('parseUnits', () => {
           </characteristics>
         </profile>
       </profiles>
+      <categoryLinks><categoryLink name="Hero" /></categoryLinks>
     </selectionEntry>
   </sharedSelectionEntries>
 </catalogue>`;
-    const units = parseUnits(catalogueXml);
+    const pointsMap = new Map<string, number>([['UnitA', 120], ['UnitB', 80]]);
+    const units = parseUnits(catalogueXml, pointsMap);
     expect(units.length).toBe(2);
     expect(units[0].name).toBe('UnitA');
     expect(units[0].stats.move).toBe('6"');
     expect(units[0].stats.health).toBe(4);
     expect(units[0].stats.save).toBe('5+');
+    expect(units[0].points).toBe(120);
     expect(units[1].name).toBe('UnitB');
     expect(units[1].stats.move).toBe('5"');
     expect(units[1].stats.health).toBe(3);
     expect(units[1].stats.save).toBe('6+');
+    expect(units[1].points).toBe(80);
   });
 });
