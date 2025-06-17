@@ -8,7 +8,7 @@ import {
   findFirstByTagAndAttr,
   findAllByTagAndAttr,
   findAllByTagAndAttrEndsWith,
-  findAllByTag
+  findAllByTag,
 } from './domUtils';
 import { DOMParser as XmldomDOMParser } from 'xmldom';
 import { parsePoints } from './parsePoints';
@@ -67,7 +67,8 @@ function parseAbilities(root: Element): Ability[] {
       if (name === 'declare') ability.declare = c.textContent || '';
       if (name === 'casting value') ability.castingValue = c.textContent || '';
       if (name === 'cost') ability.cost = c.textContent || '';
-      if (name === 'keywords' && c.textContent) ability.keywords = c.textContent.split(',').map((k: string) => k.trim());
+      if (name === 'keywords' && c.textContent)
+        ability.keywords = c.textContent.split(',').map((k: string) => k.trim());
     });
     findAllByTag(profile, 'attribute').forEach((a) => {
       const name = a.getAttribute('name')?.toLowerCase();
@@ -75,7 +76,10 @@ function parseAbilities(root: Element): Ability[] {
       if (name === 'color') ability.color = a.textContent || '';
       if (name === 'type') ability.type = a.textContent || '';
     });
-    if (!ability.timing && (profile.getAttribute('typeName') || '').toLowerCase().includes('passive')) {
+    if (
+      !ability.timing &&
+      (profile.getAttribute('typeName') || '').toLowerCase().includes('passive')
+    ) {
       ability.timing = 'Passive';
     }
     abilities.push(ability);
@@ -105,7 +109,8 @@ function parseWeapons(root: Element): { melee_weapons: any[]; ranged_weapons: an
       if (name === 'wnd' || name === 'wound') weapon.wound = c.textContent || '';
       if (name === 'rnd' || name === 'rend') weapon.rend = c.textContent || '';
       if (name === 'dmg' || name === 'damage') weapon.damage = c.textContent || '';
-      if (name === 'ability' && c.textContent && c.textContent !== '-') weapon.abilities.push(c.textContent);
+      if (name === 'ability' && c.textContent && c.textContent !== '-')
+        weapon.abilities.push(c.textContent);
     });
     if ((profile.getAttribute('typeName') || '').toLowerCase().includes('melee')) {
       melee_weapons.push(weapon);
@@ -182,7 +187,11 @@ export function parseUnits(xml: string | Element, pointsMap?: Map<string, number
   }
   const units: Unit[] = [];
   function findUnitEntries(node: Element) {
-    if (node.nodeType === 1 && node.tagName === 'selectionEntry' && node.getAttribute('type') === 'unit') {
+    if (
+      node.nodeType === 1 &&
+      node.tagName === 'selectionEntry' &&
+      node.getAttribute('type') === 'unit'
+    ) {
       const unit = parseUnit(node);
       if (pointsMap) {
         const pts = pointsMap.get(unit.name);
@@ -194,7 +203,10 @@ export function parseUnits(xml: string | Element, pointsMap?: Map<string, number
           console.warn(`No points found for unit: ${unit.name}`);
         }
       }
-      if (unit.category !== 'Other' && !unit.keywords.map(k => k.toLowerCase()).includes('legends')) {
+      if (
+        unit.category !== 'Other' &&
+        !unit.keywords.map((k) => k.toLowerCase()).includes('legends')
+      ) {
         units.push(unit);
       }
     }

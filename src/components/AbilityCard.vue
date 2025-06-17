@@ -12,7 +12,7 @@ const props = defineProps<{
     castingValue?: string;
     cost?: string;
     name: string;
-  }
+  };
 }>();
 // Map ability types to Font Awesome icon names
 const iconMap: Record<string, string> = {
@@ -44,7 +44,9 @@ function formatAbilityText(text: string): string {
 </script>
 <template>
   <div class="card ability-card">
-    <div v-if="props.ability.castingValue" class="casting-value-circle">{{ props.ability.castingValue }}</div>
+    <div v-if="props.ability.castingValue" class="casting-value-circle">
+      {{ props.ability.castingValue }}
+    </div>
     <div v-else-if="props.ability.cost" class="cost-hexagon-icon">
       <font-awesome-icon :icon="['fas', 'stop']" class="hexagon-bg" />
       <span class="hexagon-cost-text">{{ props.ability.cost }}</span>
@@ -57,8 +59,15 @@ function formatAbilityText(text: string): string {
     </div>
     <div class="card-title ability-title">{{ props.ability.name }}</div>
     <div class="card-body">
-      <div v-if="props.ability.declare" class="card-text ability-text" v-html="formatAbilityText(`**Declare**: ${props.ability.declare}`)"></div>
-      <div class="card-text ability-text" v-html="formatAbilityText(`**Effect**: ${props.ability.text}`)"></div>
+      <div
+        v-if="props.ability.declare"
+        class="card-text ability-text"
+        v-html="formatAbilityText(`**Declare**: ${props.ability.declare}`)"
+      ></div>
+      <div
+        class="card-text ability-text"
+        v-html="formatAbilityText(`**Effect**: ${props.ability.text}`)"
+      ></div>
       <KeywordsBar :keywords="props.ability.keywords" />
     </div>
   </div>
@@ -81,7 +90,7 @@ function formatAbilityText(text: string): string {
   justify-content: center;
   font-size: 1.1rem;
   z-index: 2;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 .cost-hexagon-icon {
   position: absolute;
@@ -99,7 +108,7 @@ function formatAbilityText(text: string): string {
   color: #fff;
   stroke: #000;
   stroke-width: 20px;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.08));
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
 }
 .hexagon-cost-text {
   position: absolute;

@@ -16,7 +16,9 @@ const props = defineProps<{ unit?: any; army?: string }>();
 const route = useRoute();
 
 const unitPropIsObject = typeof props.unit === 'object' && props.unit !== null;
-let unitName = unitPropIsObject ? props.unit.name : (props.unit ?? route?.params?.unit as string | undefined);
+let unitName = unitPropIsObject
+  ? props.unit.name
+  : (props.unit ?? (route?.params?.unit as string | undefined));
 let armyName = props.army ?? (route?.params?.army as string | undefined);
 
 const unit = ref(unitPropIsObject ? props.unit : null);
@@ -25,7 +27,7 @@ onMounted(async () => {
   if (!unit.value && armyName && unitName) {
     try {
       const armyData = await loadArmy(armyName);
-      unit.value = armyData.units.find(u => u.name === unitName) ?? MOCK_UNIT;
+      unit.value = armyData.units.find((u) => u.name === unitName) ?? MOCK_UNIT;
     } catch (e) {
       unit.value = MOCK_UNIT;
     }
@@ -64,17 +66,41 @@ console.log('UnitDetailView: loaded unit', unit.value);
       <StatCircle :value="unit.stats.move" label="Move" />
       <StatCircle :value="unit.stats.health" label="Health" />
       <StatCircle
-        :value="unit.stats.control !== undefined ? unit.stats.control : (unit.stats.banishment !== undefined ? unit.stats.banishment : '-')"
-        :label="unit.stats.control !== undefined ? 'Control' : (unit.stats.banishment !== undefined ? 'Banishment' : 'Control')"
+        :value="
+          unit.stats.control !== undefined
+            ? unit.stats.control
+            : unit.stats.banishment !== undefined
+              ? unit.stats.banishment
+              : '-'
+        "
+        :label="
+          unit.stats.control !== undefined
+            ? 'Control'
+            : unit.stats.banishment !== undefined
+              ? 'Banishment'
+              : 'Control'
+        "
       />
       <StatCircle :value="unit.stats.save" label="Save" />
     </div>
     <div v-if="unit.melee_weapons && unit.melee_weapons.length" class="section-divider"></div>
-    <h2 v-if="unit.melee_weapons && unit.melee_weapons.length" class="section-title">Melee Weapons</h2>
-    <WeaponTable v-if="unit.melee_weapons && unit.melee_weapons.length" :weapons="unit.melee_weapons" short-headers />
+    <h2 v-if="unit.melee_weapons && unit.melee_weapons.length" class="section-title">
+      Melee Weapons
+    </h2>
+    <WeaponTable
+      v-if="unit.melee_weapons && unit.melee_weapons.length"
+      :weapons="unit.melee_weapons"
+      short-headers
+    />
     <div v-if="unit.ranged_weapons && unit.ranged_weapons.length" class="section-divider"></div>
-    <h2 v-if="unit.ranged_weapons && unit.ranged_weapons.length" class="section-title">Ranged Weapons</h2>
-    <WeaponTable v-if="unit.ranged_weapons && unit.ranged_weapons.length" :weapons="unit.ranged_weapons" short-headers />
+    <h2 v-if="unit.ranged_weapons && unit.ranged_weapons.length" class="section-title">
+      Ranged Weapons
+    </h2>
+    <WeaponTable
+      v-if="unit.ranged_weapons && unit.ranged_weapons.length"
+      :weapons="unit.ranged_weapons"
+      short-headers
+    />
     <div v-if="unit.abilities && unit.abilities.length" class="section-divider"></div>
     <h2 v-if="unit.abilities && unit.abilities.length" class="section-title">Abilities</h2>
     <div v-if="unit.abilities && unit.abilities.length" class="abilities">
@@ -85,12 +111,21 @@ console.log('UnitDetailView: loaded unit', unit.value);
       />
     </div>
     <!-- Unit Details section: show only if points or unit_size is set and not 0 -->
-    <div v-if="(unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0)" class="section-divider"></div>
-    <div v-if="(unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0)" class="unit-detail-section" style="text-align: left;">
+    <div
+      v-if="(unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0)"
+      class="section-divider"
+    ></div>
+    <div
+      v-if="(unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0)"
+      class="unit-detail-section"
+      style="text-align: left"
+    >
       <h2 class="section-title">Unit Details</h2>
-      <div class="unit-detail-points" style="font-size: 0.95em; color: #666; text-align: left;">
+      <div class="unit-detail-points" style="font-size: 0.95em; color: #666; text-align: left">
         <span v-if="unit.points && unit.points > 0">{{ unit.points }} Points</span>
-        <span v-if="unit.unit_size && unit.unit_size > 0" style="margin-left: 1.5em;">Unit Size: {{ unit.unit_size }}</span>
+        <span v-if="unit.unit_size && unit.unit_size > 0" style="margin-left: 1.5em"
+          >Unit Size: {{ unit.unit_size }}</span
+        >
       </div>
     </div>
     <div v-if="unit.keywords && unit.keywords.length" class="section-divider"></div>
@@ -98,7 +133,7 @@ console.log('UnitDetailView: loaded unit', unit.value);
     <KeywordsBar v-if="unit.keywords && unit.keywords.length" :keywords="unit.keywords" />
   </div>
   <div v-else>
-    <p style="color: red;">Unit data is missing or incomplete.</p>
+    <p style="color: red">Unit data is missing or incomplete.</p>
     <pre>{{ unit }}</pre>
   </div>
 </template>

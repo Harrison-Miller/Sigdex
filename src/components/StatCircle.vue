@@ -6,7 +6,12 @@ const props = defineProps<{
   label: string;
 }>();
 const displayValue = computed(() => {
-  if (props.value === undefined || props.value === null || props.value === '' || props.value === '-') {
+  if (
+    props.value === undefined ||
+    props.value === null ||
+    props.value === '' ||
+    props.value === '-'
+  ) {
     return '-';
   }
   return props.value;

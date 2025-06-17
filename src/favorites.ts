@@ -38,7 +38,7 @@ export function removeFavorite(type: FavoriteType, name: string) {
       parsed = JSON.parse(data);
     } catch {}
   }
-  parsed[type] = parsed[type].filter(n => n !== name);
+  parsed[type] = parsed[type].filter((n) => n !== name);
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(parsed));
 }
 

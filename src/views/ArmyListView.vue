@@ -2,7 +2,13 @@
 import { onMounted, ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { armyList } from '../army';
-import { saveFavorite, removeFavorite, getFavorites, getFavoriteToggleState, setFavoriteToggleState } from '../favorites';
+import {
+  saveFavorite,
+  removeFavorite,
+  getFavorites,
+  getFavoriteToggleState,
+  setFavoriteToggleState,
+} from '../favorites';
 import ListButton from '../components/ListButton.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
 import SettingsButton from '../components/SettingsButton.vue';
@@ -24,7 +30,7 @@ function toggleArmyFavorite(army: string, fav: boolean) {
     if (!armyFavorites.value.includes(army)) armyFavorites.value.push(army);
   } else {
     removeFavorite('army', army);
-    armyFavorites.value = armyFavorites.value.filter(a => a !== army);
+    armyFavorites.value = armyFavorites.value.filter((a) => a !== army);
   }
 }
 function updateShowOnlyFavoritesState(newVal: boolean) {
@@ -37,12 +43,12 @@ function goToSettings() {
 
 const filteredArmyList = computed(() => {
   if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
-    return armyList.filter(a => armyFavorites.value.includes(a));
+    return armyList.filter((a) => armyFavorites.value.includes(a));
   }
   return armyList;
 });
 
-watch(armyFavorites, favs => {
+watch(armyFavorites, (favs) => {
   if (showOnlyFavorites.value && favs.length === 0) {
     showOnlyFavorites.value = false;
     setFavoriteToggleState('army', false);
@@ -71,7 +77,7 @@ watch(armyFavorites, favs => {
           :favorite="armyFavorites.includes(army)"
           :showFavoriteToggle="true"
           @click="selectArmy(army)"
-          @toggle-favorite="fav => toggleArmyFavorite(army, fav)"
+          @toggle-favorite="(fav) => toggleArmyFavorite(army, fav)"
         />
       </li>
     </ul>

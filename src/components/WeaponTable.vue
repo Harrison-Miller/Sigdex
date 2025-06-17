@@ -8,7 +8,7 @@ const props = defineProps<{
     wound: string;
     rend: string;
     damage: string;
-  }>,
+  }>;
   shortHeaders?: boolean;
 }>();
 
@@ -36,7 +36,9 @@ function displayRend(rend: string) {
           <td>
             <div>{{ w.name }}</div>
             <div v-if="w.abilities && w.abilities.length" class="weapon-abilities">
-              <span v-for="(a, i) in w.abilities" :key="i">{{ a }}<span v-if="i < w.abilities.length - 1">, </span></span>
+              <span v-for="(a, i) in w.abilities" :key="i"
+                >{{ a }}<span v-if="i < w.abilities.length - 1">, </span></span
+              >
             </div>
           </td>
           <td>{{ w.attacks }}</td>
@@ -59,7 +61,8 @@ function displayRend(rend: string) {
   background: #fff;
   color: #222;
 }
-.weapon-table th, .weapon-table td {
+.weapon-table th,
+.weapon-table td {
   border: 1px solid #ccc;
   padding: 8px;
   text-align: left;

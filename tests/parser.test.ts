@@ -147,7 +147,10 @@ describe('parseUnits', () => {
     </selectionEntry>
   </sharedSelectionEntries>
 </catalogue>`;
-    const pointsMap = new Map<string, number>([['UnitA', 120], ['UnitB', 80]]);
+    const pointsMap = new Map<string, number>([
+      ['UnitA', 120],
+      ['UnitB', 80],
+    ]);
     const units = parseUnits(catalogueXml, pointsMap);
     expect(units.length).toBe(2);
     expect(units[0].name).toBe('UnitA');

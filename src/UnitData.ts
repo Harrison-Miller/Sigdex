@@ -46,7 +46,7 @@ export interface Unit {
 
 export function determineUnitCategory(unit: Unit): string {
   for (const cat of POSSIBLE_CATEGORIES.slice(0, -1)) {
-    if (unit.keywords.some(k => k.toLowerCase() === cat.toLowerCase())) {
+    if (unit.keywords.some((k) => k.toLowerCase() === cat.toLowerCase())) {
       return cat;
     }
   }
