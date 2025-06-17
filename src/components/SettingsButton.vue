@@ -5,7 +5,18 @@ const iconSize = props.size ?? 36;
 </script>
 <template>
   <button class="circle-btn" aria-label="Back" @click="$emit('click')">
-    <font-awesome-icon icon="fa-solid fa-ellipsis-vertical" :style="{ fontSize: iconSize + 'px', background: '#f3f3f3', borderRadius: '50%', width: iconSize + 'px', height: iconSize + 'px', padding: (iconSize * 0.22) + 'px', color: '#555' }" />
+    <font-awesome-icon
+      icon="fa-solid fa-ellipsis-vertical"
+      :style="{
+        fontSize: iconSize + 'px',
+        background: '#f3f3f3',
+        borderRadius: '50%',
+        width: iconSize + 'px',
+        height: iconSize + 'px',
+        padding: iconSize * 0.22 + 'px',
+        color: '#555',
+      }"
+    />
   </button>
 </template>
 <style scoped>

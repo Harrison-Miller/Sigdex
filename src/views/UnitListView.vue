@@ -6,7 +6,13 @@ import type { Unit } from '../UnitData';
 import ListButton from '../components/ListButton.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
 import BackButton from '../components/BackButton.vue';
-import { saveFavorite, removeFavorite, getFavorites, getFavoriteToggleState, setFavoriteToggleState } from '../favorites';
+import {
+  saveFavorite,
+  removeFavorite,
+  getFavorites,
+  getFavoriteToggleState,
+  setFavoriteToggleState,
+} from '../favorites';
 import { POSSIBLE_CATEGORIES, determineUnitCategory } from '../UnitData';
 
 // Accept army as a prop for this view
@@ -22,7 +28,7 @@ const categorizedUnits = ref<Record<string, Unit[]>>({});
 const unitFavorites = ref<string[]>([]);
 const showOnlyFavorites = ref(getFavoriteToggleState('unit'));
 const sortMode = ref<'alpha' | 'points'>('alpha');
-const sortLabel = computed(() => sortMode.value === 'alpha' ? 'A-Z' : 'Points');
+const sortLabel = computed(() => (sortMode.value === 'alpha' ? 'A-Z' : 'Points'));
 
 function updateShowOnlyFavoritesState(newVal: boolean) {
   showOnlyFavorites.value = newVal;
@@ -34,10 +40,18 @@ onMounted(async () => {
   try {
     const armyData = await loadArmy(army);
     const cats: Record<string, Unit[]> = {
-      Hero: [], Infantry: [], Cavalry: [], Beast: [], Monster: [], 'War Machine': [], Manifestation: [], 'Faction Terrain': [], Other: []
+      Hero: [],
+      Infantry: [],
+      Cavalry: [],
+      Beast: [],
+      Monster: [],
+      'War Machine': [],
+      Manifestation: [],
+      'Faction Terrain': [],
+      Other: [],
     };
     for (const unit of armyData.units) {
-      if (unit.keywords.map(k => k.toLowerCase()).includes('legends')) {
+      if (unit.keywords.map((k) => k.toLowerCase()).includes('legends')) {
         // eslint-disable-next-line no-console
         console.log(`Skipping Legends unit: ${unit.name}`);
         continue;
@@ -61,7 +75,7 @@ function toggleUnitFavorite(unit: string, fav: boolean) {
     if (!unitFavorites.value.includes(unit)) unitFavorites.value.push(unit);
   } else {
     removeFavorite('unit', unit);
-    unitFavorites.value = unitFavorites.value.filter(u => u !== unit);
+    unitFavorites.value = unitFavorites.value.filter((u) => u !== unit);
   }
 }
 
@@ -72,7 +86,7 @@ function toggleSortMode() {
 const filteredUnits = (cat: string) => {
   let units = categorizedUnits.value?.[cat] || [];
   if (showOnlyFavorites.value && hasAnyFavoriteInArmy.value) {
-    units = units.filter(x => unitFavorites.value.includes(x.name));
+    units = units.filter((x) => unitFavorites.value.includes(x.name));
   }
   if (sortMode.value === 'points') {
     units = [...units].sort((a, b) => {
@@ -93,12 +107,12 @@ const filteredUnits = (cat: string) => {
 };
 
 const hasAnyFavoriteInArmy = computed(() => {
-  return Object.values(categorizedUnits.value).some(units =>
-    units.some(u => unitFavorites.value.includes(u.name))
+  return Object.values(categorizedUnits.value).some((units) =>
+    units.some((u) => unitFavorites.value.includes(u.name))
   );
 });
 
-watch(unitFavorites, favs => {
+watch(unitFavorites, (favs) => {
   if (showOnlyFavorites.value && favs.length === 0) {
     showOnlyFavorites.value = false;
     setFavoriteToggleState('unit', false);
@@ -116,7 +130,11 @@ watch(unitFavorites, favs => {
         @update:modelValue="updateShowOnlyFavoritesState"
         :disabled="!hasAnyFavoriteInArmy"
       />
-      <button class="sort-toggle" @click="toggleSortMode" :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'">
+      <button
+        class="sort-toggle"
+        @click="toggleSortMode"
+        :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'"
+      >
         Sort: {{ sortLabel }}
       </button>
     </div>
@@ -129,7 +147,8 @@ watch(unitFavorites, favs => {
           <li v-for="u in filteredUnits(cat)" :key="u.name">
             <router-link
               :to="{ name: 'UnitDetail', params: { army, unit: u.name } }"
-              custom v-slot="{ navigate, href }"
+              custom
+              v-slot="{ navigate, href }"
             >
               <ListButton
                 :label="u.name"
@@ -137,7 +156,7 @@ watch(unitFavorites, favs => {
                 :showFavoriteToggle="true"
                 :points="u.points"
                 @click="navigate"
-                @toggle-favorite="fav => toggleUnitFavorite(u.name, fav)"
+                @toggle-favorite="(fav) => toggleUnitFavorite(u.name, fav)"
                 :href="href"
               />
             </router-link>
@@ -193,7 +212,10 @@ watch(unitFavorites, favs => {
   padding: 0.2em 1em;
   margin-left: 0.5em;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border 0.2s;
 }
 .sort-toggle:hover {
   background: #8b0000;

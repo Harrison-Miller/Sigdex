@@ -6,9 +6,10 @@
   margin-bottom: 10px;
   display: inline-block; /* Fit to content */
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
-.card-header, .ability-header {
+.card-header,
+.ability-header {
   width: 100%;
   box-sizing: border-box;
   font-size: 1em;
@@ -20,7 +21,8 @@
   border-radius: 6px 6px 0 0;
   margin: 0;
 }
-.card-header .timing, .ability-header .timing {
+.card-header .timing,
+.ability-header .timing {
   font-size: 1.1em;
   font-weight: bold;
   margin-left: 0.5em;
@@ -33,13 +35,15 @@
   justify-content: center;
   font-size: 1.2em;
 }
-.card-title, .ability-title {
+.card-title,
+.ability-title {
   text-align: left;
   font-weight: bold;
   font-size: 1.1em;
   margin: 8px 12px 4px 12px;
 }
-.card-text, .ability-text {
+.card-text,
+.ability-text {
   text-align: left;
 }
 .card-body {
@@ -48,14 +52,30 @@
 .card-body div {
   margin-bottom: 8px;
 }
-.red { background-color: #8b0000; }
-.yellow { background-color: #b59f3b; }
-.black { background-color: #444; }
-.gray { background-color: #888; }
-.orange { background-color: #a65f00; }
-.green { background-color: #3a7740; }
-.blue { background-color: #3f5fa3; }
-.purple { background-color: #5e3d89; }
+.red {
+  background-color: #8b0000;
+}
+.yellow {
+  background-color: #b59f3b;
+}
+.black {
+  background-color: #444;
+}
+.gray {
+  background-color: #888;
+}
+.orange {
+  background-color: #a65f00;
+}
+.green {
+  background-color: #3a7740;
+}
+.blue {
+  background-color: #3f5fa3;
+}
+.purple {
+  background-color: #5e3d89;
+}
 .ability-keywords {
   background: #eee;
   border-radius: 6px;

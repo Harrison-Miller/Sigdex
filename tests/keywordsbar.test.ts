@@ -14,6 +14,6 @@ describe('KeywordsBar', () => {
     const wrapper = mount(KeywordsBar, { props: { keywords } });
     const chips = wrapper.findAll('.keyword');
     expect(chips).toHaveLength(keywords.length);
-    expect(chips.map(c => c.text())).toEqual(keywords);
+    expect(chips.map((c) => c.text())).toEqual(keywords);
   });
 });

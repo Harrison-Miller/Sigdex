@@ -36,26 +36,43 @@ function clearFavorites() {
     <BackButton class="back-btn" :size="36" />
     <h1>Settings</h1>
     <div class="section">
-      <ListButton label="Clear BSData" @click="clearBSDataHandler" :showFavoriteToggle="false" style="margin-bottom: 0.7rem;" />
+      <ListButton
+        label="Clear BSData"
+        @click="clearBSDataHandler"
+        :showFavoriteToggle="false"
+        style="margin-bottom: 0.7rem"
+      />
       <ListButton label="Clear Favorites" @click="clearFavorites" :showFavoriteToggle="false" />
     </div>
     <div class="section">
-      <label class="input-label">GITHUB_BASE_URL
-        <input class="settings-input" v-model="githubBaseUrl" @change="saveGithubBaseUrlHandler" placeholder="https://raw.githubusercontent.com" />
+      <label class="input-label"
+        >GITHUB_BASE_URL
+        <input
+          class="settings-input"
+          v-model="githubBaseUrl"
+          @change="saveGithubBaseUrlHandler"
+          placeholder="https://raw.githubusercontent.com"
+        />
       </label>
-      <label class="input-label">GITHUB_REPO
-        <input class="settings-input" v-model="githubRepo" @change="saveGithubRepoHandler" placeholder="BSData/age-of-sigmar-4th" />
+      <label class="input-label"
+        >GITHUB_REPO
+        <input
+          class="settings-input"
+          v-model="githubRepo"
+          @change="saveGithubRepoHandler"
+          placeholder="BSData/age-of-sigmar-4th"
+        />
       </label>
     </div>
     <div class="section legal">
-      <strong>Disclaimer:</strong> This app is not affiliated with Games Workshop. It only downloads data from BSData.
+      <strong>Disclaimer:</strong> This app is not affiliated with Games Workshop. It only downloads
+      data from BSData.
     </div>
     <div class="section about">
-      <strong>About:</strong> Sigdex is an open-source Age of Sigmar army browser. <a href="https://github.com/Harrison-Miller/sigdex" target="_blank">GitHub page</a>
+      <strong>About:</strong> Sigdex is an open-source Age of Sigmar army browser.
+      <a href="https://github.com/Harrison-Miller/sigdex" target="_blank">GitHub page</a>
     </div>
-    <div class="section version">
-      <strong>Version:</strong> {{ SIGDEX_VERSION }}
-    </div>
+    <div class="section version"><strong>Version:</strong> {{ SIGDEX_VERSION }}</div>
   </div>
 </template>
 
