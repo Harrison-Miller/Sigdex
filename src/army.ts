@@ -1,6 +1,7 @@
 import { parseArmy } from './parser/army';
 import type { Army } from './common/ArmyData';
 import { SIGDEX_VERSION } from './version';
+import { cleanObject } from './utils/cleanObject';
 
 function getGithubBaseUrl() {
   return localStorage.getItem('GITHUB_BASE_URL') || 'https://raw.githubusercontent.com';
@@ -87,7 +88,7 @@ export async function loadArmy(armyName: string): Promise<Army> {
   }
 
   try {
-    localStorage.setItem(storageKey, JSON.stringify(army));
+    localStorage.setItem(storageKey, JSON.stringify(cleanObject(army)));
     localStorage.setItem(timestampKey, Date.now().toString());
     // Set global app version after loading new army
     localStorage.setItem('SIGDEX_VERSION', SIGDEX_VERSION);
