@@ -16,5 +16,9 @@ export function formatText(text: string): string {
   text = text.replace(/\^\^(.+?)\^\^/g, '<i>$1</i>');
   // *text* => italics (must be after bold rules)
   text = text.replace(/\*(?!\*)([^*]+?)\*(?!\*)/g, '<i>$1</i>');
+  // Replace all newlines with <br>
+  text = text.replace(/\n/g, '<br>');
+  // Replace any number of sequential <br>'s (with optional whitespace between) with a single <br>
+  text = text.replace(/(<br>\s*)+/g, '<br>');
   return text;
 }

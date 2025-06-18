@@ -59,4 +59,32 @@ describe('formatText', () => {
       '<i>units can start the battle in reserve – even your entire Beasts of Chaos army!</i>'
     );
   });
+
+  it('formats multi-line Idoneth Deepkin effect with correct newlines and formatting', () => {
+    const input = `A different effect applies to friendly **^^Idoneth Deepkin^^** units each battle round, as shown below. For the fifth battle round onwards, repeat the sequence, starting with ‘Low Tide’.
+**Battle Round 1:**
+***Low Tide:*** For the rest of the battle round, subtract 1 from hit rolls for shooting attacks that target this unit and subtract 1 from hit rolls for combat attacks that target this unit if it did not use any **^^Charge^^** abilities this turn.
+**Battle Round 2:**
+***Flood Tide:*** For the rest of the battle round, this unit can use a **^^Run^^** ability and still use **^^Shoot^^** and/or **^^Charge^^** abilities later in the turn.
+**Battle Round 3:**
+***High Tide:*** For the rest of the battle round, this unit has **^^Strike-first^^**.
+**Battle Round 4:**
+***Ebb Tide:*** For the rest of the battle round, this unit can use a **^^Retreat^^** ability and still use **^^Shoot^^** and/or **^^Charge^^** abilities later in the turn.`;
+    const output = formatText(input);
+    // Check that each Battle Round header is on its own line
+    expect(output).toContain('<br><b>Battle Round 1:</b>');
+    expect(output).toContain('<br><b>Battle Round 2:</b>');
+    expect(output).toContain('<br><b>Battle Round 3:</b>');
+    expect(output).toContain('<br><b>Battle Round 4:</b>');
+    // Check that **^^Idoneth Deepkin^^** is bold italics
+    expect(output).toContain('<b><i>Idoneth Deepkin</i></b>');
+    // Check that ***Low Tide:*** is formatted as bullet bold with newline
+    expect(output).toContain('<br>• <b>Low Tide:</b>');
+    // Check that **^^Charge^^** is bold italics
+    expect(output).toContain('<b><i>Charge</i></b>');
+    // Check that ***Flood Tide:***, ***High Tide:***, ***Ebb Tide:*** are formatted
+    expect(output).toContain('<br>• <b>Flood Tide:</b>');
+    expect(output).toContain('<br>• <b>High Tide:</b>');
+    expect(output).toContain('<br>• <b>Ebb Tide:</b>');
+  });
 });
