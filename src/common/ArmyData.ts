@@ -9,6 +9,8 @@ export class Army {
   manifestationLores: string[] = [];
   spellLores: string[] = [];
   prayerLores: string[] = [];
+  battleTraits: Ability[] = [];
+  formations: Map<string, Ability[]> = new Map();
 
   constructor(
     units: Unit[],
@@ -16,7 +18,9 @@ export class Army {
     heroicTraits: Map<string, Ability[]> = new Map(),
     manifestationLores: string[] = [],
     spellLores: string[] = [],
-    prayerLores: string[] = []
+    prayerLores: string[] = [],
+    battleTraits: Ability[] = [],
+    formations: Map<string, Ability[]> = new Map()
   ) {
     this.units = units;
     this.artifacts = artifacts;
@@ -24,6 +28,8 @@ export class Army {
     this.manifestationLores = manifestationLores;
     this.spellLores = spellLores;
     this.prayerLores = prayerLores;
+    this.battleTraits = battleTraits;
+    this.formations = formations;
   }
 
   toJSON() {
@@ -34,6 +40,8 @@ export class Army {
       manifestationLores: this.manifestationLores,
       spellLores: this.spellLores,
       prayerLores: this.prayerLores,
+      battleTraits: this.battleTraits,
+      formations: Array.from(this.formations.entries()),
     };
   }
 
@@ -44,7 +52,9 @@ export class Army {
       obj.heroicTraits instanceof Map ? obj.heroicTraits : new Map(obj.heroicTraits),
       obj.manifestationLores,
       obj.spellLores,
-      obj.prayerLores
+      obj.prayerLores,
+      obj.battleTraits,
+      obj.formations instanceof Map ? obj.formations : new Map(obj.formations)
     );
   }
 }

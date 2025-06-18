@@ -4,6 +4,8 @@ import { parseHeroicTraits } from './heroictraits';
 import { parseArmyManifestationLores, parseArmyPrayerLores, parseArmySpellLores } from './lores';
 import { parsePoints } from './points';
 import { parseUnits } from './units';
+import { parseBattleTraits } from './battletraits';
+import { parseBattleFormations } from './formations';
 
 export function parseArmy(unitLibrary: Element, armyInfo: Element): Army {
   const points = parsePoints(armyInfo);
@@ -16,5 +18,17 @@ export function parseArmy(unitLibrary: Element, armyInfo: Element): Army {
   const spellLores = parseArmySpellLores(armyInfo);
   const prayerLores = parseArmyPrayerLores(armyInfo);
 
-  return new Army(units, artifacts, heroicTraits, manifestationLores, spellLores, prayerLores);
+  const battleTraits = parseBattleTraits(armyInfo);
+  const formations = parseBattleFormations(armyInfo);
+
+  return new Army(
+    units,
+    artifacts,
+    heroicTraits,
+    manifestationLores,
+    spellLores,
+    prayerLores,
+    battleTraits,
+    formations
+  );
 }
