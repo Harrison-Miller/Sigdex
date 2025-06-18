@@ -30,10 +30,13 @@ const props = defineProps<{
         <tr v-for="w in props.weapons" :key="w.name">
           <td>
             <div>{{ w.name }}</div>
-            <div v-if="w.abilities && w.abilities.length" class="weapon-abilities">
-              <span v-for="(a, i) in w.abilities" :key="i">
-                <span v-html="formatText(a)"></span
-                ><span v-if="i < w.abilities.length - 1">, </span>
+            <div
+              v-if="w.abilities && w.abilities.filter((a) => a && a !== '-').length"
+              class="weapon-abilities"
+            >
+              <span v-for="(a, i) in w.abilities.filter((a) => a && a !== '-')" :key="i">
+                <span v-html="formatText(a)"></span>
+                <span v-if="i < w.abilities.filter((a) => a && a !== '-').length - 1">, </span>
               </span>
             </div>
           </td>

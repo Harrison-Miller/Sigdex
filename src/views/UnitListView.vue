@@ -138,7 +138,6 @@ watch(unitFavorites, (favs) => {
         Sort: {{ sortLabel }}
       </button>
     </div>
-    <div class="section-divider"></div>
     <template v-for="(cat, idx) in CATEGORY_ORDER" :key="cat">
       <div v-if="filteredUnits(cat).length">
         <div v-if="idx !== 0" class="section-divider"></div>

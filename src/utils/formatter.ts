@@ -1,4 +1,5 @@
 export function formatText(text: string): string {
+  if (!text) return '';
   // Add newline before every bullet (•)
   text = text.replace(/\s*•/g, '<br>•');
   // ***text*** => bullet bold with newline

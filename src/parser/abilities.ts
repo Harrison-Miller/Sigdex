@@ -9,9 +9,18 @@ export function parseAbilities(root: Element): Ability[] {
   );
   const abilityElements = findAllByTagAndAttrPrefix(root, 'profile', 'typeName', 'Ability');
   for (const element of abilityElements) {
+    let timing =
+      findFirstByTagAndAttr(element, 'characteristic', 'name', 'Timing')?.textContent || '';
+    // If timing is empty and typeName contains 'passive', set timing to 'Passive'
+    if (!timing) {
+      const typeName = element.getAttribute('typeName') || '';
+      if (typeName.toLowerCase().includes('passive')) {
+        timing = 'Passive';
+      }
+    }
     const ability: Ability = {
       name: element.getAttribute('name') || '',
-      timing: findFirstByTagAndAttr(element, 'characteristic', 'name', 'Timing')?.textContent || '',
+      timing,
       text: findFirstByTagAndAttr(element, 'characteristic', 'name', 'Effect')?.textContent || '',
       keywords: (
         findFirstByTagAndAttr(element, 'characteristic', 'name', 'Keywords')?.textContent || ''
