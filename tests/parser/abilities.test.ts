@@ -105,7 +105,7 @@ describe('parseAbilities', () => {
 
     expect(abilities.length).toBe(1);
     expect(abilities[0].name).toBe('Passive Ability');
-    expect(abilities[0].timing).toBe('');
+    expect(abilities[0].timing).toBe('Passive');
     expect(abilities[0].color).toBe('Green');
     expect(abilities[0].type).toBe('Defensive');
     expect(abilities[0].text).toBe('Always active.');
@@ -174,5 +174,33 @@ describe('parseAbilities', () => {
     expect(abilities[0].type).toBe('Special');
     expect(abilities[0].text).toBe('Do something expensive.');
     expect(abilities[0].cost).toBe('2');
+  });
+
+  it('passive timing fallback', () => {
+    // Test for passive timing fallback
+    const xmlPassive = `
+		<selectionEntry type="unit" name="Kragnos, the End of Empires">
+		<profiles>
+			<profile name="Battle Damaged" typeName="Ability (Passive)">
+			<characteristics>
+				<characteristic name="Keywords"/>
+				<characteristic name="Effect">While this unit has 10 or more damage points, the Attacks characteristic of **The Dread Mace** is 4 and this unit has a Control characteristic of 10.</characteristic>
+			</characteristics>
+			<attributes>
+				<attribute name="Color">Black</attribute>
+				<attribute name="Type">Damage</attribute>
+			</attributes>
+			</profile>
+		</profiles>
+		</selectionEntry>
+		`;
+    const rootPassive = new DOMParser().parseFromString(xmlPassive, 'text/xml').documentElement;
+    const abilitiesPassive = parseAbilities(rootPassive);
+    expect(abilitiesPassive.length).toBe(1);
+    expect(abilitiesPassive[0].name).toBe('Battle Damaged');
+    expect(abilitiesPassive[0].timing).toBe('Passive');
+    expect(abilitiesPassive[0].color).toBe('Black');
+    expect(abilitiesPassive[0].type).toBe('Damage');
+    expect(abilitiesPassive[0].text).toContain('The Dread Mace');
   });
 });
