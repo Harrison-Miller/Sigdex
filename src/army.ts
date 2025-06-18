@@ -28,7 +28,11 @@ function getDataTimestampKey(type: 'army' | 'lore', name?: string) {
 // Returns true if the app version in localStorage does not match the current version
 export function needsMigration(): boolean {
   const storedVersion = localStorage.getItem('SIGDEX_VERSION');
-  return storedVersion !== SIGDEX_VERSION;
+  if (!storedVersion) return true;
+  // Compare only major.minor, ignore bugfix version
+  const [major, minor] = SIGDEX_VERSION.split('.');
+  const [storedMajor, storedMinor] = storedVersion.split('.');
+  return major !== storedMajor || minor !== storedMinor;
 }
 
 function fetchXml(url: string): Promise<Element> {
