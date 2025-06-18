@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatText } from '../src/utils/formatter';
+import { formatText } from '../../src/utils/formatter';
 
 describe('formatText', () => {
   it('adds <br> before bullets', () => {
