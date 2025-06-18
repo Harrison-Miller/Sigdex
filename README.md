@@ -1,15 +1,8 @@
 # Sigdex
 
-Sigdex is a modern Age of Sigmar army and unit browser, inspired by the idea of a 'pokedex' for Warhammer. It lets you quickly view unit stats, weapons, abilities, and keywords for any army, with a clean and mobile-friendly interface. Data is sourced from BSData.
+Sigmar + Pokedex. Sigedex is a unit and rules browser. The goal of the app is to allow you to view stats, abilities and rules in a natural way similar to the AoS Wh app or core rules, but with improvements. Data is sourced from [BSData](https://github.com/BSData/age-of-sigmar-4th).
 
-## Features
-
-- Browse all armies and select one to view its units
-- View unit details: stats, weapons, abilities, and keywords
-- Ability formatting: bold, italics, bullet points, and timing
-- Local caching for fast reloads
-- Favorites system for quick access
-- Roadmap: Army rules and list building
+[**Live Site**](https://verra.xyz/sigdex/)
 
 ## Getting Started
 
@@ -21,19 +14,7 @@ Sigdex is a modern Age of Sigmar army and unit browser, inspired by the idea of 
    ```bash
    npm run dev
    ```
-
-## Data Source
-
-Sigdex reads from [BSData](https://github.com/BSData/age-of-sigmar-4th). Army files are mapped internally for easy access and are cached locally for performance.
-
-## Roadmap
-
-- [x] View unit rules
-- [x] Favorites system
-- [x] Local caching
-- [ ] View army rules
-- [ ] List building
-
----
-
-This project uses Vue 3, TypeScript, Vite, Vue Router, and Vitest. Contributions and feedback are welcome!
+3. Run tests
+   ```bash
+   npx vitest
+   ```
