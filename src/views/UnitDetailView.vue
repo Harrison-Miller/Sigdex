@@ -8,8 +8,9 @@ import WeaponTable from '../components/WeaponTable.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
 import BackButton from '../components/BackButton.vue';
 import { isFavorite, saveFavorite, removeFavorite } from '../favorites';
-import { loadArmy } from '../army';
+import { loadArmy, loadLores } from '../army';
 import { MOCK_UNIT } from '../army';
+import type { Ability } from '../common/Ability';
 
 // Accept unit and army as props for detail view
 const props = defineProps<{ unit?: any; army?: string }>();
@@ -22,6 +23,7 @@ let unitName = unitPropIsObject
 let armyName = props.army ?? (route?.params?.army as string | undefined);
 
 const unit = ref(unitPropIsObject ? props.unit : null);
+const summoningAbility = ref<Ability | null>(null);
 
 onMounted(async () => {
   if (!unit.value && armyName && unitName) {
@@ -31,6 +33,23 @@ onMounted(async () => {
     } catch (e) {
       unit.value = MOCK_UNIT;
     }
+  }
+  // Summoning logic for Manifestation
+  if (unit.value && unit.value.category === 'Manifestation' && armyName) {
+    const armyData = await loadArmy(armyName);
+    const lores = await loadLores();
+    // Find all manifestation lores for this army
+    const manifestationLoreNames = armyData.manifestationLores || [];
+    if (!manifestationLoreNames.length) {
+      return;
+    }
+    let foundAbility: Ability | null = null;
+    for (const loreName of manifestationLoreNames) {
+      const abilities = lores.get(loreName) || [];
+      foundAbility = abilities.find((a) => a.text && a.text.includes(unit.value.name)) || null;
+      if (foundAbility) break;
+    }
+    summoningAbility.value = foundAbility;
   }
 });
 
@@ -110,6 +129,11 @@ console.log('UnitDetailView: loaded unit', unit.value);
         :ability="a"
       />
     </div>
+    <div v-if="summoningAbility && summoningAbility.text" class="section-divider"></div>
+    <h2 v-if="summoningAbility && summoningAbility.text" class="section-title">Summoning</h2>
+    <div v-if="summoningAbility && summoningAbility.text" class="abilities">
+      <AbilityCard :ability="summoningAbility" />
+    </div>
     <!-- Unit Details section: show only if points or unit_size is set and not 0 -->
     <div
       v-if="(unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0)"
@@ -146,12 +170,14 @@ console.log('UnitDetailView: loaded unit', unit.value);
   gap: 0.2rem;
   position: relative;
 }
+
 .unit-detail-fav {
   position: absolute;
   right: 0;
   top: 0;
   z-index: 1;
 }
+
 .unit-detail-back {
   position: absolute;
   left: 0;
@@ -169,9 +195,11 @@ console.log('UnitDetailView: loaded unit', unit.value);
   justify-content: center;
   transition: background 0.2s;
 }
+
 .unit-detail-back:hover {
   background: #e5e5e5;
 }
+
 .unit-detail-header h1 {
   margin-top: 2.2rem;
   text-align: center;
