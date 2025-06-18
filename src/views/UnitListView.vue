@@ -10,8 +10,8 @@ import {
   saveFavorite,
   removeFavorite,
   getFavorites,
-  getFavoriteToggleState,
-  setFavoriteToggleState,
+  getArmyUnitFavoriteToggleState,
+  setArmyUnitFavoriteToggleState,
 } from '../favorites';
 import { POSSIBLE_CATEGORIES } from '../common/UnitData';
 
@@ -26,17 +26,18 @@ const CATEGORY_ORDER = POSSIBLE_CATEGORIES;
 
 const categorizedUnits = ref<Record<string, Unit[]>>({});
 const unitFavorites = ref<string[]>([]);
-const showOnlyFavorites = ref(getFavoriteToggleState('unit'));
+const showOnlyFavorites = ref(getArmyUnitFavoriteToggleState(army));
 const sortMode = ref<'alpha' | 'points'>('alpha');
 const sortLabel = computed(() => (sortMode.value === 'alpha' ? 'A-Z' : 'Points'));
 
 function updateShowOnlyFavoritesState(newVal: boolean) {
   showOnlyFavorites.value = newVal;
-  setFavoriteToggleState('unit', newVal);
+  setArmyUnitFavoriteToggleState(army, newVal);
 }
 
 onMounted(async () => {
   unitFavorites.value = getFavorites('unit');
+  showOnlyFavorites.value = getArmyUnitFavoriteToggleState(army);
   try {
     const armyData = await loadArmy(army);
     const cats: Record<string, Unit[]> = {
@@ -115,7 +116,7 @@ const hasAnyFavoriteInArmy = computed(() => {
 watch(unitFavorites, (favs) => {
   if (showOnlyFavorites.value && favs.length === 0) {
     showOnlyFavorites.value = false;
-    setFavoriteToggleState('unit', false);
+    setArmyUnitFavoriteToggleState(army, false);
   }
 });
 </script>
