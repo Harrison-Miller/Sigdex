@@ -27,6 +27,11 @@ describe('formatText', () => {
     expect(formatText('foo ^^italic^^ bar')).toContain('<i>italic</i>');
   });
 
+  it('formats ^^text** as bold italics', () => {
+    expect(formatText('^^bolditalic**')).toBe('<b><i>bolditalic</i></b>');
+    expect(formatText('foo ^^bolditalic** bar')).toContain('<b><i>bolditalic</i></b>');
+  });
+
   it('combines multiple formats', () => {
     const input = '***Important*** **2 *Attacks*** **Bold** ^^italic^^';
     const output = formatText(input);
@@ -40,5 +45,18 @@ describe('formatText', () => {
     const input = '**^^Nested^^**';
     const output = formatText(input);
     expect(output).toBe('<b><i>Nested</i></b>');
+  });
+
+  it('formats complex mixed bold, italics, and bold-italics', () => {
+    const input = `**Effect**: Set up that unit in reserve in ambush. It has now been deployed.\n*Designer’s Note: Any number of friendly* **^^Beasts of Chaos^^** *units can start the battle in reserve – even your entire Beasts of Chaos army!*`;
+    const output = formatText(input);
+    expect(output).toContain(
+      '<b>Effect</b>: Set up that unit in reserve in ambush. It has now been deployed.'
+    );
+    expect(output).toContain('<i>Designer’s Note: Any number of friendly</i>');
+    expect(output).toContain('<b><i>Beasts of Chaos</i></b>');
+    expect(output).toContain(
+      '<i>units can start the battle in reserve – even your entire Beasts of Chaos army!</i>'
+    );
   });
 });

@@ -6,9 +6,15 @@ export function formatText(text: string): string {
   text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<br>• <b>$1</b>');
   // **number *text*** => bolded number - text, newline before
   text = text.replace(/\*\*(\d+) \*(.+?)\*\*\*/g, '<br><b>$1 - $2</b>');
+  // **^^text^^** => bold italics
+  text = text.replace(/\*\*\^\^(.+?)\^\^\*\*/g, '<b><i>$1</i></b>');
+  // ^^text** => bold italics
+  text = text.replace(/\^\^(.+?)\*\*/g, '<b><i>$1</i></b>');
   // **text** => bold
   text = text.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
   // ^^text^^ => italics
   text = text.replace(/\^\^(.+?)\^\^/g, '<i>$1</i>');
+  // *text* => italics (must be after bold rules)
+  text = text.replace(/\*(?!\*)([^*]+?)\*(?!\*)/g, '<i>$1</i>');
   return text;
 }

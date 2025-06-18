@@ -27,6 +27,7 @@ const iconMap: Record<string, string> = {
   control: 'bullseye',
 };
 function getAbilityIcon(type: string) {
+  if (!type) return 'star'; // Default icon if type is not provided
   return iconMap[type.toLowerCase()] || 'star';
 }
 </script>

@@ -18,6 +18,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -52,6 +53,7 @@ button {
     border 0.2s;
   box-shadow: none;
 }
+
 button:hover {
   background: #f3f3ef;
   color: #111;
@@ -75,7 +77,16 @@ button:hover {
   font-size: 1.2em;
   font-weight: bold;
 }
+
 .section-divider {
   border-top: 2px solid #ccc;
   margin: 30px 0 20px 0;
+}
+
+.section-subheader {
+  font-size: 1.08em;
+  font-weight: 500;
+  color: #444;
+  margin-top: 0.5em;
+  margin-bottom: 0.3em;
 }
