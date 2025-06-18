@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, toRefs } from 'vue';
+import { ref, watch, toRefs, computed } from 'vue';
 const props = defineProps<{
   label: string;
   favorite?: boolean;
@@ -18,15 +18,23 @@ function toggleFavorite(e: Event) {
   isFavorite.value = !isFavorite.value;
   emit('toggle-favorite', isFavorite.value);
 }
+// Remove (Scourge of Ghyran) from label and detect if present
+const isSoG = computed(() => /\(Scourge of Ghyran\)/.test(props.label));
+const displayLabel = computed(() => props.label.replace(/\s*\(Scourge of Ghyran\)/, ''));
 </script>
 <template>
   <button class="list-button" @click="$emit('click')">
     <span class="list-label" :class="{ center: !showFavoriteToggle }">
-      {{ props.label }}
-      <br v-if="typeof props.points === 'number' && props.points > 0" />
-      <span v-if="typeof props.points === 'number' && props.points > 0" class="points-badge"
-        >{{ props.points }} pts</span
+      {{ displayLabel }}
+      <div
+        class="badges-row"
+        v-if="(typeof props.points === 'number' && props.points > 0) || isSoG"
       >
+        <span v-if="typeof props.points === 'number' && props.points > 0" class="points-badge">
+          {{ props.points }} pts
+        </span>
+        <span v-if="isSoG" class="sog-badge">SoG</span>
+      </div>
     </span>
     <span
       v-if="showFavoriteToggle"
@@ -89,6 +97,7 @@ function toggleFavorite(e: Event) {
   font-weight: 500;
   text-align: left;
 }
+
 .list-label {
   display: flex;
   flex-direction: column;
@@ -100,12 +109,14 @@ function toggleFavorite(e: Event) {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .list-label.center {
   text-align: center;
   justify-content: center;
   width: 100%;
   display: flex;
 }
+
 .favorite-icon {
   margin-left: 1rem;
   display: flex;
@@ -113,17 +124,29 @@ function toggleFavorite(e: Event) {
   cursor: pointer;
   transition: color 0.2s;
 }
+
 .favorite-icon.active svg {
   filter: drop-shadow(0 0 2px #ec4899);
 }
+
 .favorite-icon svg[fill='#eab308'] {
   fill: #ec4899 !important;
 }
+
 .list-button:hover {
   background: #f3f3ef;
   color: #111;
   border: 1.5px solid #111;
 }
+
+.badges-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 0.18em;
+}
+
 .points-badge {
   background: #8b0000;
   color: #fff;
@@ -131,8 +154,23 @@ function toggleFavorite(e: Event) {
   font-weight: 600;
   border-radius: 1em;
   padding: 0.08em 0.7em 0.08em 0.7em;
-  margin-top: 0.18em;
+  margin-top: 0;
   margin-left: 0;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.01em;
+}
+
+.sog-badge {
+  background: #185c2b;
+  color: #fff;
+  font-size: 0.78em;
+  font-weight: 700;
+  border-radius: 1em;
+  padding: 0.08em 0.7em 0.08em 0.7em;
+  margin-top: 0;
+  margin-left: 0.5em;
   display: inline-block;
   vertical-align: middle;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
