@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import KeywordsBar from './KeywordsBar.vue';
+import { formatText } from '../utils/formatter';
 const props = defineProps<{
   ability: {
     timing: string;
@@ -28,19 +29,6 @@ const iconMap: Record<string, string> = {
 function getAbilityIcon(type: string) {
   return iconMap[type.toLowerCase()] || 'star';
 }
-function formatAbilityText(text: string): string {
-  // Add newline before every bullet (•)
-  text = text.replace(/\s*•/g, '<br>•');
-  // ***text*** => bullet bold with newline
-  text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<br>• <b>$1</b>');
-  // **number *text*** => bolded number - text, newline before
-  text = text.replace(/\*\*(\d+) \*(.+?)\*\*\*/g, '<br><b>$1 - $2</b>');
-  // **text** => bold
-  text = text.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
-  // ^^text^^ => italics
-  text = text.replace(/\^\^(.+?)\^\^/g, '<i>$1</i>');
-  return text;
-}
 </script>
 <template>
   <div class="card ability-card">
@@ -55,18 +43,18 @@ function formatAbilityText(text: string): string {
       <span class="icon">
         <font-awesome-icon :icon="getAbilityIcon(props.ability.type)" />
       </span>
-      <span class="timing" v-html="formatAbilityText(props.ability.timing)"></span>
+      <span class="timing" v-html="formatText(props.ability.timing)"></span>
     </div>
     <div class="card-title ability-title">{{ props.ability.name }}</div>
     <div class="card-body">
       <div
         v-if="props.ability.declare"
         class="card-text ability-text"
-        v-html="formatAbilityText(`**Declare**: ${props.ability.declare}`)"
+        v-html="formatText(`**Declare**: ${props.ability.declare}`)"
       ></div>
       <div
         class="card-text ability-text"
-        v-html="formatAbilityText(`**Effect**: ${props.ability.text}`)"
+        v-html="formatText(`**Effect**: ${props.ability.text}`)"
       ></div>
       <KeywordsBar :keywords="props.ability.keywords" />
     </div>
@@ -92,6 +80,7 @@ function formatAbilityText(text: string): string {
   z-index: 2;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
+
 .cost-hexagon-icon {
   position: absolute;
   top: -14px;
@@ -103,6 +92,7 @@ function formatAbilityText(text: string): string {
   justify-content: center;
   z-index: 2;
 }
+
 .hexagon-bg {
   font-size: 2.2rem;
   color: #fff;
@@ -110,6 +100,7 @@ function formatAbilityText(text: string): string {
   stroke-width: 20px;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
 }
+
 .hexagon-cost-text {
   position: absolute;
   top: 50%;
@@ -120,11 +111,13 @@ function formatAbilityText(text: string): string {
   font-size: 1.1rem;
   pointer-events: none;
 }
+
 .ability-declare {
   font-size: 0.95em;
   color: #666;
   margin-bottom: 0.3em;
 }
+
 .card.ability-card {
   position: relative;
 }
