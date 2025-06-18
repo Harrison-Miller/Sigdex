@@ -50,3 +50,20 @@ export function findFirstByTagAndAttr(
   }
   return null;
 }
+
+export function findFirstByTagAndAttrPrefix(
+  root: Element,
+  tagName: string,
+  attrName: string,
+  valuePrefix: string
+): Element | null {
+  const elements = root.getElementsByTagName(tagName);
+  for (let i = 0; i < elements.length; i++) {
+    const element = elements[i];
+    const attrValue = element.getAttribute(attrName);
+    if (attrValue && attrValue.toLowerCase().startsWith(valuePrefix.toLowerCase())) {
+      return element;
+    }
+  }
+  return null;
+}
