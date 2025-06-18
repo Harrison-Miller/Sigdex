@@ -51,4 +51,23 @@ describe('cleanObject', () => {
       h: [{ j: 'yes' }],
     });
   });
+
+  it('does not clean a Map with valid elements', () => {
+    const map = new Map([
+      ['foo', { a: 1 }],
+      ['bar', { b: 2 }],
+      ['empty', {}],
+      ['zero', 0],
+      ['null', null],
+      ['undefined', undefined],
+      ['emptyStr', ''],
+      ['emptyArr', []],
+    ]);
+    const cleaned = cleanObject(map);
+    // Only valid entries should remain in the Map
+    expect(Array.from(cleaned.entries())).toEqual([
+      ['foo', { a: 1 }],
+      ['bar', { b: 2 }],
+    ]);
+  });
 });

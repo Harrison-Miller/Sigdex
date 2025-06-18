@@ -1,7 +1,9 @@
 import { parseArmy } from './parser/army';
-import type { Army } from './common/ArmyData';
+import { Army } from './common/ArmyData';
 import { SIGDEX_VERSION } from './version';
 import { cleanObject } from './utils/cleanObject';
+import { parseLores } from './parser/lores';
+import type { Ability } from './common/Ability';
 
 function getGithubBaseUrl() {
   return localStorage.getItem('GITHUB_BASE_URL') || 'https://raw.githubusercontent.com';
@@ -12,11 +14,15 @@ function getGithubRepo() {
 export const GITHUB_BASE_URL = getGithubBaseUrl();
 export const GITHUB_REPO = getGithubRepo();
 
-function getArmyStorageKey(armyName: string) {
-  return `armyData:${armyName}`;
+function getDataStorageKey(type: 'army' | 'lore', name?: string) {
+  if (type === 'army' && name) return `armyData:${name}`;
+  if (type === 'lore') return 'loreData';
+  throw new Error('Invalid type or missing name');
 }
-function getArmyTimestampKey(armyName: string) {
-  return `armyDataTimestamp:${armyName}`;
+function getDataTimestampKey(type: 'army' | 'lore', name?: string) {
+  if (type === 'army' && name) return `armyDataTimestamp:${name}`;
+  if (type === 'lore') return 'loreDataTimestamp';
+  throw new Error('Invalid type or missing name');
 }
 
 // Returns true if the app version in localStorage does not match the current version
@@ -41,6 +47,16 @@ function fetchXml(url: string): Promise<Element> {
     });
 }
 
+function isCacheOutOfDate(
+  timestampKey: string,
+  maxAgeMs: number = 7 * 24 * 60 * 60 * 1000
+): boolean {
+  const cachedTimestamp = localStorage.getItem(timestampKey);
+  if (!cachedTimestamp) return true;
+  const age = Date.now() - Number(cachedTimestamp);
+  return age >= maxAgeMs;
+}
+
 /**
  * Fetches army XML data from GitHub and returns an Army instance.
  * @param armyName The name of the army (e.g. "Gloomspite Gitz - Library.cat")
@@ -49,27 +65,22 @@ export async function loadArmy(armyName: string): Promise<Army> {
   if (needsMigration()) {
     clearBSData();
   }
+  // Always ensure lores are loaded/cached when loading an army
+  await loadLores();
   const fileName = `${armyName} - Library.cat`;
   const libraryUrl = `${GITHUB_BASE_URL}/${GITHUB_REPO}/refs/heads/main/${encodeURIComponent(fileName)}`;
   const armyInfoUrl = `${GITHUB_BASE_URL}/${GITHUB_REPO}/refs/heads/main/${encodeURIComponent(armyName)}.cat`;
-  const storageKey = getArmyStorageKey(armyName);
-  const timestampKey = getArmyTimestampKey(armyName);
-  const weekMs = 7 * 24 * 60 * 60 * 1000;
+  const storageKey = getDataStorageKey('army', armyName);
+  const timestampKey = getDataTimestampKey('army', armyName);
   try {
     const cached = localStorage.getItem(storageKey);
-    const cachedTimestamp = localStorage.getItem(timestampKey);
-    if (cached && cachedTimestamp) {
-      const age = Date.now() - Number(cachedTimestamp);
-      if (age < weekMs) {
-        console.log(`Using cached army: ${armyName}`);
-        const army = JSON.parse(cached);
-        return army;
-      }
+    if (cached && !isCacheOutOfDate(timestampKey)) {
+      const obj = JSON.parse(cached);
+      return Army.fromJson(obj);
     }
   } catch (e) {
     // ignore localStorage errors
   }
-
   const unitLibrary = await fetchXml(libraryUrl);
   if (!unitLibrary) {
     console.error(`Failed to load unit library from ${libraryUrl}`);
@@ -80,17 +91,14 @@ export async function loadArmy(armyName: string): Promise<Army> {
     console.error(`Failed to load army info from ${armyInfoUrl}`);
     throw new Error(`Failed to load army info from ${armyInfoUrl}`);
   }
-
   const army = await parseArmy(unitLibrary, armyInfo);
   if (!army) {
     console.error(`Failed to parse army from ${armyInfoUrl}`);
     throw new Error(`Failed to parse army from ${armyInfoUrl}`);
   }
-
   try {
-    localStorage.setItem(storageKey, JSON.stringify(cleanObject(army)));
+    localStorage.setItem(storageKey, JSON.stringify(cleanObject(army.toJSON())));
     localStorage.setItem(timestampKey, Date.now().toString());
-    // Set global app version after loading new army
     localStorage.setItem('SIGDEX_VERSION', SIGDEX_VERSION);
   } catch (e) {
     // ignore localStorage errors
@@ -98,9 +106,44 @@ export async function loadArmy(armyName: string): Promise<Army> {
   return army;
 }
 
+export async function loadLores(): Promise<Map<string, Ability[]>> {
+  const storageKey = getDataStorageKey('lore');
+  const timestampKey = getDataTimestampKey('lore');
+  try {
+    const cached = localStorage.getItem(storageKey);
+    if (cached && !isCacheOutOfDate(timestampKey)) {
+      const arr = JSON.parse(cached);
+      return new Map(arr);
+    }
+  } catch (e) {
+    // ignore localStorage errors
+  }
+  const loresUrl = `${GITHUB_BASE_URL}/${GITHUB_REPO}/refs/heads/main/Lores.cat`;
+  const loresXml = await fetchXml(loresUrl);
+  if (!loresXml) {
+    console.error(`Failed to load lores from ${loresUrl}`);
+    throw new Error(`Failed to load lores from ${loresUrl}`);
+  }
+  const lores = parseLores(loresXml);
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(Array.from(lores.entries())));
+    localStorage.setItem(timestampKey, Date.now().toString());
+    localStorage.setItem('SIGDEX_VERSION', SIGDEX_VERSION);
+  } catch (e) {
+    // ignore localStorage errors
+  }
+  return lores;
+}
+
 export function clearBSData() {
   Object.keys(localStorage)
-    .filter((k) => k.startsWith('armyData:') || k.startsWith('armyDataTimestamp:'))
+    .filter(
+      (k) =>
+        k.startsWith('armyData:') ||
+        k.startsWith('armyDataTimestamp:') ||
+        k === 'loreData' ||
+        k === 'loreDataTimestamp'
+    )
     .forEach((k) => localStorage.removeItem(k));
 }
 

@@ -2,11 +2,11 @@ import type { Ability } from '../common/Ability';
 import { findFirstByTagAndAttr, findAllByTagAndAttr } from './utils';
 import { parseAbilities } from './abilities';
 
-export function parseArtifacts(armyInfo: Element): Map<string, Ability[]> {
+export function parseArtifacts(root: Element): Map<string, Ability[]> {
   const artifactGroups: Map<string, Ability[]> = new Map();
 
   const artifactElement = findFirstByTagAndAttr(
-    armyInfo,
+    root,
     'selectionEntryGroup',
     'name',
     'Artefacts of Power'
@@ -17,7 +17,10 @@ export function parseArtifacts(armyInfo: Element): Map<string, Ability[]> {
 
   let groups = Array.from(artifactElement.getElementsByTagName('selectionEntryGroup'));
   for (let group of groups) {
-    const groupName = group.getAttribute('name') || 'Unknown Artefact Group';
+    const groupName = group.getAttribute('name');
+    if (!groupName) {
+      continue; // Skip if group name is not defined
+    }
 
     const artifacts: Ability[] = [];
     let artifactElements = findAllByTagAndAttr(group, 'selectionEntry', 'type', 'upgrade');
