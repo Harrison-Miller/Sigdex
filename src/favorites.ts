@@ -54,9 +54,26 @@ export function setFavoriteToggleState(type: FavoriteType, value: boolean) {
   localStorage.setItem(`sigdex-${type}-fav-toggle`, String(value));
 }
 
+// Per-army unit favorite toggle helpers
+export function getArmyUnitFavoriteToggleKey(army: string) {
+  return `sigdex-unit-fav-toggle:${army}`;
+}
+
+export function getArmyUnitFavoriteToggleState(army: string): boolean {
+  return localStorage.getItem(getArmyUnitFavoriteToggleKey(army)) === 'true';
+}
+
+export function setArmyUnitFavoriteToggleState(army: string, value: boolean) {
+  localStorage.setItem(getArmyUnitFavoriteToggleKey(army), String(value));
+}
+
 export function clearAllFavorites() {
   localStorage.removeItem(FAVORITES_KEY);
   // Optionally clear favorite toggle states
   localStorage.removeItem('sigdex-army-fav-toggle');
   localStorage.removeItem('sigdex-unit-fav-toggle');
+  // Remove all per-army unit favorite toggles
+  Object.keys(localStorage)
+    .filter((k) => k.startsWith('sigdex-unit-fav-toggle:'))
+    .forEach((k) => localStorage.removeItem(k));
 }
