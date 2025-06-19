@@ -12,6 +12,12 @@ const props = defineProps<{
   }>;
   shortHeaders?: boolean;
 }>();
+
+function displayRend(rend: string | number | undefined | null): string {
+  return rend === '' || rend === undefined || rend === null || rend === '0' || rend === 0
+    ? '-'
+    : String(rend);
+}
 </script>
 <template>
   <div class="weapon-table-wrapper">
@@ -43,7 +49,7 @@ const props = defineProps<{
           <td>{{ w.attacks }}</td>
           <td>{{ w.hit }}</td>
           <td>{{ w.wound }}</td>
-          <td>{{ w.rend }}</td>
+          <td>{{ displayRend(w.rend) }}</td>
           <td>{{ w.damage }}</td>
         </tr>
       </tbody>
