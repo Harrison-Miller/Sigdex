@@ -173,7 +173,7 @@ export const armyList = [
   'Idoneth Deepkin',
   'Ironjawz',
   'Kharadron Overlords',
-  'Kruelboyz',
+  'Kruleboyz',
   'Lumineth Realm-lords',
   'Maggotkin of Nurgle',
   'Nighthaunt',
