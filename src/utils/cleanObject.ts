@@ -1,4 +1,4 @@
-// Recursively remove null, undefined, 0, empty string, empty array, and empty object values from an object
+// Recursively remove null, undefined, 0, empty string, string '-', empty array, and empty object values from an object
 export function cleanObject<T>(obj: T): T {
   if (Array.isArray(obj)) {
     // Clean each item and filter out empty results
@@ -9,6 +9,7 @@ export function cleanObject<T>(obj: T): T {
           v !== null &&
           v !== undefined &&
           v !== '' &&
+          v !== '-' &&
           !(Array.isArray(v) && v.length === 0) &&
           !(typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length === 0) &&
           v !== 0
@@ -23,6 +24,7 @@ export function cleanObject<T>(obj: T): T {
             v !== null &&
             v !== undefined &&
             v !== '' &&
+            v !== '-' &&
             !(Array.isArray(v) && v.length === 0) &&
             !(typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length === 0) &&
             v !== 0
@@ -36,6 +38,7 @@ export function cleanObject<T>(obj: T): T {
         cleaned !== null &&
         cleaned !== undefined &&
         cleaned !== '' &&
+        cleaned !== '-' &&
         !(Array.isArray(cleaned) && cleaned.length === 0) &&
         !(
           typeof cleaned === 'object' &&

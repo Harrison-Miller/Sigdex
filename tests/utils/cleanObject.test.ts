@@ -53,21 +53,50 @@ describe('cleanObject', () => {
   });
 
   it('does not clean a Map with valid elements', () => {
-    const map = new Map([
-      ['foo', { a: 1 }],
-      ['bar', { b: 2 }],
-      ['empty', {}],
-      ['zero', 0],
-      ['null', null],
-      ['undefined', undefined],
-      ['emptyStr', ''],
-      ['emptyArr', []],
-    ]);
+    const obj = {
+      foo: { a: 1 },
+      bar: { b: 2 },
+      empty: {},
+      zero: 0,
+      null: null,
+      undefined: undefined,
+      emptyStr: '',
+      emptyArr: [],
+    };
+
+    const map = new Map(Object.entries(obj));
+
     const cleaned = cleanObject(map);
     // Only valid entries should remain in the Map
     expect(Array.from(cleaned.entries())).toEqual([
       ['foo', { a: 1 }],
       ['bar', { b: 2 }],
     ]);
+  });
+
+  it('removes string values equal to "-"', () => {
+    const input = {
+      a: '-',
+      b: 'keep',
+      c: ['-', 'ok', 1, null],
+      d: { x: '-', y: 'yes' },
+      e: [{ f: '-' }, { g: 'good' }],
+      f: new Map([
+        ['foo', '-'],
+        ['bar', 'keep'],
+        ['baz', null],
+      ]),
+    };
+    const output = cleanObject(input);
+    if (output.f) {
+      expect(Array.from(output.f.entries())).toEqual([['bar', 'keep']]);
+      (output as any).f = undefined;
+    }
+    expect(output).toEqual({
+      b: 'keep',
+      c: ['ok', 1],
+      d: { y: 'yes' },
+      e: [{ g: 'good' }],
+    });
   });
 });
