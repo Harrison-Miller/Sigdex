@@ -5,6 +5,8 @@ import { parseKeywords } from './keywords';
 import { parseStats } from './stats';
 import { parseWeapons } from './weapons';
 
+// parseUnits parses all units from the given root.
+// It will also filter out unwanted units based on their category or name.
 export function parseUnits(root: Element, pointsMap: Map<string, number>): Unit[] {
   const units: Unit[] = [];
   const unitElements = findAllByTagAndAttr(root, 'selectionEntry', 'type', 'unit');
@@ -14,6 +16,11 @@ export function parseUnits(root: Element, pointsMap: Map<string, number>): Unit[
     if (!name) {
       continue; // Skip units without a name
     }
+    // Filter out units with 'Apotheosis' in the name
+    if (name.toLowerCase().includes('apotheosis')) {
+      continue;
+    }
+
     const points = pointsMap.get(name) || 0;
 
     const stats = parseStats(element);
