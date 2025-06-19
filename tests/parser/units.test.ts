@@ -82,9 +82,7 @@ describe('parseUnits', () => {
         <constraint type="max" value="1" field="selections" scope="parent" shared="true" id="8a5e-2169-e6d4-d821"/>
       </constraints>
     </selectionEntry>
-  </selectionEntries>
-</selectionEntry>
-</selectionEntries>`;
+  </selectionEntries>`;
     const root = new DOMParser().parseFromString(xml, 'text/xml').documentElement;
     const units = parseUnits(root, new Map([['Loonboss', 90]]));
 
@@ -126,7 +124,7 @@ describe('parseUnits', () => {
     expect(units[0].melee_weapons[0].damage).toBe('D3');
     expect(units[0].category).toBe('Hero');
     expect(units[0].points).toBe(90);
-    expect(units[0].unit_size).toBeUndefined(); // TODO: handle unit size
+    expect(units[0].unit_size).toBe(1); // Should parse unit size from model constraint
   });
 
   it('multiple simple units', () => {
@@ -178,7 +176,7 @@ describe('parseUnits', () => {
     expect(units[0].stats.control).toBe('1');
     expect(units[0].category).toBe('Hero');
     expect(units[0].points).toBe(100);
-    expect(units[0].unit_size).toBeUndefined(); // TODO: handle unit size
+    expect(units[0].unit_size).toBeUndefined(); // Should be undefined if no model constraint
     expect(units[1].name).toBe('Unit 2');
     expect(units[1].stats.move).toBe('5"');
     expect(units[1].stats.health).toBe(6);
@@ -186,7 +184,7 @@ describe('parseUnits', () => {
     expect(units[1].stats.control).toBe('2');
     expect(units[1].category).toBe('Infantry');
     expect(units[1].points).toBe(150);
-    expect(units[1].unit_size).toBeUndefined(); // TODO: handle unit size
+    expect(units[1].unit_size).toBeUndefined(); // Should be undefined if no model constraint
   });
 
   it('filters other and legends categories', () => {
@@ -229,5 +227,43 @@ describe('parseUnits', () => {
     );
 
     expect(units.length).toBe(0); // Both units should be filtered out
+  });
+
+  it('unit with multiple model types sums unit_size', () => {
+    const xml = `<selectionEntries>
+      <selectionEntry type="unit" import="true" name="Squig Herd" hidden="false" id="herd-1">
+        <profiles>
+          <profile name="Squig Herd" typeId="herd-type-1" typeName="Unit" hidden="false" id="profile-herd-1">
+            <characteristics>
+              <characteristic name="Move" typeId="move-type-1">5"</characteristic>
+              <characteristic name="Health" typeId="health-type-1">1</characteristic>
+              <characteristic name="Save" typeId="save-type-1">6+</characteristic>
+            </characteristics>
+          </profile>
+        </profiles>
+        <categoryLinks>
+          <categoryLink name="INFANTRY" hidden="false" id="cat-infantry-1" targetId="infantry-target-1"/>
+        </categoryLinks>
+        <selectionEntries>
+          <selectionEntry type="model" import="true" name="Cave Squig" hidden="false" id="993c-6b16-e975-5321">
+            <constraints>
+              <constraint type="min" value="10" field="selections" scope="parent" shared="true" id="aeca-6ab9-f7e7-a274"/>
+              <constraint type="max" value="10" field="selections" scope="parent" shared="true" id="f5d4-4736-23d1-e620"/>
+            </constraints>
+          </selectionEntry>
+          <selectionEntry type="model" import="true" name="Squig Herder" hidden="false" id="46f0-b887-746b-3d92">
+            <constraints>
+              <constraint type="min" value="2" field="selections" scope="parent" shared="true" id="5e03-cd7b-ddf3-6130"/>
+              <constraint type="max" value="2" field="selections" scope="parent" shared="true" id="781e-abd9-5cce-614f"/>
+            </constraints>
+          </selectionEntry>
+        </selectionEntries>
+      </selectionEntry>
+    </selectionEntries>`;
+    const root = new DOMParser().parseFromString(xml, 'text/xml').documentElement;
+    const units = parseUnits(root, new Map([['Squig Herd', 120]]));
+    expect(units.length).toBe(1);
+    expect(units[0].name).toBe('Squig Herd');
+    expect(units[0].unit_size).toBe(12); // 10 Cave Squigs + 2 Herders
   });
 });
