@@ -30,9 +30,11 @@ export function needsMigration(): boolean {
   const storedVersion = localStorage.getItem('SIGDEX_VERSION');
   if (!storedVersion) return true;
   // Compare only major.minor, ignore bugfix version
-  const [major, minor] = SIGDEX_VERSION.split('.');
-  const [storedMajor, storedMinor] = storedVersion.split('.');
-  return major !== storedMajor || minor !== storedMinor;
+  const [major, minor] = SIGDEX_VERSION.split('.').map(Number);
+  const [storedMajor, storedMinor] = storedVersion.split('.').map(Number);
+  if (isNaN(major) || isNaN(minor) || isNaN(storedMajor) || isNaN(storedMinor)) return true;
+  // Only return true if the current version is greater than the stored version
+  return major > storedMajor || (major === storedMajor && minor > storedMinor);
 }
 
 function fetchXml(url: string): Promise<Element> {
