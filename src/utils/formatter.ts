@@ -1,3 +1,4 @@
+import pluralize, { isPlural } from 'pluralize';
 import type { ModelGroup, Unit } from '../common/UnitData';
 
 export function formatText(text: string): string {
@@ -26,9 +27,6 @@ export function formatText(text: string): string {
 }
 
 export function formatModelGroups(modelGroups: ModelGroup[], unit: Unit): string {
-  console.log(`Formatting model groups for unit`, unit);
-  console.log(`ranged weapons:`, unit.ranged_weapons);
-  console.log(`melee weapons:`, unit.melee_weapons);
   const rangedWeapons = unit.ranged_weapons ? unit.ranged_weapons.map((w) => w.name) : [];
   const meleeWeapons = unit.melee_weapons ? unit.melee_weapons.map((w) => w.name) : [];
 
@@ -82,7 +80,7 @@ function formatModelGroup(
   } else if (isGroupSize) {
     text += `each <b>${group.name}</b>`;
   } else {
-    text += `${group.count} in ${unitSize} models are <b>${group.name}</b>`; // TODO: pluralize
+    text += `${group.count} in ${unitSize} models are <b>${pluralize(group.name)}</b>`;
   }
   const defaultWeapons = group.weapons.filter((w) => !w.max).map((w) => w.name);
   const defaultRanged = defaultWeapons.filter((w) => rangedWeapons.includes(w));
@@ -95,7 +93,16 @@ function formatModelGroup(
       text += ` is`;
     }
 
-    text += ` armed with <b>${defaultWeapons.join('</b> and <b>')}</b></i>`;
+    text += ` armed with`;
+    // weapon1,weapon2...and weaponN`;
+    if (defaultWeapons.length == 1) {
+      text += ` ${formatWeaponName(defaultWeapons[0])}`;
+    } else if (defaultWeapons.length > 1) {
+      text += ` ${defaultWeapons
+        .map((w) => formatWeaponName(w))
+        .join(', ')
+        .replace(/, ([^,]*)$/, ' and $1')}`;
+    }
   }
 
   // now in a bullet list write out optional weapons
@@ -107,17 +114,17 @@ function formatModelGroup(
       const isRanged = rangedWeapons.includes(weapon.name);
       text += `<li>`;
       if (isOneModel) {
-        text += `<i>it may be armed with <b>${weapon.name}</b>`;
+        text += `<i>it may be armed with ${formatWeaponName(weapon.name)}`;
       } else if (isOptionGroupSize) {
-        text += `<i>each may be armed with <b>${weapon.name}</b>`;
+        text += `<i>each may be armed with ${formatWeaponName(weapon.name)}`;
       } else {
-        text += `<i>${weapon.max} in ${group.count} may be armed with <b>${weapon.name}</b>`;
+        text += `<i>${weapon.max} in ${group.count} may be armed with ${formatWeaponName(weapon.name)}`;
       }
 
       if (isRanged && defaultRanged.length > 0) {
-        text += ` instead of <b>${defaultRanged.join('</b> or <b>')}</b>`;
+        text += ` instead of ${defaultRanged.map((w) => formatWeaponName(w)).join(' or')}`;
       } else if (!isRanged && defaultMelee.length > 0) {
-        text += ` instead of <b>${defaultMelee.join('</b> or <b>')}</b>`;
+        text += ` instead of ${defaultMelee.map((w) => formatWeaponName(w)).join(' or')}`;
       }
       text += `</i></li>`;
     }
@@ -130,4 +137,14 @@ function formatModelGroup(
   }
 
   return text;
+}
+
+function formatWeaponName(name: string): string {
+  if (isPlural(name)) {
+    return `<b>${name}</b>`;
+  }
+  // decide a or an
+  const firstLetter = name.charAt(0).toLowerCase();
+  const article = ['a', 'e', 'i', 'o', 'u'].includes(firstLetter) ? 'an' : 'a';
+  return `${article} <b>${name}</b>`;
 }
