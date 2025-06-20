@@ -8,12 +8,6 @@ export interface Stats {
   banishment?: string;
 }
 
-export interface WeaponConstraint {
-  type: 'one-in-x' | 'either-or';
-  value: number; // for one-in-x, this is the X
-  weaponNames: string[];
-}
-
 export interface Weapon {
   name: string;
   abilities: string[];
@@ -37,6 +31,17 @@ export const POSSIBLE_CATEGORIES = [
   'Other',
 ];
 
+export interface WeaponOption {
+  name: string;
+  max?: number;
+}
+
+export interface ModelGroup {
+  name: string;
+  count: number;
+  weapons: WeaponOption[];
+}
+
 export interface Unit {
   name: string;
   stats: Stats;
@@ -47,7 +52,7 @@ export interface Unit {
   category?: string;
   points?: number;
   unit_size?: number;
-  constraints?: WeaponConstraint[];
+  models?: ModelGroup[];
 }
 
 export function determineUnitCategory(keywords: string[]): string {

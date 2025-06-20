@@ -82,7 +82,10 @@ describe('parseUnits', () => {
         <constraint type="max" value="1" field="selections" scope="parent" shared="true" id="8a5e-2169-e6d4-d821"/>
       </constraints>
     </selectionEntry>
-  </selectionEntries>`;
+  </selectionEntries>
+  </selectionEntry>
+</selectionEntries>
+  `;
     const root = new DOMParser().parseFromString(xml, 'text/xml').documentElement;
     const units = parseUnits(root, new Map([['Loonboss', 90]]));
 
@@ -176,7 +179,7 @@ describe('parseUnits', () => {
     expect(units[0].stats.control).toBe('1');
     expect(units[0].category).toBe('Hero');
     expect(units[0].points).toBe(100);
-    expect(units[0].unit_size).toBeUndefined(); // Should be undefined if no model constraint
+    expect(units[0].unit_size).toBe(1);
     expect(units[1].name).toBe('Unit 2');
     expect(units[1].stats.move).toBe('5"');
     expect(units[1].stats.health).toBe(6);
@@ -184,7 +187,7 @@ describe('parseUnits', () => {
     expect(units[1].stats.control).toBe('2');
     expect(units[1].category).toBe('Infantry');
     expect(units[1].points).toBe(150);
-    expect(units[1].unit_size).toBeUndefined(); // Should be undefined if no model constraint
+    expect(units[1].unit_size).toBe(1);
   });
 
   it('filters other and legends categories', () => {
