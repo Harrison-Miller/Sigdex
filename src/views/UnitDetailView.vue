@@ -11,6 +11,7 @@ import { isFavorite, saveFavorite, removeFavorite } from '../favorites';
 import { loadArmy, loadLores } from '../army';
 import { MOCK_UNIT } from '../army';
 import type { Ability } from '../common/Ability';
+import { formatModelGroups } from '../utils/formatter';
 
 // Accept unit and army as props for detail view
 const props = defineProps<{ unit?: any; army?: string }>();
@@ -63,6 +64,11 @@ function toggleUnitFavoriteDetail(fav: boolean) {
   }
 }
 const favoriteToggleSize = 36;
+
+function shouldShowUnitDetails(unit: any): boolean {
+  if (!unit) return false;
+  return (unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0);
+}
 
 console.log('UnitDetailView: route params', { armyName, unitName });
 console.log('UnitDetailView: loaded unit', unit.value);
@@ -135,17 +141,15 @@ console.log('UnitDetailView: loaded unit', unit.value);
       <AbilityCard :ability="summoningAbility" />
     </div>
     <!-- Unit Details section: show only if points or unit_size is set and not 0 -->
-    <div
-      v-if="(unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0)"
-      class="section-divider"
-    ></div>
-    <div
-      v-if="(unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0)"
-      class="unit-detail-section"
-      style="text-align: left"
-    >
+    <div v-if="shouldShowUnitDetails(unit)" class="section-divider"></div>
+    <div v-if="shouldShowUnitDetails(unit)" class="unit-detail-section" style="text-align: left">
       <h2 class="section-title">Unit Details</h2>
       <div class="unit-detail-points" style="font-size: 0.95em; color: #666; text-align: left">
+        <div
+          v-if="unit.models && unit.models.length"
+          class="unit-model-groups"
+          v-html="formatModelGroups(unit.models, unit)"
+        ></div>
         <span v-if="unit.points && unit.points > 0">{{ unit.points }} Points</span>
         <span v-if="unit.unit_size && unit.unit_size > 0" style="margin-left: 1.5em"
           >Unit Size: {{ unit.unit_size }}</span

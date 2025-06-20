@@ -4,43 +4,7 @@ import { parseAbilities } from './abilities';
 import { parseKeywords } from './keywords';
 import { parseStats } from './stats';
 import { parseWeapons } from './weapons';
-
-// parseUnitSize parses the unit size from a unit's selectionEntry element.
-// It looks for a model selectionEntry directly under the unit, and reads min/max constraints with scope="parent".
-export function parseUnitSize(unitElement: Element): number | undefined {
-  // Find a <selectionEntries> child
-  const selectionEntries = Array.from(unitElement.childNodes).find(
-    (n): n is Element => n.nodeType === 1 && (n as Element).tagName === 'selectionEntries'
-  ) as Element | undefined;
-  if (!selectionEntries) return undefined;
-  // Find all model selectionEntry inside <selectionEntries>
-  const models = Array.from(selectionEntries.childNodes).filter(
-    (n): n is Element =>
-      n.nodeType === 1 &&
-      (n as Element).tagName === 'selectionEntry' &&
-      (n as Element).getAttribute('type') === 'model'
-  ) as Element[];
-  if (models.length === 0) return undefined;
-  // For each model, find its <constraints> child and the min constraint with scope="parent"
-  let total = 0;
-  for (const model of models) {
-    const constraintsNode = Array.from(model.childNodes).find(
-      (n): n is Element => n.nodeType === 1 && (n as Element).tagName === 'constraints'
-    ) as Element | undefined;
-    if (!constraintsNode) continue;
-    const minConstraint = Array.from(constraintsNode.childNodes).find(
-      (c): c is Element =>
-        c.nodeType === 1 &&
-        (c as Element).tagName === 'constraint' &&
-        (c as Element).getAttribute('type') === 'min' &&
-        (c as Element).getAttribute('scope') === 'parent'
-    ) as Element | undefined;
-    if (!minConstraint) continue;
-    const value = Number(minConstraint.getAttribute('value'));
-    if (!isNaN(value)) total += value;
-  }
-  return total > 0 ? total : undefined;
-}
+import { parseModelGroups } from './models';
 
 // parseUnits parses all units from the given root.
 // It will also filter out unwanted units based on their category or name.
@@ -65,13 +29,12 @@ export function parseUnits(root: Element, pointsMap: Map<string, number>): Unit[
     const abilities = parseAbilities(element);
     const keywords = parseKeywords(element);
     const category = determineUnitCategory(keywords);
+    const models = parseModelGroups(element);
 
     if (category === 'Other' || category === 'Legends') {
       // Skip units that are categorized as 'Other' or 'Legends'
       continue;
     }
-
-    const unit_size = parseUnitSize(element);
 
     const unit: Unit = {
       name: element.getAttribute('name') || '',
@@ -82,8 +45,8 @@ export function parseUnits(root: Element, pointsMap: Map<string, number>): Unit[
       keywords: keywords,
       category: category,
       points: points,
-      unit_size: unit_size,
-      constraints: weapons.constraints,
+      unit_size: models.reduce((sum, model) => sum + model.count, 0) || 1,
+      models: models.length > 0 ? models : undefined,
     };
 
     units.push(unit);
