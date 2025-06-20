@@ -7,6 +7,7 @@ import { protectorConstraints } from './protectors';
 import { squigHerdConstraints } from './squigherd';
 import { thundererConstraints } from './thunderers';
 import { stormfiendConstraints } from './stormfiends';
+import { alloplexConstraints } from './alloplex';
 
 describe('parseModelGroups', () => {
   it('loonboss, just the default weapon', () => {
@@ -111,5 +112,26 @@ describe('parseModelGroups', () => {
     expect(modelGroups[2].weapons[0].max).toBeUndefined(); // default weapons have no max
     expect(modelGroups[2].weapons[1].name).toContain('Shock Gauntlets');
     expect(modelGroups[2].weapons[1].max).toBe(1);
+  });
+
+  it('alloplex 2 default melee weapons, 2 mutually exclusive ranged weapons', () => {
+    const root = new DOMParser().parseFromString(alloplexConstraints, 'text/xml').documentElement;
+    const modelGroups = parseModelGroups(root);
+    expect(modelGroups.length).toBe(1);
+    expect(modelGroups[0].name).toBe('Akhelian Allopex');
+    expect(modelGroups[0].count).toBe(1);
+    expect(modelGroups[0].weapons.length).toBe(4);
+
+    expect(modelGroups[0].weapons[0].name).toBe('Barbed Hooks and Blades');
+    expect(modelGroups[0].weapons[0].max).toBeUndefined(); // default weapons have no max
+
+    expect(modelGroups[0].weapons[1].name).toBe('Allopex’s Ferocious Bite');
+    expect(modelGroups[0].weapons[1].max).toBeUndefined(); // default weapons have no max
+
+    expect(modelGroups[0].weapons[2].name).toBe('Razorshell Harpoon');
+    expect(modelGroups[0].weapons[2].max).toBeUndefined(); // one needs to be marked default when mutually exclusive
+
+    expect(modelGroups[0].weapons[3].name).toBe('Retarius Net Launcher');
+    expect(modelGroups[0].weapons[3].max).toBe(1); // max 1 Sharktooth Spear
   });
 });

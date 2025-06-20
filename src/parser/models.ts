@@ -4,6 +4,7 @@ import {
   getDirectChildByTagName,
   findChildByTagName,
   findAllDirectChildrenByTagAndAttr,
+  getChildren,
 } from './utils';
 import type { WeaponOption, ModelGroup } from '../common/UnitData';
 
@@ -42,12 +43,24 @@ export function parseModelGroups(root: Element): ModelGroup[] {
       console.log(`Model group count for unit ID ${unitId}: ${count}`);
     }
 
-    const weaponOptions = parseWeaponOptions(entry, unitId, count);
+    // find all selectionEntries or selectionEntryGroups directly under this model entry
+    const weaponGroups = getChildren(entry).filter((child) => {
+      console.log(`Checking child: ${child.tagName}`);
+      return child.tagName === 'selectionEntries' || child.tagName === 'selectionEntryGroups';
+    });
+    console.log(`Found ${weaponGroups.length} weapon groups for model entry: ${name}`);
+    const allWeaponOptions: WeaponOption[] = [];
+    for (const weaponGroup of weaponGroups) {
+      const weaponOptions = parseWeaponOptions(weaponGroup, unitId, count);
+      if (weaponOptions.length > 0) {
+        allWeaponOptions.push(...weaponOptions);
+      }
+    }
 
     const modelGroup: ModelGroup = {
       name: name,
       count: count,
-      weapons: weaponOptions,
+      weapons: allWeaponOptions,
     };
 
     console.log(`Model Group: ${modelGroup.name}, Count: ${modelGroup.count}`);
@@ -65,26 +78,18 @@ export function parseModelGroups(root: Element): ModelGroup[] {
 }
 
 function parseWeaponOptions(
-  modelEntry: Element,
+  entriesRoot: Element,
   unitId: string,
   groupCount: number
 ): WeaponOption[] {
   const weaponOptions: WeaponOption[] = [];
 
-  // find nearest selectionEntries
-  const weaponsRoot = findChildByTagName(modelEntry, 'selectionEntries');
+  let inSEG = entriesRoot.tagName === 'selectionEntryGroups';
+  console.log(`Parsing weapon options for unit ID: ${unitId}, inSEG: ${inSEG}`);
+  const weaponsRoot = inSEG ? findChildByTagName(entriesRoot, 'selectionEntries') : entriesRoot;
   if (!weaponsRoot) {
+    console.warn('No selectionEntries found in weapon options root');
     return weaponOptions;
-  }
-
-  let inSEG = false;
-  if (weaponsRoot.parentNode?.nodeType == 1) {
-    // Node.ELEMENT_NODE
-    let parent = weaponsRoot.parentNode as Element;
-    if (parent.tagName == 'selectionEntryGroup') {
-      inSEG = true;
-      console.log('Model entry is in a selectionEntryGroup.');
-    }
   }
 
   const upgradeEntries = findAllDirectChildrenByTagAndAttr(
@@ -94,9 +99,6 @@ function parseWeaponOptions(
     'upgrade'
   );
 
-  console.log(
-    `Found ${upgradeEntries.length} upgrade entries for model: ${modelEntry.getAttribute('name')}`
-  );
   for (const upgrade of upgradeEntries) {
     const name = upgrade.getAttribute('name');
     if (!name) {
@@ -143,14 +145,14 @@ function parseWeaponOptions(
 
 /*
 <selectionEntry type="unit" name="Unit Name", id="unitId">
-	<selectionEntries>
-		<selectionEntry type="model" name="Model Name" id="modelId">
-			<constraints>
-				<constraint type="min" value="1" scope="parent>
-			</constraint>
-		</selectionEntry>
-		<selectionEntry type="model" name="Another Model Name" id="anotherModelId">
-		<selectionEntries>
-	</selectionEntries>
+  <selectionEntries>
+    <selectionEntry type="model" name="Model Name" id="modelId">
+      <constraints>
+        <constraint type="min" value="1" scope="parent>
+      </constraint>
+    </selectionEntry>
+    <selectionEntry type="model" name="Another Model Name" id="anotherModelId">
+    <selectionEntries>
+  </selectionEntries>
 </selectionEntry>
 */
