@@ -15,58 +15,96 @@
         <AbilityCard v-for="(ability, i) in abilities" :key="ability.name + i" :ability="ability" />
       </div>
     </Section>
+    <!-- Spell Lores Dropdown -->
     <Section v-if="army.spellLores && army.spellLores.length">
       <template #title>Spell Lores</template>
-      <div v-for="lore in army.spellLores" :key="lore">
-        <h3 class="section-subheader">{{ lore }}</h3>
-        <AbilityCard
-          v-for="(ability, i) in getLoreAbilities(lore)"
-          :key="ability.name + i"
-          :ability="ability"
-        />
+      <div v-if="army.spellLores.length">
+        <select v-model="selectedSpellLore" class="lore-dropdown">
+          <option v-for="lore in army.spellLores" :key="lore" :value="lore">{{ lore }}</option>
+        </select>
+        <div v-if="selectedSpellLore">
+          <AbilityCard
+            v-for="(ability, i) in getLoreAbilities(selectedSpellLore)"
+            :key="ability.name + i"
+            :ability="ability"
+          />
+        </div>
       </div>
     </Section>
+    <!-- Prayer Lores Dropdown -->
     <Section v-if="army.prayerLores && army.prayerLores.length">
       <template #title>Prayer Lores</template>
-      <div v-for="lore in army.prayerLores" :key="lore">
-        <h3 class="section-subheader">{{ lore }}</h3>
-        <AbilityCard
-          v-for="(ability, i) in getLoreAbilities(lore)"
-          :key="ability.name + i"
-          :ability="ability"
-        />
+      <div v-if="army.prayerLores.length">
+        <select v-model="selectedPrayerLore" class="lore-dropdown">
+          <option v-for="lore in army.prayerLores" :key="lore" :value="lore">{{ lore }}</option>
+        </select>
+        <div v-if="selectedPrayerLore">
+          <AbilityCard
+            v-for="(ability, i) in getLoreAbilities(selectedPrayerLore)"
+            :key="ability.name + i"
+            :ability="ability"
+          />
+        </div>
       </div>
     </Section>
+    <!-- Manifestation Lores Dropdown -->
     <Section v-if="army.manifestationLores && army.manifestationLores.length">
       <template #title>Manifestation Lores</template>
-      <div v-for="lore in army.manifestationLores" :key="lore">
-        <h3 class="section-subheader">{{ lore }}</h3>
-        <AbilityCard
-          v-for="(ability, i) in getLoreAbilities(lore)"
-          :key="ability.name + i"
-          :ability="ability"
-        />
+      <div v-if="army.manifestationLores.length">
+        <select v-model="selectedManifestationLore" class="lore-dropdown">
+          <option v-for="lore in army.manifestationLores" :key="lore" :value="lore">
+            {{ lore }}
+          </option>
+        </select>
+        <div v-if="selectedManifestationLore">
+          <AbilityCard
+            v-for="(ability, i) in getLoreAbilities(selectedManifestationLore)"
+            :key="ability.name + i"
+            :ability="ability"
+          />
+        </div>
       </div>
     </Section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { loadLores } from '../army';
 import type { Army } from '../common/ArmyData';
 import AbilityCard from './AbilityCard.vue';
 import Section from './Section.vue';
 
-defineProps<{ army: Army | null }>();
+const props = defineProps<{ army: Army | null }>();
 const lores = ref<Map<string, any> | null>(null);
 const loresLoading = ref(true);
+
+const selectedSpellLore = ref<string | null>(null);
+const selectedPrayerLore = ref<string | null>(null);
+const selectedManifestationLore = ref<string | null>(null);
 
 onMounted(async () => {
   loresLoading.value = true;
   lores.value = await loadLores();
   loresLoading.value = false;
 });
+
+// Set default selected lore when army changes or lores load
+watch(
+  () => [props.army, loresLoading.value, lores.value],
+  () => {
+    if (props.army?.spellLores?.length && !selectedSpellLore.value) {
+      selectedSpellLore.value = props.army.spellLores[0];
+    }
+    if (props.army?.prayerLores?.length && !selectedPrayerLore.value) {
+      selectedPrayerLore.value = props.army.prayerLores[0];
+    }
+    if (props.army?.manifestationLores?.length && !selectedManifestationLore.value) {
+      selectedManifestationLore.value = props.army.manifestationLores[0];
+    }
+  },
+  { immediate: true }
+);
 
 const getLoreAbilities = (loreName: string): any[] => {
   if (!lores.value) return [];
@@ -75,8 +113,15 @@ const getLoreAbilities = (loreName: string): any[] => {
 </script>
 
 <style scoped>
-h3,
-h2.section-header {
+.lore-dropdown {
+  margin-bottom: 1em;
+  font-size: 1.1em;
+  padding: 0.4em 1em;
+  border-radius: 4px;
+  border: 1.5px solid #222;
+  background: #f9f9f9;
+}
+.section-subheader {
   text-align: left;
 }
 </style>
