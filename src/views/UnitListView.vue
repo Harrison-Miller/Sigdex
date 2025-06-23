@@ -15,6 +15,7 @@ import {
   setArmyUnitFavoriteToggleState,
 } from '../favorites';
 import { POSSIBLE_CATEGORIES } from '../common/UnitData';
+import Section from '../components/Section.vue';
 
 // Accept army as a prop for this view
 const props = defineProps<{ army?: string }>();
@@ -150,10 +151,9 @@ watch(unitFavorites, (favs) => {
           Sort: {{ sortLabel }}
         </button>
       </div>
-      <template v-for="(cat, idx) in CATEGORY_ORDER" :key="cat">
-        <div v-if="filteredUnits(cat).length">
-          <div v-if="idx !== 0" class="section-divider"></div>
-          <h2 class="section-title">{{ cat }}</h2>
+      <template v-for="cat in CATEGORY_ORDER" :key="cat">
+        <Section v-if="filteredUnits(cat).length">
+          <template #title>{{ cat }}</template>
           <ul>
             <li v-for="u in filteredUnits(cat)" :key="u.name">
               <router-link
@@ -173,7 +173,7 @@ watch(unitFavorites, (favs) => {
               </router-link>
             </li>
           </ul>
-        </div>
+        </Section>
       </template>
     </div>
     <div v-else-if="activeTab === 'rules'">
