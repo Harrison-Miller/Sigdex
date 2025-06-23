@@ -7,6 +7,7 @@ import KeywordsBar from '../components/KeywordsBar.vue';
 import WeaponTable from '../components/WeaponTable.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
 import BackButton from '../components/BackButton.vue';
+import Section from '../components/Section.vue';
 import { isFavorite, saveFavorite, removeFavorite } from '../favorites';
 import { loadArmy, loadLores } from '../army';
 import { MOCK_UNIT } from '../army';
@@ -108,42 +109,32 @@ console.log('UnitDetailView: loaded unit', unit.value);
       />
       <StatCircle :value="unit.stats.save" label="Save" />
     </div>
-    <div v-if="unit.melee_weapons && unit.melee_weapons.length" class="section-divider"></div>
-    <h2 v-if="unit.melee_weapons && unit.melee_weapons.length" class="section-title">
-      Melee Weapons
-    </h2>
-    <WeaponTable
-      v-if="unit.melee_weapons && unit.melee_weapons.length"
-      :weapons="unit.melee_weapons"
-      short-headers
-    />
-    <div v-if="unit.ranged_weapons && unit.ranged_weapons.length" class="section-divider"></div>
-    <h2 v-if="unit.ranged_weapons && unit.ranged_weapons.length" class="section-title">
-      Ranged Weapons
-    </h2>
-    <WeaponTable
-      v-if="unit.ranged_weapons && unit.ranged_weapons.length"
-      :weapons="unit.ranged_weapons"
-      short-headers
-    />
-    <div v-if="unit.abilities && unit.abilities.length" class="section-divider"></div>
-    <h2 v-if="unit.abilities && unit.abilities.length" class="section-title">Abilities</h2>
-    <div v-if="unit.abilities && unit.abilities.length" class="abilities">
-      <AbilityCard
-        v-for="(a, i) in [...unit.abilities].sort((a, b) => a.name.localeCompare(b.name))"
-        :key="a.name + i"
-        :ability="a"
-      />
-    </div>
-    <div v-if="summoningAbility && summoningAbility.text" class="section-divider"></div>
-    <h2 v-if="summoningAbility && summoningAbility.text" class="section-title">Summoning</h2>
-    <div v-if="summoningAbility && summoningAbility.text" class="abilities">
-      <AbilityCard :ability="summoningAbility" />
-    </div>
-    <!-- Unit Details section: show only if points or unit_size is set and not 0 -->
-    <div v-if="shouldShowUnitDetails(unit)" class="section-divider"></div>
-    <div v-if="shouldShowUnitDetails(unit)" class="unit-detail-section" style="text-align: left">
-      <h2 class="section-title">Unit Details</h2>
+    <Section v-if="unit.melee_weapons && unit.melee_weapons.length">
+      <template #title>Melee Weapons</template>
+      <WeaponTable :weapons="unit.melee_weapons" short-headers />
+    </Section>
+    <Section v-if="unit.ranged_weapons && unit.ranged_weapons.length">
+      <template #title>Ranged Weapons</template>
+      <WeaponTable :weapons="unit.ranged_weapons" short-headers />
+    </Section>
+    <Section v-if="unit.abilities && unit.abilities.length">
+      <template #title>Abilities</template>
+      <div class="abilities">
+        <AbilityCard
+          v-for="(a, i) in [...unit.abilities].sort((a, b) => a.name.localeCompare(b.name))"
+          :key="a.name + i"
+          :ability="a"
+        />
+      </div>
+    </Section>
+    <Section v-if="summoningAbility && summoningAbility.text">
+      <template #title>Summoning</template>
+      <div class="abilities">
+        <AbilityCard :ability="summoningAbility" />
+      </div>
+    </Section>
+    <Section v-if="shouldShowUnitDetails(unit)">
+      <template #title>Unit Details</template>
       <div class="unit-detail-points" style="font-size: 0.95em; color: #666; text-align: left">
         <div
           v-if="unit.models && unit.models.length"
@@ -155,10 +146,11 @@ console.log('UnitDetailView: loaded unit', unit.value);
           >Unit Size: {{ unit.unit_size }}</span
         >
       </div>
-    </div>
-    <div v-if="unit.keywords && unit.keywords.length" class="section-divider"></div>
-    <h2 v-if="unit.keywords && unit.keywords.length" class="section-title">Keywords</h2>
-    <KeywordsBar v-if="unit.keywords && unit.keywords.length" :keywords="unit.keywords" />
+    </Section>
+    <Section v-if="unit.keywords && unit.keywords.length">
+      <template #title>Keywords</template>
+      <KeywordsBar :keywords="unit.keywords" />
+    </Section>
   </div>
   <div v-else>
     <p style="color: red">Unit data is missing or incomplete.</p>
