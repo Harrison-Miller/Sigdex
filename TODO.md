@@ -9,3 +9,4 @@
 - fix desktop view
 - figure out the pattern for units that aren't reinforceable
 - don't save default model weapon option
+- support dark mode
