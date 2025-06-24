@@ -14,6 +14,14 @@ import { MOCK_UNIT } from '../army';
 import type { Ability } from '../common/Ability';
 import { formatModelGroups } from '../utils/formatter';
 
+function formatCompanionUnits(unitName: string, companions: string[]): string {
+  if (!companions || companions.length === 0) return '';
+  const bold = (name: string) => `<b>${name}</b>`;
+  const companionsText = companions.map(bold).join(' and ');
+  // Italicize the whole sentence
+  return `<i>${bold(unitName)} must be taken with ${companionsText}.</i>`;
+}
+
 // Accept unit and army as props for detail view
 const props = defineProps<{ unit?: any; army?: string }>();
 const route = useRoute();
@@ -136,6 +144,13 @@ console.log('UnitDetailView: loaded unit', unit.value);
     <Section v-if="shouldShowUnitDetails(unit)">
       <template #title>Unit Details</template>
       <div class="unit-detail-points" style="font-size: 0.95em; color: #666; text-align: left">
+        <div
+          v-if="unit.companion_units && unit.companion_units.length > 0"
+          class="unit-companion-units"
+          style="margin-top: 0.5em"
+        >
+          <span v-html="formatCompanionUnits(unit.name, unit.companion_units)"></span>
+        </div>
         <div
           v-if="unit.models && unit.models.length"
           class="unit-model-groups"

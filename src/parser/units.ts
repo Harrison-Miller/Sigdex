@@ -5,10 +5,15 @@ import { parseKeywords } from './keywords';
 import { parseStats } from './stats';
 import { parseWeapons } from './weapons';
 import { parseModelGroups } from './models';
+import { parseCompanionUnits } from './companionunits';
 
 // parseUnits parses all units from the given root.
 // It will also filter out unwanted units based on their category or name.
-export function parseUnits(root: Element, pointsMap: Map<string, number>): Unit[] {
+export function parseUnits(
+  root: Element,
+  armyInfoRoot: Element | null,
+  pointsMap: Map<string, number>
+): Unit[] {
   const units: Unit[] = [];
   const unitElements = findAllByTagAndAttr(root, 'selectionEntry', 'type', 'unit');
 
@@ -31,6 +36,7 @@ export function parseUnits(root: Element, pointsMap: Map<string, number>): Unit[
     const keywords = parseKeywords(element);
     const category = determineUnitCategory(keywords);
     const models = parseModelGroups(element);
+    const companionUnits = armyInfoRoot ? parseCompanionUnits(armyInfoRoot, name) : [];
 
     if (category === 'Other' || category === 'Legends') {
       // Skip units that are categorized as 'Other' or 'Legends'
@@ -49,6 +55,7 @@ export function parseUnits(root: Element, pointsMap: Map<string, number>): Unit[
       points: points,
       unit_size: models.reduce((sum, model) => sum + model.count, 0) || 1,
       models: models.length > 0 ? models : undefined,
+      companion_units: companionUnits.length > 0 ? companionUnits : undefined,
     };
 
     units.push(unit);
