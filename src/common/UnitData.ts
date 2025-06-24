@@ -54,6 +54,7 @@ export interface Unit {
   unit_size?: number;
   models?: ModelGroup[];
   companion_units?: string[];
+  notReinforcable?: boolean;
 }
 
 export function determineUnitCategory(keywords: string[]): string {
