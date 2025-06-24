@@ -87,4 +87,14 @@ describe('formatText', () => {
     expect(output).toContain('<br>• <b>High Tide:</b>');
     expect(output).toContain('<br>• <b>Ebb Tide:</b>');
   });
+
+  it('formats messed up bold italic **^^text^^', () => {
+    const input = `**^^Ward (4+)^^** friendly **^^Deathrattle^^ or **^^Deadwalkers^^** unit`;
+    const output = formatText(input);
+    expect(output).toBe(
+      '<b><i>Ward (4+)</i></b> friendly <b><i>Deathrattle</i></b> or <b><i>Deadwalkers</i></b> unit'
+    );
+  });
 });
+
+// friendly **^^Deathrattle^^** or **^^Deadwalkers^^** unit:
