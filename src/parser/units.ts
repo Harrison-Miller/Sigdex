@@ -6,6 +6,21 @@ import { parseStats } from './stats';
 import { parseWeapons } from './weapons';
 import { parseModelGroups } from './models';
 import { parseCompanionUnits } from './companionunits';
+import { parseReinforceable } from './reinforceable';
+
+function isAlwaysNotReinforceable(unitSize: number, keywords: string[]): boolean {
+  if (unitSize == 1) {
+    return true; // Single model units are always not reinforceable
+  }
+
+  return keywords.some(
+    (keyword) =>
+      keyword.toLowerCase() === 'hero' ||
+      keyword.toLowerCase() === 'unique' ||
+      keyword.toLowerCase() === 'manifestation' ||
+      keyword.toLowerCase() === 'faction terrain'
+  );
+}
 
 // parseUnits parses all units from the given root.
 // It will also filter out unwanted units based on their category or name.
@@ -44,6 +59,7 @@ export function parseUnits(
     const models = parseModelGroups(element);
     const unitSize = models.reduce((sum, model) => sum + model.count, 0) || 1;
     const companionUnits = armyInfoRoot ? parseCompanionUnits(armyInfoRoot, name) : [];
+    const reinforceable = armyInfoRoot ? parseReinforceable(armyInfoRoot, name) : true;
 
     const unit: Unit = {
       name: element.getAttribute('name') || '',
@@ -57,6 +73,7 @@ export function parseUnits(
       unit_size: unitSize,
       models: isDefaultModelGroups(models) ? undefined : models,
       companion_units: companionUnits.length > 0 ? companionUnits : undefined,
+      notReinforcable: isAlwaysNotReinforceable(unitSize, keywords) ? undefined : !reinforceable, // leave hero unique undefined so it shows nothing - since that's just a core rule
     };
 
     units.push(unit);

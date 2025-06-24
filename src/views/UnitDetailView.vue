@@ -144,6 +144,9 @@ console.log('UnitDetailView: loaded unit', unit.value);
     <Section v-if="shouldShowUnitDetails(unit)">
       <template #title>Unit Details</template>
       <div class="unit-detail-points" style="font-size: 0.95em; color: #666; text-align: left">
+        <div v-if="unit.notReinforcable" class="unit-not-reinforceable" style="margin-top: 0.5em">
+          <span v-html="`<i>This unit can not be reinforced.</i>`"></span>
+        </div>
         <div
           v-if="unit.companion_units && unit.companion_units.length > 0"
           class="unit-companion-units"
@@ -156,6 +159,7 @@ console.log('UnitDetailView: loaded unit', unit.value);
           class="unit-model-groups"
           v-html="formatModelGroups(unit.models, unit)"
         ></div>
+
         <span v-if="unit.points && unit.points > 0">{{ unit.points }} Points</span>
         <span v-if="unit.unit_size && unit.unit_size > 0" style="margin-left: 1.5em"
           >Unit Size: {{ unit.unit_size }}</span
