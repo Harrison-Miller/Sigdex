@@ -91,6 +91,30 @@ export function findFirstByTagAndAllAttrs(
   return null;
 }
 
+export function findAllByTagAndAllAttrs(
+  root: Element,
+  tagName: string,
+  attrs: Record<string, string>
+): Element[] {
+  const elements = root.getElementsByTagName(tagName);
+  const result: Element[] = [];
+  for (let i = 0; i < elements.length; i++) {
+    const element = elements[i];
+    let match = true;
+    for (const [attrName, value] of Object.entries(attrs)) {
+      const attrValue = element.getAttribute(attrName);
+      if (!attrValue || attrValue.toLowerCase() !== value.toLowerCase()) {
+        match = false;
+        break;
+      }
+    }
+    if (match) {
+      result.push(element);
+    }
+  }
+  return result;
+}
+
 export function getDirectChildByTagName(root: Element, tagName: string): Element | null {
   const children = getChildren(root);
   for (const child of children) {
@@ -146,6 +170,18 @@ export function findChildByTagName(root: Element, tagName: string): Element | nu
     }
     const children = getChildren(current);
     queue.push(...children);
+  }
+  return null;
+}
+
+// find closest ancestor with tag name
+export function closestByTagName(child: Element, tagName: string): Element | null {
+  let current: Element | null = child;
+  while (current) {
+    if (current.tagName.toLowerCase() === tagName.toLowerCase()) {
+      return current;
+    }
+    current = current.parentNode as Element | null;
   }
   return null;
 }

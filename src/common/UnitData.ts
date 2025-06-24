@@ -53,6 +53,7 @@ export interface Unit {
   points?: number;
   unit_size?: number;
   models?: ModelGroup[];
+  companion_units?: string[];
 }
 
 export function determineUnitCategory(keywords: string[]): string {

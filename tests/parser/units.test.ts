@@ -87,7 +87,7 @@ describe('parseUnits', () => {
 </selectionEntries>
   `;
     const root = new DOMParser().parseFromString(xml, 'text/xml').documentElement;
-    const units = parseUnits(root, new Map([['Loonboss', 90]]));
+    const units = parseUnits(root, null, new Map([['Loonboss', 90]]));
 
     expect(units.length).toBe(1);
     expect(units[0].name).toBe('Loonboss');
@@ -166,6 +166,7 @@ describe('parseUnits', () => {
     const root = new DOMParser().parseFromString(xml, 'text/xml').documentElement;
     const units = parseUnits(
       root,
+      null,
       new Map([
         ['Unit 1', 100],
         ['Unit 2', 150],
@@ -223,6 +224,7 @@ describe('parseUnits', () => {
     const root = new DOMParser().parseFromString(xml, 'text/xml').documentElement;
     const units = parseUnits(
       root,
+      null,
       new Map([
         ['Unit 1', 100],
         ['Unit 2', 150],
@@ -264,7 +266,7 @@ describe('parseUnits', () => {
       </selectionEntry>
     </selectionEntries>`;
     const root = new DOMParser().parseFromString(xml, 'text/xml').documentElement;
-    const units = parseUnits(root, new Map([['Squig Herd', 120]]));
+    const units = parseUnits(root, null, new Map([['Squig Herd', 120]]));
     expect(units.length).toBe(1);
     expect(units[0].name).toBe('Squig Herd');
     expect(units[0].unit_size).toBe(12); // 10 Cave Squigs + 2 Herders

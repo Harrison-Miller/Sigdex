@@ -9,7 +9,7 @@ import { parseBattleFormations } from './formations';
 
 export function parseArmy(unitLibrary: Element, armyInfo: Element): Army {
   const points = parsePoints(armyInfo);
-  const units = parseUnits(unitLibrary, points);
+  const units = parseUnits(unitLibrary, armyInfo, points);
 
   const artifacts = parseArtifacts(armyInfo);
   const heroicTraits = parseHeroicTraits(armyInfo);
