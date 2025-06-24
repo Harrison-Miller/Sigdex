@@ -19,6 +19,7 @@ export function parseUnits(root: Element, pointsMap: Map<string, number>): Unit[
     }
     // Filter out units with 'Apotheosis' in the name
     if (name.toLowerCase().includes('apotheosis')) {
+      console.warn(`Skipping unit "${name}" due to 'Apotheosis' in the name`);
       continue;
     }
 
@@ -33,6 +34,7 @@ export function parseUnits(root: Element, pointsMap: Map<string, number>): Unit[
 
     if (category === 'Other' || category === 'Legends') {
       // Skip units that are categorized as 'Other' or 'Legends'
+      console.warn(`Skipping unit "${name}" categorized as "${category}"`);
       continue;
     }
 

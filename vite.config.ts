@@ -5,4 +5,8 @@ import vue from '@vitejs/plugin-vue';
 export default defineConfig(({ command }) => ({
   plugins: [vue()],
   base: command === 'build' ? '/sigdex/' : '/',
+  test: {
+    setupFiles: ['vitest-localstorage-mock'],
+    mockReset: false,
+  },
 }));
