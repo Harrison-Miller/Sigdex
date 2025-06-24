@@ -1,4 +1,4 @@
-import { determineUnitCategory, type Unit } from '../common/UnitData';
+import { determineUnitCategory, type Unit, isDefaultModelGroups } from '../common/UnitData';
 import { findAllByTagAndAttr } from './utils';
 import { parseAbilities } from './abilities';
 import { parseKeywords } from './keywords';
@@ -28,21 +28,22 @@ export function parseUnits(
       continue;
     }
 
-    const points = pointsMap.get(name) || 0;
-
-    const stats = parseStats(element);
-    const weapons = parseWeapons(element);
-    const abilities = parseAbilities(element);
     const keywords = parseKeywords(element);
     const category = determineUnitCategory(keywords);
-    const models = parseModelGroups(element);
-    const companionUnits = armyInfoRoot ? parseCompanionUnits(armyInfoRoot, name) : [];
 
     if (category === 'Other' || category === 'Legends') {
       // Skip units that are categorized as 'Other' or 'Legends'
       console.warn(`Skipping unit "${name}" categorized as "${category}"`);
       continue;
     }
+
+    const points = pointsMap.get(name) || 0;
+    const stats = parseStats(element);
+    const weapons = parseWeapons(element);
+    const abilities = parseAbilities(element);
+    const models = parseModelGroups(element);
+    const unitSize = models.reduce((sum, model) => sum + model.count, 0) || 1;
+    const companionUnits = armyInfoRoot ? parseCompanionUnits(armyInfoRoot, name) : [];
 
     const unit: Unit = {
       name: element.getAttribute('name') || '',
@@ -53,8 +54,8 @@ export function parseUnits(
       keywords: keywords,
       category: category,
       points: points,
-      unit_size: models.reduce((sum, model) => sum + model.count, 0) || 1,
-      models: models.length > 0 ? models : undefined,
+      unit_size: unitSize,
+      models: isDefaultModelGroups(models) ? undefined : models,
       companion_units: companionUnits.length > 0 ? companionUnits : undefined,
     };
 
