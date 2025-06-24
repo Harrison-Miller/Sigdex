@@ -27,6 +27,7 @@
     "typescript": "~5.8.3",
     "vite": "^6.3.5",
     "vitest": "^3.2.3",
+    "vitest-localstorage-mock": "^0.1.2",
     "vue-router": "^4.5.1",
     "vue-tsc": "^2.2.8",
     "xmldom": "^0.6.0"

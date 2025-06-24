@@ -4,6 +4,7 @@ import { SIGDEX_VERSION } from './version';
 import { cleanObject } from './utils/cleanObject';
 import { parseLores } from './parser/lores';
 import type { Ability } from './common/Ability';
+import { DOMParser } from 'xmldom';
 
 function getGithubBaseUrl() {
   return localStorage.getItem('GITHUB_BASE_URL') || 'https://raw.githubusercontent.com';
@@ -97,6 +98,21 @@ export async function loadArmy(armyName: string): Promise<Army> {
     console.error(`Failed to load army info from ${armyInfoUrl}`);
     throw new Error(`Failed to load army info from ${armyInfoUrl}`);
   }
+
+  // const armiesOfRenown = await listArmiesOfRenown(armyName);
+  // if (armiesOfRenown.length > 0) {
+  //   for (const aor of armiesOfRenown) {
+  //     const aorUrl = `${GITHUB_BASE_URL}/${GITHUB_REPO}/refs/heads/main/${encodeURIComponent(armyName)} - ${aor}.cat`;
+  //     const aorXml = await fetchXml(aorUrl);
+  //     if (aorXml) {
+  //       const aorArmy = await parseArmy(unitLibrary, aorXml); // TODO: parsing an AoR should just keep tracking of unit names allowed and stuff that's link to the library
+  //       console.log(`Loaded Army of Renown: ${aor}: `, aorArmy);
+  //     } else {
+  //       console.warn(`Failed to load Army of Renown XML: ${aorUrl}`);
+  //     }
+  //   }
+  // }
+
   const army = await parseArmy(unitLibrary, armyInfo);
   if (!army) {
     console.error(`Failed to parse army from ${armyInfoUrl}`);
@@ -109,6 +125,7 @@ export async function loadArmy(armyName: string): Promise<Army> {
   } catch (e) {
     // ignore localStorage errors
   }
+
   return army;
 }
 
@@ -139,6 +156,48 @@ export async function loadLores(): Promise<Map<string, Ability[]>> {
     // ignore localStorage errors
   }
   return lores;
+}
+
+/**
+ * Lists Armies of Renown for a given army by inspecting the GitHub repo directory using the GitHub Trees API.
+ * @param armyName The name of the army (e.g. "Gloomspite Gitz")
+ * @returns Promise<string[]> Array of Army of Renown names
+ */
+export async function listArmiesOfRenown(armyName: string): Promise<string[]> {
+  // Use the GitHub Trees API to get all files in the repo
+  // e.g. https://api.github.com/repos/BSData/age-of-sigmar-4th/git/trees/main?recursive=1
+  const treesUrl = `https://api.github.com/repos/${GITHUB_REPO}/git/trees/main?recursive=1`;
+  try {
+    const res = await fetch(treesUrl);
+    if (!res.ok) {
+      console.error(`Failed to fetch tree from ${treesUrl}: ${res.statusText}`);
+      return [];
+    }
+    const data = await res.json();
+    const files = data.tree || [];
+    const pattern = new RegExp(`^${armyName} - (.+)\\.cat$`, 'i');
+    const results: string[] = [];
+    for (const file of files) {
+      if (file.type !== 'blob' || !file.path.endsWith('.cat')) continue;
+      const filename = file.path.split('/').pop();
+      if (!filename) continue;
+      const match = filename.match(pattern);
+      if (match) {
+        const renownName = match[1];
+        if (
+          renownName.toLowerCase().includes('library') ||
+          renownName.toLowerCase().includes('legends')
+        ) {
+          continue;
+        }
+        results.push(renownName.trim());
+      }
+    }
+    return results;
+  } catch (e) {
+    console.error('Error listing armies of renown:', e);
+    return [];
+  }
 }
 
 export function clearBSData() {
