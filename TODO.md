@@ -1,0 +1,11 @@
+- handle units that have required companion units (make sure to get thier points)
+  - example: cities: callis & toll must take tolls's companions.
+- Units that are exclusive with everything. Arkonaut skypike.
+- LotFP units special case
+- Parse and save AoRs.
+  - Do we have the restriction text? We can at least show the restricted unit text.
+  - We may need to relink together lores/artifacts/traits etc that are shared.
+- save state of all collapse, drop downs and tabs - be smart about it though.
+- fix desktop view
+- figure out the pattern for units that aren't reinforceable
+- don't save default model weapon option
