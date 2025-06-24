@@ -64,3 +64,11 @@ export function determineUnitCategory(keywords: string[]): string {
   }
   return 'Other';
 }
+
+export function isDefaultModelGroups(modelGroups: ModelGroup[]): boolean {
+  if (!modelGroups) return true;
+  if (modelGroups.length > 1) return false;
+  if (modelGroups.length === 0) return true;
+  const group = modelGroups[0];
+  return group.weapons.every((w) => w.max === 0 || w.max === undefined);
+}

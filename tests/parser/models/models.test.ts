@@ -8,6 +8,7 @@ import { squigHerdConstraints } from './squigherd';
 import { thundererConstraints } from './thunderers';
 import { stormfiendConstraints } from './stormfiends';
 import { alloplexConstraints } from './alloplex';
+import { isDefaultModelGroups } from '../../../src/common/UnitData';
 
 describe('parseModelGroups', () => {
   it('loonboss, just the default weapon', () => {
@@ -20,6 +21,7 @@ describe('parseModelGroups', () => {
     expect(modelGroups[0].weapons.length).toBe(1);
     expect(modelGroups[0].weapons[0].name).toBe('Moon-slicer');
     expect(modelGroups[0].weapons[0].max).toBeUndefined(); //default weapons have no max
+    expect(isDefaultModelGroups(modelGroups)).toBe(true); // no custom model groups
   });
 
   it('liberators, max 1 grandhammer', () => {
