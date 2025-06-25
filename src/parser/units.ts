@@ -43,6 +43,11 @@ export function parseUnits(
       continue;
     }
 
+    // athol khul is not a real unit, I'm not sure why it's in the data
+    if (name.toLowerCase().includes('athol khul')) {
+      continue;
+    }
+
     const keywords = parseKeywords(element);
     const category = determineUnitCategory(keywords);
 
