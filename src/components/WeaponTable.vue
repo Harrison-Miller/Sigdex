@@ -9,6 +9,7 @@ const props = defineProps<{
     wound: string;
     rend: string;
     damage: string;
+    range?: string;
   }>;
   shortHeaders?: boolean;
 }>();
@@ -18,6 +19,8 @@ function displayRend(rend: string | number | undefined | null): string {
     ? '-'
     : String(rend);
 }
+
+const hasRange = props.weapons.some((w) => w.range && w.range !== '');
 </script>
 <template>
   <div class="weapon-table-wrapper">
@@ -25,6 +28,7 @@ function displayRend(rend: string | number | undefined | null): string {
       <thead>
         <tr>
           <th>Name</th>
+          <th v-if="hasRange">{{ props.shortHeaders ? 'Rng' : 'Range' }}</th>
           <th>{{ props.shortHeaders ? 'A' : 'Attacks' }}</th>
           <th>{{ props.shortHeaders ? 'Hit' : 'Hit' }}</th>
           <th>{{ props.shortHeaders ? 'W' : 'Wound' }}</th>
@@ -46,6 +50,7 @@ function displayRend(rend: string | number | undefined | null): string {
               </span>
             </div>
           </td>
+          <td v-if="hasRange">{{ w.range || '-' }}</td>
           <td>{{ w.attacks }}</td>
           <td>{{ w.hit }}</td>
           <td>{{ w.wound }}</td>
