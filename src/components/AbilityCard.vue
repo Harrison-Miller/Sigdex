@@ -13,6 +13,7 @@ const props = defineProps<{
     castingValue?: string;
     cost?: string;
     name: string;
+    points?: number;
   };
 }>();
 // Map ability types to Font Awesome icon names
@@ -58,6 +59,13 @@ function getAbilityIcon(type: string) {
         v-html="formatText(`**Effect**: ${props.ability.text}`)"
       ></div>
       <KeywordsBar :keywords="props.ability.keywords" />
+      <span
+        v-if="typeof props.ability.points === 'number' && props.ability.points > 0"
+        class="points-badge"
+        style="margin-left: 0.5em"
+      >
+        {{ props.ability.points }} pts
+      </span>
     </div>
   </div>
 </template>
@@ -121,5 +129,20 @@ function getAbilityIcon(type: string) {
 
 .card.ability-card {
   position: relative;
+}
+
+.points-badge {
+  background: #8b0000;
+  color: #fff;
+  font-size: 0.78em;
+  font-weight: 600;
+  border-radius: 1em;
+  padding: 0.08em 0.7em 0.08em 0.7em;
+  margin-top: 0;
+  margin-left: 0;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.01em;
 }
 </style>
