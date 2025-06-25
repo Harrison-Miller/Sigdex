@@ -15,6 +15,24 @@
         <AbilityCard v-for="(ability, i) in abilities" :key="ability.name + i" :ability="ability" />
       </div>
     </Section>
+    <Section v-if="army.artifacts && army.artifacts.size">
+      <template #title>Artifacts</template>
+      <div v-for="[group, abilities] in Array.from(army.artifacts.entries())" :key="group">
+        <h3 class="section-subheader">{{ group }}</h3>
+        <AbilityCard
+          v-for="(artifact, j) in abilities"
+          :key="artifact.name + j"
+          :ability="artifact"
+        />
+      </div>
+    </Section>
+    <Section v-if="army.heroicTraits && army.heroicTraits.size">
+      <template #title>Heroic Traits</template>
+      <div v-for="[group, abilities] in Array.from(army.heroicTraits.entries())" :key="group">
+        <h3 class="section-subheader">{{ group }}</h3>
+        <AbilityCard v-for="(trait, j) in abilities" :key="trait.name + j" :ability="trait" />
+      </div>
+    </Section>
     <!-- Spell Lores Dropdown -->
     <Section v-if="army.spellLores && army.spellLores.length">
       <template #title>Spell Lores</template>
