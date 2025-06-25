@@ -56,10 +56,36 @@ onMounted(async () => {
     let foundAbility: Ability | null = null;
     for (const loreName of manifestationLoreNames) {
       const abilities = lores.get(loreName) || [];
-      foundAbility = abilities.find((a) => a.text && a.text.includes(unit.value.name)) || null;
+
+      foundAbility =
+        abilities.find(
+          (a) =>
+            a.name.toLowerCase().includes(unit.value.name.toLowerCase()) ||
+            a.text.toLowerCase().includes(unit.value.name.toLowerCase())
+        ) || null;
       if (foundAbility) break;
     }
+
     summoningAbility.value = foundAbility;
+
+    // try name split
+    if (!foundAbility) {
+      const nameParts = (unit.value.name as string).split(' ');
+      for (const loreName of manifestationLoreNames) {
+        const abilities = lores.get(loreName) || [];
+        foundAbility =
+          abilities.find((a) =>
+            nameParts.some(
+              (part) =>
+                a.name.toLowerCase().includes(part.toLowerCase()) ||
+                a.text.toLowerCase().includes(part.toLowerCase())
+            )
+          ) || null;
+        if (foundAbility) break;
+      }
+
+      summoningAbility.value = foundAbility;
+    }
   }
 });
 
@@ -78,9 +104,6 @@ function shouldShowUnitDetails(unit: any): boolean {
   if (!unit) return false;
   return (unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0);
 }
-
-console.log('UnitDetailView: route params', { armyName, unitName });
-console.log('UnitDetailView: loaded unit', unit.value);
 </script>
 <template>
   <div v-if="unit && unit.stats" class="unit-detail">
