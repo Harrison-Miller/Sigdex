@@ -24,9 +24,19 @@ export function parseWeapons(root: Element): {
     }
   }
 
+  // Remove duplicates by name
+  const uniqueMelee = new Map<string, Weapon>();
+  for (const w of melee_weapons) {
+    if (!uniqueMelee.has(w.name)) uniqueMelee.set(w.name, w);
+  }
+  const uniqueRanged = new Map<string, Weapon>();
+  for (const w of ranged_weapons) {
+    if (!uniqueRanged.has(w.name)) uniqueRanged.set(w.name, w);
+  }
+
   return {
-    melee_weapons,
-    ranged_weapons,
+    melee_weapons: Array.from(uniqueMelee.values()),
+    ranged_weapons: Array.from(uniqueRanged.values()),
   };
 }
 
