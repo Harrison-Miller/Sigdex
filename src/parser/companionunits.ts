@@ -9,18 +9,21 @@ export function parseCompanionUnits(root: Element, unitName: string): string[] {
   const companions: string[] = [];
 
   companions.push(...parseCompanionUnitsByCondition(root, unitName));
-  companions.push(...parseCompanionByRecursiveModifier(root, unitName));
+  companions.push(...parseCompanionByRecursiveModifier(root, unitName, companions));
 
   // remove self
   if (companions.includes(unitName)) {
-    console.log(`Removing self from companions: ${unitName}`);
     companions.splice(companions.indexOf(unitName), 1);
   }
 
   return Array.from(new Set(companions));
 }
 
-function parseCompanionByRecursiveModifier(root: Element, unitName: string): string[] {
+function parseCompanionByRecursiveModifier(
+  root: Element,
+  unitName: string,
+  found: string[] = []
+): string[] {
   const companions: string[] = [];
   const unitEntry = findFirstByTagAndAttr(root, 'entryLink', 'name', unitName);
   if (!unitEntry) {
@@ -31,8 +34,6 @@ function parseCompanionByRecursiveModifier(root: Element, unitName: string): str
   if (!id) {
     return companions;
   }
-
-  console.log(`Finding companions for unit by recursive modifier search: ${unitName} (ID: ${id})`);
 
   // turns out this constraint isn't always present
   // has -1 constraint
@@ -63,6 +64,8 @@ function parseCompanionByRecursiveModifier(root: Element, unitName: string): str
     const name = companionUnit.getAttribute('name');
     if (!name) continue;
 
+    if (found.includes(name)) continue; // prevent recursion if already found
+
     console.log(`Found companion by recursive modifier: ${name} with ID: ${id}`);
     companions.push(name);
   }
@@ -84,23 +87,15 @@ function parseCompanionByRecursiveModifier(root: Element, unitName: string): str
     const name = ancestor.getAttribute('name');
     if (!name) continue;
 
-    // turns out this constraint isn't always present
-    // check if the ancestor is a companion unit
-    // const companionConstraint = findFirstByTagAndAllAttrs(ancestor, 'constraint', {
-    // 	type: 'min',
-    // 	value: '-1',
-    // 	scope: 'force',
-    // });
-
-    // if (!companionConstraint) continue;
+    if (found.includes(name)) continue; // prevent recursion if already found
 
     console.log(
       `Found companion by reverse recursive modifier: ${name} with ID: ${ancestor.getAttribute('id')}`
     );
     companions.push(name);
 
-    // recursively find companions from the parent
-    companions.push(...parseCompanionByRecursiveModifier(root, name));
+    // recursively find companions from the parent, passing updated found list
+    companions.push(...parseCompanionByRecursiveModifier(root, name, [...found, unitName]));
   }
 
   return Array.from(new Set(companions));
@@ -117,8 +112,6 @@ function parseCompanionUnitsByCondition(root: Element, unitName: string): string
   if (!id) {
     return companions;
   }
-
-  console.log(`Finding companions for unit: ${unitName} (ID: ${id})`);
 
   const companionConditions = findAllByTagAndAllAttrs(root, 'condition', {
     type: 'atLeast',
@@ -158,7 +151,6 @@ function parseCompanionUnitsByCondition(root: Element, unitName: string): string
   }
 
   // under the unitEntry look for conditions
-  console.log(`Searching for companions in conditions of unit: ${unitName}`);
   const unitConstraints = findAllByTagAndAllAttrs(unitEntry, 'constraint', {
     type: 'min',
     value: '-1',
