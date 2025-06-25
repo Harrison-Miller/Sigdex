@@ -39,6 +39,7 @@ function parseWeapon(root: Element): Weapon {
     wound: findFirstByTagAndAttr(root, 'characteristic', 'name', 'Wnd')?.textContent || '',
     rend: findFirstByTagAndAttr(root, 'characteristic', 'name', 'Rnd')?.textContent || '',
     damage: findFirstByTagAndAttr(root, 'characteristic', 'name', 'Dmg')?.textContent || '',
+    range: findFirstByTagAndAttr(root, 'characteristic', 'name', 'Rng')?.textContent || undefined,
   };
 
   let abilityText =

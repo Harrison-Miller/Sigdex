@@ -16,6 +16,7 @@ export interface Weapon {
   wound: string;
   rend: string;
   damage: string;
+  range?: string;
 }
 
 export const POSSIBLE_CATEGORIES = [
