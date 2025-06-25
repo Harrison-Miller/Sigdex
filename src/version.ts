@@ -1,1 +1,1 @@
-export const SIGDEX_VERSION = '3.5.0';
+export const SIGDEX_VERSION = '3.6.0';
