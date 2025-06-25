@@ -9,4 +9,5 @@ export interface Ability {
   castingValue?: string;
   cost?: string;
   points?: number;
+  chantingValue?: string;
 }

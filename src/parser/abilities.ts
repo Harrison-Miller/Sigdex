@@ -36,6 +36,9 @@ export function parseAbilities(root: Element): Ability[] {
         '',
       declare:
         findFirstByTagAndAttr(element, 'characteristic', 'name', 'Declare')?.textContent || '',
+      chantingValue:
+        findFirstByTagAndAttr(element, 'characteristic', 'name', 'Chanting Value')?.textContent ||
+        '',
       points: isNaN(points) || points === 0 ? undefined : points,
     };
     if (ability.name) {

@@ -9,10 +9,11 @@ const props = defineProps<{
     type: string;
     text: string;
     keywords: string[];
+    name: string;
     declare?: string;
     castingValue?: string;
+    chantingValue?: string;
     cost?: string;
-    name: string;
     points?: number;
   };
 }>();
@@ -36,6 +37,10 @@ function getAbilityIcon(type: string) {
   <div class="card ability-card">
     <div v-if="props.ability.castingValue" class="casting-value-circle">
       {{ props.ability.castingValue }}
+    </div>
+    <div v-else-if="props.ability.chantingValue" class="chanting-value-diamond">
+      <font-awesome-icon :icon="['fas', 'diamond']" class="diamond-bg" />
+      <span class="diamond-chanting-text">{{ props.ability.chantingValue }}</span>
     </div>
     <div v-else-if="props.ability.cost" class="cost-hexagon-icon">
       <font-awesome-icon :icon="['fas', 'stop']" class="hexagon-bg" />
@@ -88,6 +93,37 @@ function getAbilityIcon(type: string) {
   font-size: 1.1rem;
   z-index: 2;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.chanting-value-diamond {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.diamond-bg {
+  font-size: 2.2rem;
+  color: #fff;
+  stroke: #000;
+  stroke-width: 20px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+}
+
+.diamond-chanting-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #222;
+  font-weight: bold;
+  font-size: 1.1rem;
+  pointer-events: none;
 }
 
 .cost-hexagon-icon {
