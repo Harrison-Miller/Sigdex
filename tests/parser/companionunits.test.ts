@@ -28,7 +28,7 @@ describe('parseCompanionUnits', () => {
     expect(companions).not.toContain('Skitterstrand Arachnarok');
   });
 
-  it('neave black talon', () => {
+  it('neave blacktalon', () => {
     const root = new DOMParser().parseFromString(neaveArmyInfo, 'text/xml').documentElement;
     const companions = parseCompanionUnits(root, 'Neave Blacktalon');
     expect(companions).toContain('Lorai, Child of the Abyss');
@@ -48,7 +48,7 @@ describe('parseCompanionUnits', () => {
     expect(neaveCompanionsCompanions).not.toContain(`Neave's Companions`);
   });
 
-  it('oathsworn kingdoms', () => {
+  it('oathsworn kin', () => {
     const root = new DOMParser().parseFromString(oathswordKinArmyInfo, 'text/xml').documentElement;
     const companions = parseCompanionUnits(root, 'The Oathsworn Kin');
     expect(companions).toContain('Singri Brand');
