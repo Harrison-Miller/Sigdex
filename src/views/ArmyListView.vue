@@ -103,7 +103,7 @@ watch(armyFavorites, (favs) => {
       </ul>
     </Section>
     <div v-for="alliance in filteredArmiesByAlliance" :key="alliance.name">
-      <Section>
+      <Section v-if="alliance.armies.length > 0">
         <template #title>{{ alliance.name }}</template>
         <ul>
           <li v-for="army in alliance.armies" :key="army.name">
