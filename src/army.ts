@@ -133,6 +133,10 @@ export async function loadArmy(armyName: string): Promise<Army> {
 }
 
 export async function loadLores(): Promise<Map<string, Lore>> {
+  if (needsMigration()) {
+    clearBSData();
+  }
+
   const storageKey = getDataStorageKey('lore');
   const timestampKey = getDataTimestampKey('lore');
   try {
