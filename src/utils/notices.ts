@@ -25,13 +25,18 @@ export const NOTICES: Notice[] = [
     category: 'special',
     alwaysShow: true, // Always show this notice
   },
-  // Example changelog notice
-  // {
-  //   title: 'Changelog: v3.1.0',
-  //   body: '<ul><li>New features!</li></ul>',
-  //   timestamp: '2025-06-01T00:00:00Z',
-  //   category: 'changelog',
-  // },
+  {
+    title: 'Changelog: v4.0.0',
+    body: `
+      <ul>
+        <li><b>Companion Units Displayed:</b> Companion units are now shown in the unit details view, making it easier to see required or associated units for each warscroll.</li>
+        <li><b>Lores Now Display Points:</b> Spell, prayer, and manifestation lores now display their points cost wherever lores are shown, including in dropdowns and headers.</li>
+        <li><b>Universal Manifestations Added:</b> A new Universal Manifestations section is available, allowing you to browse manifestation lores and view their associated units and rules. Each manifestation lore displays its points and all related units.</li>
+      </ul>
+    `,
+    timestamp: '2025-06-25T00:00:00Z',
+    category: 'changelog',
+  },
 ];
 
 export function getNoticeKey(notice: Notice): string {

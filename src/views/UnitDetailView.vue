@@ -9,7 +9,7 @@ import FavoriteToggle from '../components/FavoriteToggle.vue';
 import BackButton from '../components/BackButton.vue';
 import Section from '../components/Section.vue';
 import { isFavorite, saveFavorite, removeFavorite } from '../favorites';
-import { loadArmy, loadLores } from '../army';
+import { loadArmy, loadLores, loadUniversalUnits } from '../army';
 import { MOCK_UNIT } from '../army';
 import type { Ability } from '../common/Ability';
 import { formatModelGroups } from '../utils/formatter';
@@ -36,27 +36,36 @@ const unit = ref(unitPropIsObject ? props.unit : null);
 const summoningAbility = ref<Ability | null>(null);
 
 onMounted(async () => {
-  if (!unit.value && armyName && unitName) {
-    try {
-      const armyData = await loadArmy(armyName);
-      unit.value = armyData.units.find((u) => u.name === unitName) ?? MOCK_UNIT;
-    } catch (e) {
-      unit.value = MOCK_UNIT;
-    }
-  }
-  // Summoning logic for Manifestation
-  if (unit.value && unit.value.category === 'Manifestation' && armyName) {
-    const armyData = await loadArmy(armyName);
-    const lores = await loadLores();
-    // Find all manifestation lores for this army
-    const manifestationLoreNames = armyData.manifestationLores || [];
-    if (!manifestationLoreNames.length) {
-      return;
-    }
-    let foundAbility: Ability | null = null;
-    for (const loreName of manifestationLoreNames) {
-      const abilities = lores.get(loreName) || [];
+  if (!unitName || !armyName) return;
 
+  let units = [];
+  let manifestationLores: string[] = [];
+  let armyData: any = null;
+
+  if (armyName === 'UniversalManifestations') {
+    units = await loadUniversalUnits();
+    // No manifestationLores for universal units
+    manifestationLores = [];
+    unit.value = (units as any[]).find((u: any) => u.name === unitName) ?? MOCK_UNIT;
+  } else {
+    armyData = await loadArmy(armyName);
+    if (armyData) {
+      units = armyData.units || [];
+      manifestationLores = armyData.manifestationLores.map((lore: any) => lore.name) || [];
+    }
+    unit.value = (armyData.units as any[]).find((u: any) => u.name === unitName) ?? MOCK_UNIT;
+  }
+
+  // Summoning logic for Manifestation
+  if (unit.value && unit.value.category === 'Manifestation') {
+    const lores = await loadLores();
+    if (manifestationLores.length === 0) {
+      manifestationLores = Array.from(lores.keys());
+    }
+
+    let foundAbility: Ability | null = null;
+    for (const loreName of manifestationLores) {
+      const abilities = lores.get(loreName)?.abilities || [];
       foundAbility =
         abilities.find(
           (a) =>
@@ -65,14 +74,12 @@ onMounted(async () => {
         ) || null;
       if (foundAbility) break;
     }
-
     summoningAbility.value = foundAbility;
-
     // try name split
     if (!foundAbility) {
       const nameParts = (unit.value.name as string).split(' ');
-      for (const loreName of manifestationLoreNames) {
-        const abilities = lores.get(loreName) || [];
+      for (const loreName of manifestationLores) {
+        const abilities = lores.get(loreName)?.abilities || [];
         foundAbility =
           abilities.find((a) =>
             nameParts.some(
@@ -83,7 +90,6 @@ onMounted(async () => {
           ) || null;
         if (foundAbility) break;
       }
-
       summoningAbility.value = foundAbility;
     }
   }
@@ -109,7 +115,7 @@ function shouldShowUnitDetails(unit: any): boolean {
   <div v-if="unit && unit.stats" class="unit-detail">
     <div class="unit-detail-header">
       <BackButton :size="36" class="unit-detail-back" />
-      <div class="unit-detail-fav">
+      <div v-if="armyName !== 'UniversalManifestations'" class="unit-detail-fav">
         <FavoriteToggle
           :model-value="unitFavorite"
           @update:modelValue="toggleUnitFavoriteDetail"
