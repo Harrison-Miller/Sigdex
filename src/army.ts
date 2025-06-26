@@ -3,8 +3,9 @@ import { Army } from './common/ArmyData';
 import { SIGDEX_VERSION } from './version';
 import { cleanObject } from './utils/cleanObject';
 import { parseLores } from './parser/lores';
-import type { Ability } from './common/Ability';
+import type { Unit } from './common/UnitData';
 import { DOMParser } from 'xmldom';
+import type { Lore } from './common/ManifestationData';
 
 function getGithubBaseUrl() {
   return localStorage.getItem('GITHUB_BASE_URL') || 'https://raw.githubusercontent.com';
@@ -74,6 +75,8 @@ export async function loadArmy(armyName: string): Promise<Army> {
   }
   // Always ensure lores are loaded/cached when loading an army
   await loadLores();
+  // Also ensure universal units are loaded/cached
+  await loadUniversalUnits();
   const fileName = `${armyName} - Library.cat`;
   const libraryUrl = `${GITHUB_BASE_URL}/${GITHUB_REPO}/refs/heads/main/${encodeURIComponent(fileName)}`;
   const armyInfoUrl = `${GITHUB_BASE_URL}/${GITHUB_REPO}/refs/heads/main/${encodeURIComponent(armyName)}.cat`;
@@ -129,7 +132,7 @@ export async function loadArmy(armyName: string): Promise<Army> {
   return army;
 }
 
-export async function loadLores(): Promise<Map<string, Ability[]>> {
+export async function loadLores(): Promise<Map<string, Lore>> {
   const storageKey = getDataStorageKey('lore');
   const timestampKey = getDataTimestampKey('lore');
   try {
@@ -200,6 +203,49 @@ export async function listArmiesOfRenown(armyName: string): Promise<string[]> {
   }
 }
 
+/**
+ * Loads universal units from the GST file and caches them in localStorage.
+ * @returns Promise<Unit[]> Array of universal units
+ */
+export async function loadUniversalUnits(): Promise<Unit[]> {
+  const storageKey = 'universalUnitsData';
+  const timestampKey = 'universalUnitsDataTimestamp';
+  try {
+    const cached = localStorage.getItem(storageKey);
+    if (cached && !isCacheOutOfDate(timestampKey)) {
+      return JSON.parse(cached);
+    }
+  } catch (e) {
+    // ignore localStorage errors
+  }
+  const gstUrl = `${GITHUB_BASE_URL}/${GITHUB_REPO}/refs/heads/main/Age%20of%20Sigmar%204.0.gst`;
+  const gstXml = await fetchXml(gstUrl);
+  if (!gstXml) {
+    console.error(`Failed to load universal units from ${gstUrl}`);
+    throw new Error(`Failed to load universal units from ${gstUrl}`);
+  }
+  // Use the existing parseArmy function to extract units from the GST file
+  // The GST file may not have the same structure as a normal army, so you may need a custom parser if parseArmy doesn't work
+  // For now, try to use parseArmy and fallback to an empty array if it fails
+  let units: Unit[] = [];
+  try {
+    // parseArmy expects a library and an army XML, so pass gstXml for both
+    const army = await parseArmy(gstXml, gstXml);
+    units = army.units || [];
+  } catch (e) {
+    console.error('Failed to parse universal units:', e);
+    units = [];
+  }
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(units));
+    localStorage.setItem(timestampKey, Date.now().toString());
+    localStorage.setItem('SIGDEX_VERSION', SIGDEX_VERSION);
+  } catch (e) {
+    // ignore localStorage errors
+  }
+  return units;
+}
+
 export function clearBSData() {
   Object.keys(localStorage)
     .filter(
@@ -207,7 +253,9 @@ export function clearBSData() {
         k.startsWith('armyData:') ||
         k.startsWith('armyDataTimestamp:') ||
         k === 'loreData' ||
-        k === 'loreDataTimestamp'
+        k === 'loreDataTimestamp' ||
+        k === 'universalUnitsData' ||
+        k === 'universalUnitsDataTimestamp'
     )
     .forEach((k) => localStorage.removeItem(k));
 }
@@ -219,35 +267,6 @@ export function saveGithubBaseUrl(url: string) {
 export function saveGithubRepo(repo: string) {
   localStorage.setItem('GITHUB_REPO', repo);
 }
-
-export const armyList = [
-  'Beasts of Chaos',
-  'Blades of Khorne',
-  'Bonesplitterz',
-  'Cities of Sigmar',
-  'Daughters of Khaine',
-  'Disciples of Tzeentch',
-  'Flesh-eater Courts',
-  'Fyreslayers',
-  'Gloomspite Gitz',
-  'Hedonites of Slaanesh',
-  'Idoneth Deepkin',
-  'Ironjawz',
-  'Kharadron Overlords',
-  'Kruleboyz',
-  'Lumineth Realm-lords',
-  'Maggotkin of Nurgle',
-  'Nighthaunt',
-  'Ogor Mawtribes',
-  'Ossiarch Bonereapers',
-  'Seraphon',
-  'Skaven',
-  'Slaves to Darkness',
-  'Sons of Behemat',
-  'Soulblight Gravelords',
-  'Stormcast Eternals',
-  'Sylvaneth',
-];
 
 // Mock unit data for development/demo
 export const MOCK_UNIT = {

@@ -36,9 +36,22 @@
     <!-- Spell Lores Dropdown -->
     <Section v-if="army.spellLores && army.spellLores.length">
       <template #title>Spell Lores</template>
-      <div v-if="army.spellLores.length">
+      <div v-if="army.spellLores.length === 1">
+        <h3 class="section-subheader">
+          {{ army.spellLores[0].name
+          }}<span v-if="army.spellLores[0].points"> ({{ army.spellLores[0].points }} pts)</span>
+        </h3>
+        <AbilityCard
+          v-for="(ability, i) in getLoreAbilities(army.spellLores[0].name)"
+          :key="ability.name + i"
+          :ability="ability"
+        />
+      </div>
+      <div v-else>
         <select v-model="selectedSpellLore" class="lore-dropdown">
-          <option v-for="lore in army.spellLores" :key="lore" :value="lore">{{ lore }}</option>
+          <option v-for="lore in army.spellLores" :key="lore.name" :value="lore.name">
+            {{ lore.name }}<span v-if="lore.points"> ({{ lore.points }} pts)</span>
+          </option>
         </select>
         <div v-if="selectedSpellLore">
           <AbilityCard
@@ -52,9 +65,22 @@
     <!-- Prayer Lores Dropdown -->
     <Section v-if="army.prayerLores && army.prayerLores.length">
       <template #title>Prayer Lores</template>
-      <div v-if="army.prayerLores.length">
+      <div v-if="army.prayerLores.length === 1">
+        <h3 class="section-subheader">
+          {{ army.prayerLores[0].name
+          }}<span v-if="army.prayerLores[0].points"> ({{ army.prayerLores[0].points }} pts)</span>
+        </h3>
+        <AbilityCard
+          v-for="(ability, i) in getLoreAbilities(army.prayerLores[0].name)"
+          :key="ability.name + i"
+          :ability="ability"
+        />
+      </div>
+      <div v-else>
         <select v-model="selectedPrayerLore" class="lore-dropdown">
-          <option v-for="lore in army.prayerLores" :key="lore" :value="lore">{{ lore }}</option>
+          <option v-for="lore in army.prayerLores" :key="lore.name" :value="lore.name">
+            {{ lore.name }}<span v-if="lore.points"> ({{ lore.points }} pts)</span>
+          </option>
         </select>
         <div v-if="selectedPrayerLore">
           <AbilityCard
@@ -68,10 +94,23 @@
     <!-- Manifestation Lores Dropdown -->
     <Section v-if="army.manifestationLores && army.manifestationLores.length">
       <template #title>Manifestation Lores</template>
-      <div v-if="army.manifestationLores.length">
+      <div v-if="army.manifestationLores.length === 1">
+        <h3 class="section-subheader">
+          {{ army.manifestationLores[0].name
+          }}<span v-if="army.manifestationLores[0].points">
+            ({{ army.manifestationLores[0].points }} pts)</span
+          >
+        </h3>
+        <AbilityCard
+          v-for="(ability, i) in getLoreAbilities(army.manifestationLores[0].name)"
+          :key="ability.name + i"
+          :ability="ability"
+        />
+      </div>
+      <div v-else>
         <select v-model="selectedManifestationLore" class="lore-dropdown">
-          <option v-for="lore in army.manifestationLores" :key="lore" :value="lore">
-            {{ lore }}
+          <option v-for="lore in army.manifestationLores" :key="lore.name" :value="lore.name">
+            {{ lore.name }}<span v-if="lore.points"> ({{ lore.points }} pts)</span>
           </option>
         </select>
         <div v-if="selectedManifestationLore">
@@ -112,13 +151,13 @@ watch(
   () => [props.army, loresLoading.value, lores.value],
   () => {
     if (props.army?.spellLores?.length && !selectedSpellLore.value) {
-      selectedSpellLore.value = props.army.spellLores[0];
+      selectedSpellLore.value = props.army.spellLores[0].name;
     }
     if (props.army?.prayerLores?.length && !selectedPrayerLore.value) {
-      selectedPrayerLore.value = props.army.prayerLores[0];
+      selectedPrayerLore.value = props.army.prayerLores[0].name;
     }
     if (props.army?.manifestationLores?.length && !selectedManifestationLore.value) {
-      selectedManifestationLore.value = props.army.manifestationLores[0];
+      selectedManifestationLore.value = props.army.manifestationLores[0].name;
     }
   },
   { immediate: true }
@@ -126,7 +165,8 @@ watch(
 
 const getLoreAbilities = (loreName: string): any[] => {
   if (!lores.value) return [];
-  return lores.value.get(loreName) || [];
+  const lore = lores.value.get(loreName);
+  return lore?.abilities || [];
 };
 </script>
 

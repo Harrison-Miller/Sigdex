@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { armyList } from '../army';
+import { orderArmies, chaosArmies, deathArmies, destructionArmies } from '../common/ArmyData';
+import { universalManifestationLores } from '../common/ManifestationData';
 import {
   saveFavorite,
   removeFavorite,
@@ -13,6 +14,7 @@ import ListButton from '../components/ListButton.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
 import SettingsButton from '../components/SettingsButton.vue';
 import { SIGDEX_VERSION } from '../version';
+import Section from '../components/Section.vue';
 const router = useRouter();
 const armyFavorites = ref<string[]>([]);
 const showOnlyFavorites = ref(getFavoriteToggleState('army'));
@@ -41,11 +43,28 @@ function goToSettings() {
   router.push({ name: 'Settings' });
 }
 
-const filteredArmyList = computed(() => {
+const grandAlliances = [
+  { name: 'Order', armies: orderArmies },
+  { name: 'Chaos', armies: chaosArmies },
+  { name: 'Death', armies: deathArmies },
+  { name: 'Destruction', armies: destructionArmies },
+];
+
+const filteredArmiesByAlliance = computed(() => {
+  return grandAlliances.map(({ name, armies }) => {
+    let filtered = armies;
+    if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
+      filtered = armies.filter((a) => armyFavorites.value.includes(a.name));
+    }
+    return { name, armies: filtered };
+  });
+});
+
+const filteredManifestationLores = computed(() => {
   if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
-    return armyList.filter((a) => armyFavorites.value.includes(a));
+    return universalManifestationLores.filter((lore) => armyFavorites.value.includes(lore));
   }
-  return armyList;
+  return universalManifestationLores;
 });
 
 watch(armyFavorites, (favs) => {
@@ -69,18 +88,36 @@ watch(armyFavorites, (favs) => {
         :disabled="armyFavorites.length === 0"
       />
     </div>
-    <div class="section-divider"></div>
-    <ul>
-      <li v-for="army in filteredArmyList" :key="army">
-        <ListButton
-          :label="army"
-          :favorite="armyFavorites.includes(army)"
-          :showFavoriteToggle="true"
-          @click="selectArmy(army)"
-          @toggle-favorite="(fav) => toggleArmyFavorite(army, fav)"
-        />
-      </li>
-    </ul>
+    <Section v-if="filteredManifestationLores.length > 0">
+      <template #title>Universal Manifestations</template>
+      <ul>
+        <li v-for="lore in filteredManifestationLores" :key="lore">
+          <ListButton
+            :label="lore"
+            :favorite="armyFavorites.includes(lore)"
+            :showFavoriteToggle="true"
+            @click="() => $router.push({ name: 'ManifestationLore', params: { lore } })"
+            @toggle-favorite="(fav) => toggleArmyFavorite(lore, fav)"
+          />
+        </li>
+      </ul>
+    </Section>
+    <div v-for="alliance in filteredArmiesByAlliance" :key="alliance.name">
+      <Section>
+        <template #title>{{ alliance.name }}</template>
+        <ul>
+          <li v-for="army in alliance.armies" :key="army.name">
+            <ListButton
+              :label="army.name"
+              :favorite="armyFavorites.includes(army.name)"
+              :showFavoriteToggle="true"
+              @click="selectArmy(army.name)"
+              @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
+            />
+          </li>
+        </ul>
+      </Section>
+    </div>
     <div class="sigdex-version">Sigdex v{{ SIGDEX_VERSION }}</div>
   </div>
 </template>
