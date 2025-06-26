@@ -127,7 +127,7 @@ watch(unitFavorites, (favs) => {
 });
 </script>
 <template>
-  <BackButton :size="36" class="unit-list-back" />
+  <BackButton :size="36" />
   <div class="list-container">
     <h1>{{ army }}</h1>
     <div class="tab-bar">
@@ -216,10 +216,6 @@ watch(unitFavorites, (favs) => {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.unit-list-back {
   margin-bottom: 0.5rem;
 }
 
