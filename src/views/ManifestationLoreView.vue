@@ -65,7 +65,7 @@ onMounted(async () => {
         :class="{ active: activeTab === 'manifestation' }"
         @click="activeTab = 'manifestation'"
       >
-        Manifestation
+        Manifestations
       </button>
       <button :class="{ active: activeTab === 'lore' }" @click="activeTab = 'lore'">Lore</button>
     </div>
