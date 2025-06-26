@@ -112,9 +112,9 @@ function shouldShowUnitDetails(unit: any): boolean {
 }
 </script>
 <template>
+  <BackButton :size="36" />
   <div v-if="unit && unit.stats" class="unit-detail">
     <div class="unit-detail-header">
-      <BackButton :size="36" class="unit-detail-back" />
       <div v-if="armyName !== 'UniversalManifestations'" class="unit-detail-fav">
         <FavoriteToggle
           :model-value="unitFavorite"
@@ -220,33 +220,5 @@ function shouldShowUnitDetails(unit: any): boolean {
   right: 0;
   top: 0;
   z-index: 1;
-}
-
-.unit-detail-back {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 1;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.unit-detail-back:hover {
-  background: #e5e5e5;
-}
-
-.unit-detail-header h1 {
-  margin-top: 2.2rem;
-  text-align: center;
-  width: 100%;
 }
 </style>

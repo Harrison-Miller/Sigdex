@@ -34,6 +34,9 @@ function goBack() {
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
+  position: sticky;
+  top: 0.5rem;
+  z-index: 10;
 }
 .back-btn:hover {
   background: #e5e5e5;

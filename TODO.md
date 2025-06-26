@@ -28,10 +28,6 @@
   - 1 of the following sky cannon, sky hook, volley cannon
   - gunhaller same as frigate
 
-- lore todos:
-  - parse points for lores and display it
-  - make a place to display universal lores and endless spells - probably a section at the top of the army list area
-
 - regiment options todos:
   - parse subhero options - this one is fairly easy.
   - figure out how to compute the least common denominator for keywords with other regiment options.
