@@ -87,7 +87,7 @@ export const liberatorConstraints = `
 								<r value="1" repeats="1" scope="a" childId="f"/>
 							</s>
 						</m>
-						<!-- this is used to make the grandhammer mutually exclusive with the warhammer per instance of the model-->
+						<!-- this actually says that the champion can't take this weapon -->
 						<m type="set" value="0" field="e">
 							<conditions>
 								<c type="atLeast" value="1" scope="parent" childId="g"/>
@@ -156,6 +156,19 @@ unit:
 	weapons:
 	- id: c
 	  name: Grandhammer
+	  max: 1 # this is the max per reinforcement of the unit
+	- id: h
+	  name: Warhammer
+	count: 5
+
+unit:
+  models:
+  - id: a
+	name: Liberators
+	weapons:
+	- id: c
+	  name: Grandhammer
+	  replaces: Warhammer
 	  max: 1 # this is the max per reinforcement of the unit
 	- id: h
 	  name: Warhammer

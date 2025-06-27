@@ -9,6 +9,7 @@ import { thundererConstraints } from './thunderers';
 import { stormfiendConstraints } from './stormfiends';
 import { alloplexConstraints } from './alloplex';
 import { isDefaultModelGroups } from '../../../src/common/UnitData';
+import { akranautConstraints } from './arkanaut';
 
 describe('parseModelGroups', () => {
   it('loonboss, just the default weapon', () => {
@@ -21,6 +22,7 @@ describe('parseModelGroups', () => {
     expect(modelGroups[0].weapons.length).toBe(1);
     expect(modelGroups[0].weapons[0].name).toBe('Moon-slicer');
     expect(modelGroups[0].weapons[0].max).toBeUndefined(); //default weapons have no max
+    expect(modelGroups[0].weapons[0].replaces).toBeUndefined(); // no replaces for default weapons
     expect(isDefaultModelGroups(modelGroups)).toBe(true); // no custom model groups
   });
 
@@ -34,6 +36,8 @@ describe('parseModelGroups', () => {
     expect(modelGroups[0].weapons.length).toBe(2);
     expect(modelGroups[0].weapons[0].name).toBe('Grandhammer');
     expect(modelGroups[0].weapons[0].max).toBe(1);
+    expect(modelGroups[0].weapons[0].replaces).toContain('Warhammer'); // grandhammer replaces warhammer
+
     expect(modelGroups[0].weapons[1].name).toBe('Warhammer');
     expect(modelGroups[0].weapons[1].max).toBeUndefined(); // default weapons have no max
   });
@@ -47,6 +51,8 @@ describe('parseModelGroups', () => {
     expect(modelGroups[0].weapons.length).toBe(2);
     expect(modelGroups[0].weapons[0].name).toBe('Starsoul Mace');
     expect(modelGroups[0].weapons[0].max).toBe(2);
+    expect(modelGroups[0].weapons[0].replaces).toContain('Protector Stormstrike Glaive'); // starsoul mace replaces stormstrike glaive
+
     expect(modelGroups[0].weapons[1].name).toBe('Protector Stormstrike Glaive');
     expect(modelGroups[0].weapons[1].max).toBeUndefined(); // default weapons have no max
   });
@@ -60,12 +66,14 @@ describe('parseModelGroups', () => {
     expect(modelGroups[0].weapons.length).toBe(1);
     expect(modelGroups[0].weapons[0].name).toBe('Fang-filled Gob');
     expect(modelGroups[0].weapons[0].max).toBeUndefined(); // default weapons have no max
+    expect(modelGroups[0].weapons[0].replaces).toBeUndefined(); // no replaces for default weapons
 
     expect(modelGroups[1].name).toBe('Squig Herder');
     expect(modelGroups[1].count).toBe(2);
     expect(modelGroups[1].weapons.length).toBe(1);
     expect(modelGroups[1].weapons[0].name).toBe('Squig Prodder');
     expect(modelGroups[1].weapons[0].max).toBeUndefined(); // default weapons have no max
+    expect(modelGroups[1].weapons[0].replaces).toBeUndefined(); // no replaces for default weapons
   });
 
   it('thunderers, max 2 mortars, max 2 fumigators', () => {
@@ -78,12 +86,19 @@ describe('parseModelGroups', () => {
     expect(modelGroups[0].weapons.length).toBe(4);
     expect(modelGroups[0].weapons[0].name).toBe('Grundstok Mortar or Aethercannon');
     expect(modelGroups[0].weapons[0].max).toBe(2);
+    expect(modelGroups[0].weapons[0].replaces).toContain('Aethershot Rifle'); // mortar replaces aethershot rifle
+
     expect(modelGroups[0].weapons[1].name).toBe('Aethershot Rifle');
     expect(modelGroups[0].weapons[1].max).toBeUndefined(); // default weapons have no max
+    expect(modelGroups[0].weapons[1].replaces).toBeUndefined(); // no replaces for default weapons
+
     expect(modelGroups[0].weapons[2].name).toBe('Heavy Gun Butt');
     expect(modelGroups[0].weapons[2].max).toBeUndefined(); // default weapons have no max
+    expect(modelGroups[0].weapons[2].replaces).toBeUndefined(); // no replaces for default weapons
+
     expect(modelGroups[0].weapons[3].name).toBe('Aetheric Fumigator or Decksweeper');
     expect(modelGroups[0].weapons[3].max).toBe(2);
+    expect(modelGroups[0].weapons[3].replaces).toContain('Aethershot Rifle'); // fumigator replaces aethershot rifle
   });
 
   it('3 different stormfiends each with different mutually exclusive options', () => {
@@ -95,25 +110,37 @@ describe('parseModelGroups', () => {
     expect(modelGroups[0].count).toBe(1);
     expect(modelGroups[0].weapons.length).toBe(2);
     expect(modelGroups[0].weapons[0].name).toContain('Ratling Cannons and Clubbing Blows');
-    expect(modelGroups[0].weapons[0].max).toBeUndefined(); // default weapons have no max
+    expect(modelGroups[0].weapons[0].max).toBeUndefined();
+    expect(modelGroups[0].weapons[0].replaces).toBeUndefined(); // no replaces for grouped weapons
+    expect(modelGroups[0].weapons[0].group).toBe('Wargear Options'); // group name for selectionEntryGroup
     expect(modelGroups[0].weapons[1].name).toContain('Grinderfists');
-    expect(modelGroups[0].weapons[1].max).toBe(1);
+    expect(modelGroups[0].weapons[1].max).toBeUndefined();
+    expect(modelGroups[0].weapons[1].replaces).toBeUndefined(); // no replaces for grouped weapons
+    expect(modelGroups[0].weapons[1].group).toBe('Wargear Options'); // group name for selectionEntryGroup
 
     expect(modelGroups[1].name).toBe('Stormfiend');
     expect(modelGroups[1].count).toBe(1);
     expect(modelGroups[1].weapons.length).toBe(2);
     expect(modelGroups[1].weapons[0].name).toContain('Warpfire Projectors and Clubbing Blows');
-    expect(modelGroups[1].weapons[0].max).toBeUndefined(); // default weapons have no max
+    expect(modelGroups[1].weapons[0].max).toBeUndefined();
+    expect(modelGroups[1].weapons[0].replaces).toBeUndefined(); // no replaces for grouped weapons
+    expect(modelGroups[1].weapons[0].group).toBe('Wargear Options'); // group name for selectionEntryGroup
     expect(modelGroups[1].weapons[1].name).toContain('Windlaunchers and Clubbing Blows');
-    expect(modelGroups[1].weapons[1].max).toBe(1);
+    expect(modelGroups[1].weapons[1].max).toBeUndefined();
+    expect(modelGroups[1].weapons[1].group).toBe('Wargear Options'); // group name for selectionEntryGroup
+    expect(modelGroups[1].weapons[1].replaces).toBeUndefined(); // no replaces for grouped weapons
 
     expect(modelGroups[2].name).toBe('Stormfiend');
     expect(modelGroups[2].count).toBe(1);
     expect(modelGroups[2].weapons.length).toBe(2);
     expect(modelGroups[2].weapons[0].name).toContain('Doomflayer Gauntlets');
-    expect(modelGroups[2].weapons[0].max).toBeUndefined(); // default weapons have no max
+    expect(modelGroups[2].weapons[0].max).toBeUndefined();
+    expect(modelGroups[2].weapons[0].replaces).toBeUndefined(); // no replaces for grouped weapons
+    expect(modelGroups[2].weapons[0].group).toBe('Wargear Options'); // group name for selectionEntryGroup
     expect(modelGroups[2].weapons[1].name).toContain('Shock Gauntlets');
-    expect(modelGroups[2].weapons[1].max).toBe(1);
+    expect(modelGroups[2].weapons[1].max).toBeUndefined();
+    expect(modelGroups[2].weapons[1].group).toBe('Wargear Options'); // group name for selectionEntryGroup
+    expect(modelGroups[2].weapons[1].replaces).toBeUndefined(); // no replaces for grouped weapons
   });
 
   it('alloplex 2 default melee weapons, 2 mutually exclusive ranged weapons', () => {
@@ -131,9 +158,43 @@ describe('parseModelGroups', () => {
     expect(modelGroups[0].weapons[1].max).toBeUndefined(); // default weapons have no max
 
     expect(modelGroups[0].weapons[2].name).toBe('Razorshell Harpoon');
-    expect(modelGroups[0].weapons[2].max).toBeUndefined(); // one needs to be marked default when mutually exclusive
+    expect(modelGroups[0].weapons[2].max).toBeUndefined();
+    expect(modelGroups[0].weapons[2].replaces).toBeUndefined(); // no replaces for grouped weapons
+    expect(modelGroups[0].weapons[2].group).toBe('Wargear Options'); // group name for selectionEntryGroup
 
     expect(modelGroups[0].weapons[3].name).toBe('Retarius Net Launcher');
-    expect(modelGroups[0].weapons[3].max).toBe(1); // max 1 Sharktooth Spear
+    expect(modelGroups[0].weapons[3].max).toBeUndefined();
+    expect(modelGroups[0].weapons[3].replaces).toBeUndefined(); // no replaces for grouped weapons
+    expect(modelGroups[0].weapons[3].group).toBe('Wargear Options'); // group name for selectionEntryGroup
+  });
+
+  it('arkanauts', () => {
+    const root = new DOMParser().parseFromString(akranautConstraints, 'text/xml').documentElement;
+    const modelGroups = parseModelGroups(root);
+    expect(modelGroups.length).toBe(1);
+    expect(modelGroups[0].name).toBe('Arkanaut');
+    expect(modelGroups[0].count).toBe(10);
+    expect(modelGroups[0].weapons.length).toBe(5);
+
+    expect(modelGroups[0].weapons[0].name).toBe('Skypike');
+    expect(modelGroups[0].weapons[0].max).toBe(1); // max 1 Skypike
+    expect(modelGroups[0].weapons[0].replaces).toContain('Arkanaut Hand Weapon');
+    expect(modelGroups[0].weapons[0].replaces).toContain('Privateer Pistol');
+
+    expect(modelGroups[0].weapons[1].name).toBe('Privateer Pistol');
+    expect(modelGroups[0].weapons[1].max).toBeUndefined(); // default weapons have no max
+    expect(modelGroups[0].weapons[1].replaces).toBeUndefined(); // no replaces for default weapons
+
+    expect(modelGroups[0].weapons[2].name).toBe('Arkanaut Hand Weapon');
+    expect(modelGroups[0].weapons[2].max).toBeUndefined(); // default weapons have no max
+    expect(modelGroups[0].weapons[2].replaces).toBeUndefined(); // no replaces for default weapons
+
+    expect(modelGroups[0].weapons[3].name).toBe('Aethermatic Volley Gun');
+    expect(modelGroups[0].weapons[3].max).toBe(1);
+    expect(modelGroups[0].weapons[3].replaces).toContain('Privateer Pistol');
+
+    expect(modelGroups[0].weapons[4].name).toBe('Light Skyhook');
+    expect(modelGroups[0].weapons[4].max).toBe(1);
+    expect(modelGroups[0].weapons[4].replaces).toContain('Privateer Pistol');
   });
 });

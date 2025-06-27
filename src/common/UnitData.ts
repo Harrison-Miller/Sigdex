@@ -35,6 +35,8 @@ export const POSSIBLE_CATEGORIES = [
 export interface WeaponOption {
   name: string;
   max?: number;
+  replaces?: string[];
+  group?: string; // for selectionEntryGroup, this is the group name i.e) 'Wargear Options'
 }
 
 export interface ModelGroup {
@@ -72,5 +74,7 @@ export function isDefaultModelGroups(modelGroups: ModelGroup[]): boolean {
   if (modelGroups.length > 1) return false;
   if (modelGroups.length === 0) return true;
   const group = modelGroups[0];
-  return group.weapons.every((w) => w.max === 0 || w.max === undefined);
+  return group.weapons.every(
+    (w) => (w.max === 0 || w.max === undefined) && !w.replaces && !w.group
+  );
 }
