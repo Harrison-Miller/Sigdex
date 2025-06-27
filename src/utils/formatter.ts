@@ -1,5 +1,5 @@
 import pluralize, { isPlural } from 'pluralize';
-import type { ModelGroup, Unit } from '../common/UnitData';
+import type { ModelGroup, Unit, WeaponOption } from '../common/UnitData';
 
 export function formatText(text: string): string {
   if (!text) return '';
@@ -29,9 +29,6 @@ export function formatText(text: string): string {
 }
 
 export function formatModelGroups(modelGroups: ModelGroup[], unit: Unit): string {
-  const rangedWeapons = unit.ranged_weapons ? unit.ranged_weapons.map((w) => w.name) : [];
-  const meleeWeapons = unit.melee_weapons ? unit.melee_weapons.map((w) => w.name) : [];
-
   // contains champion keyword case insensitive
   const hasChampion = unit.keywords
     ? unit.keywords.some((k) => k.toLowerCase() === 'champion')
@@ -47,7 +44,7 @@ export function formatModelGroups(modelGroups: ModelGroup[], unit: Unit): string
   }
 
   for (const group of modelGroups) {
-    const groupText = formatModelGroup(unitSize, group, hasChampion, rangedWeapons, meleeWeapons);
+    const groupText = formatModelGroup(unitSize, group, hasChampion);
     if (!isOneGroup) {
       text += `<li>${groupText}</li>`;
     } else {
@@ -62,13 +59,7 @@ export function formatModelGroups(modelGroups: ModelGroup[], unit: Unit): string
   return text;
 }
 
-function formatModelGroup(
-  unitSize: number,
-  group: ModelGroup,
-  hasChampion: boolean,
-  rangedWeapons: string[],
-  meleeWeapons: string[]
-): string {
+function formatModelGroup(unitSize: number, group: ModelGroup, hasChampion: boolean): string {
   const isOneModel = group.count === 1;
   const isGroupSize = unitSize === group.count;
   let text = `<i>`;
@@ -84,9 +75,7 @@ function formatModelGroup(
   } else {
     text += `${group.count} in ${unitSize} models are <b>${pluralize(group.name)}</b>`;
   }
-  const defaultWeapons = group.weapons.filter((w) => !w.max).map((w) => w.name);
-  const defaultRanged = defaultWeapons.filter((w) => rangedWeapons.includes(w));
-  const defaultMelee = defaultWeapons.filter((w) => meleeWeapons.includes(w));
+  const defaultWeapons = group.weapons.filter((w) => !w.max && !w.group).map((w) => w.name);
   if (defaultWeapons.length > 0) {
     if (!isOneModel && !isGroupSize) {
       text += ` each`;
@@ -106,14 +95,14 @@ function formatModelGroup(
         .replace(/, ([^,]*)$/, ' and $1')}`;
     }
   }
+  text += `</i>`;
 
   // now in a bullet list write out optional weapons
-  const optionalWeapons = group.weapons.filter((w) => w.max);
+  const optionalWeapons = group.weapons.filter((w) => w.max && !w.group);
   if (optionalWeapons.length > 0) {
     text += '<ul>';
     for (const weapon of optionalWeapons) {
       const isOptionGroupSize = weapon.max === group.count;
-      const isRanged = rangedWeapons.includes(weapon.name);
       text += `<li>`;
       if (isOneModel) {
         text += `<i>it may be armed with ${formatWeaponName(weapon.name)}`;
@@ -123,11 +112,18 @@ function formatModelGroup(
         text += `<i>${weapon.max} in ${group.count} may be armed with ${formatWeaponName(weapon.name)}`;
       }
 
-      if (isRanged && defaultRanged.length > 0) {
-        text += ` instead of ${defaultRanged.map((w) => formatWeaponName(w)).join(' or')}`;
-      } else if (!isRanged && defaultMelee.length > 0) {
-        text += ` instead of ${defaultMelee.map((w) => formatWeaponName(w)).join(' or')}`;
+      // replacesAll true if all replaces options are the same as defaultWeapons
+      if (weapon.replaces && weapon.replaces.length > 0) {
+        const replacesAll = defaultWeapons.every(
+          (w) => weapon.replaces && weapon.replaces.includes(w)
+        );
+        if (replacesAll) {
+          text += ` instead`;
+        } else {
+          text += ` instead of ${weapon.replaces.map((w) => formatWeaponName(w)).join(' and ')}`;
+        }
       }
+
       text += `</i></li>`;
     }
 
@@ -136,6 +132,27 @@ function formatModelGroup(
     }
 
     text += '</ul>';
+  }
+
+  // grouped weapons
+  const groupedWeapons: Map<string, WeaponOption[]> = new Map();
+  for (const weapon of group.weapons) {
+    if (weapon.group) {
+      if (!groupedWeapons.has(weapon.group)) {
+        groupedWeapons.set(weapon.group, []);
+      }
+      groupedWeapons.get(weapon.group)?.push(weapon);
+    }
+  }
+
+  for (const [_, weapons] of groupedWeapons.entries()) {
+    text += `<br>`;
+    text += `<i>It may be armed with 1 of the following options:</i>`;
+    text += `<ul>`;
+    for (const weapon of weapons) {
+      text += `<li><i> ${formatWeaponName(weapon.name)} </i></li>`;
+    }
+    text += `</ul>`;
   }
 
   return text;

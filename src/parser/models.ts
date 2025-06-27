@@ -5,6 +5,7 @@ import {
   findChildByTagName,
   findAllDirectChildrenByTagAndAttr,
   getChildren,
+  findAllByTagAndAllAttrs,
 } from './utils';
 import type { WeaponOption, ModelGroup } from '../common/UnitData';
 
@@ -43,9 +44,16 @@ export function parseModelGroups(root: Element): ModelGroup[] {
     });
     const allWeaponOptions: WeaponOption[] = [];
     for (const weaponGroup of weaponGroups) {
-      const weaponOptions = parseWeaponOptions(weaponGroup, unitId, count);
-      if (weaponOptions.length > 0) {
+      if (weaponGroup.tagName === 'selectionEntries') {
+        const weaponOptions = parseWeaponOptionsFromSelectionEntries(weaponGroup);
         allWeaponOptions.push(...weaponOptions);
+      } else if (weaponGroup.tagName === 'selectionEntryGroups') {
+        // get all selectionEntryGroup elements
+        const groups = Array.from(weaponGroup.getElementsByTagName('selectionEntryGroup'));
+        for (const group of groups) {
+          const weaponOptions = parseWeaponOptionsFromSelectionEntryGroup(group);
+          allWeaponOptions.push(...weaponOptions);
+        }
       }
     }
 
@@ -65,59 +73,140 @@ export function parseModelGroups(root: Element): ModelGroup[] {
   return modelGroups;
 }
 
-function parseWeaponOptions(
-  entriesRoot: Element,
-  unitId: string,
-  groupCount: number
-): WeaponOption[] {
-  const weaponOptions: WeaponOption[] = [];
+function parseWeaponOptionsFromSelectionEntries(weaponsRoot: Element): WeaponOption[] {
+  const weaponOptions: Map<String, WeaponOption> = new Map();
+  const exclusiveWeapons: Map<string, string[]> = new Map(); // weaponId to exclusive weaponIds
 
-  let inSEG = entriesRoot.tagName === 'selectionEntryGroups';
-  const weaponsRoot = inSEG ? findChildByTagName(entriesRoot, 'selectionEntries') : entriesRoot;
-  if (!weaponsRoot) {
-    return weaponOptions;
-  }
-
-  const upgradeEntries = findAllDirectChildrenByTagAndAttr(
+  const weaponEntries = findAllDirectChildrenByTagAndAttr(
     weaponsRoot,
     'selectionEntry',
     'type',
     'upgrade'
   );
 
-  for (const upgrade of upgradeEntries) {
-    const name = upgrade.getAttribute('name');
-    if (!name) {
-      continue;
+  for (const weapon of weaponEntries) {
+    const name = weapon.getAttribute('name');
+    if (!name) continue;
+
+    const id = weapon.getAttribute('id');
+    if (!id) continue;
+
+    // add the weapon option to the map
+    weaponOptions.set(id, {
+      name: name,
+    });
+
+    // get the constraint directly under the weapon entry
+    const constraints = getDirectChildByTagName(weapon, 'constraints');
+    if (!constraints) continue;
+
+    const constraintEntries = Array.from(constraints.getElementsByTagName('constraint'));
+    const max =
+      constraintEntries.find((c) => c.getAttribute('type') === 'max')?.getAttribute('value') ||
+      undefined;
+    const min =
+      constraintEntries
+        .find((c) => c.getAttribute('type') === 'min' && c.getAttribute('scope') === 'parent')
+        ?.getAttribute('value') || undefined;
+
+    // optional weapon
+    const weaponOption = weaponOptions.get(id);
+    if (!min && max && weaponOption) {
+      weaponOption.max = Number(max);
     }
 
-    const weaponOption: WeaponOption = {
-      name: name,
-    };
+    // parse modifiers
+    const modifiers = getDirectChildByTagName(weapon, 'modifiers');
+    if (!modifiers) continue;
 
-    const constraints = getDirectChildByTagName(upgrade, 'constraints');
-    if (constraints) {
-      const minConstraint = findFirstByTagAndAllAttrs(constraints, 'constraint', {
-        type: 'min',
+    const exclusiveModifiers = findAllByTagAndAllAttrs(modifiers, 'modifier', {
+      type: 'set',
+      value: '0',
+    });
+
+    // for each exclusive modifier gather all conditions
+    for (const modifier of exclusiveModifiers) {
+      const atLeastConditions = findAllByTagAndAllAttrs(modifier, 'condition', {
+        type: 'atLeast',
+        value: '1',
         scope: 'parent',
       });
-      if (!minConstraint) {
-        const maxConstraint = findFirstByTagAndAllAttrs(constraints, 'constraint', {
-          type: 'max',
-          scope: unitId,
-        });
-        if (!minConstraint && maxConstraint) {
-          weaponOption.max = Number(maxConstraint.getAttribute('value'));
+
+      const childIds = atLeastConditions
+        .map((c) => c.getAttribute('childId'))
+        .filter((id): id is string => id !== null);
+      if (childIds.length === 0) continue;
+
+      // store exclusive weapons
+      if (!exclusiveWeapons.has(id)) {
+        exclusiveWeapons.set(id, childIds);
+      }
+    }
+  }
+
+  // now we need to process the exclusive weapons
+  for (const [weaponId, exclusiveIds] of exclusiveWeapons.entries()) {
+    const weaponOption = weaponOptions.get(weaponId);
+    if (!weaponOption) continue;
+
+    if (weaponOption.max == undefined) {
+      // this weapon is a default weapon and will not replace anything.
+      // for each exclusive weapon, we will set that weapon's replaces to this weapon's name
+
+      for (const exclusiveId of exclusiveIds) {
+        const exclusiveOption = weaponOptions.get(exclusiveId);
+        if (exclusiveOption) {
+          exclusiveOption.replaces = exclusiveOption.replaces || [];
+          exclusiveOption.replaces.push(weaponOption.name);
+        }
+      }
+    } else {
+      // this weapon is an exclusive weapon, so we will set its replaces to the names of all other exclusive weapons
+      weaponOption.replaces = weaponOption.replaces || [];
+      for (const exclusiveId of exclusiveIds) {
+        if (exclusiveId !== weaponId) {
+          const exclusiveOption = weaponOptions.get(exclusiveId);
+          if (exclusiveOption) {
+            weaponOption.replaces.push(exclusiveOption.name);
+          }
         }
       }
     }
-
-    weaponOptions.push(weaponOption);
   }
 
-  if (inSEG) {
-    // if in seg everything should be mutually exclusive
-    weaponOptions[weaponOptions.length - 1].max = groupCount;
+  return Array.from(weaponOptions.values());
+}
+
+// weapon options in selectionEntryGroups are inherently mutually exclusive
+function parseWeaponOptionsFromSelectionEntryGroup(root: Element): WeaponOption[] {
+  const groupName = root.getAttribute('name');
+  if (!groupName) return [];
+
+  const weaponOptions: WeaponOption[] = [];
+
+  const weaponsRoot = findChildByTagName(root, 'selectionEntries');
+  if (!weaponsRoot) return weaponOptions;
+
+  const weaponEntries = findAllDirectChildrenByTagAndAttr(
+    weaponsRoot,
+    'selectionEntry',
+    'type',
+    'upgrade'
+  );
+
+  // I think segs are only ever max 1 selection. But they do have a constraint at seg level (1 level down) that might be the number of times the selection can be made.
+  // I'd need find an example of a seg with more than 1 selection to be sure. For now we'll assum it's always 1.
+
+  for (const weapon of weaponEntries) {
+    const name = weapon.getAttribute('name');
+    if (!name) continue;
+
+    const weaponOption: WeaponOption = {
+      name: name,
+      group: groupName,
+    };
+
+    weaponOptions.push(weaponOption);
   }
 
   return weaponOptions;
