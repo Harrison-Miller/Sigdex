@@ -19,6 +19,11 @@ export interface Weapon {
   range?: string;
 }
 
+export interface RegimentOption {
+  name: string;
+  max?: number;
+}
+
 export const POSSIBLE_CATEGORIES = [
   'Legends',
   'Hero',
@@ -58,6 +63,8 @@ export interface Unit {
   models?: ModelGroup[];
   companion_units?: string[];
   notReinforcable?: boolean;
+  regiment_options?: RegimentOption[]; // options for the regiment if this is the leader
+  regiment_tags?: string[]; // tags that this unit has like: Moonclan Agitator
 }
 
 export function determineUnitCategory(keywords: string[]): string {
