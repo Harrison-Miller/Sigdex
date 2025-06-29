@@ -102,6 +102,14 @@ export async function loadArmy(armyName: string): Promise<Army> {
     throw new Error(`Failed to load army info from ${armyInfoUrl}`);
   }
 
+  // get the game file
+  const gameInfoUrl = `${GITHUB_BASE_URL}/${GITHUB_REPO}/refs/heads/main/Age%20of%20Sigmar%204.0.gst`;
+  const gameInfo = await fetchXml(gameInfoUrl);
+  if (!gameInfo) {
+    console.error(`Failed to load game file from ${gameInfoUrl}`);
+    throw new Error(`Failed to load game file from ${gameInfoUrl}`);
+  }
+
   // const armiesOfRenown = await listArmiesOfRenown(armyName);
   // if (armiesOfRenown.length > 0) {
   //   for (const aor of armiesOfRenown) {
@@ -116,7 +124,7 @@ export async function loadArmy(armyName: string): Promise<Army> {
   //   }
   // }
 
-  const army = await parseArmy(unitLibrary, armyInfo);
+  const army = await parseArmy(gameInfo, unitLibrary, armyInfo);
   if (!army) {
     console.error(`Failed to parse army from ${armyInfoUrl}`);
     throw new Error(`Failed to parse army from ${armyInfoUrl}`);
@@ -234,7 +242,7 @@ export async function loadUniversalUnits(): Promise<Unit[]> {
   let units: Unit[] = [];
   try {
     // parseArmy expects a library and an army XML, so pass gstXml for both
-    const army = await parseArmy(gstXml, gstXml);
+    const army = await parseArmy(gstXml, gstXml, gstXml);
     units = army.units || [];
   } catch (e) {
     console.error('Failed to parse universal units:', e);

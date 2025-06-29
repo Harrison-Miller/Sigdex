@@ -1,4 +1,5 @@
-import { findAllByTagAndAllAttrs, findFirstByTagAndAllAttrs } from './utils';
+import type { RegimentOption } from '../common/UnitData';
+import { findAllByTagAndAllAttrs, findFirstByTagAndAllAttrs, findFirstByTagAndAttr } from './utils';
 
 // parseSubHeroRegimentOptions returns a list of subhero regiment options tags by unit
 export function parseSubHeroRegimentOptions(armyInfoRoot: Element): Map<string, string[]> {
@@ -51,11 +52,6 @@ export function parseRegimentTags(armyInfoRoot: Element): Map<string, string[]> 
       categoryIdToName.set(id, name);
     }
   }
-  console.log(
-    `categoryIdToName: ${Array.from(categoryIdToName.entries())
-      .map(([id, name]) => `${id}: ${name}`)
-      .join(', ')}`
-  );
 
   // For each unit, check for modifiers that add a category
   const unitEntries = Array.from(armyInfoRoot.getElementsByTagName('entryLink'));
@@ -79,4 +75,41 @@ export function parseRegimentTags(armyInfoRoot: Element): Map<string, string[]> 
     }
   }
   return tags;
+}
+
+export function parseRegimentOptionCategories(
+  unitName: string,
+  armyInfoRoot: Element,
+  categories: Map<string, string>
+): RegimentOption[] {
+  const options: RegimentOption[] = [];
+
+  const unitEntry = findFirstByTagAndAttr(armyInfoRoot, 'entryLink', 'name', unitName);
+  if (!unitEntry) return options;
+
+  const categoryModifiers = findAllByTagAndAllAttrs(unitEntry, 'modifier', {
+    type: 'add',
+    field: 'category',
+    scope: 'force',
+  });
+
+  // looking for modifiers with this: self.entries.recursive.9c8d-276-b7d2-f1fd
+  for (const modifier of categoryModifiers) {
+    const affects = modifier.getAttribute('affects');
+    if (!affects) continue;
+
+    const categoryId = affects.split('.').pop();
+    if (!categoryId) continue;
+
+    const categoryName = categories.get(categoryId);
+    if (!categoryName) continue;
+
+    const option: RegimentOption = {
+      name: categoryName,
+      max: 0, // default to 0, can be updated later
+    };
+    options.push(option);
+  }
+
+  return options;
 }

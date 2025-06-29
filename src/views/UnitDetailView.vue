@@ -12,7 +12,7 @@ import { isFavorite, saveFavorite, removeFavorite } from '../favorites';
 import { loadArmy, loadLores, loadUniversalUnits } from '../army';
 import { MOCK_UNIT } from '../army';
 import type { Ability } from '../common/Ability';
-import { formatModelGroups, formatRegimentTags, formatRegimentOptions } from '../utils/formatter';
+import { formatModelGroups, formatSubHeroTags, formatRegimentOptions } from '../utils/formatter';
 
 function formatCompanionUnits(unitName: string, companions: string[]): string {
   if (!companions || companions.length === 0) return '';
@@ -195,18 +195,21 @@ function shouldShowUnitDetails(unit: any): boolean {
         >
 
         <div
-          v-if="unit.regiment_tags && unit.regiment_tags.length > 0"
-          class="unit-regiment-tags"
+          v-if="unit.sub_hero_tags && unit.sub_hero_tags.length > 0"
+          class="unit-sub-hero-tags"
           style="margin-top: 0.5em"
         >
-          <span v-html="formatRegimentTags(unit.regiment_tags)"></span>
+          <span v-html="formatSubHeroTags(unit.sub_hero_tags)"></span>
         </div>
         <div
-          v-if="unit.regiment_options && unit.regiment_options.length > 0"
+          v-if="
+            (unit.regiment_options && unit.regiment_options.length > 0) ||
+            (unit.sub_hero_options && unit.sub_hero_options.length > 0)
+          "
           class="unit-regiment-options"
           style="margin-top: 0.5em"
         >
-          <span v-html="formatRegimentOptions(unit.regiment_options)"></span>
+          <span v-html="formatRegimentOptions(unit.sub_hero_options, unit.regiment_options)"></span>
         </div>
       </div>
     </Section>

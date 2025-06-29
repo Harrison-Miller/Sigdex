@@ -63,8 +63,9 @@ export interface Unit {
   models?: ModelGroup[];
   companion_units?: string[];
   notReinforcable?: boolean;
-  regiment_options?: RegimentOption[]; // options for the regiment if this is the leader
-  regiment_tags?: string[]; // tags that this unit has like: Moonclan Agitator
+  sub_hero_options?: RegimentOption[];
+  sub_hero_tags?: string[]; // tags that this unit has like: Moonclan Agitator
+  regiment_options?: RegimentOption[];
 }
 
 export function determineUnitCategory(keywords: string[]): string {
