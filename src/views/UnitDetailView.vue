@@ -12,7 +12,7 @@ import { isFavorite, saveFavorite, removeFavorite } from '../favorites';
 import { loadArmy, loadLores, loadUniversalUnits } from '../army';
 import { MOCK_UNIT } from '../army';
 import type { Ability } from '../common/Ability';
-import { formatModelGroups } from '../utils/formatter';
+import { formatModelGroups, formatRegimentTags, formatRegimentOptions } from '../utils/formatter';
 
 function formatCompanionUnits(unitName: string, companions: string[]): string {
   if (!companions || companions.length === 0) return '';
@@ -193,6 +193,21 @@ function shouldShowUnitDetails(unit: any): boolean {
         <span v-if="unit.unit_size && unit.unit_size > 0" style="margin-left: 1.5em"
           >Unit Size: {{ unit.unit_size }}</span
         >
+
+        <div
+          v-if="unit.regiment_tags && unit.regiment_tags.length > 0"
+          class="unit-regiment-tags"
+          style="margin-top: 0.5em"
+        >
+          <span v-html="formatRegimentTags(unit.regiment_tags)"></span>
+        </div>
+        <div
+          v-if="unit.regiment_options && unit.regiment_options.length > 0"
+          class="unit-regiment-options"
+          style="margin-top: 0.5em"
+        >
+          <span v-html="formatRegimentOptions(unit.regiment_options)"></span>
+        </div>
       </div>
     </Section>
     <Section v-if="unit.keywords && unit.keywords.length">

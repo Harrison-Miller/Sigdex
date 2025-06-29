@@ -1,5 +1,5 @@
 import pluralize, { isPlural } from 'pluralize';
-import type { ModelGroup, Unit, WeaponOption } from '../common/UnitData';
+import type { ModelGroup, Unit, WeaponOption, RegimentOption } from '../common/UnitData';
 
 export function formatText(text: string): string {
   if (!text) return '';
@@ -166,4 +166,23 @@ function formatWeaponName(name: string): string {
   const firstLetter = name.charAt(0).toLowerCase();
   const article = ['a', 'e', 'i', 'o', 'u'].includes(firstLetter) ? 'an' : 'a';
   return `${article} <b>${name}</b>`;
+}
+
+export function formatRegimentTags(tags: string[]): string {
+  if (!tags || tags.length === 0) return '';
+  return `<i>This <b>Hero</b> can join an eligible regiment as a ${tags.map((tag) => `<b>${tag}</b>`).join(', ')}.</i>`;
+}
+
+export function formatRegimentOptions(options: RegimentOption[]): string {
+  if (!options || options.length === 0) return '';
+  const items = options
+    .map((opt) => {
+      if (!opt.max || opt.max === 0) {
+        return `<li><i>any <b>${opt.name}</b></i></li>`;
+      } else {
+        return `<li><i>0-${opt.max} <b>${opt.name}</b></i></li>`;
+      }
+    })
+    .join('');
+  return `<div style='font-weight:600;margin-bottom:0.2em;'>Regiment Options:</div><ul style='margin:0 0 0 1.2em;padding:0;font-size:0.97em;'>${items}</ul>`;
 }

@@ -7,6 +7,8 @@ import { parseWeapons } from './weapons';
 import { parseModelGroups } from './models';
 import { parseCompanionUnits } from './companionunits';
 import { parseReinforceable } from './reinforceable';
+import { parseRegimentTags, parseSubHeroRegimentOptions } from './regimentoptions';
+import type { RegimentOption } from '../common/UnitData';
 
 function isAlwaysNotReinforceable(unitSize: number, keywords: string[]): boolean {
   if (unitSize == 1) {
@@ -22,6 +24,10 @@ function isAlwaysNotReinforceable(unitSize: number, keywords: string[]): boolean
   );
 }
 
+function isHero(keywords: string[]): boolean {
+  return keywords.some((keyword) => keyword.toLowerCase() === 'hero');
+}
+
 // parseUnits parses all units from the given root.
 // It will also filter out unwanted units based on their category or name.
 export function parseUnits(
@@ -31,6 +37,14 @@ export function parseUnits(
 ): Unit[] {
   const units: Unit[] = [];
   const unitElements = findAllByTagAndAttr(root, 'selectionEntry', 'type', 'unit');
+
+  const regimentSubHeroOptions = armyInfoRoot
+    ? parseSubHeroRegimentOptions(armyInfoRoot)
+    : new Map<string, string[]>();
+  const regimentTags = armyInfoRoot ? parseRegimentTags(armyInfoRoot) : new Map<string, string[]>();
+  console.log(
+    `regiment tags found: ${regimentTags.size}: ${Array.from(regimentTags.keys()).join(', ')}`
+  );
 
   for (const element of unitElements) {
     const name = element.getAttribute('name') || '';
@@ -66,6 +80,16 @@ export function parseUnits(
     const companionUnits = armyInfoRoot ? parseCompanionUnits(armyInfoRoot, name) : [];
     const reinforceable = armyInfoRoot ? parseReinforceable(armyInfoRoot, name) : true;
 
+    const regimentOptions: RegimentOption[] | undefined = isHero(keywords) ? [] : undefined;
+    if (isHero(keywords) && regimentSubHeroOptions.has(name)) {
+      regimentSubHeroOptions.get(name)?.forEach((tag) => {
+        regimentOptions?.push({
+          name: tag,
+          max: 1, // Sub-hero options are typically single selections
+        });
+      });
+    }
+
     const unit: Unit = {
       name: element.getAttribute('name') || '',
       stats: stats,
@@ -79,6 +103,8 @@ export function parseUnits(
       models: isDefaultModelGroups(models) ? undefined : models,
       companion_units: companionUnits.length > 0 ? companionUnits : undefined,
       notReinforcable: isAlwaysNotReinforceable(unitSize, keywords) ? undefined : !reinforceable, // leave hero unique undefined so it shows nothing - since that's just a core rule
+      regiment_options: regimentOptions,
+      regiment_tags: regimentTags.get(name) || undefined,
     };
 
     units.push(unit);
