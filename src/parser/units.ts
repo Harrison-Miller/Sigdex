@@ -1,5 +1,11 @@
 import { determineUnitCategory, type Unit, isDefaultModelGroups } from '../common/UnitData';
-import { findAllByTagAndAttr } from './utils';
+import {
+  closestAncestorByTagName,
+  findAllByTagAndAllAttrs,
+  findAllByTagAndAttr,
+  findFirstByTagAndAllAttrs,
+  getChildren,
+} from './utils';
 import { parseAbilities } from './abilities';
 import { parseKeywords } from './keywords';
 import { parseStats } from './stats';
@@ -41,6 +47,7 @@ export function parseUnits(
   pointsMap: Map<string, number>,
   categories: Map<string, string> = new Map<string, string>()
 ): Unit[] {
+  const errorConditions: ErrorCondition[] = [];
   if (armyInfoRoot) {
     const unitCategories = parseUnitsAsCategories(armyInfoRoot);
     for (const [id, name] of unitCategories) {
@@ -48,6 +55,9 @@ export function parseUnits(
         categories.set(id, name);
       }
     }
+
+    const errors = parseErrors(armyInfoRoot, categories);
+    errorConditions.push(...errors);
   }
 
   const units: Unit[] = [];
@@ -105,7 +115,12 @@ export function parseUnits(
       }
 
       if (armyInfoRoot) {
-        const optionsByCategory = parseRegimentOptionCategories(name, armyInfoRoot, categories);
+        const optionsByCategory = parseRegimentOptionCategories(
+          name,
+          armyInfoRoot,
+          categories,
+          errorConditions
+        );
         // only add options that aren't covered by sub-hero options
         for (const option of optionsByCategory) {
           if (!regimentSubHeroOptions.get(name)?.includes(option.name)) {
@@ -137,4 +152,93 @@ export function parseUnits(
   }
 
   return units;
+}
+
+export interface ErrorCondition {
+  errorCategory: string;
+  max: number;
+  conditionUnitName?: string;
+}
+
+function parseErrors(root: Element, categories: Map<string, string>): ErrorCondition[] {
+  const errors: ErrorCondition[] = [];
+  const errorElements = findAllByTagAndAllAttrs(root, 'modifier', {
+    type: 'add',
+    field: 'error',
+  });
+
+  for (const error of errorElements) {
+    const value = error.getAttribute('value');
+    if (!value) continue;
+
+    let category: string | undefined;
+    for (const name of categories.values()) {
+      if (value.toLowerCase().includes(name.toLowerCase())) {
+        category = name;
+        break;
+      }
+    }
+
+    if (!category) continue; // Skip if no category found
+
+    // get the max value from the condition below the error
+    const condition = findFirstByTagAndAllAttrs(error, 'condition', {
+      type: 'atLeast',
+      field: 'selections',
+      scope: 'force',
+    });
+    if (!condition) continue; // Skip if no condition found
+    const maxValue = condition.getAttribute('value');
+    if (!maxValue) continue; // Skip if no max value found
+
+    // go up to the modifier group level, then conditions
+    const modifierGroup = closestAncestorByTagName(error, 'modifierGroup');
+    if (modifierGroup) {
+      // if the error has a condition, then it only applies for certain leaders
+      // could be one of conditions, conditionGroups or localConditionGroups
+      const children = getChildren(modifierGroup).filter(
+        (child) =>
+          child.tagName.toLowerCase() === 'conditions' ||
+          child.tagName.toLowerCase() === 'conditiongroups' ||
+          child.tagName.toLowerCase() === 'localconditiongroups'
+      );
+
+      for (const child of children) {
+        // look for condition: <condition type="instanceOf" value="1" field="selections" scope="self" childId="80c1-4ede-22b8-b215" shared="true"/>
+        const instanceOfCondition = findAllByTagAndAllAttrs(child, 'condition', {
+          type: 'instanceOf',
+          value: '1',
+          field: 'selections',
+          scope: 'self',
+        });
+
+        for (const condition of instanceOfCondition) {
+          const childId = condition.getAttribute('childId');
+          if (!childId) continue; // Skip if no childId found
+
+          // get condition category by childId
+          const conditionCategory = categories.get(childId);
+          if (!conditionCategory) continue; // Skip if no category found
+
+          // if condition is leader skip, we only care about the unit itself
+          if (conditionCategory.toLowerCase().includes('leader')) continue;
+
+          // add the error condition
+          errors.push({
+            errorCategory: category,
+            max: parseInt(maxValue, 10) - 1, // the condition is to trigger the error at atLeast X so -1 is the real max
+            conditionUnitName: conditionCategory,
+          });
+        }
+      }
+    } else {
+      // this just condition always applies to the unit i.e) 0-1 skyvessel
+      errors.push({
+        errorCategory: category,
+        max: parseInt(maxValue, 10), // the condition is to trigger the error at atLeast X so -1 is the real max
+      });
+    }
+  }
+
+  return errors;
 }

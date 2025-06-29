@@ -10,12 +10,19 @@
 - report error in warscroll
 - back to top button
 
+- formatting todo:
+  - loonboss has a misformatted ability
+
 - reinforceable todo/fixes:
   - loftp demons can be reinforced (they show as not reinforeable).
 
+- data issues
+  - KO regiment options are incorrect/to permissive
+  - squigboss has the wrong melee profiles (copied from fungoid)
+  - skitterstrand shouldn't be reinforceable
+
 - regiment options todos:
-  - parse subhero options - this one is fairly easy.
-  - figure out how to compute the least common denominator for keywords with other regiment options.
-    - need to figure out what we're looking for and gather all possible units
-    - then take the difference of all the sets of keywords to find the keyword for the regiment options
-    - we also need to compute the allowed amount of the regiment option, any amount (any might actually be 0-4/5) vs 0-1 vs 0-x
+  - drekki flynt, should be 0-1 frigate but is any frigate. The 0-1 skyvessel covers this, but indirectly, so we don't parse it correctly.
+  - rabble-rowza should be 0-1 monsters, but is any
+  - trugg says any mollog which is a legends unit, can probably be fixed by filtering legends units from the categories list (might not be the easiest because of the order things happen)
+  - trugg says any dankhold instead of 0-1, this is a subhero though it's a specifically named one not like "moon clan agitator".

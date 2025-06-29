@@ -1,4 +1,5 @@
 import type { RegimentOption } from '../common/UnitData';
+import type { ErrorCondition } from './units';
 import { findAllByTagAndAllAttrs, findFirstByTagAndAllAttrs, findFirstByTagAndAttr } from './utils';
 
 // parseSubHeroRegimentOptions returns a list of subhero regiment options tags by unit
@@ -80,7 +81,8 @@ export function parseRegimentTags(armyInfoRoot: Element): Map<string, string[]> 
 export function parseRegimentOptionCategories(
   unitName: string,
   armyInfoRoot: Element,
-  categories: Map<string, string>
+  categories: Map<string, string>,
+  errorConditions: ErrorCondition[] = []
 ): RegimentOption[] {
   const options: RegimentOption[] = [];
 
@@ -104,9 +106,24 @@ export function parseRegimentOptionCategories(
     const categoryName = categories.get(categoryId);
     if (!categoryName) continue;
 
+    // Check for error conditions
+    let condition: ErrorCondition | undefined;
+    for (const error of errorConditions) {
+      if (error.errorCategory === categoryName) {
+        if (error.conditionUnitName && error.conditionUnitName !== unitName) {
+          continue; // skip if the error condition is for a different unit
+        }
+
+        condition = error; // found a matching error condition, (this could just be the default though)
+        if (error.conditionUnitName && error.conditionUnitName === unitName) {
+          break; // stop checking if we found a specific condition for this unit
+        }
+      }
+    }
+
     const option: RegimentOption = {
       name: categoryName,
-      max: 0, // default to 0, can be updated later
+      max: condition ? condition.max : 0, // use maxValue from error condition if available
     };
     options.push(option);
   }

@@ -186,9 +186,11 @@ export function findChildByTagName(root: Element, tagName: string): Element | nu
 }
 
 // find closest ancestor with tag name
-export function closestByTagName(child: Element, tagName: string): Element | null {
+export function closestAncestorByTagName(child: Element, tagName: string): Element | null {
   let current: Element | null = child;
   while (current) {
+    if (!current.tagName) return null;
+
     if (current.tagName.toLowerCase() === tagName.toLowerCase()) {
       return current;
     }

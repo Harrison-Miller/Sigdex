@@ -1,7 +1,7 @@
 import {
   findFirstByTagAndAttr,
   findAllByTagAndAllAttrs,
-  closestByTagName,
+  closestAncestorByTagName,
   findFirstByTagAndAllAttrs,
 } from './utils';
 
@@ -79,7 +79,7 @@ function parseCompanionByRecursiveModifier(
 
     for (const modifier of reverseModifiers) {
       // get the ancestor unitEntry
-      const ancestor = closestByTagName(modifier, 'entryLink');
+      const ancestor = closestAncestorByTagName(modifier, 'entryLink');
       if (!ancestor) continue;
 
       const name = ancestor.getAttribute('name');
@@ -124,7 +124,7 @@ function parseCompanionUnitsByCondition(root: Element, unitName: string): string
     });
 
     for (const condition of companionConditions) {
-      const modifier = closestByTagName(condition, 'modifier');
+      const modifier = closestAncestorByTagName(condition, 'modifier');
       if (!modifier) continue;
 
       const type = modifier.getAttribute('type');
@@ -134,7 +134,7 @@ function parseCompanionUnitsByCondition(root: Element, unitName: string): string
 
       if (type != 'set' || value != '1') continue;
 
-      const companionUnit = closestByTagName(condition, 'entryLink');
+      const companionUnit = closestAncestorByTagName(condition, 'entryLink');
       if (!companionUnit) continue;
 
       const name = companionUnit.getAttribute('name');
