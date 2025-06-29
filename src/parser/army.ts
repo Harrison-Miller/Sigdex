@@ -6,10 +6,19 @@ import { parsePoints } from './points';
 import { parseUnits } from './units';
 import { parseBattleTraits } from './battletraits';
 import { parseBattleFormations } from './formations';
+import { parseCategories } from './categories';
 
-export function parseArmy(unitLibrary: Element, armyInfo: Element): Army {
+export function parseArmy(gameInfo: Element, unitLibrary: Element, armyInfo: Element): Army {
+  const categories = parseCategories(gameInfo);
+  const armyCategories = parseCategories(armyInfo);
+  for (const [id, name] of armyCategories) {
+    if (!categories.has(id)) {
+      categories.set(id, name);
+    }
+  }
+
   const points = parsePoints(armyInfo);
-  const units = parseUnits(unitLibrary, armyInfo, points);
+  const units = parseUnits(unitLibrary, armyInfo, points, categories);
 
   const artifacts = parseArtifacts(armyInfo);
   const heroicTraits = parseHeroicTraits(armyInfo);

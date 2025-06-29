@@ -7,8 +7,13 @@ import { parseWeapons } from './weapons';
 import { parseModelGroups } from './models';
 import { parseCompanionUnits } from './companionunits';
 import { parseReinforceable } from './reinforceable';
-import { parseRegimentTags, parseSubHeroRegimentOptions } from './regimentoptions';
+import {
+  parseRegimentOptionCategories,
+  parseRegimentTags,
+  parseSubHeroRegimentOptions,
+} from './regimentoptions';
 import type { RegimentOption } from '../common/UnitData';
+import { parseUnitsAsCategories } from './categories';
 
 function isAlwaysNotReinforceable(unitSize: number, keywords: string[]): boolean {
   if (unitSize == 1) {
@@ -33,8 +38,18 @@ function isHero(keywords: string[]): boolean {
 export function parseUnits(
   root: Element,
   armyInfoRoot: Element | null,
-  pointsMap: Map<string, number>
+  pointsMap: Map<string, number>,
+  categories: Map<string, string> = new Map<string, string>()
 ): Unit[] {
+  if (armyInfoRoot) {
+    const unitCategories = parseUnitsAsCategories(armyInfoRoot);
+    for (const [id, name] of unitCategories) {
+      if (!categories.has(id)) {
+        categories.set(id, name);
+      }
+    }
+  }
+
   const units: Unit[] = [];
   const unitElements = findAllByTagAndAttr(root, 'selectionEntry', 'type', 'unit');
 
@@ -42,9 +57,6 @@ export function parseUnits(
     ? parseSubHeroRegimentOptions(armyInfoRoot)
     : new Map<string, string[]>();
   const regimentTags = armyInfoRoot ? parseRegimentTags(armyInfoRoot) : new Map<string, string[]>();
-  console.log(
-    `regiment tags found: ${regimentTags.size}: ${Array.from(regimentTags.keys()).join(', ')}`
-  );
 
   for (const element of unitElements) {
     const name = element.getAttribute('name') || '';
@@ -80,14 +92,27 @@ export function parseUnits(
     const companionUnits = armyInfoRoot ? parseCompanionUnits(armyInfoRoot, name) : [];
     const reinforceable = armyInfoRoot ? parseReinforceable(armyInfoRoot, name) : true;
 
+    const suberHeroOptions: RegimentOption[] | undefined = isHero(keywords) ? [] : undefined;
     const regimentOptions: RegimentOption[] | undefined = isHero(keywords) ? [] : undefined;
-    if (isHero(keywords) && regimentSubHeroOptions.has(name)) {
-      regimentSubHeroOptions.get(name)?.forEach((tag) => {
-        regimentOptions?.push({
-          name: tag,
-          max: 1, // Sub-hero options are typically single selections
+    if (isHero(keywords)) {
+      if (regimentSubHeroOptions.has(name)) {
+        regimentSubHeroOptions.get(name)?.forEach((tag) => {
+          suberHeroOptions?.push({
+            name: tag,
+            max: 1, // Sub-hero options are typically single selections
+          });
         });
-      });
+      }
+
+      if (armyInfoRoot) {
+        const optionsByCategory = parseRegimentOptionCategories(name, armyInfoRoot, categories);
+        // only add options that aren't covered by sub-hero options
+        for (const option of optionsByCategory) {
+          if (!regimentSubHeroOptions.get(name)?.includes(option.name)) {
+            regimentOptions?.push(option);
+          }
+        }
+      }
     }
 
     const unit: Unit = {
@@ -103,8 +128,9 @@ export function parseUnits(
       models: isDefaultModelGroups(models) ? undefined : models,
       companion_units: companionUnits.length > 0 ? companionUnits : undefined,
       notReinforcable: isAlwaysNotReinforceable(unitSize, keywords) ? undefined : !reinforceable, // leave hero unique undefined so it shows nothing - since that's just a core rule
+      sub_hero_options: suberHeroOptions,
+      sub_hero_tags: regimentTags.get(name) || undefined,
       regiment_options: regimentOptions,
-      regiment_tags: regimentTags.get(name) || undefined,
     };
 
     units.push(unit);

@@ -125,6 +125,17 @@ export function getDirectChildByTagName(root: Element, tagName: string): Element
   return null;
 }
 
+export function getAllDirectChildrenByTagName(root: Element, tagName: string): Element[] {
+  const children = getChildren(root);
+  const result: Element[] = [];
+  for (const child of children) {
+    if (child.tagName.toLowerCase() === tagName.toLowerCase()) {
+      result.push(child);
+    }
+  }
+  return result;
+}
+
 export function findAllDirectChildrenByTagAndAttr(
   root: Element,
   tagName: string,

@@ -168,21 +168,33 @@ function formatWeaponName(name: string): string {
   return `${article} <b>${name}</b>`;
 }
 
-export function formatRegimentTags(tags: string[]): string {
+export function formatSubHeroTags(tags: string[]): string {
   if (!tags || tags.length === 0) return '';
   return `<i>This <b>Hero</b> can join an eligible regiment as a ${tags.map((tag) => `<b>${tag}</b>`).join(', ')}.</i>`;
 }
 
-export function formatRegimentOptions(options: RegimentOption[]): string {
-  if (!options || options.length === 0) return '';
-  const items = options
-    .map((opt) => {
-      if (!opt.max || opt.max === 0) {
-        return `<li><i>any <b>${opt.name}</b></i></li>`;
-      } else {
-        return `<li><i>0-${opt.max} <b>${opt.name}</b></i></li>`;
-      }
-    })
-    .join('');
-  return `<div style='font-weight:600;margin-bottom:0.2em;'>Regiment Options:</div><ul style='margin:0 0 0 1.2em;padding:0;font-size:0.97em;'>${items}</ul>`;
+export function formatRegimentOptions(
+  subHeroOptions: RegimentOption[],
+  options: RegimentOption[]
+): string {
+  const allOptions = [...(subHeroOptions || []), ...(options || [])];
+
+  const formatItems = (opts: RegimentOption[]) =>
+    opts
+      .map((opt) => {
+        if (!opt.max || opt.max === 0) {
+          return `<li><i>any <b>${opt.name}</b></i></li>`;
+        } else {
+          return `<li><i>0-${opt.max} <b>${opt.name}</b></i></li>`;
+        }
+      })
+      .join('');
+
+  let html = '';
+  if (allOptions.length > 0) {
+    html += `<div style='font-weight:600;margin-bottom:0.2em;'>Regiment Options:</div>`;
+    html += `<ul style='margin:0 0 0 1.2em;padding:0;font-size:0.97em;'>${formatItems(allOptions)}</ul>`;
+  }
+
+  return html;
 }
