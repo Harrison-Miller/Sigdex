@@ -18,6 +18,7 @@ import {
   faStop,
   faEllipsisV,
   faDiamond,
+  faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Add icons to the library
@@ -33,7 +34,8 @@ library.add(
   faArrowLeft,
   faStop,
   faEllipsisV,
-  faDiamond
+  faDiamond,
+  faTrash
 );
 
 const app = createApp(App);
