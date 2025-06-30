@@ -6,6 +6,7 @@ import type { Lore } from '../common/ManifestationData';
 import ListButton from '../components/ListButton.vue';
 import BackButton from '../components/BackButton.vue';
 import ArmyRules from '../components/ArmyRules.vue';
+import TwoTab from '../components/TwoTab.vue';
 
 const props = defineProps<{ lore: string }>();
 const loreName = props.lore;
@@ -14,7 +15,7 @@ const units = ref<Unit[]>([]);
 const spells = ref<any[]>([]);
 const loreData = ref<Lore | null>(null);
 const loreNotFound = ref(false);
-const activeTab = ref<'manifestation' | 'lore'>('manifestation');
+const leftActive = ref(true);
 
 onMounted(async () => {
   try {
@@ -60,84 +61,57 @@ onMounted(async () => {
         {{ loreData.points }} pts
       </span>
     </h1>
-    <div class="tab-bar">
-      <button
-        :class="{ active: activeTab === 'manifestation' }"
-        @click="activeTab = 'manifestation'"
-      >
-        Manifestations
-      </button>
-      <button :class="{ active: activeTab === 'lore' }" @click="activeTab = 'lore'">Lore</button>
-    </div>
-    <div v-if="activeTab === 'manifestation'">
-      <ul>
-        <li v-for="u in units" :key="u.name">
-          <router-link
-            :to="{ name: 'UnitDetail', params: { army: 'UniversalManifestations', unit: u.name } }"
-            custom
-            v-slot="{ navigate, href }"
-          >
-            <ListButton :label="u.name" :points="u.points" @click="navigate" :href="href" />
-          </router-link>
-        </li>
-      </ul>
-      <div v-if="loreNotFound" class="error">Lore not found.</div>
-    </div>
-    <div v-else-if="activeTab === 'lore'">
-      <ArmyRules
-        :army="{
-          units: [],
-          artifacts: new Map(),
-          heroicTraits: new Map(),
-          spellLores: [],
-          prayerLores: [],
-          formations: new Map(),
-          battleTraits: [],
-          manifestationLores: loreData ? [{ name: loreName, points: loreData.points ?? 0 }] : [],
-          toJSON: function () {
-            return {
-              units: this.units,
-              artifacts: Array.from(this.artifacts.entries()),
-              heroicTraits: Array.from(this.heroicTraits.entries()),
-              manifestationLores: this.manifestationLores,
-              spellLores: this.spellLores,
-              prayerLores: this.prayerLores,
-              battleTraits: this.battleTraits,
-              formations: Array.from(this.formations.entries()),
-            };
-          },
-        }"
-      />
-    </div>
+    <TwoTab :left-label="'Manifestations'" :right-label="'Lore'" v-model:leftActive="leftActive">
+      <template #left>
+        <ul>
+          <li v-for="u in units" :key="u.name">
+            <router-link
+              :to="{
+                name: 'UnitDetail',
+                params: { army: 'UniversalManifestations', unit: u.name },
+              }"
+              custom
+              v-slot="{ navigate, href }"
+            >
+              <ListButton :label="u.name" :points="u.points" @click="navigate" :href="href" />
+            </router-link>
+          </li>
+        </ul>
+        <div v-if="loreNotFound" class="error">Lore not found.</div>
+      </template>
+      <template #right>
+        <ArmyRules
+          :army="{
+            units: [],
+            artifacts: new Map(),
+            heroicTraits: new Map(),
+            spellLores: [],
+            prayerLores: [],
+            formations: new Map(),
+            battleTraits: [],
+            manifestationLores: loreData ? [{ name: loreName, points: loreData.points ?? 0 }] : [],
+            toJSON: function () {
+              return {
+                units: this.units,
+                artifacts: Array.from(this.artifacts.entries()),
+                heroicTraits: Array.from(this.heroicTraits.entries()),
+                manifestationLores: this.manifestationLores,
+                spellLores: this.spellLores,
+                prayerLores: this.prayerLores,
+                battleTraits: this.battleTraits,
+                formations: Array.from(this.formations.entries()),
+              };
+            },
+          }"
+        />
+      </template>
+    </TwoTab>
   </div>
 </template>
 <style src="./list-shared.css" scoped></style>
 <style scoped>
 .unit-list-back {
   margin-bottom: 0.5rem;
-}
-.tab-bar {
-  display: flex;
-  gap: 0;
-  margin-bottom: 1.2rem;
-  width: 100%;
-}
-.tab-bar button {
-  flex: 1 1 0;
-  padding: 0.5em 1.2em;
-  border: none;
-  background: #eee;
-  color: #333;
-  font-weight: 600;
-  border-radius: 6px 6px 0 0;
-  cursor: pointer;
-  transition: background 0.2s;
-  text-align: center;
-}
-.tab-bar button.active {
-  background: #fff;
-  border-bottom: 2px solid #222;
-  color: #222;
 }
 .points-badge {
   display: inline-block;
@@ -150,5 +124,10 @@ onMounted(async () => {
   margin-left: 0.7em;
   vertical-align: middle;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.error {
+  color: #b91c1c;
+  margin-top: 1em;
+  font-weight: 500;
 }
 </style>
