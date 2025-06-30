@@ -127,7 +127,9 @@ export function filterUnitsByRegimentOptions(units: Unit[], options: RegimentOpt
     return optionNames.some((optName) => {
       if (optName.includes(' ')) {
         const parts = optName.split(/\s+/);
-        return parts.every((part) => keywords.includes(part));
+        if (parts.every((part) => keywords.includes(part))) {
+          return true;
+        }
       }
       return (
         name.includes(optName) ||

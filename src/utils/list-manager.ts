@@ -1,20 +1,53 @@
 import type { Army } from '../common/ArmyData';
 import type { List } from '../common/ListData';
+import { serializeListUnit, deserializeListUnit } from '../common/ArrayData';
+import type { ListUnitWeaponOption } from '../common/ListData';
+import type { WeaponOption } from '../common/UnitData';
+import type { ListUnit } from '../common/ListData';
 
 const STORAGE_KEY = 'sigdex_lists';
 
 export function createList(list: List): void {
   const lists = getAllLists();
   lists.push(list);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(lists));
+  // Always serialize all lists before saving
+  const serializeRegiment = (reg: any) => ({
+    leader: serializeListUnit(reg.leader),
+    units: reg.units.map(serializeListUnit),
+  });
+  const serializeList = (l: List) => ({
+    ...l,
+    regiments: l.regiments.map(serializeRegiment),
+    auxiallary_units: l.auxiallary_units?.map(serializeListUnit),
+  });
+  const serializedLists = lists.map(serializeList);
+  // eslint-disable-next-line no-console
+  console.log('createList: saving lists', JSON.stringify(serializedLists, null, 2));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(serializedLists));
 }
 
 export function getAllLists(): List[] {
   const raw = localStorage.getItem(STORAGE_KEY);
+  // eslint-disable-next-line no-console
+  console.log('getAllLists: raw from storage', raw);
   if (!raw) return [];
   try {
-    return JSON.parse(raw) as List[];
-  } catch {
+    const arr = JSON.parse(raw) as any[];
+    // Debug: log what is being loaded
+    // eslint-disable-next-line no-console
+    console.log('getAllLists: parsed array', arr);
+    // Deserialize weapon_options for each unit
+    return arr.map((list) => ({
+      ...list,
+      regiments: list.regiments.map((reg: any) => ({
+        leader: deserializeListUnit(reg.leader),
+        units: reg.units.map(deserializeListUnit),
+      })),
+      auxiallary_units: list.auxiallary_units?.map(deserializeListUnit),
+    }));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('getAllLists: failed to parse', e);
     return [];
   }
 }
@@ -27,7 +60,18 @@ export function saveList(list: List): void {
   } else {
     lists.push(list);
   }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(lists));
+  // Always serialize all lists before saving
+  const serializeRegiment = (reg: any) => ({
+    leader: serializeListUnit(reg.leader),
+    units: reg.units.map(serializeListUnit),
+  });
+  const serializeList = (l: List) => ({
+    ...l,
+    regiments: l.regiments.map(serializeRegiment),
+    auxiallary_units: l.auxiallary_units?.map(serializeListUnit),
+  });
+  const serializedLists = lists.map(serializeList);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(serializedLists));
 }
 
 export function deleteList(name: string): void {
@@ -233,5 +277,141 @@ export function calculateViolations(
       }
     }
   }
+  // 9. Weapon option violations
+  for (const regiment of list.regiments) {
+    if (regiment.leader) {
+      const leaderViolations = calculateWeaponOptionViolations(regiment.leader, army);
+      violations.push(...leaderViolations);
+    }
+    for (const unit of regiment.units) {
+      const unitViolations = calculateWeaponOptionViolations(unit, army);
+      violations.push(...unitViolations);
+    }
+  }
+  // 10. Every regiment must have a leader assigned
+  for (const [i, regiment] of list.regiments.entries()) {
+    if (!regiment.leader || !regiment.leader.name) {
+      violations.push(`Regiment ${i + 1} does not have a leader assigned.`);
+    }
+  }
+  // 11. All units must be present in ArmyData
+  for (const [i, regiment] of list.regiments.entries()) {
+    if (regiment.leader && regiment.leader.name) {
+      const found = army.units.find((u) => u.name === regiment.leader.name);
+      if (!found) {
+        violations.push(
+          `Regiment ${i + 1} leader '${regiment.leader.name}' is not present in ArmyData.`
+        );
+      }
+    }
+    for (const unit of regiment.units) {
+      if (unit && unit.name) {
+        const found = army.units.find((u) => u.name === unit.name);
+        if (!found) {
+          violations.push(`Unit '${unit.name}' in regiment ${i + 1} is not present in ArmyData.`);
+        }
+      }
+    }
+  }
   return violations;
+}
+
+/**
+ * Checks for weapon option violations for a ListUnit.
+ * 1. If there is a weapon option that doesn't exist for the given model group
+ * 2. If the weapon option has a count higher than the max (the max is doubled when reinforced).
+ * 3. If there are multiple selections for a grouped weapon option.
+ */
+export function calculateWeaponOptionViolations(unit: ListUnit, army: Army): string[] {
+  const violations: string[] = [];
+  if (!unit.weapon_options || !(unit.weapon_options instanceof Map)) return violations;
+  const armyUnit = army.units.find((u) => u.name === unit.name);
+  if (!armyUnit || !armyUnit.models) return violations;
+  const reinforced = !!unit.reinforced;
+  for (const [groupName, options] of unit.weapon_options.entries()) {
+    const modelGroup = (armyUnit.models || []).find((g) => g.name === groupName);
+    if (!modelGroup) {
+      violations.push(`Model group '${groupName}' does not exist for unit '${unit.name}'.`);
+      continue;
+    }
+    const groupWeapons = modelGroup.weapons || [];
+    // 1. Check for non-existent weapon options
+    for (const opt of options as { name: string; count?: number }[]) {
+      const weapon = groupWeapons.find((w) => w.name === opt.name);
+      if (!weapon) {
+        violations.push(
+          `Weapon option '${opt.name}' does not exist in model group '${groupName}' for unit '${unit.name}'.`
+        );
+        continue;
+      }
+      // 2. Check for count > max (for optional weapons)
+      if (weapon.max && !weapon.group && typeof opt.count === 'number') {
+        const effectiveMax = reinforced ? weapon.max * 2 : weapon.max;
+        if (opt.count > effectiveMax) {
+          violations.push(
+            `Weapon option '${opt.name}' in group '${groupName}' exceeds max (${opt.count} > ${effectiveMax}) for unit '${unit.name}'.`
+          );
+        }
+      }
+    }
+    // 3. Check for multiple selections in grouped weapons
+    // For each group, only one selection allowed, and at least one must be selected
+    const groupMap: Record<string, string[]> = {};
+    for (const w of groupWeapons) {
+      if (w.group) {
+        if (!groupMap[w.group]) groupMap[w.group] = [];
+        // Find if this weapon is selected in options
+        if (options.some((opt) => opt.name === w.name && typeof opt.count !== 'number')) {
+          groupMap[w.group].push(w.name);
+        }
+      }
+    }
+    for (const groupKey in groupMap) {
+      if (groupMap[groupKey].length > 1) {
+        violations.push(
+          `Multiple selections (${groupMap[groupKey].join(', ')}) for weapon group '${groupKey}' in model group '${groupName}' for unit '${unit.name}'.`
+        );
+      }
+      // New rule: must have at least one selection for grouped weapon options
+      if (groupMap[groupKey].length === 0) {
+        violations.push(
+          `No selection for weapon group '${groupKey}' in model group '${groupName}' for unit '${unit.name}'.`
+        );
+      }
+    }
+  }
+  return violations;
+}
+
+export function setupDefaultWeaponOptions(
+  unitName: string,
+  army: Army
+): Map<string, ListUnitWeaponOption[]> {
+  const result = new Map<string, ListUnitWeaponOption[]>();
+  const armyUnit = army.units.find((u) => u.name === unitName);
+  if (!armyUnit || !armyUnit.models) return result;
+  for (const group of armyUnit.models) {
+    const arr: ListUnitWeaponOption[] = [];
+    // Optional weapons (with max)
+    for (const w of group.weapons || []) {
+      if (w.max && !w.group) {
+        arr.push({ name: w.name, count: w.max });
+      }
+    }
+    // Grouped weapons: select first in each group
+    const groupMap: Record<string, WeaponOption[]> = {};
+    for (const w of group.weapons || []) {
+      if (w.group) {
+        if (!groupMap[w.group]) groupMap[w.group] = [];
+        groupMap[w.group].push(w);
+      }
+    }
+    for (const groupKey in groupMap) {
+      if (groupMap[groupKey].length > 0) {
+        arr.push({ name: groupMap[groupKey][0].name });
+      }
+    }
+    if (arr.length > 0) result.set(group.name, arr);
+  }
+  return result;
 }

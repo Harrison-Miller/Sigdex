@@ -27,7 +27,14 @@ export interface ListUnit {
 
   reinforced?: boolean;
 
-  // TODO: weapon options, other enhancements
+  weapon_options?: Map<string, ListUnitWeaponOption[]>;
+
+  // TODO: other enhancements
+}
+
+export interface ListUnitWeaponOption {
+  name: string;
+  count?: number;
 }
 
 export const POINTS_CAP = 2000;

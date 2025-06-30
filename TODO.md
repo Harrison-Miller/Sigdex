@@ -32,9 +32,6 @@
 - parse and show other enchancement types like s2d banners or monster traits.
 
 - list builder todos:
-  - calculate violations for regiment options
-  - weapon options hadnling in unit settings
-  - heroic traits, artifacts handling in unit settings
   - handle other possible enhancements (we need to parse them first, also could be tricky becasue banners can be on units).
   - auxillary units
   - disbale/remove already selected 0-1 unit from the unit picker.
@@ -43,3 +40,4 @@
   - ExportView and copy to clipboard
   - armies of renown - requires parsing armies of renow
   - list importing
+  - probably don't select a manifestation lore by default if there isn't an army one
