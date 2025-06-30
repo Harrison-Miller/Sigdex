@@ -29,6 +29,11 @@ function onEllipsisClick(e: Event) {
 // Remove (Scourge of Ghyran) from label and detect if present
 const isSoG = computed(() => /\(Scourge of Ghyran\)/.test(props.label));
 const displayLabel = computed(() => props.label.replace(/\s*\(Scourge of Ghyran\)/, ''));
+// Double the displayed points if showReinforced is true, as requested.
+const displayPoints = computed(() => {
+  if (typeof props.points !== 'number') return undefined;
+  return props.showReinforced ? props.points * 2 : props.points;
+});
 </script>
 <template>
   <button class="list-button" @click="$emit('click')">
@@ -43,8 +48,8 @@ const displayLabel = computed(() => props.label.replace(/\s*\(Scourge of Ghyran\
           props.showReinforced
         "
       >
-        <span v-if="typeof props.points === 'number' && props.points > 0" class="points-badge">
-          {{ props.points }} pts
+        <span v-if="typeof displayPoints === 'number' && displayPoints > 0" class="points-badge">
+          {{ displayPoints }} pts
         </span>
         <span v-if="isSoG" class="sog-badge">SoG</span>
         <span v-if="props.showGeneral" class="general-badge">General</span>
