@@ -180,5 +180,58 @@ export function calculateViolations(
   if (warmasterUnits.length > 0 && !warmasterUnits.some((u) => u.isGeneral)) {
     violations.push('At least one Warmaster must be marked as general.');
   }
+  // 5. No more than 4 units in a regiment if the leader is the general, otherwise max 3
+  for (const regiment of list.regiments) {
+    const isLeaderGeneral = !!regiment.leader && !!regiment.leader.general;
+    const maxUnits = isLeaderGeneral ? 4 : 3;
+    if (regiment.units.length > maxUnits) {
+      violations.push(
+        `No more than ${maxUnits} units in a regiment${isLeaderGeneral ? ' (if the leader is the general)' : ''}.`
+      );
+    }
+  }
+  // 6. Regiment leader must have the hero category
+  for (const regiment of list.regiments) {
+    if (regiment.leader && regiment.leader.name) {
+      const armyUnit = army.units.find((u) => u.name === regiment.leader.name);
+      if (!armyUnit || !armyUnit.keywords.some((k) => k.toLowerCase() === 'hero')) {
+        violations.push('Regiment leader must have the Hero category.');
+      }
+    }
+  }
+  // 7. No duplicates of the same unit with the unique keyword in the list
+  const uniqueUnits: Record<string, number> = {};
+  for (const regiment of list.regiments) {
+    // Check leader
+    if (regiment.leader && regiment.leader.name) {
+      const armyUnit = army.units.find((u) => u.name === regiment.leader.name);
+      if (armyUnit && armyUnit.keywords.some((k) => k.toLowerCase() === 'unique')) {
+        uniqueUnits[regiment.leader.name] = (uniqueUnits[regiment.leader.name] || 0) + 1;
+      }
+    }
+    // Check units
+    for (const unit of regiment.units) {
+      const armyUnit = army.units.find((u) => u.name === unit.name);
+      if (armyUnit && armyUnit.keywords.some((k) => k.toLowerCase() === 'unique')) {
+        uniqueUnits[unit.name] = (uniqueUnits[unit.name] || 0) + 1;
+      }
+    }
+  }
+  for (const [name, count] of Object.entries(uniqueUnits)) {
+    if (count > 1) {
+      violations.push(`Duplicate unique unit: ${name}`);
+    }
+  }
+  // 8. Only units with notReinforcable=false and unit_size > 1 can be reinforced
+  for (const regiment of list.regiments) {
+    for (const unit of regiment.units) {
+      if (unit.reinforced) {
+        const armyUnit = army.units.find((u) => u.name === unit.name);
+        if (!armyUnit || armyUnit.notReinforcable || (armyUnit.unit_size ?? 1) <= 1) {
+          violations.push(`Unit ${unit.name} cannot be reinforced.`);
+        }
+      }
+    }
+  }
   return violations;
 }
