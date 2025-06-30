@@ -5,9 +5,10 @@ import { getAllLists, saveList, deleteList, calculatePoints } from '../utils/lis
 import BackButton from '../components/BackButton.vue';
 import SettingsButton from '../components/SettingsButton.vue';
 import type { List } from '../common/ListData';
-import ListRegimentComponent from '../components/ListRegimentComponent.vue';
+import ListRegiment from '../components/ListRegiment.vue';
 import { loadArmy, loadLores } from '../army';
 import type { Army } from '../common/ArmyData';
+import ListSettingsModal from '../components/ListSettingsModal.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -44,12 +45,6 @@ const pointsTotal = computed(() => {
   return calculatePoints(list.value, armyData.value, lores.value ?? undefined);
 });
 
-const isRenameUnique = computed(() => {
-  const trimmed = renameValue.value.trim();
-  if (!trimmed) return false;
-  return !lists.value.some((l) => l.name === trimmed && l.name !== list.value?.name);
-});
-
 function addRegiment() {
   if (!list.value) return;
   list.value.regiments.push({ leader: { name: '' }, units: [] });
@@ -64,23 +59,22 @@ function openSettings() {
 function closeSettings() {
   showSettingsModal.value = false;
 }
-function doRename() {
-  const trimmed = renameValue.value.trim();
-  if (!trimmed || !isRenameUnique.value || !list.value) return;
+function handleRename(newName: string) {
+  if (!list.value) return;
   const oldName = list.value.name;
-  if (oldName === trimmed) {
+  if (oldName === newName) {
     closeSettings();
     return;
   }
   // Remove the old list first
   deleteList(oldName);
-  list.value.name = trimmed;
+  list.value.name = newName;
   saveList(list.value);
   lists.value = getAllLists();
   closeSettings();
-  router.replace({ name: 'ListBuilder', params: { name: trimmed } });
+  router.replace({ name: 'ListBuilder', params: { name: newName } });
 }
-function doDelete() {
+function handleDelete() {
   if (!list.value) return;
   deleteList(list.value.name);
   closeSettings();
@@ -113,11 +107,12 @@ function handleDeleteUnit(regimentIdx: number, unitIdx: number | string) {
     <div v-else class="not-found">List not found.</div>
     <div v-if="list">
       <div v-for="(regiment, idx) in list.regiments" :key="idx" class="regiment-block">
-        <ListRegimentComponent
+        <ListRegiment
           :regiment="regiment"
           :title="`Regiment ${idx + 1}`"
           :army="armyData"
           :armyName="list.faction"
+          :settingsOpen="showSettingsModal"
           @delete="() => deleteRegiment(idx)"
           @delete-unit="(unitIdx) => handleDeleteUnit(idx, unitIdx)"
         />
@@ -126,26 +121,14 @@ function handleDeleteUnit(regimentIdx: number, unitIdx: number | string) {
         Add regiment
       </button>
     </div>
-    <div v-if="showSettingsModal" class="modal-overlay" @click.self="closeSettings">
-      <div class="modal settings-modal">
-        <h3>List Settings</h3>
-        <label>
-          Rename List
-          <input v-model="renameValue" type="text" placeholder="New list name" />
-        </label>
-        <div v-if="renameValue && !isRenameUnique" class="error-message">
-          A list with this name already exists.
-        </div>
-        <div class="modal-actions">
-          <button @click="closeSettings">Cancel</button>
-          <button class="save-btn" @click="doRename" :disabled="!renameValue || !isRenameUnique">
-            Rename
-          </button>
-        </div>
-        <hr />
-        <button class="delete-btn" @click="doDelete">Delete List</button>
-      </div>
-    </div>
+    <ListSettingsModal
+      v-model="showSettingsModal"
+      :initialName="list?.name || ''"
+      :existingNames="lists.map((l) => l.name)"
+      @rename="handleRename"
+      @delete="handleDelete"
+      @close="closeSettings"
+    />
     <div class="points-fab" v-if="list && armyData">
       <span :class="{ 'over-cap': pointsTotal > POINTS_CAP }">
         {{ pointsTotal }} / {{ POINTS_CAP }} pts
@@ -206,87 +189,6 @@ function handleDeleteUnit(regimentIdx: number, unitIdx: number | string) {
 }
 .add-regiment-btn:hover {
   background: #c00;
-}
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1100;
-}
-.settings-modal {
-  min-width: 320px;
-  max-width: 95vw;
-}
-.modal {
-  background: #fff;
-  color: #222;
-  border-radius: 12px;
-  padding: 2em 1.5em 1.5em 1.5em;
-  min-width: 320px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
-  display: flex;
-  flex-direction: column;
-  gap: 1.2em;
-}
-.settings-modal label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3em;
-  font-weight: 500;
-  margin-bottom: 1em;
-}
-.settings-modal input[type='text'] {
-  width: 100%;
-  font-size: 1.1em;
-  padding: 0.7em 0.9em;
-  border-radius: 6px;
-  border: 1px solid #bbb;
-  margin-top: 0.3em;
-  box-sizing: border-box;
-}
-.save-btn {
-  background: #1976d2;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5em 1.2em;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.save-btn:disabled {
-  background: #ccc;
-  color: #888;
-  cursor: not-allowed;
-}
-.save-btn:not(:disabled):hover {
-  background: #1565c0;
-}
-.delete-btn {
-  background: #a00;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5em 1.2em;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 1.2em;
-  width: 100%;
-  transition: background 0.2s;
-}
-.delete-btn:hover {
-  background: #c00;
-}
-.error-message {
-  color: #d00;
-  font-size: 0.9em;
-  margin-top: 0.5em;
 }
 .points-fab {
   position: fixed;

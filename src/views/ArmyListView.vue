@@ -15,11 +15,12 @@ import FavoriteToggle from '../components/FavoriteToggle.vue';
 import SettingsButton from '../components/SettingsButton.vue';
 import { SIGDEX_VERSION } from '../version';
 import Section from '../components/Section.vue';
-import ListListComponent from '../components/ListListComponent.vue';
+import ListList from '../components/ListList.vue';
+import TwoTab from '../components/TwoTab.vue';
 const router = useRouter();
 const armyFavorites = ref<string[]>([]);
 const showOnlyFavorites = ref(getFavoriteToggleState('army'));
-const activeTab = ref<'browse' | 'lists'>('browse');
+const leftActive = ref(true);
 
 onMounted(() => {
   armyFavorites.value = getFavorites('army');
@@ -82,54 +83,50 @@ watch(armyFavorites, (favs) => {
       <SettingsButton class="settings-btn" :size="36" @click="goToSettings" />
       <h1>Select an Army</h1>
     </div>
-    <div class="tab-bar">
-      <button :class="{ active: activeTab === 'browse' }" @click="activeTab = 'browse'">
-        Browse
-      </button>
-      <button :class="{ active: activeTab === 'lists' }" @click="activeTab = 'lists'">Lists</button>
-    </div>
-    <div v-if="activeTab === 'browse'">
-      <div class="filters-bar">
-        <FavoriteToggle
-          :model-value="showOnlyFavorites"
-          @update:modelValue="updateShowOnlyFavoritesState"
-          :disabled="armyFavorites.length === 0"
-        />
-      </div>
-      <Section v-if="filteredManifestationLores && filteredManifestationLores.length > 0">
-        <template #title>Universal Manifestations</template>
-        <ul>
-          <li v-for="lore in filteredManifestationLores" :key="lore">
-            <ListButton
-              :label="lore"
-              :favorite="armyFavorites.includes(lore)"
-              :showFavoriteToggle="true"
-              @click="() => $router.push({ name: 'ManifestationLore', params: { lore } })"
-              @toggle-favorite="(fav) => toggleArmyFavorite(lore, fav)"
-            />
-          </li>
-        </ul>
-      </Section>
-      <div v-for="alliance in filteredArmiesByAlliance" :key="alliance.name">
-        <Section v-if="alliance && alliance.armies.length > 0">
-          <template #title>{{ alliance.name }}</template>
+    <TwoTab :left-label="'Browse'" :right-label="'Lists'" v-model:leftActive="leftActive">
+      <template #left>
+        <div class="filters-bar">
+          <FavoriteToggle
+            :model-value="showOnlyFavorites"
+            @update:modelValue="updateShowOnlyFavoritesState"
+            :disabled="armyFavorites.length === 0"
+          />
+        </div>
+        <Section v-if="filteredManifestationLores && filteredManifestationLores.length > 0">
+          <template #title>Universal Manifestations</template>
           <ul>
-            <li v-for="army in alliance.armies" :key="army.name">
+            <li v-for="lore in filteredManifestationLores" :key="lore">
               <ListButton
-                :label="army.name"
-                :favorite="armyFavorites.includes(army.name)"
+                :label="lore"
+                :favorite="armyFavorites.includes(lore)"
                 :showFavoriteToggle="true"
-                @click="selectArmy(army.name)"
-                @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
+                @click="() => $router.push({ name: 'ManifestationLore', params: { lore } })"
+                @toggle-favorite="(fav) => toggleArmyFavorite(lore, fav)"
               />
             </li>
           </ul>
         </Section>
-      </div>
-    </div>
-    <div v-else-if="activeTab === 'lists'">
-      <ListListComponent />
-    </div>
+        <div v-for="alliance in filteredArmiesByAlliance" :key="alliance.name">
+          <Section v-if="alliance && alliance.armies.length > 0">
+            <template #title>{{ alliance.name }}</template>
+            <ul>
+              <li v-for="army in alliance.armies" :key="army.name">
+                <ListButton
+                  :label="army.name"
+                  :favorite="armyFavorites.includes(army.name)"
+                  :showFavoriteToggle="true"
+                  @click="selectArmy(army.name)"
+                  @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
+                />
+              </li>
+            </ul>
+          </Section>
+        </div>
+      </template>
+      <template #right>
+        <ListList />
+      </template>
+    </TwoTab>
     <div class="sigdex-version">Sigdex v{{ SIGDEX_VERSION }}</div>
   </div>
 </template>
@@ -163,29 +160,6 @@ watch(armyFavorites, (favs) => {
   align-items: center;
   gap: 1.2rem;
   margin-bottom: 1.2rem;
-}
-.tab-bar {
-  display: flex;
-  gap: 0;
-  margin-bottom: 1.2rem;
-  width: 100%;
-}
-.tab-bar button {
-  flex: 1 1 0;
-  padding: 0.5em 1.2em;
-  border: none;
-  background: #eee;
-  color: #333;
-  font-weight: 600;
-  border-radius: 6px 6px 0 0;
-  cursor: pointer;
-  transition: background 0.2s;
-  text-align: center;
-}
-.tab-bar button.active {
-  background: #fff;
-  border-bottom: 2px solid #222;
-  color: #222;
 }
 .lists-placeholder {
   text-align: center;

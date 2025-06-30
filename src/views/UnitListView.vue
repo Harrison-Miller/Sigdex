@@ -7,6 +7,7 @@ import ListButton from '../components/ListButton.vue';
 import FavoriteToggle from '../components/FavoriteToggle.vue';
 import BackButton from '../components/BackButton.vue';
 import ArmyRules from '../components/ArmyRules.vue';
+import TwoTab from '../components/TwoTab.vue';
 import {
   saveFavorite,
   removeFavorite,
@@ -31,7 +32,7 @@ const unitFavorites = ref<string[]>([]);
 const showOnlyFavorites = ref(getArmyUnitFavoriteToggleState(army));
 const sortMode = ref<'alpha' | 'points'>('alpha');
 const sortLabel = computed(() => (sortMode.value === 'alpha' ? 'A-Z' : 'Points'));
-const activeTab = ref<'warscrolls' | 'rules'>('warscrolls');
+const leftActive = ref(true);
 const loadedArmy = ref<any>(null);
 
 function updateShowOnlyFavoritesState(newVal: boolean) {
@@ -130,55 +131,51 @@ watch(unitFavorites, (favs) => {
   <BackButton :size="36" />
   <div class="list-container">
     <h1>{{ army }}</h1>
-    <div class="tab-bar">
-      <button :class="{ active: activeTab === 'warscrolls' }" @click="activeTab = 'warscrolls'">
-        Warscrolls
-      </button>
-      <button :class="{ active: activeTab === 'rules' }" @click="activeTab = 'rules'">Rules</button>
-    </div>
-    <div v-if="activeTab === 'warscrolls'">
-      <div class="filters-bar">
-        <FavoriteToggle
-          :model-value="showOnlyFavorites"
-          @update:modelValue="updateShowOnlyFavoritesState"
-          :disabled="!hasAnyFavoriteInArmy"
-        />
-        <button
-          class="sort-toggle"
-          @click="toggleSortMode"
-          :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'"
-        >
-          Sort: {{ sortLabel }}
-        </button>
-      </div>
-      <template v-for="cat in CATEGORY_ORDER" :key="cat">
-        <Section v-if="filteredUnits(cat).length">
-          <template #title>{{ cat }}</template>
-          <ul>
-            <li v-for="u in filteredUnits(cat)" :key="u.name">
-              <router-link
-                :to="{ name: 'UnitDetail', params: { army, unit: u.name } }"
-                custom
-                v-slot="{ navigate, href }"
-              >
-                <ListButton
-                  :label="u.name"
-                  :favorite="unitFavorites.includes(u.name)"
-                  :showFavoriteToggle="true"
-                  :points="u.points"
-                  @click="navigate"
-                  @toggle-favorite="(fav) => toggleUnitFavorite(u.name, fav)"
-                  :href="href"
-                />
-              </router-link>
-            </li>
-          </ul>
-        </Section>
+    <TwoTab :left-label="'Warscrolls'" :right-label="'Rules'" v-model:leftActive="leftActive">
+      <template #left>
+        <div class="filters-bar">
+          <FavoriteToggle
+            :model-value="showOnlyFavorites"
+            @update:modelValue="updateShowOnlyFavoritesState"
+            :disabled="!hasAnyFavoriteInArmy"
+          />
+          <button
+            class="sort-toggle"
+            @click="toggleSortMode"
+            :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'"
+          >
+            Sort: {{ sortLabel }}
+          </button>
+        </div>
+        <template v-for="cat in CATEGORY_ORDER" :key="cat">
+          <Section v-if="filteredUnits(cat).length">
+            <template #title>{{ cat }}</template>
+            <ul>
+              <li v-for="u in filteredUnits(cat)" :key="u.name">
+                <router-link
+                  :to="{ name: 'UnitDetail', params: { army, unit: u.name } }"
+                  custom
+                  v-slot="{ navigate, href }"
+                >
+                  <ListButton
+                    :label="u.name"
+                    :favorite="unitFavorites.includes(u.name)"
+                    :showFavoriteToggle="true"
+                    :points="u.points"
+                    @click="navigate"
+                    @toggle-favorite="(fav) => toggleUnitFavorite(u.name, fav)"
+                    :href="href"
+                  />
+                </router-link>
+              </li>
+            </ul>
+          </Section>
+        </template>
       </template>
-    </div>
-    <div v-else-if="activeTab === 'rules'">
-      <ArmyRules :army="loadedArmy" />
-    </div>
+      <template #right>
+        <ArmyRules :army="loadedArmy" />
+      </template>
+    </TwoTab>
   </div>
 </template>
 <style src="./list-shared.css" scoped></style>
@@ -238,32 +235,6 @@ watch(unitFavorites, (favs) => {
 .sort-toggle:hover {
   background: #8b0000;
   color: #fff;
-}
-
-.tab-bar {
-  display: flex;
-  gap: 0;
-  margin-bottom: 1.2rem;
-  width: 100%;
-}
-
-.tab-bar button {
-  flex: 1 1 0;
-  padding: 0.5em 1.2em;
-  border: none;
-  background: #eee;
-  color: #333;
-  font-weight: 600;
-  border-radius: 6px 6px 0 0;
-  cursor: pointer;
-  transition: background 0.2s;
-  text-align: center;
-}
-
-.tab-bar button.active {
-  background: #fff;
-  border-bottom: 2px solid #222;
-  color: #222;
 }
 
 .army-rules-section {

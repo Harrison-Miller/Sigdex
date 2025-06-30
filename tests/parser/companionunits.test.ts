@@ -4,7 +4,7 @@ import { DOMParser } from 'xmldom';
 import { callisAndTollArmyInfo } from './callisandtoll';
 import { rabblerowzaAndSkitterstrandArmyInfo } from './rabblerowza';
 import { neaveArmyInfo } from './neave';
-import { oathswordKinArmyInfo } from '../oathswornkin';
+import { oathswordKinArmyInfo } from './oathswornkin';
 
 describe('parseCompanionUnits', () => {
   it("returns Toll's Companions for Callis and Toll", () => {
