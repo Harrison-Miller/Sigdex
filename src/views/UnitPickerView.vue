@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getAllLists, saveList } from '../utils/list-manager';
+import { getAllLists, saveList, setupDefaultWeaponOptions } from '../utils/list-manager';
 import { loadArmy } from '../army';
 import { filterUnitsByRegimentOptions, POSSIBLE_CATEGORIES } from '../common/UnitData';
 import { formatRegimentOptions } from '../utils/formatter';
@@ -141,11 +141,15 @@ function addUnitToRegiment(unit: Unit) {
   }
   if (isNaN(regimentIdx) || !list.value.regiments[regimentIdx]) return;
   if (filter.toLowerCase() === 'leader') {
-    // Set as leader
-    list.value.regiments[regimentIdx].leader = { name: unit.name };
+    list.value.regiments[regimentIdx].leader = {
+      name: unit.name,
+      weapon_options: army.value ? setupDefaultWeaponOptions(unit.name, army.value) : undefined,
+    };
   } else {
-    // Add to regiment.units
-    list.value.regiments[regimentIdx].units.push({ name: unit.name });
+    list.value.regiments[regimentIdx].units.push({
+      name: unit.name,
+      weapon_options: army.value ? setupDefaultWeaponOptions(unit.name, army.value) : undefined,
+    });
   }
   saveList(list.value);
   router.back();

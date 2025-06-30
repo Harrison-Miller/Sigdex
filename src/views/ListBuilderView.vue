@@ -105,8 +105,7 @@
       @saveLore="savePrayerLore"
     />
     <ListBuilderLoreSection
-      v-if="armyData && armyData.manifestationLores && armyData.manifestationLores.length > 0"
-      :armyLore="armyData.manifestationLores"
+      :armyLore="armyData?.manifestationLores"
       :lores="lores"
       v-model="manifestationLoresCollapsed"
       v-model:selectedLore="selectedManifestationLore"
