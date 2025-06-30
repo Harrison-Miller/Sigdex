@@ -5,6 +5,7 @@ import BackButton from '../components/BackButton.vue';
 import ListButton from '../components/ListButton.vue';
 import { clearAllFavorites } from '../favorites';
 import { clearBSData, saveGithubBaseUrl, saveGithubRepo } from '../army';
+import { clearAllLists } from '../utils/list-manager';
 
 const githubBaseUrlKey = 'GITHUB_BASE_URL';
 const githubRepoKey = 'GITHUB_REPO';
@@ -30,6 +31,9 @@ function saveGithubRepoHandler() {
 function clearFavorites() {
   clearAllFavorites();
 }
+function clearLists() {
+  clearAllLists();
+}
 </script>
 <template>
   <div class="settings-view">
@@ -43,6 +47,7 @@ function clearFavorites() {
         style="margin-bottom: 0.7rem"
       />
       <ListButton label="Clear Favorites" @click="clearFavorites" :showFavoriteToggle="false" />
+      <ListButton label="Clear Lists" @click="clearLists" :showFavoriteToggle="false" />
     </div>
     <div class="section">
       <label class="input-label"

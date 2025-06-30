@@ -12,7 +12,7 @@ const props = defineProps<{
   armyName: string;
   settingsOpen?: boolean; // Add prop to control settings state
 }>();
-const emit = defineEmits(['delete', 'delete-unit']);
+const emit = defineEmits(['delete', 'delete-unit', 'ellipsis']);
 const router = useRouter();
 const route = useRoute();
 
@@ -77,12 +77,18 @@ function goToUnitDetail(unitName: string) {
           :label="props.regiment.leader.name"
           v-if="!props.settingsOpen"
           :points="getUnitByName(props.regiment.leader.name)?.points"
+          :showEllipsis="true"
+          :showGeneral="!!props.regiment.leader.general"
           @click="() => goToUnitDetail(props.regiment.leader.name)"
+          @ellipsis="$emit('ellipsis', { type: 'leader', name: props.regiment.leader.name })"
         />
         <ListButton
           v-else
           :label="props.regiment.leader.name"
+          :showEllipsis="true"
+          :showGeneral="!!props.regiment.leader.general"
           @click="() => goToUnitDetail(props.regiment.leader.name)"
+          @ellipsis="$emit('ellipsis', { type: 'leader', name: props.regiment.leader.name })"
         />
         <button
           class="delete-unit-btn"
@@ -107,13 +113,19 @@ function goToUnitDetail(unitName: string) {
               :label="unit.name"
               v-if="!props.settingsOpen"
               :points="getUnitByName(unit.name)?.points"
+              :showEllipsis="true"
+              :showReinforced="!!unit.reinforced"
               @click="() => goToUnitDetail(unit.name)"
+              @ellipsis="$emit('ellipsis', { type: 'unit', name: unit.name, idx })"
               class="regiment-unit-btn"
             />
             <ListButton
               v-else
               :label="unit.name"
+              :showEllipsis="true"
+              :showReinforced="!!unit.reinforced"
               @click="() => goToUnitDetail(unit.name)"
+              @ellipsis="$emit('ellipsis', { type: 'unit', name: unit.name, idx })"
               class="regiment-unit-btn"
             />
           </div>

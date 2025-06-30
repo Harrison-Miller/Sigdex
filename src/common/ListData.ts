@@ -1,5 +1,6 @@
 export interface List {
   name: string;
+  setup: boolean; // true if the list is fully set up
   faction: string;
   formation: string;
   regiments: ListRegiment[];
@@ -28,3 +29,5 @@ export interface ListUnit {
 
   // TODO: weapon options, other enhancements
 }
+
+export const POINTS_CAP = 2000;

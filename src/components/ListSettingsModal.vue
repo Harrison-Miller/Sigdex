@@ -13,8 +13,7 @@
       <div v-if="renameValue && !isRenameUnique" class="error-message">
         A list with this name already exists.
       </div>
-      <div class="modal-actions">
-        <button @click="handleClose">Cancel</button>
+      <div class="modal-actions single-action">
         <button class="save-btn" @click="emitRename" :disabled="!renameValue || !isRenameUnique">
           Rename
         </button>
@@ -92,6 +91,10 @@ function handleClose() {
   justify-content: flex-end;
   gap: 1em;
   margin-top: 0.5em;
+}
+.modal-actions.single-action {
+  justify-content: center;
+  gap: 0;
 }
 .save-btn {
   background: #1976d2;

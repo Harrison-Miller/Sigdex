@@ -30,3 +30,16 @@
   - trugg says any dankhold instead of 0-1, this is a subhero though it's a specifically named one not like "moon clan agitator".
 
 - parse and show other enchancement types like s2d banners or monster traits.
+
+- list builder todos:
+  - calculate violations for regiment options
+  - weapon options hadnling in unit settings
+  - heroic traits, artifacts handling in unit settings
+  - handle other possible enhancements (we need to parse them first, also could be tricky becasue banners can be on units).
+  - auxillary units
+  - disbale/remove already selected 0-1 unit from the unit picker.
+  - show manifestation units
+  - GameView - show rules and, non duplicate entries, etc.
+  - ExportView and copy to clipboard
+  - armies of renown - requires parsing armies of renow
+  - list importing

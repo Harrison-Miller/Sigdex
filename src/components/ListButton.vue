@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { ref, watch, toRefs, computed } from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 const props = defineProps<{
   label: string;
   favorite?: boolean;
   showFavoriteToggle?: boolean;
   points?: number;
+  showEllipsis?: boolean;
+  showGeneral?: boolean;
+  showReinforced?: boolean;
 }>();
-const emit = defineEmits(['click', 'toggle-favorite']);
+const emit = defineEmits(['click', 'toggle-favorite', 'ellipsis']);
 const { favorite } = toRefs(props);
 const isFavorite = ref(!!favorite?.value);
 const showFavoriteToggle = props.showFavoriteToggle !== false;
@@ -18,6 +22,10 @@ function toggleFavorite(e: Event) {
   isFavorite.value = !isFavorite.value;
   emit('toggle-favorite', isFavorite.value);
 }
+function onEllipsisClick(e: Event) {
+  e.stopPropagation();
+  emit('ellipsis');
+}
 // Remove (Scourge of Ghyran) from label and detect if present
 const isSoG = computed(() => /\(Scourge of Ghyran\)/.test(props.label));
 const displayLabel = computed(() => props.label.replace(/\s*\(Scourge of Ghyran\)/, ''));
@@ -28,12 +36,19 @@ const displayLabel = computed(() => props.label.replace(/\s*\(Scourge of Ghyran\
       {{ displayLabel }}
       <div
         class="badges-row"
-        v-if="(typeof props.points === 'number' && props.points > 0) || isSoG"
+        v-if="
+          (typeof props.points === 'number' && props.points > 0) ||
+          isSoG ||
+          props.showGeneral ||
+          props.showReinforced
+        "
       >
         <span v-if="typeof props.points === 'number' && props.points > 0" class="points-badge">
           {{ props.points }} pts
         </span>
         <span v-if="isSoG" class="sog-badge">SoG</span>
+        <span v-if="props.showGeneral" class="general-badge">General</span>
+        <span v-if="props.showReinforced" class="reinforced-badge">Reinforced</span>
       </div>
     </span>
     <span
@@ -70,6 +85,14 @@ const displayLabel = computed(() => props.label.replace(/\s*\(Scourge of Ghyran\
           d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
         />
       </svg>
+    </span>
+    <span
+      v-if="props.showEllipsis"
+      class="ellipsis-icon"
+      @click="onEllipsisClick"
+      title="More options"
+    >
+      <FontAwesomeIcon icon="ellipsis-v" />
     </span>
   </button>
 </template>
@@ -143,7 +166,7 @@ const displayLabel = computed(() => props.label.replace(/\s*\(Scourge of Ghyran\
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.5em;
+  gap: 0.18em; /* Reduced gap between badges */
   margin-top: 0.18em;
 }
 
@@ -175,5 +198,35 @@ const displayLabel = computed(() => props.label.replace(/\s*\(Scourge of Ghyran\
   vertical-align: middle;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   letter-spacing: 0.01em;
+}
+
+.general-badge,
+.reinforced-badge {
+  background: #ffe066;
+  color: #111; /* Changed from #a08000 to black */
+  font-size: 0.78em;
+  font-weight: 700;
+  border-radius: 1em;
+  padding: 0.08em 0.7em 0.08em 0.7em;
+  margin-top: 0;
+  margin-left: 0.5em;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.01em;
+}
+
+.ellipsis-icon {
+  margin-left: 0.7rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #888;
+  font-size: 1.25em;
+  transition: color 0.18s;
+}
+
+.ellipsis-icon:hover {
+  color: #222;
 }
 </style>

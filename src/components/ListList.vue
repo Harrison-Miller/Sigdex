@@ -24,6 +24,7 @@ function closeModal() {
 function handleCreate({ name, faction }: { name: string; faction: string }) {
   createListInStorage({
     name,
+    setup: false,
     faction,
     formation: '',
     regiments: [{ leader: { name: '' }, units: [] }],
@@ -41,7 +42,10 @@ function goToList(list: List) {
   <div v-if="lists.length === 0" class="empty-message">You have no saved lists yet.</div>
   <ul v-else>
     <li v-for="list in lists" :key="list.name">
-      <ListButton :label="`${list.name} | ${list.faction}`" @click="goToList(list)" />
+      <ListButton
+        :label="`${list.name} | ${list.faction}${list.formation && list.formation.trim() ? ' | ' + list.formation : ''}`"
+        @click="goToList(list)"
+      />
     </li>
   </ul>
   <button class="fab" @click="openModal">+</button>

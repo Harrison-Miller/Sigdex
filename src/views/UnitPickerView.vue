@@ -52,8 +52,12 @@ const filteredUnits = computed(() => {
       us = us.filter((u) => u.category?.toLowerCase() !== 'hero');
     }
   } else if (filter) {
-    const actualFilter = filter.toLowerCase() == 'leader' ? 'Hero' : filter;
-    us = us.filter((u) => u.category?.toLowerCase() === actualFilter.toLowerCase());
+    if (filter.toLowerCase() === 'terrain') {
+      us = us.filter((u) => (u.category || '').toLowerCase() === 'faction terrain');
+    } else {
+      const actualFilter = filter.toLowerCase() == 'leader' ? 'Hero' : filter;
+      us = us.filter((u) => u.category?.toLowerCase() === actualFilter.toLowerCase());
+    }
   }
   if (search.value) {
     us = us.filter((u) => u.name.toLowerCase().includes(search.value.toLowerCase()));
@@ -127,7 +131,15 @@ function goToDetail(unit: Unit) {
 }
 
 function addUnitToRegiment(unit: Unit) {
-  if (!list.value || isNaN(regimentIdx) || !list.value.regiments[regimentIdx]) return;
+  if (!list.value) return;
+  if (filter.toLowerCase() === 'terrain') {
+    // Set as faction terrain
+    list.value.faction_terrain = unit.name;
+    saveList(list.value);
+    router.back();
+    return;
+  }
+  if (isNaN(regimentIdx) || !list.value.regiments[regimentIdx]) return;
   if (filter.toLowerCase() === 'leader') {
     // Set as leader
     list.value.regiments[regimentIdx].leader = { name: unit.name };
