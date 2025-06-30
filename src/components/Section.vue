@@ -15,8 +15,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-const collapsed = ref(false);
+import { ref, watch, defineProps } from 'vue';
+const props = defineProps<{ modelValue?: boolean }>();
+const collapsed = ref(props.modelValue ?? false);
+watch(
+  () => props.modelValue,
+  (val) => {
+    if (typeof val === 'boolean') collapsed.value = val;
+  }
+);
+import { defineEmits } from 'vue';
+const emit = defineEmits(['update:modelValue']);
+watch(collapsed, (val) => emit('update:modelValue', val));
 </script>
 
 <style scoped>
