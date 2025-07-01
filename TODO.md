@@ -34,10 +34,12 @@
 - list builder todos:
   - handle other possible enhancements (we need to parse them first, also could be tricky becasue banners can be on units).
   - disbale/remove already selected 0-1 unit from the unit picker.
-  - show manifestation units
   - GameView - show rules and, non duplicate entries, etc.
   - ExportView and copy to clipboard
   - armies of renown - requires parsing armies of renow
   - list importing
   - probably don't select a manifestation lore by default if there isn't an army one
   - regiments of renown
+  - battle tactic cards
+  - can't have more than 1 of each enhancement
+  - SoG enhancement table rule
