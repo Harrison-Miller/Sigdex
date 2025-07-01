@@ -2,7 +2,12 @@
 import { ref, watch, computed } from 'vue';
 import Section from './Section.vue';
 import AbilityCard from './AbilityCard.vue';
+import ListButton from './ListButton.vue';
 import { universalManifestationLores } from '../common/ManifestationData';
+import { loadUniversalUnits } from '../army';
+import type { Unit } from '../common/UnitData';
+import type { Lore } from '../common/ManifestationData';
+import type { Army } from '../common/ArmyData';
 
 const props = defineProps<{
   armyLore: any[] | null | undefined; // spellLores, prayerLores, or manifestationLores
@@ -10,6 +15,8 @@ const props = defineProps<{
   modelValue: boolean;
   selectedLore: string;
   manifestationMode?: boolean;
+  currentArmy?: Army | null;
+  armyName?: string; // Optional, used for universal manifestation lores
 }>();
 const emit = defineEmits(['update:modelValue', 'update:selectedLore', 'saveLore']);
 
@@ -70,6 +77,70 @@ const getLorePoints = (loreName: string): number | undefined => {
   // Fallback to lores Map
   return props.lores?.get(loreName)?.points;
 };
+
+const manifestationUnits = ref<Unit[]>([]);
+const manifestationLoading = ref(false);
+
+async function loadManifestationUnits() {
+  manifestationLoading.value = true;
+  manifestationUnits.value = [];
+  if (!props.manifestationMode || !selectedLore.value || !props.lores) {
+    manifestationLoading.value = false;
+    return;
+  }
+  const lore: Lore | undefined = props.lores.get(selectedLore.value);
+  if (!lore) {
+    manifestationLoading.value = false;
+    return;
+  }
+  let units: Unit[] = [];
+  // Army lore: use army units, else universal units
+  const isArmyLore =
+    Array.isArray(props.armyLore) && props.armyLore.some((l) => l.name === selectedLore.value);
+  if (isArmyLore && props.currentArmy && Array.isArray(props.currentArmy.units)) {
+    units = props.currentArmy.units;
+  } else {
+    units = await loadUniversalUnits();
+  }
+  // Find all units referenced by any ability in this lore
+  const unitNames = new Set<string>();
+  for (const unit of units) {
+    if (unit.category != 'Manifestation') continue; // Only consider Manifestation units
+
+    for (const ability of lore.abilities) {
+      // Match if ability name or text contains the full unit name
+      if (
+        (ability.name && ability.name.includes(unit.name)) ||
+        (ability.text && ability.text.includes(unit.name))
+      ) {
+        unitNames.add(unit.name);
+        break;
+      }
+
+      const summonNameParts = ability.name.split(/\s+/);
+      // Match if any part of the summon name matches the unit name
+      if (summonNameParts.some((part) => unit.name.includes(part))) {
+        unitNames.add(unit.name);
+        break;
+      }
+    }
+  }
+  manifestationUnits.value = units.filter((u) => unitNames.has(u.name));
+  manifestationLoading.value = false;
+}
+
+watch(
+  [() => props.manifestationMode, selectedLore, () => props.lores],
+  () => {
+    if (props.manifestationMode) loadManifestationUnits();
+  },
+  { immediate: true }
+);
+
+const isUniversalLore = computed(() => {
+  // If the selected lore is in universalManifestationLores, it's universal
+  return universalManifestationLores.includes(selectedLore.value);
+});
 </script>
 <template>
   <Section v-if="computedArmyLore && computedArmyLore.length > 0" v-model="collapsed">
@@ -95,7 +166,33 @@ const getLorePoints = (loreName: string): number | undefined => {
           </option>
         </select>
       </template>
-      <div v-if="selectedLore && lores && lores.get(selectedLore)">
+      <div v-if="props.manifestationMode">
+        <div v-if="manifestationLoading" style="margin: 1em 0">Loading...</div>
+        <ul v-else>
+          <li v-for="unit in manifestationUnits" :key="unit.name">
+            <router-link
+              :to="{
+                name: 'UnitDetail',
+                params: {
+                  army: isUniversalLore ? 'UniversalManifestations' : props.armyName || '',
+                  unit: unit.name,
+                },
+              }"
+              custom
+              v-slot="{ navigate, href }"
+            >
+              <ListButton :label="unit.name" :points="unit.points" @click="navigate" :href="href" />
+            </router-link>
+          </li>
+        </ul>
+        <div
+          v-if="!manifestationLoading && manifestationUnits.length === 0"
+          style="margin: 1em 0; color: #a00"
+        >
+          No summonable Manifestations found for this lore.
+        </div>
+      </div>
+      <div v-else-if="selectedLore && lores && lores.get(selectedLore)">
         <AbilityCard
           v-for="(ability, i) in lores.get(selectedLore).abilities"
           :key="ability.name + i"
@@ -127,5 +224,13 @@ const getLorePoints = (loreName: string): number | undefined => {
   padding: 0.08em 0.4em 0.08em 0.4em;
   margin-left: 0.4em;
   vertical-align: middle;
+}
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+li {
+  margin-bottom: 0.5em;
 }
 </style>

@@ -28,31 +28,53 @@ function decrement() {
 .counter-box {
   display: flex;
   align-items: center;
-  gap: 0.5em;
+  gap: 0;
 }
 .counter-btn {
-  background: #f5f5f5;
-  border: 1.5px solid #1976d2;
-  color: #1976d2;
-  border-radius: 6px;
   width: 2em;
   height: 2em;
-  font-size: 1.2em;
-  font-weight: 600;
+  border: 1.5px solid #bbb;
+  background: #f5f6fa;
+  color: #333;
+  font-size: 1.3em;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
   cursor: pointer;
-  transition:
-    background 0.18s,
-    color 0.18s,
-    border 0.18s;
+  user-select: none;
+  transition: background 0.15s;
+  padding: 0;
 }
-.counter-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.counter-btn:active {
+  background: #e0e1e6;
+}
+.counter-btn:first-child {
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
+  border-right: none;
+}
+.counter-btn:last-child {
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+  border-left: none;
 }
 .counter-value {
-  min-width: 2em;
-  text-align: center;
+  min-width: 2.5em;
+  height: 2.35em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-top: 1.5px solid #bbb;
+  border-bottom: 1.5px solid #bbb;
+  border-left: none;
+  border-right: none;
   font-size: 1.1em;
   font-weight: 500;
+  box-sizing: border-box;
+  line-height: 2em;
+  padding: 0;
 }
 </style>

@@ -33,7 +33,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import Modal from './Modal.vue';
-import { calculatePoints, calculateViolations } from '../utils/list-manager';
+import { calculatePoints } from '../utils/points-manager';
+import { calculateViolations } from '../utils/violations-manager';
 import type { List } from '../common/ListData';
 import type { Army } from '../common/ArmyData';
 

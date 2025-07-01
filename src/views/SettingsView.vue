@@ -46,7 +46,12 @@ function clearLists() {
         :showFavoriteToggle="false"
         style="margin-bottom: 0.7rem"
       />
-      <ListButton label="Clear Favorites" @click="clearFavorites" :showFavoriteToggle="false" />
+      <ListButton
+        label="Clear Favorites"
+        @click="clearFavorites"
+        :showFavoriteToggle="false"
+        style="margin-bottom: 0.7rem"
+      />
       <ListButton label="Clear Lists" @click="clearLists" :showFavoriteToggle="false" />
     </div>
     <div class="section">
