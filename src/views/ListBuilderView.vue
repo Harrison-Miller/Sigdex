@@ -47,6 +47,40 @@
         />
       </div>
       <button class="add-regiment-btn" @click="addRegiment">Add regiment</button>
+
+      <!-- Auxillary Units Section -->
+      <Section v-model="auxCollapsed">
+        <template #title>Auxillary Units</template>
+        <div
+          class="faction-terrain-controls"
+          v-if="list.auxiallary_units && list.auxiallary_units.length"
+        >
+          <template v-for="(unit, i) in list.auxiallary_units" :key="unit.name + i">
+            <ListButton
+              :label="unit.name"
+              :points="armyData?.units.find((u) => u.name === unit.name)?.points"
+              @click="
+                () =>
+                  list &&
+                  router.push({
+                    name: 'UnitDetail',
+                    params: { army: list.faction, unit: unit.name },
+                  })
+              "
+            />
+            <button
+              class="delete-terrain-btn"
+              @click="() => handleDeleteAuxUnit(i)"
+              title="Delete Auxillary Unit"
+            >
+              <font-awesome-icon icon="trash" />
+            </button>
+          </template>
+        </div>
+        <button class="add-terrain-btn" style="margin-top: 0.7em" @click="handleAddAuxUnit">
+          + Auxillary Unit
+        </button>
+      </Section>
     </div>
     <ListSettingsModal
       v-model="showSettingsModal"
@@ -107,6 +141,8 @@
     <ListBuilderLoreSection
       :armyLore="armyData?.manifestationLores"
       :lores="lores"
+      :currentArmy="armyData"
+      :armyName="list?.faction"
       v-model="manifestationLoresCollapsed"
       v-model:selectedLore="selectedManifestationLore"
       manifestationMode
@@ -134,7 +170,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getAllLists, saveList, deleteList } from '../utils/list-manager';
 import BackButton from '../components/BackButton.vue';
@@ -155,7 +191,8 @@ import { POINTS_CAP, type ListUnit } from '../common/ListData';
 
 const route = useRoute();
 const router = useRouter();
-const listName = route.params.name as string;
+const props = defineProps<{ name: string }>();
+const listName = props.name ?? (route.params.name as string);
 const list = ref<List | undefined>();
 const showSettingsModal = ref(false);
 const renameValue = ref('');
@@ -177,6 +214,7 @@ const unitSettings = ref<{
   unitIdx: number | 'leader';
   unit: ListUnit | null;
 } | null>(null);
+const auxCollapsed = ref(true);
 
 function saveSpellLore(lore: string) {
   if (list.value) {
@@ -304,6 +342,15 @@ onMounted(async () => {
   }
 });
 
+watch(
+  () => list.value?.auxiallary_units?.length,
+  (len) => {
+    if (len && len > 0) auxCollapsed.value = false;
+    else auxCollapsed.value = true;
+  },
+  { immediate: true }
+);
+
 function addRegiment() {
   if (!list.value) return;
   list.value.regiments.push({ leader: { name: '' }, units: [] });
@@ -387,6 +434,20 @@ function handleDeleteFactionTerrain() {
   if (!list.value) return;
   list.value.faction_terrain = undefined;
   saveList(list.value);
+}
+function handleDeleteAuxUnit(idx: number) {
+  if (!list.value || !list.value.auxiallary_units) return;
+  list.value.auxiallary_units.splice(idx, 1);
+  saveList(list.value);
+}
+function handleAddAuxUnit() {
+  if (!list.value) return;
+  const listName = list.value.name;
+  router.push({
+    name: 'UnitPicker',
+    params: { listName, regimentIdx: -2 }, // -2 to indicate aux unit
+    query: { filter: 'aux' },
+  });
 }
 
 function handleRegimentEllipsis(payload: { type: 'leader' | 'unit'; name: string; idx?: number }) {

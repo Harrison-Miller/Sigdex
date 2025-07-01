@@ -54,6 +54,12 @@ const filteredUnits = computed(() => {
   } else if (filter) {
     if (filter.toLowerCase() === 'terrain') {
       us = us.filter((u) => (u.category || '').toLowerCase() === 'faction terrain');
+    } else if (filter.toLowerCase() === 'aux') {
+      // For aux, allow all units except manifestations and faction terrain
+      us = us.filter((u) => {
+        const cat = (u.category || '').toLowerCase();
+        return cat !== 'manifestation' && cat !== 'faction terrain';
+      });
     } else {
       const actualFilter = filter.toLowerCase() == 'leader' ? 'Hero' : filter;
       us = us.filter((u) => u.category?.toLowerCase() === actualFilter.toLowerCase());
@@ -135,6 +141,16 @@ function addUnitToRegiment(unit: Unit) {
   if (filter.toLowerCase() === 'terrain') {
     // Set as faction terrain
     list.value.faction_terrain = unit.name;
+    saveList(list.value);
+    router.back();
+    return;
+  }
+  if (filter.toLowerCase() === 'aux') {
+    if (!list.value.auxiallary_units) list.value.auxiallary_units = [];
+    list.value.auxiallary_units.push({
+      name: unit.name,
+      weapon_options: army.value ? setupDefaultWeaponOptions(unit.name, army.value) : undefined,
+    });
     saveList(list.value);
     router.back();
     return;

@@ -37,6 +37,18 @@ export const NOTICES: Notice[] = [
     timestamp: '2025-06-25T00:00:00Z',
     category: 'changelog',
   },
+  {
+    title: 'Changelog: v5.0.0',
+    body: `
+      <b>All-New List Builder:</b>
+      <ul>
+        <li>Full rules checking and validation as you build</li>
+        <li>Automatic selection of lores, faction terrain and weapon options</li>
+      </ul>
+    `,
+    timestamp: '2025-07-01T00:00:00Z',
+    category: 'changelog',
+  },
 ];
 
 export function getNoticeKey(notice: Notice): string {
