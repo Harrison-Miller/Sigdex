@@ -8,6 +8,17 @@
     <div v-if="list" class="subheader">{{ list.faction }}</div>
     <div v-else class="not-found">List not found.</div>
     <Section
+      v-if="armyData && armyData.battleTraits && armyData.battleTraits.length > 0"
+      v-model="battleTraitsCollapsed"
+    >
+      <template #title>Battle Traits</template>
+      <AbilityCard
+        v-for="(trait, i) in armyData.battleTraits"
+        :key="trait.name + i"
+        :ability="trait"
+      />
+    </Section>
+    <Section
       v-if="armyData && armyData.formations && armyData.formations.size > 0"
       v-model="formationCollapsed"
     >
@@ -204,6 +215,7 @@ const selectedFormation = ref<string>('');
 const selectedSpellLore = ref<string>('');
 const selectedPrayerLore = ref<string>('');
 const selectedManifestationLore = ref<string>('');
+const battleTraitsCollapsed = ref(true);
 const spellLoresCollapsed = ref(true);
 const prayerLoresCollapsed = ref(true);
 const formationCollapsed = ref(true);
