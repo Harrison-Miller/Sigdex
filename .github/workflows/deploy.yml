@@ -30,8 +30,8 @@ jobs:
       - name: Deploy to FTP server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ftp.verra.xyz
-          username: sigdex@verra.xyz
+          server: ftp.sigdex.io
+          username: github@sigdex.io
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
           server-dir: ./
