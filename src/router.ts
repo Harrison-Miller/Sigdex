@@ -44,7 +44,7 @@ const routes = [
     component: BuilderUnitSettings,
   },
   {
-    path: '/list/:id/regiment/:regimentIdx/pick',
+    path: '/list/:id/regiment/:regimentIdx/pick/:filter',
     name: 'UnitPicker',
     component: UnitPicker,
   },

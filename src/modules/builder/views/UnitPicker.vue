@@ -21,7 +21,7 @@ const route = useRoute();
 const router = useRouter();
 const listId = route.params.id as string;
 const regimentIdx = Number(route.params.regimentIdx);
-const filter = (route.query.filter as string) || '';
+const filter = (route.params.filter as string) || '';
 
 const list = ref<List | undefined>();
 const army = ref<Army | null>(null);

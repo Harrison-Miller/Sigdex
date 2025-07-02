@@ -395,8 +395,7 @@ function handleAddFactionTerrain() {
     // Use the same routing logic as ListRegiment for UnitPicker
     router.push({
       name: 'UnitPicker',
-      params: { id: listId, regimentIdx: -1 }, // -1 indicates no specific regiment
-      query: { filter: 'terrain' },
+      params: { id: listId, regimentIdx: '0', filter: 'terrain' }, // 0 indicates no specific regiment
     });
   }
 }
@@ -414,8 +413,7 @@ function handleAddAuxUnit() {
   if (!list.value) return;
   router.push({
     name: 'UnitPicker',
-    params: { id: listId, regimentIdx: -2 },
-    query: { filter: 'aux' },
+    params: { id: listId, regimentIdx: '0', filter: 'aux' },
   });
 }
 </script>
