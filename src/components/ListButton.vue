@@ -229,9 +229,28 @@ const displayPoints = computed(() => {
   color: #888;
   font-size: 1.25em;
   transition: color 0.18s;
+  /* Make the clickable area larger without changing the visual size */
+  position: relative;
+  z-index: 1;
 }
 
-.ellipsis-icon:hover {
+.ellipsis-icon::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2.2em;
+  height: 2.2em;
+  border-radius: 50%;
+  /* transparent clickable area */
+  background: transparent;
+  z-index: -1;
+}
+
+.ellipsis-icon:hover,
+.ellipsis-icon:has(:hover),
+.ellipsis-icon:hover::before {
   color: #222;
 }
 </style>

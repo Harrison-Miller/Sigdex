@@ -1,5 +1,6 @@
 export interface List {
   name: string;
+  id: string;
   setup: boolean; // true if the list is fully set up
   faction: string;
   formation: string;

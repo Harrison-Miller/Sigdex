@@ -44,17 +44,18 @@
         </div>
       </div>
     </Section>
-    <div v-if="list">
-      <div v-for="(regiment, idx) in list.regiments" :key="idx" class="regiment-block">
+    <div v-if="list && armyData">
+      <div v-for="idx in list.regiments.length" :key="idx" class="regiment-block">
         <ListRegiment
+          v-for="(regiment, idx) in list.regiments"
+          :key="idx"
+          :regimentIdx="idx"
           :regiment="regiment"
-          :title="`Regiment ${idx + 1}`"
+          :listId="list.id"
           :army="armyData"
           :armyName="list.faction"
-          :settingsOpen="showSettingsModal"
           @delete="() => deleteRegiment(idx)"
           @delete-unit="(unitIdx) => handleDeleteUnit(idx, unitIdx)"
-          @ellipsis="(payload) => handleRegimentEllipsis({ ...payload, regimentIdx: idx })"
         />
       </div>
       <button class="add-regiment-btn" @click="addRegiment">Add regiment</button>
@@ -93,14 +94,6 @@
         </button>
       </Section>
     </div>
-    <ListSettingsModal
-      v-model="showSettingsModal"
-      :initialName="list?.name || ''"
-      :existingNames="lists.map((l) => l.name)"
-      @rename="handleRename"
-      @delete="handleDelete"
-      @close="closeSettings"
-    />
     <div class="divider"></div>
     <div class="faction-terrain-controls">
       <template v-if="list?.faction_terrain && armyData">
@@ -159,20 +152,10 @@
       manifestationMode
       @saveLore="saveManifestationLore"
     />
-    <UnitSettingsModal
-      v-if="showUnitSettingsModal && unitSettings && unitSettings.unit && armyData"
-      v-model="showUnitSettingsModal"
-      :unit="unitSettings.unit"
-      :army="armyData"
-      :regimentIdx="unitSettings.regimentIdx"
-      :unitIdx="unitSettings.unitIdx"
-      @save="handleUnitSettingsSave"
-      @close="handleUnitSettingsClose"
-    />
     <div class="scroll-buffer"></div>
   </div>
   <ListIndicator
-    v-if="list && armyData && !showSettingsModal"
+    v-if="list && armyData"
     :list="list"
     :army-data="armyData"
     :lores="lores"
@@ -183,31 +166,26 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getAllLists, saveList, deleteList } from '../utils/list-manager';
+import { getList, saveList } from '../utils/list-manager';
 import BackButton from '../components/BackButton.vue';
 import SettingsButton from '../components/SettingsButton.vue';
 import type { List } from '../common/ListData';
 import ListRegiment from '../components/ListRegiment.vue';
 import { loadArmy, loadLores } from '../army';
 import type { Army } from '../common/ArmyData';
-import ListSettingsModal from '../components/ListSettingsModal.vue';
 import Section from '../components/Section.vue';
 import AbilityCard from '../components/AbilityCard.vue';
 import ListButton from '../components/ListButton.vue';
 import ListBuilderLoreSection from '../components/ListBuilderLoreSection.vue';
 import { universalManifestationLores } from '../common/ManifestationData';
-import UnitSettingsModal from '../components/UnitSettingsModal.vue';
 import ListIndicator from '../components/ListIndicator.vue';
-import { POINTS_CAP, type ListUnit } from '../common/ListData';
+import { POINTS_CAP } from '../common/ListData';
 
+const props = defineProps<{ id: string }>();
 const route = useRoute();
 const router = useRouter();
-const props = defineProps<{ name: string }>();
-const listName = props.name ?? (route.params.name as string);
+const listId = props.id ?? (route.params.id as string);
 const list = ref<List | undefined>();
-const showSettingsModal = ref(false);
-const renameValue = ref('');
-const lists = ref(getAllLists());
 const armyData = ref<Army | null>(null);
 const lores = ref<Map<string, any> | null>(null);
 const loadingArmy = ref(false);
@@ -220,12 +198,6 @@ const spellLoresCollapsed = ref(true);
 const prayerLoresCollapsed = ref(true);
 const formationCollapsed = ref(true);
 const manifestationLoresCollapsed = ref(true);
-const showUnitSettingsModal = ref(false);
-const unitSettings = ref<{
-  regimentIdx: number;
-  unitIdx: number | 'leader';
-  unit: ListUnit | null;
-} | null>(null);
 const auxCollapsed = ref(true);
 
 function saveSpellLore(lore: string) {
@@ -248,7 +220,7 @@ function saveManifestationLore(lore: string) {
 }
 
 onMounted(async () => {
-  const found = getAllLists().find((l) => l.name === listName);
+  const found = getList(listId);
   list.value = found;
   if (found) {
     loadingArmy.value = true;
@@ -366,38 +338,13 @@ watch(
 function addRegiment() {
   if (!list.value) return;
   list.value.regiments.push({ leader: { name: '' }, units: [] });
-  // Save updated list to localStorage
   saveList(list.value);
 }
 
 function openSettings() {
-  if (list.value) renameValue.value = list.value.name;
-  showSettingsModal.value = true;
+  router.push({ name: 'BuilderSettings', params: { id: listId } });
 }
-function closeSettings() {
-  showSettingsModal.value = false;
-}
-function handleRename(newName: string) {
-  if (!list.value) return;
-  const oldName = list.value.name;
-  if (oldName === newName) {
-    closeSettings();
-    return;
-  }
-  // Remove the old list first
-  deleteList(oldName);
-  list.value.name = newName;
-  saveList(list.value);
-  lists.value = getAllLists();
-  closeSettings();
-  router.replace({ name: 'ListBuilder', params: { name: newName } });
-}
-function handleDelete() {
-  if (!list.value) return;
-  deleteList(list.value.name);
-  closeSettings();
-  router.push({ name: 'Armies' });
-}
+
 function deleteRegiment(idx: number) {
   if (!list.value) return;
   list.value.regiments.splice(idx, 1);
@@ -434,10 +381,9 @@ function handleAddFactionTerrain() {
     saveList(list.value);
   } else if (terrainUnits.length > 1) {
     // Use the same routing logic as ListRegiment for UnitPicker
-    const listName = list.value.name;
     router.push({
       name: 'UnitPicker',
-      params: { listName, regimentIdx: -1 }, // -1 indicates no specific regiment
+      params: { id: listId, regimentIdx: -1 }, // -1 indicates no specific regiment
       query: { filter: 'terrain' },
     });
   }
@@ -454,66 +400,11 @@ function handleDeleteAuxUnit(idx: number) {
 }
 function handleAddAuxUnit() {
   if (!list.value) return;
-  const listName = list.value.name;
   router.push({
     name: 'UnitPicker',
-    params: { listName, regimentIdx: -2 }, // -2 to indicate aux unit
+    params: { id: listId, regimentIdx: -2 },
     query: { filter: 'aux' },
   });
-}
-
-function handleRegimentEllipsis(payload: { type: 'leader' | 'unit'; name: string; idx?: number }) {
-  let regimentIdx = -1;
-  let unitIdx: number | 'leader' = 'leader';
-  let unit: ListUnit | null = null;
-  if (payload.type === 'leader') {
-    regimentIdx = list.value?.regiments.findIndex((r) => r.leader?.name === payload.name) ?? -1;
-    unitIdx = 'leader';
-    if (regimentIdx >= 0) {
-      unit = list.value?.regiments[regimentIdx].leader ?? null;
-    }
-  } else {
-    regimentIdx =
-      list.value?.regiments.findIndex((r) => r.units.some((u) => u.name === payload.name)) ?? -1;
-    unitIdx = payload.idx ?? 0;
-    if (regimentIdx >= 0 && typeof unitIdx === 'number') {
-      unit = list.value?.regiments[regimentIdx].units[unitIdx] ?? null;
-    }
-  }
-  if (regimentIdx >= 0 && unit) {
-    unitSettings.value = {
-      regimentIdx,
-      unitIdx,
-      unit,
-    };
-    showUnitSettingsModal.value = true;
-  }
-}
-function handleUnitSettingsSave(settings: {
-  regimentIdx: number;
-  unitIdx: number | 'leader';
-  unit: ListUnit;
-}) {
-  if (!list.value) {
-    showUnitSettingsModal.value = false;
-    return;
-  }
-  const { regimentIdx, unitIdx, unit } = settings;
-  const reg = list.value.regiments[regimentIdx];
-  if (!reg) {
-    showUnitSettingsModal.value = false;
-    return;
-  }
-  if (unitIdx === 'leader') {
-    reg.leader = unit;
-  } else if (typeof unitIdx === 'number' && reg.units[unitIdx]) {
-    reg.units[unitIdx] = unit;
-  }
-  saveList(list.value);
-  showUnitSettingsModal.value = false;
-}
-function handleUnitSettingsClose() {
-  showUnitSettingsModal.value = false;
 }
 </script>
 

@@ -53,18 +53,13 @@
       </label>
       <div class="modal-actions">
         <button @click="handleClose">Cancel</button>
-        <button class="create-btn" @click="emitCreate" :disabled="!name || !isNameUnique">
-          Create
-        </button>
-      </div>
-      <div v-if="name && !isNameUnique" class="error-message">
-        A list with this name already exists.
+        <button class="create-btn" @click="emitCreate" :disabled="!isNameValid">Create</button>
       </div>
     </div>
   </Modal>
 </template>
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 import Modal from './Modal.vue';
 import { allArmies } from '../common/ArmyData';
 
@@ -72,31 +67,18 @@ const props = defineProps<{
   modelValue: boolean;
   initialName?: string;
   initialFaction?: string;
-  existingNames: string[];
 }>();
 const emit = defineEmits(['update:modelValue', 'create', 'close']);
 
 const name = ref(props.initialName || '');
 const faction = ref(props.initialFaction || allArmies[0]?.name || '');
 
-watch(
-  () => props.modelValue,
-  (val) => {
-    if (val) {
-      name.value = props.initialName || '';
-      faction.value = props.initialFaction || allArmies[0]?.name || '';
-    }
-  }
-);
+// Removed the watcher as it's no longer needed
 
-const isNameUnique = computed(() => {
-  const trimmed = name.value.trim();
-  if (!trimmed) return false;
-  return !props.existingNames.includes(trimmed);
-});
+const isNameValid = computed(() => !!name.value.trim());
 
 function emitCreate() {
-  if (!name.value.trim() || !isNameUnique.value) return;
+  if (!isNameValid.value) return;
   emit('create', { name: name.value.trim(), faction: faction.value });
   emit('update:modelValue', false);
 }
@@ -158,10 +140,5 @@ function handleClose() {
 }
 .create-btn:not(:disabled):hover {
   background: #c00;
-}
-.error-message {
-  color: #d00;
-  font-size: 0.9em;
-  margin-top: 0.5em;
 }
 </style>

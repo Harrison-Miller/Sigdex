@@ -1,54 +1,43 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits, computed } from 'vue';
 import type { ListRegiment } from '../common/ListData';
 import ListButton from './ListButton.vue';
 import Section from './Section.vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
+import type { Army } from '../common/ArmyData';
 
 const props = defineProps<{
+  regimentIdx: number;
   regiment: ListRegiment;
-  title: string;
-  army: any; // Army type, but allow any for now for flexibility
-  armyName: string;
-  settingsOpen?: boolean; // Add prop to control settings state
+  listId: string;
+  army: Army;
+  armyName: string; // This should be stored in the army data
 }>();
-const emit = defineEmits(['delete', 'delete-unit', 'ellipsis']);
+const emit = defineEmits(['delete', 'delete-unit']);
 const router = useRouter();
-const route = useRoute();
+
+const title = computed(() => `Regiment ${props.regimentIdx + 1}`);
 
 function goToAddLeader() {
-  // Expect parent route to have list name and regiment index in params
-  const listName = route.params.name as string;
-  const regimentIdx =
-    route.params.regimentIdx !== undefined
-      ? route.params.regimentIdx
-      : typeof props.title === 'string' && props.title.match(/\d+/)
-        ? Number(props.title.match(/\d+/)?.[0]) - 1
-        : undefined;
-  if (listName != null && regimentIdx != null) {
-    router.push({
-      name: 'UnitPicker',
-      params: { listName, regimentIdx },
-      query: { filter: 'leader' },
-    });
-  }
+  router.push({
+    name: 'UnitPicker',
+    params: {
+      id: props.listId,
+      regimentIdx: props.regimentIdx,
+    },
+    query: { filter: 'leader' },
+  });
 }
 
 function goToAddUnit() {
-  const listName = route.params.name as string;
-  const regimentIdx =
-    route.params.regimentIdx !== undefined
-      ? route.params.regimentIdx
-      : typeof props.title === 'string' && props.title.match(/\d+/)
-        ? Number(props.title.match(/\d+/)?.[0]) - 1
-        : undefined;
-  if (listName != null && regimentIdx != null) {
-    router.push({
-      name: 'UnitPicker',
-      params: { listName, regimentIdx },
-      query: { filter: 'unit' },
-    });
-  }
+  router.push({
+    name: 'UnitPicker',
+    params: {
+      id: props.listId,
+      regimentIdx: props.regimentIdx,
+    },
+    query: { filter: 'unit' },
+  });
 }
 
 function getUnitByName(name: string) {
@@ -62,11 +51,22 @@ function goToUnitDetail(unitName: string) {
     params: { army: props.armyName, unit: unitName },
   });
 }
+
+function goToUnitSettings(unitIdx: number | 'leader') {
+  router.push({
+    name: 'BuilderUnitSettings',
+    params: {
+      id: props.listId,
+      regimentIdx: props.regimentIdx,
+      unitIdx: unitIdx,
+    },
+  });
+}
 </script>
 <template>
   <Section>
     <template #title>
-      <span>{{ props.title }}</span>
+      <span>{{ title }}</span>
       <button class="delete-regiment-btn" @click="$emit('delete')" title="Delete Regiment">
         <font-awesome-icon icon="trash" />
       </button>
@@ -75,20 +75,11 @@ function goToUnitDetail(unitName: string) {
       <div v-if="props.regiment.leader && props.regiment.leader.name" class="regiment-unit-row">
         <ListButton
           :label="props.regiment.leader.name"
-          v-if="!props.settingsOpen"
           :points="getUnitByName(props.regiment.leader.name)?.points"
           :showEllipsis="true"
           :showGeneral="!!props.regiment.leader.general"
           @click="() => goToUnitDetail(props.regiment.leader.name)"
-          @ellipsis="$emit('ellipsis', { type: 'leader', name: props.regiment.leader.name })"
-        />
-        <ListButton
-          v-else
-          :label="props.regiment.leader.name"
-          :showEllipsis="true"
-          :showGeneral="!!props.regiment.leader.general"
-          @click="() => goToUnitDetail(props.regiment.leader.name)"
-          @ellipsis="$emit('ellipsis', { type: 'leader', name: props.regiment.leader.name })"
+          @ellipsis="() => goToUnitSettings('leader')"
         />
         <button
           class="delete-unit-btn"
@@ -103,29 +94,15 @@ function goToUnitDetail(unitName: string) {
     <div class="divider"></div>
     <div class="regiment-units">
       <ul>
-        <li
-          v-for="(unit, idx) in props.regiment.units"
-          :key="unit.name + idx"
-          class="regiment-unit-row"
-        >
+        <li v-for="(unit, idx) in props.regiment.units" :key="unit.name" class="regiment-unit-row">
           <div class="regiment-unit-btn">
             <ListButton
               :label="unit.name"
-              v-if="!props.settingsOpen"
               :points="getUnitByName(unit.name)?.points"
               :showEllipsis="true"
               :showReinforced="!!unit.reinforced"
               @click="() => goToUnitDetail(unit.name)"
-              @ellipsis="$emit('ellipsis', { type: 'unit', name: unit.name, idx })"
-              class="regiment-unit-btn"
-            />
-            <ListButton
-              v-else
-              :label="unit.name"
-              :showEllipsis="true"
-              :showReinforced="!!unit.reinforced"
-              @click="() => goToUnitDetail(unit.name)"
-              @ellipsis="$emit('ellipsis', { type: 'unit', name: unit.name, idx })"
+              @ellipsis="() => goToUnitSettings(idx)"
               class="regiment-unit-btn"
             />
           </div>

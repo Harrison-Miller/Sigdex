@@ -1,76 +1,106 @@
 import type { Army } from '../common/ArmyData';
-import type { List } from '../common/ListData';
+import type { List, ListRegiment } from '../common/ListData';
 import { serializeListUnit, deserializeListUnit } from '../common/ArrayData';
 import type { ListUnitWeaponOption } from '../common/ListData';
 import type { WeaponOption } from '../common/UnitData';
 
-const STORAGE_KEY = 'sigdex_lists';
+const OLD_STORAGE_KEY = 'sigdex_list';
+const STORAGE_PREFIX = 'sigdex_list:';
 
 export function createList(list: List): void {
-  const lists = getAllLists();
-  lists.push(list);
-  // Always serialize all lists before saving
-  const serializeRegiment = (reg: any) => ({
-    leader: serializeListUnit(reg.leader),
-    units: reg.units.map(serializeListUnit),
-  });
-  const serializeList = (l: List) => ({
-    ...l,
-    regiments: l.regiments.map(serializeRegiment),
-    auxiallary_units: l.auxiallary_units?.map(serializeListUnit),
-  });
-  const serializedLists = lists.map(serializeList);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(serializedLists));
+  // always generate a new id
+  list.id = Math.random().toString(36).slice(2, 10);
+  localStorage.setItem(STORAGE_PREFIX + list.id, JSON.stringify(serializeList(list)));
 }
 
 export function getAllLists(): List[] {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return [];
+  const lists: List[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith(STORAGE_PREFIX)) {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      try {
+        const list = JSON.parse(raw);
+        lists.push({
+          ...list,
+          regiments: list.regiments.map((reg: any) => ({
+            leader: deserializeListUnit(reg.leader),
+            units: reg.units.map(deserializeListUnit),
+          })),
+          auxiallary_units: list.auxiallary_units?.map(deserializeListUnit),
+        });
+      } catch (e) {
+        // skip corrupted
+      }
+    }
+  }
+  return lists;
+}
+
+export function getList(id: string): List | undefined {
+  const raw = localStorage.getItem(STORAGE_PREFIX + id);
+  if (!raw) return undefined;
   try {
-    const arr = JSON.parse(raw) as any[];
-    // Deserialize weapon_options for each unit
-    return arr.map((list) => ({
+    const list = JSON.parse(raw);
+    return {
       ...list,
       regiments: list.regiments.map((reg: any) => ({
         leader: deserializeListUnit(reg.leader),
         units: reg.units.map(deserializeListUnit),
       })),
       auxiallary_units: list.auxiallary_units?.map(deserializeListUnit),
-    }));
+    };
   } catch (e) {
-    return [];
+    return undefined;
   }
+}
+
+export function renameList(id: string, newName: string): void {
+  const list = getList(id);
+  if (!list) return;
+  list.name = newName;
+  saveList(list);
 }
 
 export function saveList(list: List): void {
-  const lists = getAllLists();
-  const idx = lists.findIndex((l) => l.name === list.name);
-  if (idx !== -1) {
-    lists[idx] = list;
-  } else {
-    lists.push(list);
-  }
-  // Always serialize all lists before saving
-  const serializeRegiment = (reg: any) => ({
-    leader: serializeListUnit(reg.leader),
-    units: reg.units.map(serializeListUnit),
-  });
-  const serializeList = (l: List) => ({
-    ...l,
-    regiments: l.regiments.map(serializeRegiment),
-    auxiallary_units: l.auxiallary_units?.map(serializeListUnit),
-  });
-  const serializedLists = lists.map(serializeList);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(serializedLists));
+  if (!list.id) throw new Error('List must have an id');
+  localStorage.setItem(STORAGE_PREFIX + list.id, JSON.stringify(serializeList(list)));
 }
 
-export function deleteList(name: string): void {
-  const lists = getAllLists().filter((l) => l.name !== name);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(lists));
+export function deleteList(id: string): void {
+  localStorage.removeItem(STORAGE_PREFIX + id);
 }
 
 export function clearAllLists(): void {
-  localStorage.removeItem(STORAGE_KEY);
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith(STORAGE_PREFIX)) {
+      keysToRemove.push(key);
+    }
+  }
+  for (const key of keysToRemove) {
+    localStorage.removeItem(key);
+  }
+
+  // also clear old storage key
+  localStorage.removeItem(OLD_STORAGE_KEY);
+}
+
+function serializeRegiment(regiment: ListRegiment): any {
+  return {
+    leader: serializeListUnit(regiment.leader),
+    units: regiment.units.map(serializeListUnit),
+  };
+}
+
+function serializeList(list: List): any {
+  return {
+    ...list,
+    regiments: list.regiments.map(serializeRegiment),
+    auxiallary_units: list.auxiallary_units?.map(serializeListUnit),
+  };
 }
 
 export function setupDefaultWeaponOptions(
