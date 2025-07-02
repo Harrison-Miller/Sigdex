@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import Section from './Section.vue';
-import AbilityCard from './AbilityCard.vue';
-import ListButton from './ListButton.vue';
-import { universalManifestationLores } from '../common/ManifestationData';
-import { loadUniversalUnits } from '../army';
-import type { Unit } from '../common/UnitData';
-import type { Lore } from '../common/ManifestationData';
-import type { Army } from '../common/ArmyData';
+import Section from '../../core/components/Section.vue';
+import AbilityCard from '../../shared/components/AbilityCard.vue';
+import ListButton from '../../shared/components/ListButton.vue';
+import { universalManifestationLores } from '../../../common/ManifestationData';
+import { loadUniversalUnits } from '../../../army';
+import type { Unit } from '../../../common/UnitData';
+import type { Lore } from '../../../common/ManifestationData';
+import type { Army } from '../../../common/ArmyData';
 
 const props = defineProps<{
   armyLore: any[] | null | undefined; // spellLores, prayerLores, or manifestationLores
@@ -119,7 +119,7 @@ async function loadManifestationUnits() {
 
       const summonNameParts = ability.name.split(/\s+/);
       // Match if any part of the summon name matches the unit name
-      if (summonNameParts.some((part) => unit.name.includes(part))) {
+      if (summonNameParts.some((part: string) => unit.name.includes(part))) {
         unitNames.add(unit.name);
         break;
       }

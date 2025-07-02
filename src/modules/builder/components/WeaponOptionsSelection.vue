@@ -46,8 +46,8 @@
 </template>
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
-import CounterBox from '../../../components/CounterBox.vue';
-import Section from '../../../components/Section.vue';
+import CounterBox from '../../core/components/CounterBox.vue';
+import Section from '../../core/components/Section.vue';
 import type { ListUnit } from '../../../common/ListData';
 import type { Unit } from '../../../common/UnitData';
 

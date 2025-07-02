@@ -10,13 +10,13 @@ import {
   getFavoriteToggleState,
   setFavoriteToggleState,
 } from '../favorites';
-import ListButton from '../components/ListButton.vue';
-import FavoriteToggle from '../components/FavoriteToggle.vue';
-import SettingsButton from '../components/SettingsButton.vue';
+import ListButton from '../modules/shared/components/ListButton.vue';
+import FavoriteToggle from '../modules/core/components/FavoriteToggle.vue';
+import SettingsButton from '../modules/core/components/SettingsButton.vue';
 import { SIGDEX_VERSION } from '../version';
-import Section from '../components/Section.vue';
+import Section from '../modules/core/components/Section.vue';
 import ListList from '../components/ListList.vue';
-import TwoTab from '../components/TwoTab.vue';
+import TwoTab from '../modules/core/components/TwoTab.vue';
 const router = useRouter();
 const armyFavorites = ref<string[]>([]);
 const showOnlyFavorites = ref(getFavoriteToggleState('army'));

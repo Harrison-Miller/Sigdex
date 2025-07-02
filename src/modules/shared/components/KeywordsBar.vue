@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatText } from '../utils/formatter';
+import { formatText } from '../../../utils/formatter';
 const props = defineProps<{ keywords?: string[] | null }>();
 </script>
 <template>

@@ -18,10 +18,10 @@ import { getList, saveList } from '../../../utils/list-manager';
 import { loadArmy } from '../../../army';
 import { computedAsync } from '@vueuse/core';
 import { useRoute } from 'vue-router';
-import ToggleBox from '../../../components/ToggleBox.vue';
+import ToggleBox from '../../core/components/ToggleBox.vue';
 import WeaponOptionsSelection from '../components/WeaponOptionsSelection.vue';
 import EnhancementsSelection from '../components/EnhancementsSelection.vue';
-import BackButton from '../../../components/BackButton.vue';
+import BackButton from '../../core/components/BackButton.vue';
 
 const route = useRoute();
 const listId = route.params.id as string;
@@ -94,20 +94,6 @@ const isReinforceable = computed(
 );
 </script>
 <style scoped>
-.unit-settings-back-btn {
-  position: absolute;
-  left: 1.2em;
-  top: 1.2em;
-  z-index: 2;
-}
-.unit-settings-modal {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2em;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
 .unit-name {
   font-size: 1.3em;
   font-weight: 600;
@@ -119,51 +105,6 @@ const isReinforceable = computed(
   flex-direction: column;
   gap: 0.3em;
   align-items: center;
-}
-.scrollable-options {
-  max-height: 320px;
-  overflow-y: auto;
-  width: 100%;
-  margin-bottom: 1em;
-}
-.modal-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1em;
-  margin-top: 1.2em;
-}
-.save-btn {
-  background: #1976d2;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 0.6em 1.3em;
-  font-size: 1em;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.18s;
-}
-.save-btn:hover {
-  background: #1251a2;
-}
-.cancel-btn {
-  background: #f5f5f5;
-  color: #a00;
-  border: 1.5px solid #a00;
-  border-radius: 6px;
-  padding: 0.6em 1.3em;
-  font-size: 1em;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background 0.18s,
-    color 0.18s,
-    border 0.18s;
-}
-.cancel-btn:hover {
-  background: #a00;
-  color: #fff;
-  border-color: #a00;
 }
 .enhancement-count {
   font-weight: 500;

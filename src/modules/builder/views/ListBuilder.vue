@@ -165,20 +165,20 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getList, saveList } from '../utils/list-manager';
-import BackButton from '../components/BackButton.vue';
-import SettingsButton from '../components/SettingsButton.vue';
-import type { List } from '../common/ListData';
-import ListRegiment from '../components/ListRegiment.vue';
-import { loadArmy, loadLores } from '../army';
-import type { Army } from '../common/ArmyData';
-import Section from '../components/Section.vue';
-import AbilityCard from '../components/AbilityCard.vue';
-import ListButton from '../components/ListButton.vue';
+import { getList, saveList } from '../../../utils/list-manager';
+import BackButton from '../../core/components/BackButton.vue';
+import SettingsButton from '../../core/components/SettingsButton.vue';
+import type { List } from '../../../common/ListData';
+import { loadArmy, loadLores } from '../../../army';
+import type { Army } from '../../../common/ArmyData';
+import Section from '../../core/components/Section.vue';
+import AbilityCard from '../../shared/components/AbilityCard.vue';
+import ListButton from '../../shared/components/ListButton.vue';
 import ListBuilderLoreSection from '../components/ListBuilderLoreSection.vue';
-import { universalManifestationLores } from '../common/ManifestationData';
+import { universalManifestationLores } from '../../../common/ManifestationData';
 import ListIndicator from '../components/ListIndicator.vue';
-import { POINTS_CAP } from '../common/ListData';
+import { POINTS_CAP } from '../../../common/ListData';
+import ListRegiment from '../components/ListRegiment.vue';
 
 const props = defineProps<{ id: string }>();
 const route = useRoute();

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import KeywordsBar from './KeywordsBar.vue';
-import { formatText } from '../utils/formatter';
+import { formatText } from '../../../utils/formatter';
 const props = defineProps<{
   ability: {
     timing: string;

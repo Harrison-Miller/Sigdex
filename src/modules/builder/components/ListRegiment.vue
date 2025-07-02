@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { defineProps, defineEmits, computed } from 'vue';
-import type { ListRegiment } from '../common/ListData';
-import ListButton from './ListButton.vue';
-import Section from './Section.vue';
+import type { ListRegiment } from '../../../common/ListData';
+import ListButton from '../../shared/components/ListButton.vue';
+import Section from '../../core/components/Section.vue';
 import { useRouter } from 'vue-router';
-import type { Army } from '../common/ArmyData';
+import type { Army } from '../../../common/ArmyData';
 
 const props = defineProps<{
   regimentIdx: number;
