@@ -7,6 +7,7 @@ import { parseUnits } from './units';
 import { parseBattleTraits } from './battletraits';
 import { parseBattleFormations } from './formations';
 import { parseCategories } from './categories';
+import { parseEnhancementTables } from './enhancementtables';
 
 export function parseArmy(gameInfo: Element, unitLibrary: Element, armyInfo: Element): Army {
   const categories = parseCategories(gameInfo);
@@ -30,6 +31,8 @@ export function parseArmy(gameInfo: Element, unitLibrary: Element, armyInfo: Ele
   const battleTraits = parseBattleTraits(armyInfo);
   const formations = parseBattleFormations(armyInfo);
 
+  const enhancementTables = parseEnhancementTables(armyInfo);
+
   return new Army(
     units,
     artifacts,
@@ -38,6 +41,7 @@ export function parseArmy(gameInfo: Element, unitLibrary: Element, armyInfo: Ele
     spellLores,
     prayerLores,
     battleTraits,
-    formations
+    formations,
+    enhancementTables
   );
 }

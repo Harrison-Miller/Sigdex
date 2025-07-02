@@ -14,7 +14,7 @@ export const orderArmies: ArmyDefinition[] = [
   { name: 'Fyreslayers', grandAlliance: 'Order' },
   { name: 'Idoneth Deepkin', grandAlliance: 'Order' },
   { name: 'Kharadron Overlords', grandAlliance: 'Order' },
-  { name: 'Lumineth Realm-Lords', grandAlliance: 'Order' },
+  { name: 'Lumineth Realm-lords', grandAlliance: 'Order' },
   { name: 'Seraphon', grandAlliance: 'Order' },
   { name: 'Stormcast Eternals', grandAlliance: 'Order' },
   { name: 'Sylvaneth', grandAlliance: 'Order' },
@@ -68,6 +68,7 @@ export class Army {
   prayerLores: ArmyLore[] = [];
   battleTraits: Ability[] = [];
   formations: Map<string, Ability[]> = new Map();
+  enhancementTables: Map<string, Ability[]> = new Map();
 
   constructor(
     units: Unit[],
@@ -77,7 +78,8 @@ export class Army {
     spellLores: ArmyLore[] = [],
     prayerLores: ArmyLore[] = [],
     battleTraits: Ability[] = [],
-    formations: Map<string, Ability[]> = new Map()
+    formations: Map<string, Ability[]> = new Map(),
+    enhancementTables: Map<string, Ability[]> = new Map()
   ) {
     this.units = units;
     this.artifacts = artifacts;
@@ -87,6 +89,7 @@ export class Army {
     this.prayerLores = prayerLores;
     this.battleTraits = battleTraits;
     this.formations = formations;
+    this.enhancementTables = enhancementTables;
   }
 
   toJSON() {
@@ -99,6 +102,7 @@ export class Army {
       prayerLores: this.prayerLores,
       battleTraits: this.battleTraits,
       formations: Array.from(this.formations.entries()),
+      enhancementTables: Array.from(this.enhancementTables.entries()),
     };
   }
 
@@ -111,7 +115,8 @@ export class Army {
       obj.spellLores,
       obj.prayerLores,
       obj.battleTraits,
-      obj.formations instanceof Map ? obj.formations : new Map(obj.formations)
+      obj.formations instanceof Map ? obj.formations : new Map(obj.formations),
+      obj.enhancementTables instanceof Map ? obj.enhancementTables : new Map(obj.enhancementTables)
     );
   }
 }

@@ -215,6 +215,13 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   for (const [name, count] of Object.entries(assignedHeroicTraits)) {
     if (count > 1) violations.push(`Duplicate heroic trait assigned: ${name}`);
   }
+  // 12.b: Only one unique artifact and one unique heroic trait allowed in the list
+  if (Object.keys(assignedArtifacts).length > 1) {
+    violations.push('You cannot have more than 1 artifact in a list.');
+  }
+  if (Object.keys(assignedHeroicTraits).length > 1) {
+    violations.push('You cannot have more than 1 heroic trait in a list.');
+  }
   // 13. Regiment option violations
   for (const [i, regiment] of list.regiments.entries()) {
     const regViolations = calculateRegimentOptionViolations(regiment, army);

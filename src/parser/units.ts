@@ -20,6 +20,7 @@ import {
 } from './regimentoptions';
 import type { RegimentOption } from '../common/UnitData';
 import { parseUnitsAsCategories } from './categories';
+import { parseUnitEnhancementTables } from './enhancementtables';
 
 function isAlwaysNotReinforceable(unitSize: number, keywords: string[]): boolean {
   if (unitSize == 1) {
@@ -101,6 +102,7 @@ export function parseUnits(
     const unitSize = models.reduce((sum, model) => sum + model.count, 0) || 1;
     const companionUnits = armyInfoRoot ? parseCompanionUnits(armyInfoRoot, name) : [];
     const reinforceable = armyInfoRoot ? parseReinforceable(armyInfoRoot, name) : true;
+    const enhancementTables = armyInfoRoot ? parseUnitEnhancementTables(armyInfoRoot, name) : [];
 
     const suberHeroOptions: RegimentOption[] | undefined = isHero(keywords) ? [] : undefined;
     const regimentOptions: RegimentOption[] | undefined = isHero(keywords) ? [] : undefined;
@@ -146,6 +148,7 @@ export function parseUnits(
       sub_hero_options: suberHeroOptions,
       sub_hero_tags: regimentTags.get(name) || undefined,
       regiment_options: regimentOptions,
+      enhancement_tables: enhancementTables.length > 0 ? enhancementTables : undefined,
     };
 
     units.push(unit);

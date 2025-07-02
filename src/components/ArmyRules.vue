@@ -33,6 +33,13 @@
         <AbilityCard v-for="(trait, j) in abilities" :key="trait.name + j" :ability="trait" />
       </div>
     </Section>
+    <Section v-if="army.enhancementTables && army.enhancementTables.size">
+      <template #title>Enhancements</template>
+      <div v-for="[table, abilities] in Array.from(army.enhancementTables.entries())" :key="table">
+        <h3 class="section-subheader">{{ table }}</h3>
+        <AbilityCard v-for="(ability, i) in abilities" :key="ability.name + i" :ability="ability" />
+      </div>
+    </Section>
     <!-- Spell Lores Dropdown -->
     <Section v-if="army.spellLores && army.spellLores.length">
       <template #title>Spell Lores</template>
