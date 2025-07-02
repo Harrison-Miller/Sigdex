@@ -5,6 +5,8 @@ import UnitDetailView from './views/UnitDetailView.vue';
 import SettingsView from './views/SettingsView.vue';
 import ManifestationLoreView from './views/ManifestationLoreView.vue';
 import ListBuilderView from './views/ListBuilderView.vue';
+import BuilderSettings from './modules/builder/views/BuilderSettings.vue';
+import BuilderUnitSettings from './modules/builder/views/BuilderUnitSettings.vue';
 
 const routes = [
   { path: '/', name: 'Armies', component: ArmyListView },
@@ -17,9 +19,24 @@ const routes = [
     props: true,
   },
   { path: '/settings', name: 'Settings', component: SettingsView },
-  { path: '/list/:name', name: 'ListBuilder', component: ListBuilderView, props: true },
   {
-    path: '/list/:listName/regiment/:regimentIdx/pick',
+    path: '/list/:id',
+    name: 'ListBuilder',
+    component: ListBuilderView,
+    props: true,
+  },
+  {
+    path: '/list/:id/settings',
+    name: 'BuilderSettings',
+    component: BuilderSettings,
+  },
+  {
+    path: '/list/:id/regiment/:regimentIdx/:unitIdx/settings',
+    name: 'BuilderUnitSettings',
+    component: BuilderUnitSettings,
+  },
+  {
+    path: '/list/:id/regiment/:regimentIdx/pick',
     name: 'UnitPicker',
     component: () => import('./views/UnitPickerView.vue'),
   },

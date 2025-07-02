@@ -28,20 +28,25 @@ function handleCreate({ name, faction }: { name: string; faction: string }) {
     faction,
     formation: '',
     regiments: [{ leader: { name: '' }, units: [] }],
+    id: '', // id will be generated in createListInStorage
   });
   lists.value = getAllLists();
   closeModal();
-  router.push({ name: 'ListBuilder', params: { name } });
+  // Find the newly created list by name and faction (should be unique enough)
+  const created = lists.value.find((l) => l.name === name && l.faction === faction);
+  if (created) {
+    router.push({ name: 'ListBuilder', params: { id: created.id } });
+  }
 }
 function goToList(list: List) {
-  router.push({ name: 'ListBuilder', params: { name: list.name } });
+  router.push({ name: 'ListBuilder', params: { id: list.id } });
 }
 </script>
 <template>
   <h2>Your Lists</h2>
   <div v-if="lists.length === 0" class="empty-message">You have no saved lists yet.</div>
   <ul v-else>
-    <li v-for="list in lists" :key="list.name">
+    <li v-for="list in lists" :key="list.id">
       <ListButton
         :label="`${list.name} | ${list.faction}${list.formation && list.formation.trim() ? ' | ' + list.formation : ''}`"
         @click="goToList(list)"

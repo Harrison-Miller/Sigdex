@@ -58,3 +58,7 @@
   - consider parsing the constraints on them, it might help us figure what armies can take more. Or when tables are mutually exclusive etc.
 - summon abilitiy should probably be stored with the manifestation directly so we don't have to do lookups and vice-a-versa
 - lore abilities should be stored directly in the army so we don't have to do lookups.
+
+- fix ko ather runners display
+
+- when parsing ability colors normalize grey to gray

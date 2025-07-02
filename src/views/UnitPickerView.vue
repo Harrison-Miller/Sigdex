@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getAllLists, saveList, setupDefaultWeaponOptions } from '../utils/list-manager';
+import { getList, saveList, setupDefaultWeaponOptions } from '../utils/list-manager';
 import { loadArmy } from '../army';
 import { filterUnitsByRegimentOptions, POSSIBLE_CATEGORIES } from '../common/UnitData';
 import { formatRegimentOptions } from '../utils/formatter';
@@ -14,7 +14,7 @@ import Section from '../components/Section.vue';
 
 const route = useRoute();
 const router = useRouter();
-const listName = route.params.listName as string;
+const listId = route.params.id as string;
 const regimentIdx = Number(route.params.regimentIdx);
 const filter = (route.query.filter as string) || '';
 
@@ -24,7 +24,7 @@ const loading = ref(true);
 const search = ref('');
 
 onMounted(async () => {
-  const found = getAllLists().find((l) => l.name === listName);
+  const found = getList(listId);
   list.value = found;
   if (found) {
     army.value = await loadArmy(found.faction);
