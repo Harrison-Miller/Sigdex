@@ -45,9 +45,8 @@
       </div>
     </Section>
     <div v-if="list && armyData">
-      <div v-for="idx in list.regiments.length" :key="idx" class="regiment-block">
+      <div v-for="(regiment, idx) in list.regiments" :key="idx" class="regiment-block">
         <ListRegiment
-          v-for="(regiment, idx) in list.regiments"
           :key="idx"
           :regimentIdx="idx"
           :regiment="regiment"

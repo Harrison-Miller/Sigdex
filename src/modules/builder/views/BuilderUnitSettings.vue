@@ -50,7 +50,6 @@ const unit = computed({
   },
   set: (value) => {
     if (!list.value || !value) return;
-    console.log('Setting unit', value, 'at index', unitIdx, 'in regiment', regimentIdx);
     if (unitIdx === 'leader') {
       list.value.regiments[regimentIdx].leader = value;
     } else {
