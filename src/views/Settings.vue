@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { SIGDEX_VERSION } from '../version';
-import BackButton from '../components/BackButton.vue';
-import ListButton from '../components/ListButton.vue';
+import BackButton from '../modules/core/components/BackButton.vue';
+import ListButton from '../modules/shared/components/ListButton.vue';
 import { clearAllFavorites } from '../favorites';
 import { clearBSData, saveGithubBaseUrl, saveGithubRepo } from '../army';
 import { clearAllLists } from '../utils/list-manager';

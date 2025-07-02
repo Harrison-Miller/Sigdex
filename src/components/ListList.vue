@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import type { List } from '../common/ListData';
 import { allArmies } from '../common/ArmyData';
-import ListButton from './ListButton.vue';
+import ListButton from '../modules/shared/components/ListButton.vue';
 import { createList as createListInStorage, getAllLists } from '../utils/list-manager';
 import { useRouter } from 'vue-router';
 import CreateListModal from './CreateListModal.vue';

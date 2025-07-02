@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { loadLores, loadUniversalUnits } from '../army';
-import type { Unit } from '../common/UnitData';
-import type { Lore } from '../common/ManifestationData';
-import ListButton from '../components/ListButton.vue';
-import BackButton from '../components/BackButton.vue';
+import { loadLores, loadUniversalUnits } from '../../../army';
+import type { Unit } from '../../../common/UnitData';
+import type { Lore } from '../../../common/ManifestationData';
+import ListButton from '../../shared/components/ListButton.vue';
+import BackButton from '../../core/components/BackButton.vue';
 import ArmyRules from '../components/ArmyRules.vue';
-import TwoTab from '../components/TwoTab.vue';
+import TwoTab from '../../core/components/TwoTab.vue';
 
 const props = defineProps<{ lore: string }>();
 const loreName = props.lore;
@@ -110,7 +110,7 @@ onMounted(async () => {
     </TwoTab>
   </div>
 </template>
-<style src="./list-shared.css" scoped></style>
+<style src="../../../views/list-shared.css" scoped></style>
 <style scoped>
 .unit-list-back {
   margin-bottom: 0.5rem;

@@ -15,7 +15,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import BackButton from '../../../components/BackButton.vue';
+import BackButton from '../../core/components/BackButton.vue';
 import { ref, computed, watch } from 'vue';
 import { deleteList, renameList, getList } from '../../../utils/list-manager';
 import { useRoute, useRouter } from 'vue-router';
@@ -49,42 +49,6 @@ function renameCurrentList() {
 }
 </script>
 <style scoped>
-.settings-back-btn {
-  position: absolute;
-  left: 1.2em;
-  top: 1.2em;
-  z-index: 2;
-}
-.settings-modal {
-  min-width: 320px;
-  max-width: 95vw;
-}
-.settings-modal label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3em;
-  font-weight: 500;
-  margin-bottom: 1em;
-}
-.settings-modal input[type='text'] {
-  width: 100%;
-  font-size: 1.1em;
-  padding: 0.7em 0.9em;
-  border-radius: 6px;
-  border: 1px solid #bbb;
-  margin-top: 0.3em;
-  box-sizing: border-box;
-}
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1em;
-  margin-top: 0.5em;
-}
-.modal-actions.single-action {
-  justify-content: center;
-  gap: 0;
-}
 .save-btn {
   background: #1976d2;
   color: #fff;

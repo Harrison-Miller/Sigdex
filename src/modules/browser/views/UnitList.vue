@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { loadArmy } from '../army';
+import { loadArmy } from '../../../army';
 import { ref, onMounted, watch, computed } from 'vue';
-import type { Unit } from '../common/UnitData';
-import ListButton from '../components/ListButton.vue';
-import FavoriteToggle from '../components/FavoriteToggle.vue';
-import BackButton from '../components/BackButton.vue';
+import type { Unit } from '../../../common/UnitData';
+import ListButton from '../../shared/components/ListButton.vue';
+import FavoriteToggle from '../../core/components/FavoriteToggle.vue';
+import BackButton from '../../core/components/BackButton.vue';
 import ArmyRules from '../components/ArmyRules.vue';
-import TwoTab from '../components/TwoTab.vue';
+import TwoTab from '../../core/components/TwoTab.vue';
 import {
   saveFavorite,
   removeFavorite,
   getFavorites,
   getArmyUnitFavoriteToggleState,
   setArmyUnitFavoriteToggleState,
-} from '../favorites';
-import { POSSIBLE_CATEGORIES } from '../common/UnitData';
-import Section from '../components/Section.vue';
+} from '../../../favorites';
+import { POSSIBLE_CATEGORIES } from '../../../common/UnitData';
+import Section from '../../core/components/Section.vue';
 
 // Accept army as a prop for this view
 const props = defineProps<{ army?: string }>();
@@ -163,7 +163,7 @@ watch(unitFavorites, (favs) => {
                     :showFavoriteToggle="true"
                     :points="u.points"
                     @click="navigate"
-                    @toggle-favorite="(fav) => toggleUnitFavorite(u.name, fav)"
+                    @toggle-favorite="(fav: boolean) => toggleUnitFavorite(u.name, fav)"
                     :href="href"
                   />
                 </router-link>
@@ -178,7 +178,7 @@ watch(unitFavorites, (favs) => {
     </TwoTab>
   </div>
 </template>
-<style src="./list-shared.css" scoped></style>
+<style src="../../../views/list-shared.css" scoped></style>
 <style scoped>
 .filters-bar {
   display: flex;

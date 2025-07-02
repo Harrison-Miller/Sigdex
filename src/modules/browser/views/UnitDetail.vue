@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import AbilityCard from '../components/AbilityCard.vue';
+import AbilityCard from '../../shared/components/AbilityCard.vue';
 import StatCircle from '../components/StatCircle.vue';
-import KeywordsBar from '../components/KeywordsBar.vue';
+import KeywordsBar from '../../shared/components/KeywordsBar.vue';
 import WeaponTable from '../components/WeaponTable.vue';
-import FavoriteToggle from '../components/FavoriteToggle.vue';
-import BackButton from '../components/BackButton.vue';
-import Section from '../components/Section.vue';
-import { isFavorite, saveFavorite, removeFavorite } from '../favorites';
-import { loadArmy, loadLores, loadUniversalUnits } from '../army';
-import { MOCK_UNIT } from '../army';
-import type { Ability } from '../common/Ability';
-import { formatModelGroups, formatSubHeroTags, formatRegimentOptions } from '../utils/formatter';
+import FavoriteToggle from '../../core/components/FavoriteToggle.vue';
+import BackButton from '../../core/components/BackButton.vue';
+import Section from '../../core/components/Section.vue';
+import { isFavorite, saveFavorite, removeFavorite } from '../../../favorites';
+import { loadArmy, loadLores, loadUniversalUnits } from '../../../army';
+import { MOCK_UNIT } from '../../../army';
+import type { Ability } from '../../../common/Ability';
+import {
+  formatModelGroups,
+  formatSubHeroTags,
+  formatRegimentOptions,
+} from '../../../utils/formatter';
 
 function formatCompanionUnits(unitName: string, companions: string[]): string {
   if (!companions || companions.length === 0) return '';

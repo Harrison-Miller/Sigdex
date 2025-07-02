@@ -134,10 +134,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
-import { loadLores } from '../army';
-import type { Army } from '../common/ArmyData';
-import AbilityCard from './AbilityCard.vue';
-import Section from './Section.vue';
+import { loadLores } from '../../../army';
+import type { Army } from '../../../common/ArmyData';
+import AbilityCard from '../../shared/components/AbilityCard.vue';
+import Section from '../../core/components/Section.vue';
 
 const props = defineProps<{ army: Army | null }>();
 const lores = ref<Map<string, any> | null>(null);

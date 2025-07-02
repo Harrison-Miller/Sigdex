@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getList, saveList, setupDefaultWeaponOptions } from '../utils/list-manager';
-import { loadArmy } from '../army';
-import { filterUnitsByRegimentOptions, POSSIBLE_CATEGORIES } from '../common/UnitData';
-import { formatRegimentOptions } from '../utils/formatter';
-import type { List } from '../common/ListData';
-import type { Army } from '../common/ArmyData';
-import type { Unit } from '../common/UnitData';
-import ListButton from '../components/ListButton.vue';
-import BackButton from '../components/BackButton.vue';
-import Section from '../components/Section.vue';
+import { getList, saveList, setupDefaultWeaponOptions } from '../../../utils/list-manager';
+import { loadArmy } from '../../../army';
+import { filterUnitsByRegimentOptions, POSSIBLE_CATEGORIES } from '../../../common/UnitData';
+import { formatRegimentOptions } from '../../../utils/formatter';
+import type { List } from '../../../common/ListData';
+import type { Army } from '../../../common/ArmyData';
+import type { Unit } from '../../../common/UnitData';
+import ListButton from '../../shared/components/ListButton.vue';
+import BackButton from '../../core/components/BackButton.vue';
+import Section from '../../core/components/Section.vue';
 
 const route = useRoute();
 const router = useRouter();
