@@ -23,9 +23,9 @@ function goToAddLeader() {
     name: 'UnitPicker',
     params: {
       id: props.listId,
-      regimentIdx: props.regimentIdx,
+      regimentIdx: props.regimentIdx.toString(),
+      filter: 'leader',
     },
-    query: { filter: 'leader' },
   });
 }
 
@@ -34,9 +34,9 @@ function goToAddUnit() {
     name: 'UnitPicker',
     params: {
       id: props.listId,
-      regimentIdx: props.regimentIdx,
+      regimentIdx: props.regimentIdx.toString(),
+      filter: 'unit',
     },
-    query: { filter: 'unit' },
   });
 }
 
@@ -57,8 +57,8 @@ function goToUnitSettings(unitIdx: number | 'leader') {
     name: 'BuilderUnitSettings',
     params: {
       id: props.listId,
-      regimentIdx: props.regimentIdx,
-      unitIdx: unitIdx,
+      regimentIdx: props.regimentIdx.toString(),
+      unitIdx: unitIdx.toString(),
     },
   });
 }
