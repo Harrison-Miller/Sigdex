@@ -2,7 +2,15 @@
   <div class="list-builder-view">
     <div class="header-bar">
       <BackButton />
-      <SettingsButton class="settings-btn" :size="36" @click="openSettings" />
+      <div class="header-buttons">
+        <CircleIconButton
+          class="export-btn"
+          :size="36"
+          icon="fa-solid fa-file-arrow-down"
+          @click="openExport"
+        />
+        <SettingsButton class="settings-btn" :size="36" @click="openSettings" />
+      </div>
     </div>
     <h1 class="list-title" v-if="list">{{ list.name }}</h1>
     <div v-if="list" class="subheader">{{ list.faction }}</div>
@@ -168,6 +176,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { getList, saveList } from '../../../utils/list-manager';
 import BackButton from '../../core/components/BackButton.vue';
 import SettingsButton from '../../core/components/SettingsButton.vue';
+import CircleIconButton from '../../core/components/CircleIconButton.vue';
 import type { List } from '../../../common/ListData';
 import { loadArmy, loadLores } from '../../../army';
 import type { Army } from '../../../common/ArmyData';
@@ -344,6 +353,10 @@ function openSettings() {
   router.push({ name: 'BuilderSettings', params: { id: listId } });
 }
 
+function openExport() {
+  router.push({ name: 'ListExport', params: { id: listId } });
+}
+
 function deleteRegiment(idx: number) {
   if (!list.value) return;
   list.value.regiments.splice(idx, 1);
@@ -414,6 +427,13 @@ function handleAddAuxUnit() {
   justify-content: space-between;
   margin-bottom: 0.5em;
 }
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .settings-btn {
   background: none;
   border: none;

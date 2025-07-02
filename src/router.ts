@@ -5,6 +5,7 @@ import UnitList from './modules/browser/views/UnitList.vue';
 import ManifestationLore from './modules/browser/views/ManifestationLore.vue';
 import Settings from './views/Settings.vue';
 import ListBuilder from './modules/builder/views/ListBuilder.vue';
+import ListExport from './modules/builder/views/ListExport.vue';
 import BuilderSettings from './modules/builder/views/BuilderSettings.vue';
 import BuilderUnitSettings from './modules/builder/views/BuilderUnitSettings.vue';
 import UnitPicker from './modules/builder/views/UnitPicker.vue';
@@ -24,6 +25,12 @@ const routes = [
     path: '/list/:id',
     name: 'ListBuilder',
     component: ListBuilder,
+    props: true,
+  },
+  {
+    path: '/list/:id/export',
+    name: 'ListExport',
+    component: ListExport,
     props: true,
   },
   {

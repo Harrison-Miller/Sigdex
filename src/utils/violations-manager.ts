@@ -191,9 +191,11 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
       }
     }
   }
-  // 12. No duplicate artifacts or heroic traits assigned across all units
+  // 12. No duplicate artifacts, heroic traits, or enhancements assigned across all units
   const assignedArtifacts: Record<string, number> = {};
   const assignedHeroicTraits: Record<string, number> = {};
+  const assignedEnhancements: Record<string, Record<string, number>> = {};
+
   // Helper to count assignments
   function countEnhancements(unit: ListUnit | undefined) {
     if (!unit) return;
@@ -201,6 +203,17 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
       assignedArtifacts[unit.artifact] = (assignedArtifacts[unit.artifact] || 0) + 1;
     if (unit.heroic_trait)
       assignedHeroicTraits[unit.heroic_trait] = (assignedHeroicTraits[unit.heroic_trait] || 0) + 1;
+
+    // Count misc enhancements
+    if (unit.enhancements) {
+      for (const [tableName, enhancementName] of unit.enhancements.entries()) {
+        if (!assignedEnhancements[tableName]) {
+          assignedEnhancements[tableName] = {};
+        }
+        assignedEnhancements[tableName][enhancementName] =
+          (assignedEnhancements[tableName][enhancementName] || 0) + 1;
+      }
+    }
   }
   for (const regiment of list.regiments) {
     countEnhancements(regiment.leader);
@@ -215,12 +228,29 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   for (const [name, count] of Object.entries(assignedHeroicTraits)) {
     if (count > 1) violations.push(`Duplicate heroic trait assigned: ${name}`);
   }
-  // 12.b: Only one unique artifact and one unique heroic trait allowed in the list
+
+  // Check for duplicate enhancements within each table
+  for (const [tableName, enhancements] of Object.entries(assignedEnhancements)) {
+    for (const [enhancementName, count] of Object.entries(enhancements)) {
+      if (count > 1) {
+        violations.push(`Duplicate enhancement assigned: ${enhancementName} (from ${tableName})`);
+      }
+    }
+  }
+
+  // 12.b: Only one unique artifact, one unique heroic trait, and one unique enhancement per table allowed in the list
   if (Object.keys(assignedArtifacts).length > 1) {
     violations.push('You cannot have more than 1 artifact in a list.');
   }
   if (Object.keys(assignedHeroicTraits).length > 1) {
     violations.push('You cannot have more than 1 heroic trait in a list.');
+  }
+
+  // Check that only one enhancement per table is selected across the list
+  for (const [tableName, enhancements] of Object.entries(assignedEnhancements)) {
+    if (Object.keys(enhancements).length > 1) {
+      violations.push(`You cannot have more than 1 enhancement from ${tableName} in a list.`);
+    }
   }
   // 13. Regiment option violations
   for (const [i, regiment] of list.regiments.entries()) {

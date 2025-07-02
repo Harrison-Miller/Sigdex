@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getList, saveList, setupDefaultWeaponOptions } from '../../../utils/list-manager';
+import {
+  getList,
+  saveList,
+  setupDefaultWeaponOptions,
+  setupDefaultEnhancements,
+} from '../../../utils/list-manager';
 import { loadArmy } from '../../../army';
 import { filterUnitsByRegimentOptions, POSSIBLE_CATEGORIES } from '../../../common/UnitData';
 import { formatRegimentOptions } from '../../../utils/formatter';
@@ -150,6 +155,7 @@ function addUnitToRegiment(unit: Unit) {
     list.value.auxiallary_units.push({
       name: unit.name,
       weapon_options: army.value ? setupDefaultWeaponOptions(unit.name, army.value) : undefined,
+      enhancements: army.value ? setupDefaultEnhancements(unit.name, army.value) : undefined,
     });
     saveList(list.value);
     router.back();
@@ -160,11 +166,13 @@ function addUnitToRegiment(unit: Unit) {
     list.value.regiments[regimentIdx].leader = {
       name: unit.name,
       weapon_options: army.value ? setupDefaultWeaponOptions(unit.name, army.value) : undefined,
+      enhancements: army.value ? setupDefaultEnhancements(unit.name, army.value) : undefined,
     };
   } else {
     list.value.regiments[regimentIdx].units.push({
       name: unit.name,
       weapon_options: army.value ? setupDefaultWeaponOptions(unit.name, army.value) : undefined,
+      enhancements: army.value ? setupDefaultEnhancements(unit.name, army.value) : undefined,
     });
   }
   saveList(list.value);

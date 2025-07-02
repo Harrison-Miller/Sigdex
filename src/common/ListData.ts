@@ -30,7 +30,7 @@ export interface ListUnit {
 
   weapon_options?: Map<string, ListUnitWeaponOption[]>;
 
-  // TODO: other enhancements
+  enhancements?: Map<string, string>; // enhancement table name to enhancement name (only 1 per table)
 }
 
 export interface ListUnitWeaponOption {

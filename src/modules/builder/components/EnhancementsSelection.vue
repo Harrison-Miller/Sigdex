@@ -1,9 +1,12 @@
 <template>
-  <Section v-if="isHero && unitData && army" v-model="enhancementsCollapsed">
+  <Section
+    v-if="(isHero || hasEnhancementTables) && unitData && army"
+    v-model="enhancementsCollapsed"
+  >
     <template #title>
       Enhancements<span v-if="enhancementCount > 0"> ({{ enhancementCount }})</span>
     </template>
-    <div>
+    <div v-if="isHero">
       <h3>Heroic Trait</h3>
       <OptionSelect
         id="heroic-trait-select"
@@ -15,7 +18,7 @@
         <AbilityCard :ability="selectedHeroicTraitAbility" />
       </div>
     </div>
-    <div>
+    <div v-if="isHero">
       <h3>Artifact</h3>
       <OptionSelect
         id="artifact-select"
@@ -25,6 +28,19 @@
       />
       <div v-if="selectedArtifactAbility">
         <AbilityCard :ability="selectedArtifactAbility" />
+      </div>
+    </div>
+    <div v-for="tableName in availableEnhancementTables" :key="tableName">
+      <h3>{{ tableName }}</h3>
+      <OptionSelect
+        :id="`enhancement-${tableName}-select`"
+        :model-value="unit.enhancements?.get(tableName) || ''"
+        :options="new Map([['', getEnhancementTableOptions(tableName)]])"
+        :placeholder="`No ${tableName}`"
+        @update:model-value="updateEnhancement(tableName, $event)"
+      />
+      <div v-if="getSelectedEnhancementAbility(tableName)">
+        <AbilityCard :ability="getSelectedEnhancementAbility(tableName)!" />
       </div>
     </div>
   </Section>
@@ -47,6 +63,10 @@ const unit = computed({
 });
 
 const isHero = computed(() => props.unitData?.keywords?.some((k) => k.toLowerCase() === 'hero'));
+
+const hasEnhancementTables = computed(() => {
+  return availableEnhancementTables.value.length > 0;
+});
 
 const heroicTraitsOptions = computed(() => {
   if (!props.army?.heroicTraits) return new Map<string, string[]>();
@@ -94,6 +114,9 @@ const enhancementCount = computed(() => {
   let count = 0;
   if (unit.value?.heroic_trait) count++;
   if (unit.value?.artifact) count++;
+  if (unit.value?.enhancements) {
+    count += unit.value.enhancements.size;
+  }
   return count;
 });
 
@@ -102,4 +125,43 @@ const enhancementsCollapsed = ref(false);
 onMounted(() => {
   if (enhancementCount.value === 0) enhancementsCollapsed.value = true;
 });
+
+const availableEnhancementTables = computed(() => {
+  if (!props.unitData?.enhancement_tables || !props.army?.enhancementTables) return [];
+  return props.unitData.enhancement_tables.filter((tableName) =>
+    props.army!.enhancementTables.has(tableName)
+  );
+});
+
+const getEnhancementTableOptions = (tableName: string) => {
+  const table = props.army?.enhancementTables.get(tableName);
+  if (!table) return [];
+  return table.map((ability) => ability.name);
+};
+
+const getSelectedEnhancementAbility = (tableName: string) => {
+  if (!unit.value?.enhancements || !props.army?.enhancementTables) return null;
+  const selectedName = unit.value.enhancements.get(tableName);
+  if (!selectedName) return null;
+
+  const table = props.army.enhancementTables.get(tableName);
+  if (!table) return null;
+
+  return table.find((ability) => ability.name === selectedName) || null;
+};
+
+const updateEnhancement = (tableName: string, enhancementName: string | undefined) => {
+  if (!unit.value.enhancements) {
+    unit.value.enhancements = new Map();
+  }
+
+  if (enhancementName) {
+    unit.value.enhancements.set(tableName, enhancementName);
+  } else {
+    unit.value.enhancements.delete(tableName);
+  }
+
+  // Trigger reactivity by creating a new object
+  unit.value = { ...unit.value, enhancements: new Map(unit.value.enhancements) };
+};
 </script>

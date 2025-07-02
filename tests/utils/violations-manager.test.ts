@@ -5,7 +5,7 @@ import {
 } from '../../src/utils/violations-manager';
 import { Army } from '../../src/common/ArmyData';
 import type { List } from '../../src/common/ListData';
-import type { Unit } from '../../src/common/ArmyData';
+import type { Unit } from '../../src/common/UnitData';
 
 // Minimal Army/unit/regiment mocks for testing
 const makeArmy = (units: any[]) =>
@@ -24,6 +24,7 @@ const makeRegiment = (leader: any, units: any[]) => ({ leader, units });
 const hero = (name: string, sub_hero_tags: string[] = []) => ({
   name,
   category: 'Hero',
+  keywords: ['Hero'],
   sub_hero_tags,
 });
 const unit = (name: string, keywords: string[] = [], category = 'Battleline') => ({
@@ -154,6 +155,7 @@ describe('calculateViolations', () => {
     );
     const list: List = {
       name: 'Test',
+      id: '1',
       setup: true,
       faction: 'Test',
       formation: '',
@@ -191,6 +193,7 @@ describe('calculateViolations', () => {
     );
     const list: List = {
       name: 'Test',
+      id: '1',
       setup: true,
       faction: 'Test',
       formation: '',
@@ -220,6 +223,7 @@ describe('calculateViolations', () => {
     );
     const list: List = {
       name: 'Test',
+      id: '1',
       setup: true,
       faction: 'Test',
       formation: '',
@@ -255,6 +259,7 @@ describe('calculateViolations', () => {
     );
     const list: List = {
       name: 'Test',
+      id: '1',
       setup: true,
       faction: 'Test',
       formation: '',
@@ -294,6 +299,7 @@ describe('calculateViolations', () => {
     );
     const list: List = {
       name: 'Test',
+      id: '1',
       setup: true,
       faction: 'Test',
       formation: '',
@@ -311,5 +317,178 @@ describe('calculateViolations', () => {
     expect(violations).toContain(
       "Cannot include both 'Loonsmasha Fanatics' and 'Loonsmasha Fanatics (Scourge of Ghyran)' in the same list."
     );
+  });
+
+  describe('Enhancement violations', () => {
+    it('flags duplicate artifacts', () => {
+      const army = makeArmy([hero('Hero1'), hero('Hero2')]);
+      const list: List = {
+        name: 'Test',
+        id: '1',
+        setup: true,
+        faction: 'Test',
+        formation: '',
+        regiments: [
+          {
+            leader: { name: 'Hero1', artifact: 'Test Artifact' },
+            units: [{ name: 'Hero2', artifact: 'Test Artifact' }],
+          },
+        ],
+      };
+      const violations = calculateViolations(list, army);
+      expect(violations).toContain('Duplicate artifact assigned: Test Artifact');
+    });
+
+    it('flags multiple unique artifacts', () => {
+      const army = makeArmy([hero('Hero1'), hero('Hero2')]);
+      const list: List = {
+        name: 'Test',
+        id: '1',
+        setup: true,
+        faction: 'Test',
+        formation: '',
+        regiments: [
+          {
+            leader: { name: 'Hero1', artifact: 'Artifact A' },
+            units: [{ name: 'Hero2', artifact: 'Artifact B' }],
+          },
+        ],
+      };
+      const violations = calculateViolations(list, army);
+      expect(violations).toContain('You cannot have more than 1 artifact in a list.');
+    });
+
+    it('flags duplicate heroic traits', () => {
+      const army = makeArmy([hero('Hero1'), hero('Hero2')]);
+      const list: List = {
+        name: 'Test',
+        id: '1',
+        setup: true,
+        faction: 'Test',
+        formation: '',
+        regiments: [
+          {
+            leader: { name: 'Hero1', heroic_trait: 'Test Trait' },
+            units: [{ name: 'Hero2', heroic_trait: 'Test Trait' }],
+          },
+        ],
+      };
+      const violations = calculateViolations(list, army);
+      expect(violations).toContain('Duplicate heroic trait assigned: Test Trait');
+    });
+
+    it('flags multiple unique heroic traits', () => {
+      const army = makeArmy([hero('Hero1'), hero('Hero2')]);
+      const list: List = {
+        name: 'Test',
+        id: '1',
+        setup: true,
+        faction: 'Test',
+        formation: '',
+        regiments: [
+          {
+            leader: { name: 'Hero1', heroic_trait: 'Trait A' },
+            units: [{ name: 'Hero2', heroic_trait: 'Trait B' }],
+          },
+        ],
+      };
+      const violations = calculateViolations(list, army);
+      expect(violations).toContain('You cannot have more than 1 heroic trait in a list.');
+    });
+
+    it('flags duplicate enhancements from same table', () => {
+      const army = makeArmy([unit('Unit1'), unit('Unit2')]);
+      const enhancements1 = new Map([['Command Traits', 'Enhancement A']]);
+      const enhancements2 = new Map([['Command Traits', 'Enhancement A']]);
+      const list: List = {
+        name: 'Test',
+        id: '1',
+        setup: true,
+        faction: 'Test',
+        formation: '',
+        regiments: [
+          {
+            leader: { name: 'Unit1', enhancements: enhancements1 },
+            units: [{ name: 'Unit2', enhancements: enhancements2 }],
+          },
+        ],
+      };
+      const violations = calculateViolations(list, army);
+      expect(violations).toContain(
+        'Duplicate enhancement assigned: Enhancement A (from Command Traits)'
+      );
+    });
+
+    it('flags multiple unique enhancements from same table', () => {
+      const army = makeArmy([unit('Unit1'), unit('Unit2')]);
+      const enhancements1 = new Map([['Command Traits', 'Enhancement A']]);
+      const enhancements2 = new Map([['Command Traits', 'Enhancement B']]);
+      const list: List = {
+        name: 'Test',
+        id: '1',
+        setup: true,
+        faction: 'Test',
+        formation: '',
+        regiments: [
+          {
+            leader: { name: 'Unit1', enhancements: enhancements1 },
+            units: [{ name: 'Unit2', enhancements: enhancements2 }],
+          },
+        ],
+      };
+      const violations = calculateViolations(list, army);
+      expect(violations).toContain(
+        'You cannot have more than 1 enhancement from Command Traits in a list.'
+      );
+    });
+
+    it('allows different enhancements from different tables', () => {
+      const army = makeArmy([unit('Unit1'), unit('Unit2')]);
+      const enhancements1 = new Map([['Command Traits', 'Enhancement A']]);
+      const enhancements2 = new Map([['Battle Traits', 'Enhancement B']]);
+      const list: List = {
+        name: 'Test',
+        id: '1',
+        setup: true,
+        faction: 'Test',
+        formation: '',
+        regiments: [
+          {
+            leader: { name: 'Unit1', enhancements: enhancements1 },
+            units: [{ name: 'Unit2', enhancements: enhancements2 }],
+          },
+        ],
+      };
+      const violations = calculateViolations(list, army);
+      // Should not have enhancement-related violations
+      const enhancementViolations = violations.filter(
+        (v) => v.includes('enhancement') || v.includes('Enhancement')
+      );
+      expect(enhancementViolations).toHaveLength(0);
+    });
+
+    it('handles auxiliary units with enhancements', () => {
+      const army = makeArmy([unit('Unit1'), unit('Aux1')]);
+      const enhancements1 = new Map([['Command Traits', 'Enhancement A']]);
+      const enhancements2 = new Map([['Command Traits', 'Enhancement A']]);
+      const list: List = {
+        name: 'Test',
+        id: '1',
+        setup: true,
+        faction: 'Test',
+        formation: '',
+        regiments: [
+          {
+            leader: { name: 'Unit1', enhancements: enhancements1 },
+            units: [],
+          },
+        ],
+        auxiallary_units: [{ name: 'Aux1', enhancements: enhancements2 }],
+      };
+      const violations = calculateViolations(list, army);
+      expect(violations).toContain(
+        'Duplicate enhancement assigned: Enhancement A (from Command Traits)'
+      );
+    });
   });
 });
