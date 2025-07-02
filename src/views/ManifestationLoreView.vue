@@ -90,6 +90,7 @@ onMounted(async () => {
             formations: new Map(),
             battleTraits: [],
             manifestationLores: loreData ? [{ name: loreName, points: loreData.points ?? 0 }] : [],
+            enhancementTables: new Map(),
             toJSON: function () {
               return {
                 units: this.units,
@@ -100,6 +101,7 @@ onMounted(async () => {
                 prayerLores: this.prayerLores,
                 battleTraits: this.battleTraits,
                 formations: Array.from(this.formations.entries()),
+                enhancementTables: Array.from(this.enhancementTables.entries()),
               };
             },
           }"

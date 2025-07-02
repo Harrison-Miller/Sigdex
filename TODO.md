@@ -38,8 +38,23 @@
   - ExportView and copy to clipboard
   - armies of renown - requires parsing armies of renow
   - list importing
-  - probably don't select a manifestation lore by default if there isn't an army one
+  - probably don't select a manifestation lore by default if there isn't an army one (just allow a none option).
   - regiments of renown
   - battle tactic cards
-  - can't have more than 1 of each enhancement
   - SoG enhancement table rule
+  - notes option for the list and for each unit/renaming a unit: My cool hero name (actual unit name)
+  - badge to show a unit has artifact/heroic trait
+  - don't allow enhancements taken from different tables in the same category.
+  - companion unit checking. Companion unit allows sub heroe's that are in the companion list. Identify the leader of the subhero group that needs to lead the regiment (it's the one with the points). Probably just mark it in some way.
+  - uniques can not take enhancements
+
+- any time we load just make it load everthing, instead of only the current army.
+
+- set default weapon options on the unit detail page
+
+- grouped weapon options don't currently work with reinforcing. You should be able to take 1 of each or 2 of the same. It currently assumes 2 of the same.
+
+- all enhancement tables should probably work the same way
+  - consider parsing the constraints on them, it might help us figure what armies can take more. Or when tables are mutually exclusive etc.
+- summon abilitiy should probably be stored with the manifestation directly so we don't have to do lookups and vice-a-versa
+- lore abilities should be stored directly in the army so we don't have to do lookups.
