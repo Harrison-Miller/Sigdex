@@ -171,14 +171,14 @@ export function exportList(list: List, army: Army, lores?: Map<string, Lore>): s
 
   // name and points
   out += `${list.name} ${points}/2000 pts\n\n`;
-  out += `${list.faction}\n${list.formation}`;
+  out += `${list.faction}\n${list.formation}\n`;
   out += `General's Handbook 2025-26\n`; // TODO: actually have ghb version selection that leads to different rules
   out += `Drops: ${calculateDrops(list)}\n`;
-  out += `Wounds: ${calculateWounds(list, army)}\n\n`;
+  out += `Wounds: ${calculateWounds(list, army)}\n`;
 
   // lores
   if (list.spell_lore) {
-    out += `Spell Lore: ${list.spell_lore}`;
+    out += `Spell Lore - ${list.spell_lore}`;
     const spellPoints = getLorePoints(list.spell_lore, lores);
     if (spellPoints > 0) {
       out += ` (${spellPoints})\n`;
@@ -187,7 +187,7 @@ export function exportList(list: List, army: Army, lores?: Map<string, Lore>): s
     }
   }
   if (list.prayer_lore) {
-    out += `Prayer Lore: ${list.prayer_lore}`;
+    out += `Prayer Lore - ${list.prayer_lore}`;
     const prayerPoints = getLorePoints(list.prayer_lore, lores);
     if (prayerPoints > 0) {
       out += ` (${prayerPoints})\n`;
@@ -196,7 +196,7 @@ export function exportList(list: List, army: Army, lores?: Map<string, Lore>): s
     }
   }
   if (list.manifestation_lore) {
-    out += `Manifestation Lore: ${list.manifestation_lore}`;
+    out += `Manifestation Lore - ${list.manifestation_lore}`;
     const manifestationPoints = getLorePoints(list.manifestation_lore, lores);
     if (manifestationPoints > 0) {
       out += ` (${manifestationPoints})\n`;
@@ -219,7 +219,7 @@ export function exportList(list: List, army: Army, lores?: Map<string, Lore>): s
   });
 
   if (generalRegimentIdx >= 0 && generalsRegiment) {
-    out += `General's Regiment:\n`;
+    out += `\nGeneral's Regiment\n`;
     out += `${displayRegiment(generalsRegiment, army)}\n`;
   }
 
@@ -227,7 +227,7 @@ export function exportList(list: List, army: Army, lores?: Map<string, Lore>): s
   let regimentIdx = 1;
   for (let i = 0; i < list.regiments.length; i++) {
     if (i === generalRegimentIdx) continue; // skip the general's regiment
-    out += `Regiment ${regimentIdx++}:\n`;
+    out += `Regiment ${regimentIdx++}\n`;
     out += `${displayRegiment(list.regiments[i], army)}\n`;
   }
 
@@ -246,8 +246,7 @@ export function exportList(list: List, army: Army, lores?: Map<string, Lore>): s
   }
 
   // app info
-  out += `\n\nCreate with Sigdex:\n`;
-  out += `https://sigdex.io/\n`;
+  out += `\n\nCreated with Sigdex: https://sigdex.io/\n`;
   out += `Version: ${SIGDEX_VERSION}\n`;
 
   return out;
