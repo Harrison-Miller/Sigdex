@@ -135,3 +135,13 @@ export function setupDefaultWeaponOptions(
   }
   return result;
 }
+
+export function setupDefaultEnhancements(unitName: string, army: Army): Map<string, string> {
+  const result = new Map<string, string>();
+  const armyUnit = army.units.find((u) => u.name === unitName);
+  if (!armyUnit || !armyUnit.enhancement_tables) return result;
+
+  // Initialize empty map - user will select enhancements manually
+  // We don't pre-select any enhancements as they are optional choices
+  return result;
+}
