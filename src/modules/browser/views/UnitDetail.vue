@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
@@ -114,6 +115,15 @@ function shouldShowUnitDetails(unit: any): boolean {
   if (!unit) return false;
   return (unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0);
 }
+
+// Computed: extract ward value from keywords like "Ward (5+)"
+const wardValue = computed(() => {
+  if (!unit.value || !unit.value.keywords) return null;
+  const match = unit.value.keywords.find((k: string) => /^ward \([^)]+\)$/i.test(k));
+  if (!match) return null;
+  const paren = match.match(/\(([^)]+)\)/);
+  return paren ? paren[1] : null;
+});
 </script>
 <template>
   <BackButton :size="36" />
@@ -149,6 +159,7 @@ function shouldShowUnitDetails(unit: any): boolean {
         "
       />
       <StatCircle :value="unit.stats.save" label="Save" />
+      <StatCircle v-if="wardValue" :value="wardValue" label="Ward" />
     </div>
     <Section v-if="unit.melee_weapons && unit.melee_weapons.length">
       <template #title>Melee Weapons</template>
