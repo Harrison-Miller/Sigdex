@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import OptionSelect from '../../core/components/OptionSelect.vue';
 import { ref, watch, computed } from 'vue';
 import Section from '../../core/components/Section.vue';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
@@ -167,12 +168,7 @@ const isUniversalLore = computed(() => {
     </template>
     <div class="spell-lores-section">
       <template v-if="computedArmyLore.length > 1">
-        <select v-model="selectedLore">
-          <option v-for="lore in computedArmyLore" :key="lore.name" :value="lore.name">
-            {{ lore.name
-            }}<span v-if="getLorePoints(lore.name)"> ({{ getLorePoints(lore.name) }} pts)</span>
-          </option>
-        </select>
+        <OptionSelect v-model="selectedLore" :options="computedArmyLore.map((lore) => lore.name)" />
       </template>
       <div v-if="props.manifestationMode">
         <div v-if="manifestationLoading" style="margin: 1em 0">Loading...</div>
