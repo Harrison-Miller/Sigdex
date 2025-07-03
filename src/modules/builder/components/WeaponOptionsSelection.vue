@@ -24,20 +24,14 @@
             v-for="(weapons, groupKey) in getGroupWeapons(group)"
             :key="groupKey"
             class="weapon-option-control"
+            style="flex-direction: column; align-items: flex-start"
           >
-            <span class="weapon-option-name">{{ groupKey }}</span>
-            <select
-              class="weapon-option-dropdown"
-              :value="groupWeaponState[group.name][groupKey]"
-              @change="
-                (e) =>
-                  updateGroupWeapon(group.name, groupKey, (e.target as HTMLSelectElement).value)
-              "
-            >
-              <option v-for="w in weapons" :key="w.name" :value="w.name" :title="w.name">
-                {{ w.name }}
-              </option>
-            </select>
+            <span class="weapon-option-name" style="margin-bottom: 0.2em">{{ groupKey }}</span>
+            <OptionSelect
+              :model-value="groupWeaponState[group.name][groupKey]"
+              :options="weapons.map((w) => w.name)"
+              @update:modelValue="(val) => val && handleGroupWeaponSelect(val)"
+            />
           </div>
         </div>
       </template>
@@ -45,6 +39,7 @@
   </Section>
 </template>
 <script setup lang="ts">
+import OptionSelect from '../../core/components/OptionSelect.vue';
 import { computed, reactive, watch } from 'vue';
 import CounterBox from '../../core/components/CounterBox.vue';
 import Section from '../../core/components/Section.vue';
@@ -130,9 +125,24 @@ function updateOptionalWeapon(groupName: string, weaponName: string, value: numb
   optionalWeaponState[groupName][weaponName] = value;
   emitUpdatedModelValue();
 }
-function updateGroupWeapon(groupName: string, groupKey: string, value: string) {
-  groupWeaponState[groupName][groupKey] = value;
-  emitUpdatedModelValue();
+
+function updateGroupWeaponByWeaponName(weaponName: string) {
+  // Find the group and groupKey for this weapon name
+  for (const group of modelGroups.value) {
+    const groupMap = getGroupWeapons(group);
+    for (const groupKey in groupMap) {
+      if (groupMap[groupKey].some((w) => w.name === weaponName)) {
+        groupWeaponState[group.name][groupKey] = weaponName;
+        emitUpdatedModelValue();
+        return;
+      }
+    }
+  }
+}
+
+function handleGroupWeaponSelect(weaponName: string) {
+  if (!weaponName) return;
+  updateGroupWeaponByWeaponName(weaponName);
 }
 
 function buildWeaponOptionsForSave() {
@@ -200,29 +210,9 @@ const showModelGroupHeader = computed(() => modelGroups.value.length > 1);
   overflow-wrap: anywhere;
   word-break: break-word;
 }
-.weapon-option-counter,
-.weapon-option-dropdown {
+.weapon-option-counter {
   flex: 0 0 180px;
   display: flex;
   justify-content: flex-end;
-}
-.weapon-option-dropdown {
-  width: 100%;
-  max-width: 180px;
-  min-width: 120px;
-  padding: 0.4em 1.1em 0.4em 0.7em;
-  border: 1.5px solid #bbb;
-  border-radius: 7px;
-  background: #fafbfc;
-  font-size: 1em;
-  color: #222;
-  transition: border 0.18s;
-  box-sizing: border-box;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.weapon-group-select {
-  margin-bottom: 0.7em;
 }
 </style>

@@ -32,11 +32,11 @@
     >
       <template #title>{{ selectedFormation || 'Formation' }}</template>
       <div class="formation-section">
-        <select v-model="selectedFormation" @change="onFormationChange">
-          <option v-for="name in Array.from(armyData.formations.keys())" :key="name" :value="name">
-            {{ name }}
-          </option>
-        </select>
+        <OptionSelect
+          v-model="selectedFormation"
+          :options="Array.from(armyData.formations.keys())"
+          @update:modelValue="onFormationSelect"
+        />
         <div
           v-if="
             selectedFormation &&
@@ -171,6 +171,7 @@
 </template>
 
 <script setup lang="ts">
+import OptionSelect from '../../core/components/OptionSelect.vue';
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getList, saveList } from '../../../utils/list-manager';
@@ -372,10 +373,8 @@ function handleDeleteUnit(regimentIdx: number, unitIdx: number | string) {
   }
   saveList(list.value);
 }
-function onFormationChange(event: Event) {
-  const target = event.target as HTMLSelectElement | null;
-  if (!target) return;
-  const newFormation = target.value;
+function onFormationSelect(newFormation: string | undefined) {
+  if (!newFormation) return;
   selectedFormation.value = newFormation;
   if (list.value) {
     list.value.formation = newFormation;

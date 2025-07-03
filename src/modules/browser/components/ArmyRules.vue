@@ -55,11 +55,10 @@
         />
       </div>
       <div v-else>
-        <select v-model="selectedSpellLore" class="lore-dropdown">
-          <option v-for="lore in army.spellLores" :key="lore.name" :value="lore.name">
-            {{ lore.name }}<span v-if="lore.points"> ({{ lore.points }} pts)</span>
-          </option>
-        </select>
+        <OptionSelect
+          v-model="selectedSpellLore"
+          :options="army.spellLores.map((lore) => lore.name)"
+        />
         <div v-if="selectedSpellLore">
           <AbilityCard
             v-for="(ability, i) in getLoreAbilities(selectedSpellLore)"
@@ -84,11 +83,12 @@
         />
       </div>
       <div v-else>
-        <select v-model="selectedPrayerLore" class="lore-dropdown">
-          <option v-for="lore in army.prayerLores" :key="lore.name" :value="lore.name">
-            {{ lore.name }}<span v-if="lore.points"> ({{ lore.points }} pts)</span>
-          </option>
-        </select>
+        <OptionSelect
+          v-model="selectedPrayerLore"
+          :options="army.prayerLores.map((lore) => lore.name)"
+          class="lore-dropdown"
+          placeholder="Select Prayer Lore"
+        />
         <div v-if="selectedPrayerLore">
           <AbilityCard
             v-for="(ability, i) in getLoreAbilities(selectedPrayerLore)"
@@ -115,11 +115,12 @@
         />
       </div>
       <div v-else>
-        <select v-model="selectedManifestationLore" class="lore-dropdown">
-          <option v-for="lore in army.manifestationLores" :key="lore.name" :value="lore.name">
-            {{ lore.name }}<span v-if="lore.points"> ({{ lore.points }} pts)</span>
-          </option>
-        </select>
+        <OptionSelect
+          v-model="selectedManifestationLore"
+          :options="army.manifestationLores.map((lore) => lore.name)"
+          class="lore-dropdown"
+          placeholder="Select Manifestation Lore"
+        />
         <div v-if="selectedManifestationLore">
           <AbilityCard
             v-for="(ability, i) in getLoreAbilities(selectedManifestationLore)"
@@ -134,6 +135,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
+import OptionSelect from '../../core/components/OptionSelect.vue';
 import { loadLores } from '../../../army';
 import type { Army } from '../../../common/ArmyData';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
@@ -143,9 +145,9 @@ const props = defineProps<{ army: Army | null }>();
 const lores = ref<Map<string, any> | null>(null);
 const loresLoading = ref(true);
 
-const selectedSpellLore = ref<string | null>(null);
-const selectedPrayerLore = ref<string | null>(null);
-const selectedManifestationLore = ref<string | null>(null);
+const selectedSpellLore = ref<string | undefined>(undefined);
+const selectedPrayerLore = ref<string | undefined>(undefined);
+const selectedManifestationLore = ref<string | undefined>(undefined);
 
 onMounted(async () => {
   loresLoading.value = true;
