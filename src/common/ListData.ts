@@ -12,6 +12,8 @@ export interface List {
   manifestation_lore?: string;
 
   auxiliary_units?: ListUnit[];
+
+  battle_tactics: string[]; // names of battle tactics
 }
 
 export interface ListRegiment {

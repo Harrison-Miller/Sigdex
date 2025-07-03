@@ -29,6 +29,7 @@ function handleCreate({ name, faction }: { name: string; faction: string }) {
     formation: '',
     regiments: [{ leader: { name: '' }, units: [] }],
     id: '', // id will be generated in createListInStorage
+    battle_tactics: [], // Initialize with empty array
   });
   lists.value = getAllLists();
   closeModal();

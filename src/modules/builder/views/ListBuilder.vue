@@ -1,8 +1,10 @@
 <template>
   <div class="list-builder-view">
     <div class="header-bar">
-      <BackButton />
-      <div class="header-buttons">
+      <div style="flex: 1; min-width: 0; display: flex; align-items: center">
+        <BackButton />
+      </div>
+      <div class="floating-header-buttons">
         <CircleIconButton
           class="export-btn"
           :size="36"
@@ -52,6 +54,36 @@
         </div>
       </div>
     </Section>
+    <Section v-model="battleTacticCardsCollapsed">
+      <template #title>Battle Tactic Cards</template>
+      <div v-if="battleTacticCards.length === 0" style="margin: 1em 0; color: #a00">
+        No battle tactic cards found.
+      </div>
+      <div v-else class="battle-tactic-selectors">
+        <div class="battle-tactic-selector">
+          <OptionSelect
+            v-model="selectedBattleTactic1"
+            :options="battleTacticCards.map((card) => card.name)"
+            placeholder="Select Battle Tactic Card 1"
+            @update:modelValue="onBattleTacticSelect"
+          />
+          <div v-if="selectedBattleTacticCard1">
+            <BattleTacticCard :card="selectedBattleTacticCard1" />
+          </div>
+        </div>
+        <div class="battle-tactic-selector">
+          <OptionSelect
+            v-model="selectedBattleTactic2"
+            :options="battleTacticCards.map((card) => card.name)"
+            placeholder="Select Battle Tactic Card 2"
+            @update:modelValue="onBattleTacticSelect"
+          />
+          <div v-if="selectedBattleTacticCard2">
+            <BattleTacticCard :card="selectedBattleTacticCard2" />
+          </div>
+        </div>
+      </div>
+    </Section>
     <div v-if="list && armyData">
       <div v-for="(regiment, idx) in list.regiments" :key="idx" class="regiment-block">
         <ListRegiment
@@ -68,76 +100,22 @@
       <button class="add-regiment-btn" @click="addRegiment">Add regiment</button>
 
       <!-- Auxillary Units Section -->
-      <Section v-model="auxCollapsed">
-        <template #title>Auxillary Units</template>
-        <div
-          class="faction-terrain-controls"
-          v-if="list.auxiliary_units && list.auxiliary_units.length"
-        >
-          <template v-for="(unit, i) in list.auxiliary_units" :key="unit.name + i">
-            <ListButton
-              :label="unit.name"
-              :points="armyData?.units.find((u) => u.name === unit.name)?.points"
-              :show-reinforced="unit.reinforced || false"
-              :show-ellipsis="true"
-              :enhancement-count="getEnhancementCount(unit)"
-              @click="
-                () =>
-                  list &&
-                  router.push({
-                    name: 'UnitDetail',
-                    params: { army: list.faction, unit: unit.name },
-                  })
-              "
-              @ellipsis="() => goToAuxUnitSettings(i)"
-            />
-            <button
-              class="delete-terrain-btn"
-              @click="() => handleDeleteAuxUnit(i)"
-              title="Delete Auxillary Unit"
-            >
-              <font-awesome-icon icon="trash" />
-            </button>
-          </template>
-        </div>
-        <button class="add-terrain-btn" style="margin-top: 0.7em" @click="handleAddAuxUnit">
-          + Auxillary Unit
-        </button>
-      </Section>
+      <AuxiliaryUnitsSection
+        v-model="list.auxiliary_units"
+        :army-data="armyData"
+        :list-faction="list.faction"
+        :router="router"
+        :list-id="list.id"
+        @update:modelValue="onListChange"
+      />
     </div>
-    <div class="divider"></div>
-    <div class="faction-terrain-controls">
-      <template v-if="list?.faction_terrain && armyData">
-        <ListButton
-          :label="list.faction_terrain"
-          :points="armyData.units.find((u) => u.name === list?.faction_terrain)?.points"
-          @click="
-            () =>
-              list &&
-              router.push({
-                name: 'UnitDetail',
-                params: { army: list.faction, unit: list.faction_terrain },
-              })
-          "
-        />
-        <button
-          class="delete-terrain-btn"
-          @click="handleDeleteFactionTerrain"
-          title="Delete Faction Terrain"
-        >
-          <font-awesome-icon icon="trash" />
-        </button>
-      </template>
-      <template
-        v-else-if="
-          armyData &&
-          armyData.units &&
-          armyData.units.some((u) => (u.category || '').toLowerCase() === 'faction terrain')
-        "
-      >
-        <button class="add-terrain-btn" @click="handleAddFactionTerrain">+ Faction Terrain</button>
-      </template>
-    </div>
+    <FactionTerrainSection
+      v-if="list && armyData"
+      v-model="factionTerrainRef"
+      :army-data="armyData"
+      :list-faction="list.faction"
+      :list-id="list.id"
+    />
     <!-- Lore Sections -->
     <ListBuilderLoreSection
       :armyLore="armyData?.spellLores"
@@ -176,7 +154,7 @@
 
 <script setup lang="ts">
 import OptionSelect from '../../core/components/OptionSelect.vue';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getList, saveList } from '../../../utils/list-manager';
 import BackButton from '../../core/components/BackButton.vue';
@@ -187,12 +165,15 @@ import { loadArmy, loadLores } from '../../../army';
 import type { Army } from '../../../common/ArmyData';
 import Section from '../../core/components/Section.vue';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
-import ListButton from '../../shared/components/ListButton.vue';
 import ListBuilderLoreSection from '../components/ListBuilderLoreSection.vue';
 import { universalManifestationLores } from '../../../common/ManifestationData';
 import ListIndicator from '../components/ListIndicator.vue';
 import { POINTS_CAP } from '../../../common/ListData';
 import ListRegiment from '../components/ListRegiment.vue';
+import BattleTacticCard from '../../shared/components/BattleTacticCard.vue';
+import { loadBattleTacticCards } from '../../../army';
+import FactionTerrainSection from '../components/FactionTerrainSection.vue';
+import AuxiliaryUnitsSection from '../components/AuxiliaryUnitsSection.vue';
 
 const props = defineProps<{ id: string }>();
 const route = useRoute();
@@ -212,6 +193,38 @@ const prayerLoresCollapsed = ref(true);
 const formationCollapsed = ref(true);
 const manifestationLoresCollapsed = ref(true);
 const auxCollapsed = ref(true);
+const battleTacticCardsCollapsed = ref(true);
+const battleTacticCards = ref<any[]>([]);
+const selectedBattleTactic1 = ref<string>('');
+const selectedBattleTactic2 = ref<string>('');
+const selectedBattleTacticCard1 = computed(() =>
+  battleTacticCards.value.find((card) => card.name === selectedBattleTactic1.value)
+);
+const selectedBattleTacticCard2 = computed(() =>
+  battleTacticCards.value.find((card) => card.name === selectedBattleTactic2.value)
+);
+// Sync selected battle tactics from list on mount and when list changes
+watch(
+  () => list.value?.battle_tactics,
+  (tactics) => {
+    if (Array.isArray(tactics)) {
+      selectedBattleTactic1.value = tactics[0] || '';
+      selectedBattleTactic2.value = tactics[1] || '';
+    }
+  },
+  { immediate: true }
+);
+
+function onBattleTacticSelect() {
+  if (list.value) {
+    // Always keep both selected, even if blank, and never save null
+    const val1 = selectedBattleTactic1.value || '';
+    const val2 = selectedBattleTactic2.value || '';
+    list.value.battle_tactics = [val1, val2];
+    saveList(list.value);
+  }
+}
+const factionTerrainRef = ref<string | undefined>(undefined);
 
 function saveSpellLore(lore: string) {
   if (list.value) {
@@ -337,6 +350,12 @@ onMounted(async () => {
       loadingArmy.value = false;
     }
   }
+
+  try {
+    battleTacticCards.value = await loadBattleTacticCards();
+  } catch (e) {
+    battleTacticCards.value = [];
+  }
 });
 
 watch(
@@ -347,6 +366,23 @@ watch(
   },
   { immediate: true }
 );
+
+// Sync ref with list value on mount and when list changes
+watch(
+  () => list.value?.faction_terrain,
+  (val) => {
+    factionTerrainRef.value = val;
+  },
+  { immediate: true }
+);
+
+// Watch the ref and update the list and save when it changes
+watch(factionTerrainRef, (val) => {
+  if (list.value) {
+    list.value.faction_terrain = val;
+    saveList(list.value);
+  }
+});
 
 function addRegiment() {
   if (!list.value) return;
@@ -385,179 +421,27 @@ function onFormationSelect(newFormation: string | undefined) {
     saveList(list.value);
   }
 }
-function handleAddFactionTerrain() {
-  if (!list.value || !armyData.value) return;
-  // Find all faction terrain units in the army
-  const terrainUnits = armyData.value.units.filter(
-    (u) => (u.category || '').toLowerCase() === 'faction terrain'
-  );
-  if (terrainUnits.length === 1) {
-    list.value.faction_terrain = terrainUnits[0].name;
+
+function onListChange() {
+  if (list.value) {
     saveList(list.value);
-  } else if (terrainUnits.length > 1) {
-    // Use the same routing logic as ListRegiment for UnitPicker
-    router.push({
-      name: 'UnitPicker',
-      params: { id: listId, regimentIdx: '0', filter: 'terrain' }, // 0 indicates no specific regiment
-    });
   }
-}
-function handleDeleteFactionTerrain() {
-  if (!list.value) return;
-  list.value.faction_terrain = undefined;
-  saveList(list.value);
-}
-function handleDeleteAuxUnit(idx: number) {
-  if (!list.value || !list.value.auxiliary_units) return;
-  list.value.auxiliary_units.splice(idx, 1);
-  saveList(list.value);
-}
-function handleAddAuxUnit() {
-  if (!list.value) return;
-  router.push({
-    name: 'UnitPicker',
-    params: { id: listId, regimentIdx: '0', filter: 'aux' },
-  });
-}
-function getEnhancementCount(unit: any) {
-  let count = 0;
-  if (unit.heroic_trait) count += 1;
-  if (unit.artifact) count += 1;
-  if (unit.enhancements && typeof unit.enhancements.size === 'number')
-    count += unit.enhancements.size;
-  return count;
-}
-function goToAuxUnitSettings(unitIdx: number) {
-  router.push({
-    name: 'BuilderUnitSettings',
-    params: {
-      id: listId,
-      regimentIdx: '999', // Special value for aux units
-      unitIdx: unitIdx.toString(),
-    },
-  });
 }
 </script>
 <style scoped>
-.header-bar {
+@import './listbuilder.css';
+.battle-tactic-selectors {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.5em;
+  gap: 2em;
+  flex-wrap: wrap;
+  margin-bottom: 1em;
 }
-
-.header-buttons {
+.battle-tactic-selector {
+  flex: 1 1 250px;
+  min-width: 220px;
+  max-width: 350px;
   display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.settings-btn {
-  background: none;
-  border: none;
-  border-radius: 50%;
-  box-shadow: none;
-  color: #555;
-  cursor: pointer;
-  z-index: 2;
-}
-.settings-btn:hover {
-  background: #e5e5e5;
-}
-.subheader {
-  color: #666;
-  font-size: 1.2em;
-  margin-bottom: 0.5em;
-}
-.not-found {
-  color: #a00;
-  font-size: 1.2em;
-  margin-top: 2em;
-}
-.add-regiment-btn {
-  display: block;
-  width: 100%;
-  margin: 2em auto 0 auto;
-  background: #a00;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.9em 0;
-  font-size: 1.15em;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-width: 340px;
-}
-.add-regiment-btn:hover {
-  background: #c00;
-}
-.divider {
-  border-bottom: 1px solid #ddd;
-  margin: 0.5em 0;
-}
-.faction-terrain-controls {
-  display: flex;
-  align-items: stretch;
-  justify-content: space-between;
-  width: 100%;
-}
-.add-terrain-btn {
-  width: 100%;
-  background: #f5f5f5;
-  color: #1976d2;
-  border: 2px dashed #1976d2;
-  border-radius: 8px;
-  font-size: 1.1em;
-  font-weight: 600;
-  padding: 0.7em 1.2em;
-  cursor: pointer;
-  transition:
-    background 0.18s,
-    color 0.18s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.add-terrain-btn:hover {
-  background: #1976d2;
-  color: #fff;
-}
-.delete-terrain-btn {
-  min-width: 44px;
-  min-height: 44px;
-  height: auto;
-  font-size: 1.3em;
-  background: #f5f5f5;
-  color: #a00;
-  border: 1.5px solid #a00;
-  border-radius: 7px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 0.1em;
-  margin-right: 0;
-  margin-top: 0;
-  margin-bottom: 0;
-  box-sizing: border-box;
-  transition:
-    background 0.18s,
-    color 0.18s,
-    border 0.18s;
-}
-.delete-terrain-btn:hover {
-  background: #a00;
-  color: #fff;
-  border-color: #a00;
-}
-.list-title {
-  margin: 0;
-  margin-bottom: 0.25em;
-}
-.scroll-buffer {
-  height: 5em;
-  width: 100%;
+  flex-direction: column;
+  gap: 0.7em;
 }
 </style>

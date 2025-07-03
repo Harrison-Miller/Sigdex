@@ -185,6 +185,10 @@ export function exportList(list: List, army: Army, lores?: Map<string, Lore>): s
     );
   }
 
+  if (list.battle_tactics && list.battle_tactics.length > 0) {
+    out += `\nBattle Tactic Cards: ${list.battle_tactics.join(', ')}\n`;
+  }
+
   // TODO: add battle tactic cards or grand starts based on ghb version
 
   // display the general
