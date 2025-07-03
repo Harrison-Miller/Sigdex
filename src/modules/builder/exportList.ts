@@ -93,8 +93,12 @@ function displayUnit(unit: ListUnit, army: Army): string {
   if (!unitData) return `${unit.name} (not found in army)`; // Fallback if unit not found
 
   let out = `${unit.name}`;
-  if (unitData.points) {
-    out += ` (${unitData.points})`; // Add points if available
+  if (unitData.points && unitData.points > 0) {
+    let points = unitData.points || 0;
+    if (unit.reinforced) {
+      points *= 2; // Reinforced units cost double
+    }
+    out += ` (${points})`; // Add points if available
   }
   out += '\n';
 
