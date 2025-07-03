@@ -31,6 +31,7 @@ export async function importList(text: string): Promise<List> {
     spell_lore: findSpellLore(listText, army),
     prayer_lore: findPrayerLore(listText, army),
     manifestation_lore: findManifestationLore(listText, army),
+    battle_tactics: [], // will be filled later
   };
 
   // split the text into regiment chunks

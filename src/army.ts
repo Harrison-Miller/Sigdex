@@ -6,6 +6,8 @@ import { parseLores } from './parser/lores';
 import type { Unit } from './common/UnitData';
 import { DOMParser } from 'xmldom';
 import type { Lore } from './common/ManifestationData';
+import { parseBattleTactics } from './parser/battletactics';
+import type { BattleTacticCard } from './common/BattleTacticsData';
 
 function getGithubBaseUrl() {
   return localStorage.getItem('GITHUB_BASE_URL') || 'https://raw.githubusercontent.com';
@@ -256,6 +258,42 @@ export async function loadUniversalUnits(): Promise<Unit[]> {
     // ignore localStorage errors
   }
   return units;
+}
+
+export async function loadBattleTacticCards(): Promise<BattleTacticCard[]> {
+  const storageKey = 'battleTacticCardsData';
+  const timestampKey = 'battleTacticCardsDataTimestamp';
+  try {
+    const cached = localStorage.getItem(storageKey);
+    if (cached && !isCacheOutOfDate(timestampKey)) {
+      return JSON.parse(cached);
+    }
+  } catch (e) {
+    // ignore localStorage errors
+  }
+
+  const gstUrl = `${GITHUB_BASE_URL}/${GITHUB_REPO}/refs/heads/main/Age%20of%20Sigmar%204.0.gst`;
+  const gstXml = await fetchXml(gstUrl);
+  if (!gstXml) {
+    console.error(`Failed to load battle tactic cards from ${gstUrl}`);
+    throw new Error(`Failed to load battle tactic cards from ${gstUrl}`);
+  }
+
+  const cards = await parseBattleTactics(gstXml);
+  if (!cards || cards.length === 0) {
+    console.error(`Failed to parse battle tactic cards from ${gstXml}`);
+    throw new Error(`Failed to parse battle tactic cards from ${gstXml}`);
+  }
+
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(cards));
+    localStorage.setItem(timestampKey, Date.now().toString());
+    localStorage.setItem('SIGDEX_VERSION', SIGDEX_VERSION);
+  } catch (e) {
+    // ignore localStorage errors
+  }
+
+  return cards;
 }
 
 export function clearBSData() {

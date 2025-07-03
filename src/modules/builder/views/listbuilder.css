@@ -1,0 +1,80 @@
+.header-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  margin-bottom: 0.5em;
+}
+
+.floating-header-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  padding: 0.3em 0.3em 0 0;
+}
+
+.settings-btn {
+  background: none;
+  border: none;
+  border-radius: 50%;
+  box-shadow: none;
+  color: #555;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.settings-btn:hover {
+  background: #e5e5e5;
+}
+
+.subheader {
+  color: #666;
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+}
+
+.not-found {
+  color: #a00;
+  font-size: 1.2em;
+  margin-top: 2em;
+}
+
+.add-regiment-btn {
+  display: block;
+  width: 100%;
+  margin: 2em auto 0 auto;
+  background: #a00;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.9em 0;
+  font-size: 1.15em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 340px;
+}
+
+.add-regiment-btn:hover {
+  background: #c00;
+}
+
+.divider {
+  border-bottom: 1px solid #ddd;
+  margin: 0.5em 0;
+}
+
+.list-title {
+  margin: 0;
+  margin-bottom: 0.25em;
+}
+
+.scroll-buffer {
+  height: 5em;
+  width: 100%;
+}
