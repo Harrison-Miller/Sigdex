@@ -175,6 +175,34 @@ function addUnitToRegiment(unit: Unit) {
       enhancements: army.value ? setupDefaultEnhancements(unit.name, army.value) : undefined,
     });
   }
+
+  // --- Companion auto-add logic ---
+  // Only for leader, points > 0, and has companions
+  const isLeader = filter.toLowerCase() === 'leader';
+  const hasPoints = typeof unit.points === 'number' && unit.points > 0;
+  const companions = Array.isArray(unit.companion_units) ? unit.companion_units : [];
+  if (isLeader && hasPoints && companions.length > 0) {
+    const regimentUnits = list.value.regiments[regimentIdx].units;
+    for (const companionName of companions) {
+      const alreadyPresent = regimentUnits.some((u) => u.name === companionName);
+      if (!alreadyPresent) {
+        // Find the companion unit in the army
+        const companionUnit = army.value?.units.find((u) => u.name === companionName);
+        if (companionUnit) {
+          regimentUnits.push({
+            name: companionUnit.name,
+            weapon_options: army.value
+              ? setupDefaultWeaponOptions(companionUnit.name, army.value)
+              : undefined,
+            enhancements: army.value
+              ? setupDefaultEnhancements(companionUnit.name, army.value)
+              : undefined,
+          });
+        }
+      }
+    }
+  }
+
   saveList(list.value);
   router.back();
 }
