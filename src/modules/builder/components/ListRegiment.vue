@@ -1,3 +1,6 @@
+function getEnhancementCount(unit) { let count = 0; if (unit.heroic_trait) count += 1; if
+(unit.artifact) count += 1; if (unit.enhancements && typeof unit.enhancements.size === 'number')
+count += unit.enhancements.size; return count; }
 <script setup lang="ts">
 import { defineProps, defineEmits, computed } from 'vue';
 import type { ListRegiment } from '../../../common/ListData';
@@ -62,6 +65,14 @@ function goToUnitSettings(unitIdx: number | 'leader') {
     },
   });
 }
+function getEnhancementCount(unit: any) {
+  let count = 0;
+  if (unit.heroic_trait) count += 1;
+  if (unit.artifact) count += 1;
+  if (unit.enhancements && typeof unit.enhancements.size === 'number')
+    count += unit.enhancements.size;
+  return count;
+}
 </script>
 <template>
   <Section>
@@ -78,6 +89,7 @@ function goToUnitSettings(unitIdx: number | 'leader') {
           :points="getUnitByName(props.regiment.leader.name)?.points"
           :showEllipsis="true"
           :showGeneral="!!props.regiment.leader.general"
+          :enhancementCount="getEnhancementCount(props.regiment.leader)"
           @click="() => goToUnitDetail(props.regiment.leader.name)"
           @ellipsis="() => goToUnitSettings('leader')"
         />
@@ -101,6 +113,7 @@ function goToUnitSettings(unitIdx: number | 'leader') {
               :points="getUnitByName(unit.name)?.points"
               :showEllipsis="true"
               :showReinforced="!!unit.reinforced"
+              :enhancementCount="getEnhancementCount(unit)"
               @click="() => goToUnitDetail(unit.name)"
               @ellipsis="() => goToUnitSettings(idx)"
               class="regiment-unit-btn"

@@ -78,6 +78,9 @@
             <ListButton
               :label="unit.name"
               :points="armyData?.units.find((u) => u.name === unit.name)?.points"
+              :show-reinforced="unit.reinforced || false"
+              :show-ellipsis="true"
+              :enhancement-count="getEnhancementCount(unit)"
               @click="
                 () =>
                   list &&
@@ -86,6 +89,7 @@
                     params: { army: list.faction, unit: unit.name },
                   })
               "
+              @ellipsis="() => goToAuxUnitSettings(i)"
             />
             <button
               class="delete-terrain-btn"
@@ -415,8 +419,25 @@ function handleAddAuxUnit() {
     params: { id: listId, regimentIdx: '0', filter: 'aux' },
   });
 }
+function getEnhancementCount(unit: any) {
+  let count = 0;
+  if (unit.heroic_trait) count += 1;
+  if (unit.artifact) count += 1;
+  if (unit.enhancements && typeof unit.enhancements.size === 'number')
+    count += unit.enhancements.size;
+  return count;
+}
+function goToAuxUnitSettings(unitIdx: number) {
+  router.push({
+    name: 'BuilderUnitSettings',
+    params: {
+      id: listId,
+      regimentIdx: '999', // Special value for aux units
+      unitIdx: unitIdx.toString(),
+    },
+  });
+}
 </script>
-
 <style scoped>
 .header-bar {
   display: flex;

@@ -9,6 +9,7 @@ const props = defineProps<{
   showEllipsis?: boolean;
   showGeneral?: boolean;
   showReinforced?: boolean;
+  enhancementCount?: number;
 }>();
 const emit = defineEmits(['click', 'toggle-favorite', 'ellipsis']);
 const { favorite } = toRefs(props);
@@ -45,7 +46,8 @@ const displayPoints = computed(() => {
           (typeof props.points === 'number' && props.points > 0) ||
           isSoG ||
           props.showGeneral ||
-          props.showReinforced
+          props.showReinforced ||
+          (typeof props.enhancementCount === 'number' && props.enhancementCount > 0)
         "
       >
         <span v-if="typeof displayPoints === 'number' && displayPoints > 0" class="points-badge">
@@ -54,6 +56,13 @@ const displayPoints = computed(() => {
         <span v-if="isSoG" class="sog-badge">SoG</span>
         <span v-if="props.showGeneral" class="general-badge">General</span>
         <span v-if="props.showReinforced" class="reinforced-badge">Reinforced</span>
+        <span
+          v-if="typeof props.enhancementCount === 'number' && props.enhancementCount > 0"
+          class="enhancement-badge"
+        >
+          Enhancements
+          <template v-if="props.enhancementCount > 1"> ×{{ props.enhancementCount }}</template>
+        </span>
       </div>
     </span>
     <span
@@ -209,6 +218,21 @@ const displayPoints = computed(() => {
 .reinforced-badge {
   background: #ffe066;
   color: #111; /* Changed from #a08000 to black */
+  font-size: 0.78em;
+  font-weight: 700;
+  border-radius: 1em;
+  padding: 0.08em 0.7em 0.08em 0.7em;
+  margin-top: 0;
+  margin-left: 0.5em;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.01em;
+}
+
+.enhancement-badge {
+  background: #e3f0ff;
+  color: #1976d2;
   font-size: 0.78em;
   font-weight: 700;
   border-radius: 1em;

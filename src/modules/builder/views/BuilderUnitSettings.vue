@@ -47,15 +47,26 @@ watch(
 // getter and setter for the unit
 const unit = computed({
   get: () => {
+    if (regimentIdx === 999) {
+      console.log(
+        'Fetching auxiliary unit at index:',
+        unitIdx,
+        list.value?.auxiliary_units?.[unitIdx as number]
+      );
+      return list.value?.auxiliary_units?.[unitIdx as number];
+    }
     if (unitIdx === 'leader') {
       return list.value?.regiments[regimentIdx]?.leader;
     }
-
     return list.value?.regiments[regimentIdx]?.units[unitIdx];
   },
   set: (value) => {
     if (!list.value || !value) return;
-    if (unitIdx === 'leader') {
+    if (regimentIdx === 999) {
+      if (list.value.auxiliary_units && typeof unitIdx === 'number') {
+        list.value.auxiliary_units[unitIdx] = value;
+      }
+    } else if (unitIdx === 'leader') {
       list.value.regiments[regimentIdx].leader = value;
     } else {
       list.value.regiments[regimentIdx].units[unitIdx] = value;
