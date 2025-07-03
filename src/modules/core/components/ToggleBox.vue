@@ -28,35 +28,35 @@ defineEmits(['update:modelValue']);
   display: none;
 }
 .toggle-label {
-  font-size: 1em;
+  font-size: 1.5em;
   color: #222;
   margin-right: 0.2em;
 }
 .toggle-slider {
-  width: 38px;
-  height: 22px;
+  width: 76px;
+  height: 44px;
   background: #ddd;
-  border-radius: 12px;
+  border-radius: 24px;
   position: relative;
   transition: background 0.18s;
 }
 .toggle-slider::before {
   content: '';
   position: absolute;
-  left: 3px;
-  top: 3px;
-  width: 16px;
-  height: 16px;
+  left: 6px;
+  top: 6px;
+  width: 32px;
+  height: 32px;
   background: #fff;
   border-radius: 50%;
   transition: transform 0.18s;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 .toggle-box.checked .toggle-slider {
   background: #1976d2;
 }
 .toggle-box.checked .toggle-slider::before {
-  transform: translateX(16px);
+  transform: translateX(32px);
   background: #fff;
 }
 </style>

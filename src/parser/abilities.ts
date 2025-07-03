@@ -28,7 +28,12 @@ export function parseAbilities(root: Element): Ability[] {
         .split(',')
         .map((k) => k.trim())
         .filter((k) => k),
-      color: findFirstByTagAndAttr(element, 'attribute', 'name', 'Color')?.textContent || '',
+      color: (() => {
+        const color =
+          findFirstByTagAndAttr(element, 'attribute', 'name', 'Color')?.textContent || '';
+        if (color.trim().toLowerCase() === 'grey') return 'Gray';
+        return color;
+      })(),
       type: findFirstByTagAndAttr(element, 'attribute', 'name', 'Type')?.textContent || '',
       cost: findFirstByTagAndAttr(element, 'characteristic', 'name', 'Cost')?.textContent || '',
       castingValue:

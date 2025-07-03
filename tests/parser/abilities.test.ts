@@ -3,6 +3,29 @@ import { DOMParser } from 'xmldom';
 import { parseAbilities } from '../../src/parser/abilities';
 
 describe('parseAbilities', () => {
+  it('normalizes grey to gray', () => {
+    const xml = `
+		<selectionEntry type="unit" name="AbilityGuy">
+			<profiles>
+				<profile name="Grey Ability" typeName="Ability (Activated)">
+					<characteristics>
+						<characteristic name="Timing">Your Hero Phase</characteristic>
+						<characteristic name="Effect">Do something grey.</characteristic>
+						<characteristic name="Keywords">Test</characteristic>
+					</characteristics>
+					<attributes>
+					<attribute name="Color">Grey</attribute>
+					<attribute name="Type">Special</attribute>
+					</attributes>
+				</profile>
+			</profiles>
+		</selectionEntry>
+	`;
+    const root = new DOMParser().parseFromString(xml, 'text/xml').documentElement;
+    const abilities = parseAbilities(root);
+    expect(abilities.length).toBe(1);
+    expect(abilities[0].color).toBe('Gray');
+  });
   it('simple', () => {
     const xml = `
 		<selectionEntry type="unit" name="AbilityGuy">

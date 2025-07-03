@@ -12,6 +12,65 @@ import { calculatePoints } from './points-manager';
  */
 export function calculateViolations(list: List, army: Army, lores?: Map<string, Lore>): string[] {
   const violations: string[] = [];
+  // Unique units cannot take heroic traits, artifacts, or enhancements
+  for (const regiment of list.regiments) {
+    const allUnits = [regiment.leader, ...regiment.units];
+    for (const unit of allUnits) {
+      if (!unit || !unit.name) continue;
+      const armyUnit = army.units.find((u) => u.name === unit.name);
+      if (!armyUnit) continue;
+      const isUnique =
+        armyUnit.keywords && armyUnit.keywords.some((k) => k.toLowerCase() === 'unique');
+      if (isUnique) {
+        if (unit.heroic_trait) {
+          violations.push(`Unique unit '${unit.name}' cannot have a heroic trait.`);
+        }
+        if (unit.artifact) {
+          violations.push(`Unique unit '${unit.name}' cannot have an artifact.`);
+        }
+        if (unit.enhancements && unit.enhancements.size > 0) {
+          violations.push(`Unique unit '${unit.name}' cannot have enhancements.`);
+        }
+      }
+    }
+  }
+  // Companion unit violations
+  for (const [i, regiment] of list.regiments.entries()) {
+    if (!regiment.leader || !regiment.leader.name) continue;
+    const leaderUnit = army.units.find((u) => u.name === regiment.leader.name);
+    if (!leaderUnit) continue;
+    // 1. If a leader with points has companion units, the regiment must contain all those companion units.
+    if (leaderUnit.companion_units && leaderUnit.companion_units.length > 0) {
+      if (leaderUnit.points && leaderUnit.points > 0) {
+        for (const companionName of leaderUnit.companion_units) {
+          const found = regiment.units.some((u) => u.name === companionName);
+          if (!found) {
+            violations.push(
+              `Regiment ${i + 1}: Leader '${leaderUnit.name}' requires companion unit '${companionName}' in the regiment.`
+            );
+          }
+        }
+      } else {
+        // 2. If a leader with no points has companion units, error
+        violations.push(
+          `Regiment ${i + 1}: Unit '${leaderUnit.name}' must not lead a regiment (has companion units but no points).`
+        );
+      }
+    }
+    // 3. If any other unit with companion is taken in a regiment not lead by a leader with them as companion, error
+    for (const unit of regiment.units) {
+      const armyUnit = army.units.find((u) => u.name === unit.name);
+      if (!armyUnit) continue;
+      if (armyUnit.companion_units && armyUnit.companion_units.length > 0) {
+        // Only allowed if this unit is a companion of the leader
+        if (!leaderUnit.companion_units || !leaderUnit.companion_units.includes(armyUnit.name)) {
+          violations.push(
+            `Regiment ${i + 1}: Unit '${armyUnit.name}' cannot be included in regiment led by '${leaderUnit.name}'.`
+          );
+        }
+      }
+    }
+  }
   // 1. Points cap
   const points = calculatePoints(list, army, lores);
   if (points > 2000) {
