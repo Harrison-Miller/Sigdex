@@ -102,26 +102,34 @@ async function loadManifestationUnits() {
   } else {
     units = await loadUniversalUnits();
   }
-  // Find all units referenced by any ability in this lore
+  // Find all units that are referenced by any spell/ability in this lore (match logic from ManifestationLore.vue)
   const unitNames = new Set<string>();
   for (const unit of units) {
-    if (unit.category != 'Manifestation') continue; // Only consider Manifestation units
-
+    if (unit.category !== 'Manifestation') continue;
     for (const ability of lore.abilities) {
-      // Match if ability name or text contains the full unit name
       if (
         (ability.name && ability.name.includes(unit.name)) ||
         (ability.text && ability.text.includes(unit.name))
       ) {
         unitNames.add(unit.name);
-        break;
+        break; // No need to check other abilities for this unit
       }
 
-      const summonNameParts = ability.name.split(/\s+/);
-      // Match if any part of the summon name matches the unit name
-      if (summonNameParts.some((part: string) => unit.name.includes(part))) {
+      // to lowercase and filter out of/and/or/a/an
+      const nameParts = unit.name
+        .split(' ')
+        .map((part) => part.toLowerCase())
+        .filter((part) => !['of', 'and', 'or', 'a', 'an', 'the'].includes(part));
+      if (
+        nameParts.some((part) => {
+          return (
+            ability.name?.toLowerCase().includes(part.toLowerCase()) ||
+            ability.text?.toLowerCase().includes(part.toLowerCase())
+          );
+        })
+      ) {
         unitNames.add(unit.name);
-        break;
+        break; // No need to check other abilities for this unit
       }
     }
   }
