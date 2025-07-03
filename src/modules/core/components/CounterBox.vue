@@ -1,8 +1,22 @@
 <template>
   <div class="counter-box">
-    <button class="counter-btn" @click="decrement" :disabled="modelValue <= min">-</button>
+    <button
+      class="counter-btn"
+      @click="decrement"
+      :disabled="modelValue <= min"
+      :class="{ disabled: modelValue <= min }"
+    >
+      -
+    </button>
     <span class="counter-value">{{ modelValue }}</span>
-    <button class="counter-btn" @click="increment" :disabled="modelValue >= max">+</button>
+    <button
+      class="counter-btn"
+      @click="increment"
+      :disabled="modelValue >= max"
+      :class="{ disabled: modelValue >= max }"
+    >
+      +
+    </button>
   </div>
 </template>
 
@@ -44,8 +58,17 @@ function decrement() {
   border-radius: 0;
   cursor: pointer;
   user-select: none;
-  transition: background 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
   padding: 0;
+}
+.counter-btn.disabled,
+.counter-btn:disabled {
+  background: #e0e1e6;
+  color: #aaa;
+  cursor: not-allowed;
+  border-color: #ccc;
 }
 .counter-btn:active {
   background: #e0e1e6;

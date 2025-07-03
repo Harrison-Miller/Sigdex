@@ -37,6 +37,7 @@
   - notes option for the list and for each unit/renaming a unit: My cool hero name (actual unit name)
   - badge to show a unit has artifact/heroic trait
   - don't allow enhancements taken from different tables in the same category.
+  - limit list name length to like 30 characters
 
 - any time we load just make it load everthing, instead of only the current army.
 
