@@ -161,8 +161,8 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
     }
   }
   // Check auxillary units for unique
-  if (list.auxiallary_units) {
-    for (const unit of list.auxiallary_units) {
+  if (list.auxiliary_units) {
+    for (const unit of list.auxiliary_units) {
       const armyUnit = army.units.find((u) => u.name === unit.name);
       if (armyUnit && armyUnit.keywords.some((k) => k.toLowerCase() === 'unique')) {
         uniqueUnits[unit.name] = (uniqueUnits[unit.name] || 0) + 1;
@@ -186,8 +186,8 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
     }
   }
   // Check auxillary units for reinforce
-  if (list.auxiallary_units) {
-    for (const unit of list.auxiallary_units) {
+  if (list.auxiliary_units) {
+    for (const unit of list.auxiliary_units) {
       if (unit.reinforced) {
         const armyUnit = army.units.find((u) => u.name === unit.name);
         if (!armyUnit || armyUnit.notReinforcable || (armyUnit.unit_size ?? 1) <= 1) {
@@ -208,8 +208,8 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
     }
   }
   // Check auxillary units for weapon violations
-  if (list.auxiallary_units) {
-    for (const unit of list.auxiallary_units) {
+  if (list.auxiliary_units) {
+    for (const unit of list.auxiliary_units) {
       const unitViolations = calculateWeaponOptionViolations(unit, army);
       violations.push(...unitViolations);
     }
@@ -240,8 +240,8 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
     }
   }
   // Check auxillary units for presence in ArmyData
-  if (list.auxiallary_units) {
-    for (const unit of list.auxiallary_units) {
+  if (list.auxiliary_units) {
+    for (const unit of list.auxiliary_units) {
       if (unit && unit.name) {
         const found = army.units.find((u) => u.name === unit.name);
         if (!found) {
@@ -278,8 +278,8 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
     countEnhancements(regiment.leader);
     for (const unit of regiment.units) countEnhancements(unit);
   }
-  if (list.auxiallary_units) {
-    for (const unit of list.auxiallary_units) countEnhancements(unit);
+  if (list.auxiliary_units) {
+    for (const unit of list.auxiliary_units) countEnhancements(unit);
   }
   for (const [name, count] of Object.entries(assignedArtifacts)) {
     if (count > 1) violations.push(`Duplicate artifact assigned: ${name}`);
@@ -324,8 +324,8 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
     if (regiment.leader && regiment.leader.name) allUnits.push(regiment.leader.name);
     for (const unit of regiment.units) if (unit && unit.name) allUnits.push(unit.name);
   }
-  if (list.auxiallary_units) {
-    for (const unit of list.auxiallary_units) if (unit && unit.name) allUnits.push(unit.name);
+  if (list.auxiliary_units) {
+    for (const unit of list.auxiliary_units) if (unit && unit.name) allUnits.push(unit.name);
   }
   const scourgePattern = /(.*) \(Scourge of Ghyran\)$/;
   const scourgeMap = new Map<string, boolean>();

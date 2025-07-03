@@ -30,7 +30,6 @@
   - disbale/remove already selected 0-1 unit from the unit picker.
   - GameView - show rules and, non duplicate entries, etc.
   - armies of renown - requires parsing armies of renow
-  - list importing
   - probably don't select a manifestation lore by default if there isn't an army one (just allow a none option).
   - regiments of renown
   - battle tactic cards
@@ -38,7 +37,6 @@
   - notes option for the list and for each unit/renaming a unit: My cool hero name (actual unit name)
   - badge to show a unit has artifact/heroic trait
   - don't allow enhancements taken from different tables in the same category.
-  - uniques can not take enhancements
 
 - any time we load just make it load everthing, instead of only the current army.
 

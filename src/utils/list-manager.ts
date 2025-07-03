@@ -28,7 +28,7 @@ export function getAllLists(): List[] {
             leader: deserializeListUnit(reg.leader),
             units: reg.units.map(deserializeListUnit),
           })),
-          auxiallary_units: list.auxiallary_units?.map(deserializeListUnit),
+          auxiliary_units: list.auxiliary_units?.map(deserializeListUnit),
         });
       } catch (e) {
         // skip corrupted
@@ -49,7 +49,7 @@ export function getList(id: string): List | undefined {
         leader: deserializeListUnit(reg.leader),
         units: reg.units.map(deserializeListUnit),
       })),
-      auxiallary_units: list.auxiallary_units?.map(deserializeListUnit),
+      auxiliary_units: list.auxiliary_units?.map(deserializeListUnit),
     };
   } catch (e) {
     return undefined;
@@ -99,7 +99,7 @@ function serializeList(list: List): any {
   return {
     ...list,
     regiments: list.regiments.map(serializeRegiment),
-    auxiallary_units: list.auxiallary_units?.map(serializeListUnit),
+    auxiliary_units: list.auxiliary_units?.map(serializeListUnit),
   };
 }
 

@@ -7,7 +7,7 @@ import { SIGDEX_VERSION } from '../../version';
 
 function calculateDrops(list: List): number {
   if (!list || !list.regiments) return 0;
-  let drops = list.regiments.length + (list.auxiallary_units?.length || 0);
+  let drops = list.regiments.length + (list.auxiliary_units?.length || 0);
   return drops;
 }
 
@@ -39,7 +39,7 @@ function calculateWounds(list: List, army: Army): number {
   }
 
   // aux
-  for (const unit of list.auxiallary_units || []) {
+  for (const unit of list.auxiliary_units || []) {
     const unitData = getUnitData(unit.name, army);
     if (unitData) {
       totalWounds += unitData.stats.health * (unitData.unit_size || 1) * (unit.reinforced ? 2 : 1);
@@ -212,9 +212,9 @@ export function exportList(list: List, army: Army, lores?: Map<string, Lore>): s
   }
 
   // auxiliary units
-  if (list.auxiallary_units && list.auxiallary_units.length > 0) {
+  if (list.auxiliary_units && list.auxiliary_units.length > 0) {
     out += `Auxiliary Units\n`;
-    for (const auxUnit of list.auxiallary_units) {
+    for (const auxUnit of list.auxiliary_units) {
       out += `${displayUnit(auxUnit, army)}`;
     }
     out += `\n`;

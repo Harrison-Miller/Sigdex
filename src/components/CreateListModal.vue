@@ -54,6 +54,7 @@
       <div class="modal-actions">
         <button @click="handleClose">Cancel</button>
         <button class="create-btn" @click="emitCreate" :disabled="!isNameValid">Create</button>
+        <button class="import-btn" @click="goToImport">Import</button>
       </div>
     </div>
   </Modal>
@@ -62,6 +63,7 @@
 import { ref, computed } from 'vue';
 import Modal from './Modal.vue';
 import { allArmies } from '../common/ArmyData';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
   modelValue: boolean;
@@ -73,10 +75,9 @@ const emit = defineEmits(['update:modelValue', 'create', 'close']);
 const name = ref(props.initialName || '');
 const faction = ref(props.initialFaction || allArmies[0]?.name || '');
 
-// Removed the watcher as it's no longer needed
-
 const isNameValid = computed(() => !!name.value.trim());
 
+const router = useRouter();
 function emitCreate() {
   if (!isNameValid.value) return;
   emit('create', { name: name.value.trim(), faction: faction.value });
@@ -85,6 +86,9 @@ function emitCreate() {
 function handleClose() {
   emit('update:modelValue', false);
   emit('close');
+}
+function goToImport() {
+  router.push({ name: 'ListImport' });
 }
 </script>
 <style scoped>
@@ -140,5 +144,19 @@ function handleClose() {
 }
 .create-btn:not(:disabled):hover {
   background: #c00;
+}
+
+.import-btn {
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5em 1.2em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.import-btn:hover {
+  background: #388e3c;
 }
 </style>

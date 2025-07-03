@@ -11,7 +11,7 @@ export interface List {
   prayer_lore?: string;
   manifestation_lore?: string;
 
-  auxiallary_units?: ListUnit[];
+  auxiliary_units?: ListUnit[];
 }
 
 export interface ListRegiment {
