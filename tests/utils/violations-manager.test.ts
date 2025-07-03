@@ -483,7 +483,7 @@ describe('calculateViolations', () => {
             units: [],
           },
         ],
-        auxiallary_units: [{ name: 'Aux1', enhancements: enhancements2 }],
+        auxiliary_units: [{ name: 'Aux1', enhancements: enhancements2 }],
       };
       const violations = calculateViolations(list, army);
       expect(violations).toContain(

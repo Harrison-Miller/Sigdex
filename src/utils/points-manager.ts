@@ -83,8 +83,8 @@ export function calculatePoints(list: List, army: Army, lores?: Map<string, Lore
   }
 
   // Add points for auxiliary units
-  if (list.auxiallary_units) {
-    for (const unit of list.auxiallary_units) {
+  if (list.auxiliary_units) {
+    for (const unit of list.auxiliary_units) {
       let unitPoints = getPoints(unit.name);
       if (unit.reinforced) {
         unitPoints *= 2;

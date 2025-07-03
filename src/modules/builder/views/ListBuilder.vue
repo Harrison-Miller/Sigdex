@@ -72,9 +72,9 @@
         <template #title>Auxillary Units</template>
         <div
           class="faction-terrain-controls"
-          v-if="list.auxiallary_units && list.auxiallary_units.length"
+          v-if="list.auxiliary_units && list.auxiliary_units.length"
         >
-          <template v-for="(unit, i) in list.auxiallary_units" :key="unit.name + i">
+          <template v-for="(unit, i) in list.auxiliary_units" :key="unit.name + i">
             <ListButton
               :label="unit.name"
               :points="armyData?.units.find((u) => u.name === unit.name)?.points"
@@ -335,7 +335,7 @@ onMounted(async () => {
 });
 
 watch(
-  () => list.value?.auxiallary_units?.length,
+  () => list.value?.auxiliary_units?.length,
   (len) => {
     if (len && len > 0) auxCollapsed.value = false;
     else auxCollapsed.value = true;
@@ -405,8 +405,8 @@ function handleDeleteFactionTerrain() {
   saveList(list.value);
 }
 function handleDeleteAuxUnit(idx: number) {
-  if (!list.value || !list.value.auxiallary_units) return;
-  list.value.auxiallary_units.splice(idx, 1);
+  if (!list.value || !list.value.auxiliary_units) return;
+  list.value.auxiliary_units.splice(idx, 1);
   saveList(list.value);
 }
 function handleAddAuxUnit() {

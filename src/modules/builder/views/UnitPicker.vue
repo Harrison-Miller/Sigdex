@@ -151,8 +151,8 @@ function addUnitToRegiment(unit: Unit) {
     return;
   }
   if (filter.toLowerCase() === 'aux') {
-    if (!list.value.auxiallary_units) list.value.auxiallary_units = [];
-    list.value.auxiallary_units.push({
+    if (!list.value.auxiliary_units) list.value.auxiliary_units = [];
+    list.value.auxiliary_units.push({
       name: unit.name,
       weapon_options: army.value ? setupDefaultWeaponOptions(unit.name, army.value) : undefined,
       enhancements: army.value ? setupDefaultEnhancements(unit.name, army.value) : undefined,

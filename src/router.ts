@@ -9,8 +9,14 @@ import ListExport from './modules/builder/views/ListExport.vue';
 import BuilderSettings from './modules/builder/views/BuilderSettings.vue';
 import BuilderUnitSettings from './modules/builder/views/BuilderUnitSettings.vue';
 import UnitPicker from './modules/builder/views/UnitPicker.vue';
+import ListImport from './modules/builder/views/ListImport.vue';
 
 const routes = [
+  {
+    path: '/import',
+    name: 'ListImport',
+    component: ListImport,
+  },
   { path: '/', name: 'Armies', component: Home },
   { path: '/army/:army', name: 'UnitList', component: UnitList, props: true },
   { path: '/army/:army/unit/:unit', name: 'UnitDetail', component: UnitDetail, props: true },
