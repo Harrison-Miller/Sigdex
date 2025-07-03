@@ -1,9 +1,9 @@
 <template>
   <div class="section-wrapper">
     <div class="section-divider"></div>
-    <div class="section-header-row">
+    <div class="section-header-row" @click="collapsed = !collapsed" style="cursor: pointer">
       <h2 class="section-title"><slot name="title" /></h2>
-      <button class="collapse-btn" @click="collapsed = !collapsed">
+      <button class="collapse-btn" @click.stop="collapsed = !collapsed">
         <span v-if="collapsed">&#9654;</span>
         <span v-else>&#9660;</span>
       </button>

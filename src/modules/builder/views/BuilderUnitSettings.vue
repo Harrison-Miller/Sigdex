@@ -9,10 +9,15 @@
       <ToggleBox v-model="reinforced">Reinforce</ToggleBox>
     </div>
     <WeaponOptionsSelection v-model="unit" :unit-data="unitData" />
-    <EnhancementsSelection v-model="unit" :unit-data="unitData" :army="army" />
+    <EnhancementsSelection v-if="!isUnique" v-model="unit" :unit-data="unitData" :army="army" />
   </div>
 </template>
 <script setup lang="ts">
+// Unique check: unit is unique if it has the 'unique' keyword
+const isUnique = computed(() => {
+  if (!unitData.value) return false;
+  return (unitData.value.keywords || []).some((k: string) => k.toLowerCase() === 'unique');
+});
 import { ref, computed, watch } from 'vue';
 import { getList, saveList } from '../../../utils/list-manager';
 import { loadArmy } from '../../../army';

@@ -11,9 +11,6 @@
 - back to top button
 - track scroll height
 
-- formatting todo:
-  - loonboss has a misformatted ability
-
 - reinforceable todo/fixes:
   - loftp demons can be reinforced (they show as not reinforeable).
 
@@ -41,7 +38,6 @@
   - notes option for the list and for each unit/renaming a unit: My cool hero name (actual unit name)
   - badge to show a unit has artifact/heroic trait
   - don't allow enhancements taken from different tables in the same category.
-  - companion unit checking. Companion unit allows sub heroe's that are in the companion list. Identify the leader of the subhero group that needs to lead the regiment (it's the one with the points). Probably just mark it in some way.
   - uniques can not take enhancements
 
 - any time we load just make it load everthing, instead of only the current army.
@@ -55,6 +51,6 @@
 - summon abilitiy should probably be stored with the manifestation directly so we don't have to do lookups and vice-a-versa
 - lore abilities should be stored directly in the army so we don't have to do lookups.
 
-- fix ko ather runners display
+- fix ko ather runners display -> this is an actual problem in data I can't fix
 
-- when parsing ability colors normalize grey to gray
+- neave's companions shouldn't be reinforcable (probably because unique).
