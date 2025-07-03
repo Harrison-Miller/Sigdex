@@ -23,13 +23,17 @@ function calculateWounds(list: List, army: Army): number {
     if (regiment.leader) {
       const leaderUnit = getUnitData(regiment.leader.name, army);
       if (leaderUnit) {
-        totalWounds += leaderUnit.stats.health;
+        totalWounds +=
+          leaderUnit.stats.health *
+          (leaderUnit.unit_size || 1) *
+          (regiment.leader.reinforced ? 2 : 1);
       }
     }
     for (const unit of regiment.units) {
       const unitData = getUnitData(unit.name, army);
       if (unitData) {
-        totalWounds += unitData.stats.health;
+        totalWounds +=
+          unitData.stats.health * (unitData.unit_size || 1) * (unit.reinforced ? 2 : 1);
       }
     }
   }
@@ -38,7 +42,7 @@ function calculateWounds(list: List, army: Army): number {
   for (const unit of list.auxiallary_units || []) {
     const unitData = getUnitData(unit.name, army);
     if (unitData) {
-      totalWounds += unitData.stats.health;
+      totalWounds += unitData.stats.health * (unitData.unit_size || 1) * (unit.reinforced ? 2 : 1);
     }
   }
 
@@ -87,20 +91,19 @@ function getLorePoints(lore: string, lores?: Map<string, Lore>): number {
   return loreData.points || 0; // Return points if defined, otherwise 0
 }
 
+function displayWithPoints(text: string, points: number | undefined): string {
+  if (points && points > 0) {
+    return `${text} (${points})\n`; // Add points if available
+  }
+  return `${text}\n`; // No points, just the name
+}
+
 function displayUnit(unit: ListUnit, army: Army): string {
   if (!unit) return '';
   const unitData = getUnitData(unit.name, army);
   if (!unitData) return `${unit.name} (not found in army)`; // Fallback if unit not found
 
-  let out = `${unit.name}`;
-  if (unitData.points && unitData.points > 0) {
-    let points = unitData.points || 0;
-    if (unit.reinforced) {
-      points *= 2; // Reinforced units cost double
-    }
-    out += ` (${points})`; // Add points if available
-  }
-  out += '\n';
+  let out = displayWithPoints(unitData.name, (unitData.points || 0) * (unit.reinforced ? 2 : 1));
 
   // bullet point (use special bullet point character) list of things
   // general > reinforced > weapon options > heroic trait > artifact > enhancements
@@ -113,42 +116,27 @@ function displayUnit(unit: ListUnit, army: Army): string {
   // weapon options
   for (const [_, weaponOptions] of unit.weapon_options || new Map()) {
     for (const option of weaponOptions) {
-      if (option.count) {
-        out += `• ${option.count}x ${option.name}\n`;
-      } else {
-        out += `• ${option.name}\n`;
+      out += `• `;
+      if (option.count && option.count > 1) {
+        out += `${option.count}x `;
       }
+      out += `${option.name}\n`;
     }
   }
 
   // artifact then heroic trait
   if (unit.artifact) {
     const artifactPoints = getArtifactPoints(unit.artifact, army);
-    out += `• ${unit.artifact}`;
-    if (artifactPoints > 0) {
-      out += ` (${artifactPoints})\n`;
-    } else {
-      out += '\n'; // No points, just the name
-    }
+    out += displayWithPoints(`• ${unit.artifact}`, artifactPoints);
   }
   if (unit.heroic_trait) {
     const heroicTraitPoints = getHeroicTraitPoints(unit.heroic_trait, army);
-    out += `• ${unit.heroic_trait}`;
-    if (heroicTraitPoints > 0) {
-      out += ` (${heroicTraitPoints})\n`;
-    } else {
-      out += '\n'; // No points, just the name
-    }
+    out += displayWithPoints(`• ${unit.heroic_trait}`, heroicTraitPoints);
   }
   if (unit.enhancements) {
     for (const [_, enhancement] of unit.enhancements) {
       const enhancementPoints = getEnhancementPoints(enhancement, army);
-      out += `• ${enhancement}`;
-      if (enhancementPoints > 0) {
-        out += ` (${enhancementPoints})\n`;
-      } else {
-        out += '\n'; // No points, just the name
-      }
+      out += displayWithPoints(`• ${enhancement}`, enhancementPoints);
     }
   }
 
@@ -182,31 +170,19 @@ export function exportList(list: List, army: Army, lores?: Map<string, Lore>): s
 
   // lores
   if (list.spell_lore) {
-    out += `Spell Lore - ${list.spell_lore}`;
     const spellPoints = getLorePoints(list.spell_lore, lores);
-    if (spellPoints > 0) {
-      out += ` (${spellPoints})\n`;
-    } else {
-      out += `\n`;
-    }
+    out += displayWithPoints(`Spell Lore - ${list.spell_lore}`, spellPoints);
   }
   if (list.prayer_lore) {
-    out += `Prayer Lore - ${list.prayer_lore}`;
     const prayerPoints = getLorePoints(list.prayer_lore, lores);
-    if (prayerPoints > 0) {
-      out += ` (${prayerPoints})\n`;
-    } else {
-      out += `\n`;
-    }
+    out += displayWithPoints(`Prayer Lore - ${list.prayer_lore}`, prayerPoints);
   }
   if (list.manifestation_lore) {
-    out += `Manifestation Lore - ${list.manifestation_lore}`;
     const manifestationPoints = getLorePoints(list.manifestation_lore, lores);
-    if (manifestationPoints > 0) {
-      out += ` (${manifestationPoints})\n`;
-    } else {
-      out += `\n`;
-    }
+    out += displayWithPoints(
+      `Manifestation Lore - ${list.manifestation_lore}`,
+      manifestationPoints
+    );
   }
 
   // TODO: add battle tactic cards or grand starts based on ghb version
@@ -233,6 +209,15 @@ export function exportList(list: List, army: Army, lores?: Map<string, Lore>): s
     if (i === generalRegimentIdx) continue; // skip the general's regiment
     out += `Regiment ${regimentIdx++}\n`;
     out += `${displayRegiment(list.regiments[i], army)}\n`;
+  }
+
+  // auxiliary units
+  if (list.auxiallary_units && list.auxiallary_units.length > 0) {
+    out += `Auxiliary Units\n`;
+    for (const auxUnit of list.auxiallary_units) {
+      out += `${displayUnit(auxUnit, army)}`;
+    }
+    out += `\n`;
   }
 
   // faction terrain
