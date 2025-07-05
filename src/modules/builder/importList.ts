@@ -220,6 +220,8 @@ function parseUnits(text: string, army: Army): ListUnit[] {
         // Try to find weapon option names in the line
         for (const group of currentUnitData.models) {
           for (const weapon of group.weapons) {
+            if (!weapon.max && !weapon.replaces && !weapon.group) continue; // skip default weapons
+
             if (line.includes(weapon.name.toLowerCase())) {
               if (!currentUnit.weapon_options) currentUnit.weapon_options = new Map();
               if (!currentUnit.weapon_options.has(group.name)) {
@@ -233,8 +235,12 @@ function parseUnits(text: string, army: Army): ListUnit[] {
                 count = parseInt(countMatch[1], 10);
               }
 
+              const maxCount =
+                (weapon.max ? weapon.max : group.count || 1) * (currentUnit.reinforced ? 2 : 1);
+              const actualCount = count ? Math.min(count, maxCount) : undefined;
+
               const arr = currentUnit.weapon_options.get(group.name)!;
-              arr.push({ name: weapon.name, count: count });
+              arr.push({ name: weapon.name, count: actualCount });
             }
           }
         }
