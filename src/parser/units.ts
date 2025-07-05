@@ -21,6 +21,7 @@ import {
 import type { RegimentOption } from '../common/UnitData';
 import { parseUnitsAsCategories } from './categories';
 import { parseUnitEnhancementTables } from './enhancementtables';
+import { parseUndersizeUnits } from './undersize';
 
 function isAlwaysNotReinforceable(unitSize: number, keywords: string[]): boolean {
   if (unitSize == 1) {
@@ -152,6 +153,27 @@ export function parseUnits(
     };
 
     units.push(unit);
+  }
+
+  if (armyInfoRoot) {
+    const underSizeUnits = parseUndersizeUnits(armyInfoRoot);
+    for (const underSizeUnit of underSizeUnits) {
+      // find the unit by name
+      const unit = units.find((u) => u.name === underSizeUnit.name);
+      if (unit) {
+        // create a copy of the unit with the undersize condition
+        const undersizeUnit: Unit = {
+          ...unit,
+          name: `${unit.name} (1 model)`, // Append (1 model) to the name
+          points: underSizeUnit.points, // Use the undersize points
+          undersize_condition: underSizeUnit.condition, // Add the condition if it exists
+          unit_size: 1, // Set the unit size to 1
+          notReinforcable: true, // Undersize units are not reinforceable
+        };
+
+        units.push(undersizeUnit);
+      }
+    }
   }
 
   return units;

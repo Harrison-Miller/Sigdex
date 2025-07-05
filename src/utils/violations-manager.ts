@@ -4,6 +4,87 @@ import type { Lore } from '../common/ManifestationData';
 import { calculatePoints } from './points-manager';
 
 /**
+ * Checks for undersize unit violations in a list.
+ * For each unit with an undersize_condition, you may include 1 of that unit for each of the condition unit.
+ * @param list The list to check
+ * @param army The loaded Army data
+ * @returns Array of violation strings
+ */
+export function calculateUndersizeUnitViolations(list: List, army: Army): string[] {
+  // Map: undersize unit name -> { condition: string, count: number }
+  const undersizeMap = new Map<string, { condition: string; count: number }>();
+  // Map: condition unit name -> count
+  const conditionCountMap = new Map<string, number>();
+
+  // builder undersizeMap
+  for (const regiment of list.regiments) {
+    for (const unit of regiment.units) {
+      const unitData = army.units.find((u) => u.name === unit.name);
+      if (unitData && unitData.undersize_condition) {
+        undersizeMap.set(unit.name, {
+          condition: unitData.undersize_condition,
+          count: (undersizeMap.get(unit.name)?.count || 0) + 1,
+        });
+        conditionCountMap.set(unitData.undersize_condition, 0);
+      }
+    }
+  }
+  for (const unit of list.auxiliary_units || []) {
+    const unitData = army.units.find((u) => u.name === unit.name);
+    if (unitData && unitData.undersize_condition) {
+      undersizeMap.set(unit.name, {
+        condition: unitData.undersize_condition,
+        count: (undersizeMap.get(unit.name)?.count || 0) + 1,
+      });
+      conditionCountMap.set(unitData.undersize_condition, 0);
+    }
+  }
+
+  console.log('before countMap', conditionCountMap);
+
+  // build conditionCountMap
+  for (const regiment of list.regiments) {
+    for (const unit of regiment.units) {
+      if (conditionCountMap.has(unit.name)) {
+        // This unit is a condition unit, increment its count
+        conditionCountMap.set(unit.name, (conditionCountMap.get(unit.name) || 0) + 1);
+      }
+    }
+    if (regiment.leader && conditionCountMap.has(regiment.leader.name)) {
+      // If the leader is a condition unit, increment its count
+      conditionCountMap.set(
+        regiment.leader.name,
+        (conditionCountMap.get(regiment.leader.name) || 0) + 1
+      );
+    }
+  }
+
+  for (const unit of list.auxiliary_units || []) {
+    if (conditionCountMap.has(unit.name)) {
+      // This unit is a condition unit, increment its count
+      conditionCountMap.set(unit.name, (conditionCountMap.get(unit.name) || 0) + 1);
+    }
+  }
+
+  console.log('Undersize Map:', undersizeMap);
+  console.log('Condition Count Map:', conditionCountMap);
+
+  // Second pass: for each undersize unit, check if count > allowed
+  const violations: string[] = [];
+  for (const [undersizeName, info] of undersizeMap.entries()) {
+    const allowed = conditionCountMap.get(info.condition) || 0;
+    const actual = info.count;
+    if (actual > allowed) {
+      violations.push(
+        `Too many '${undersizeName}' units: only ${allowed} allowed (1 per '${info.condition}').`
+      );
+    }
+  }
+
+  return violations;
+}
+
+/**
  * Checks for list-building violations and returns a list of error messages.
  * @param list The list to check
  * @param army The loaded Army data
@@ -342,6 +423,9 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
       );
     }
   }
+
+  violations.push(...calculateUndersizeUnitViolations(list, army));
+
   return violations;
 }
 

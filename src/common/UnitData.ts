@@ -67,6 +67,7 @@ export interface Unit {
   sub_hero_tags?: string[]; // tags that this unit has like: Moonclan Agitator
   regiment_options?: RegimentOption[];
   enhancement_tables?: string[]; // names of enhancement tables this unit can take
+  undersize_condition?: string; // condition for undersize units, e.g
 }
 
 export function determineUnitCategory(keywords: string[]): string {

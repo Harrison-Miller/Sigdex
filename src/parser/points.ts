@@ -5,8 +5,14 @@ export function parsePoints(root: Element): Map<string, number> {
   const entryLinks = root.getElementsByTagName('entryLink');
 
   for (const el of Array.from(entryLinks)) {
-    const name = el.getAttribute('name');
+    let name = el.getAttribute('name');
     if (!name) continue;
+
+    // check this isn't an undersized unit variant
+    const undersized = findFirstByTagAndAttr(el, 'categoryLink', 'name', 'Undersize Unit');
+    if (undersized) {
+      name = name + ` (1 model)`;
+    }
 
     const cost = findFirstByTagAndAttr(el, 'cost', 'typeId', 'points');
     if (cost) {

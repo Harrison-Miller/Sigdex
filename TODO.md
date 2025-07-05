@@ -16,9 +16,9 @@
 
 - data issues
   - KO regiment options are incorrect/to permissive
-  - squigboss has the wrong melee profiles (copied from fungoid)
   - skitterstrand shouldn't be reinforceable
   - typo in scrapskuttle name
+  - dracoth single model doesn't have constraints
 
 - regiment options todos:
   - drekki flynt, should be 0-1 frigate but is any frigate. The 0-1 skyvessel covers this, but indirectly, so we don't parse it correctly.
