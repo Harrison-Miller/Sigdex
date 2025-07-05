@@ -1,7 +1,7 @@
 import type { Army } from '../../common/ArmyData';
 import type { List, ListRegiment, ListUnit } from '../../common/ListData';
 import type { Lore } from '../../common/ManifestationData';
-import type { Unit } from '../../common/UnitData';
+import type { Unit, WeaponOption } from '../../common/UnitData';
 import { calculatePoints } from '../../utils/points-manager';
 import { SIGDEX_VERSION } from '../../version';
 
@@ -114,11 +114,21 @@ function displayUnit(unit: ListUnit, army: Army): string {
     out += '• Reinforced\n';
   }
   // weapon options
-  for (const [_, weaponOptions] of unit.weapon_options || new Map()) {
+  for (const [modelGroup, weaponOptions] of unit.weapon_options || new Map()) {
     for (const option of weaponOptions) {
+      // look up weapon option in unitData
+      const optionData = findWeaponOption(modelGroup, option.name, unitData);
+      if (!optionData) continue; // Skip if option not found in unit data
+      if (!optionData.max && !optionData.replaces && !optionData.group) continue; // Skip because default weapon
+
+      // the max for a grouped weapon is the modelGroup count * 2 if reinforced
+      const maxCount =
+        (optionData.max ? optionData.max : modelGroup.count || 1) * (unit.reinforced ? 2 : 1);
+      const count = Math.min(option.count, maxCount);
+
       out += `• `;
-      if (option.count && option.count > 1) {
-        out += `${option.count}x `;
+      if (count > 1) {
+        out += `${count}x `;
       }
       out += `${option.name}\n`;
     }
@@ -141,6 +151,17 @@ function displayUnit(unit: ListUnit, army: Army): string {
   }
 
   return out;
+}
+
+function findWeaponOption(
+  modelGroup: string,
+  optionName: string,
+  unitData: Unit
+): WeaponOption | undefined {
+  if (!unitData.models) return undefined;
+  const model = unitData.models.find((m) => m.name === modelGroup);
+  if (!model || model.weapons.length === 0) return undefined;
+  return model.weapons.find((opt) => opt.name === optionName);
 }
 
 function displayRegiment(regiment: ListRegiment, army: Army): string {

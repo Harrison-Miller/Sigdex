@@ -40,8 +40,6 @@ export function calculateUndersizeUnitViolations(list: List, army: Army): string
     }
   }
 
-  console.log('before countMap', conditionCountMap);
-
   // build conditionCountMap
   for (const regiment of list.regiments) {
     for (const unit of regiment.units) {
@@ -65,9 +63,6 @@ export function calculateUndersizeUnitViolations(list: List, army: Army): string
       conditionCountMap.set(unit.name, (conditionCountMap.get(unit.name) || 0) + 1);
     }
   }
-
-  console.log('Undersize Map:', undersizeMap);
-  console.log('Condition Count Map:', conditionCountMap);
 
   // Second pass: for each undersize unit, check if count > allowed
   const violations: string[] = [];
