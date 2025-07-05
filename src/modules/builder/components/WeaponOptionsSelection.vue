@@ -19,19 +19,37 @@
               @update:modelValue="(val) => updateOptionalWeapon(group.name, w.name, val)"
             />
           </div>
-          <!-- Group selection weapons -->
-          <div
-            v-for="(weapons, groupKey) in getGroupWeapons(group)"
-            :key="groupKey"
-            class="weapon-option-control"
-            style="flex-direction: column; align-items: flex-start"
-          >
-            <span class="weapon-option-name" style="margin-bottom: 0.2em">{{ groupKey }}</span>
-            <OptionSelect
-              :model-value="groupWeaponState[group.name][groupKey]"
-              :options="weapons.map((w) => w.name)"
-              @update:modelValue="(val) => val && handleGroupWeaponSelect(val)"
-            />
+          <!-- Group selection weapons as CounterBoxes -->
+          <div v-for="(weapons, groupKey) in getGroupWeapons(group)" :key="groupKey">
+            <span class="weapon-option-name">{{ groupKey }}</span>
+            <template v-if="unitData.unit_size === 1">
+              <div class="weapon-option-control">
+                <OptionSelect
+                  :model-value="groupWeaponSingleSelect[group.name]?.[groupKey]"
+                  :options="weapons.map((w) => w.name)"
+                  @update:modelValue="
+                    (val) => {
+                      handleSingleSelectChange(group.name, groupKey, val);
+                    }
+                  "
+                />
+              </div>
+            </template>
+            <template v-else>
+              <div v-for="w in weapons" :key="w.name" class="weapon-option-control">
+                <span class="weapon-option-name">{{ w.name }}</span>
+                <CounterBox
+                  :model-value="groupWeaponCounterState[group.name]?.[groupKey]?.[w.name] || 0"
+                  :min="0"
+                  :max="
+                    getGroupWeaponMax(group) - getGroupWeaponUsedExcept(group, groupKey, w.name)
+                  "
+                  @update:modelValue="
+                    (val) => updateGroupWeaponCounter(group.name, groupKey, w.name, val)
+                  "
+                />
+              </div>
+            </template>
           </div>
         </div>
       </template>
@@ -39,12 +57,12 @@
   </Section>
 </template>
 <script setup lang="ts">
-import OptionSelect from '../../core/components/OptionSelect.vue';
 import { computed, reactive, watch } from 'vue';
 import CounterBox from '../../core/components/CounterBox.vue';
 import Section from '../../core/components/Section.vue';
 import type { ListUnit } from '../../../common/ListData';
 import type { Unit } from '../../../common/UnitData';
+import OptionSelect from '../../core/components/OptionSelect.vue';
 
 // v-model:unit
 const props = defineProps<{ modelValue: ListUnit; unitData?: Unit }>();
@@ -54,8 +72,10 @@ const modelGroups = computed(() => props.unitData?.models ?? []);
 
 // State for optional weapons (max)
 const optionalWeaponState = reactive<Record<string, Record<string, number>>>({});
-// State for group selection weapons
-const groupWeaponState = reactive<Record<string, Record<string, string>>>({});
+// State for group selection weapons (counter per weapon in group)
+const groupWeaponCounterState = reactive<Record<string, Record<string, Record<string, number>>>>(
+  {}
+);
 
 function getEffectiveMax(w: any) {
   if (!w.max) return 99;
@@ -76,11 +96,36 @@ function getGroupWeapons(group: any) {
   return map;
 }
 
+// State for single-select dropdowns for grouped weapons (for alwaysSingleModel)
+const groupWeaponSingleSelect = reactive<Record<string, Record<string, string>>>({});
+
+function handleSingleSelectChange(groupName: string, groupKey: string, weapon: string | undefined) {
+  if (!weapon) {
+    return; // No weapon selected, do nothing
+  }
+
+  if (!groupWeaponSingleSelect[groupName]) groupWeaponSingleSelect[groupName] = {};
+  groupWeaponSingleSelect[groupName][groupKey] = weapon;
+  // Set all to 0, then set selected to 1
+  if (!groupWeaponCounterState[groupName]) groupWeaponCounterState[groupName] = {};
+  if (!groupWeaponCounterState[groupName][groupKey])
+    groupWeaponCounterState[groupName][groupKey] = {};
+  // Set all to 0 for all weapons in the group, then set selected to 1
+  const group = modelGroups.value.find((g) => g.name === groupName);
+  const groupMap = group ? getGroupWeapons(group) : {};
+  const weapons = groupMap[groupKey] || [];
+  for (const w of weapons) {
+    groupWeaponCounterState[groupName][groupKey][w.name] = 0;
+  }
+  groupWeaponCounterState[groupName][groupKey][weapon] = 1;
+  emitUpdatedModelValue();
+}
+
 function initWeaponStates() {
   const saved = props.modelValue.weapon_options;
   for (const group of modelGroups.value) {
     if (!optionalWeaponState[group.name]) optionalWeaponState[group.name] = {};
-    if (!groupWeaponState[group.name]) groupWeaponState[group.name] = {};
+    if (!groupWeaponCounterState[group.name]) groupWeaponCounterState[group.name] = {};
     // Optional weapons
     for (const w of getOptionalWeapons(group)) {
       let val = 0;
@@ -94,19 +139,40 @@ function initWeaponStates() {
     // Grouped weapons
     const groupMap = getGroupWeapons(group);
     for (const groupKey in groupMap) {
-      let selected = '';
-      if (saved && saved instanceof Map && saved.has(group.name)) {
-        const arr = saved.get(group.name) as any[];
-        const found = arr.find(
-          (opt) =>
-            groupMap[groupKey].some((w) => w.name === opt.name) && typeof opt.count !== 'number'
-        );
-        if (found) selected = found.name;
+      if (!groupWeaponCounterState[group.name][groupKey])
+        groupWeaponCounterState[group.name][groupKey] = {};
+      if (props.unitData?.unit_size === 1) {
+        // Single select: find which is selected (count==1)
+        let selected = '';
+        if (saved && saved instanceof Map && saved.has(group.name)) {
+          const arr = saved.get(group.name) as any[];
+          const found = arr.find(
+            (opt) => groupMap[groupKey].some((w) => w.name === opt.name) && opt.count === 1
+          );
+          if (found) selected = found.name;
+        }
+        if (!selected && groupMap[groupKey].length > 0) {
+          selected = groupMap[groupKey][0].name;
+        }
+        if (!groupWeaponSingleSelect[group.name]) groupWeaponSingleSelect[group.name] = {};
+        groupWeaponSingleSelect[group.name][groupKey] = selected;
+        // Set all to 0, then selected to 1
+        for (const w of groupMap[groupKey]) {
+          groupWeaponCounterState[group.name][groupKey][w.name] = w.name === selected ? 1 : 0;
+        }
+      } else {
+        if (saved && saved instanceof Map && saved.has(group.name)) {
+          const arr = saved.get(group.name) as any[];
+          for (const w of groupMap[groupKey]) {
+            const found = arr.find((opt) => opt.name === w.name && typeof opt.count === 'number');
+            groupWeaponCounterState[group.name][groupKey][w.name] = found ? found.count || 0 : 0;
+          }
+        } else {
+          for (const w of groupMap[groupKey]) {
+            groupWeaponCounterState[group.name][groupKey][w.name] = 0;
+          }
+        }
       }
-      if (!selected && groupMap[groupKey].length > 0) {
-        selected = groupMap[groupKey][0].name;
-      }
-      groupWeaponState[group.name][groupKey] = selected;
     }
   }
 }
@@ -115,7 +181,7 @@ watch(
   () => [props.modelValue, props.unitData],
   () => {
     for (const k in optionalWeaponState) delete optionalWeaponState[k];
-    for (const k in groupWeaponState) delete groupWeaponState[k];
+    for (const k in groupWeaponCounterState) delete groupWeaponCounterState[k];
     if (props.unitData) initWeaponStates();
   },
   { immediate: true, deep: true }
@@ -126,23 +192,34 @@ function updateOptionalWeapon(groupName: string, weaponName: string, value: numb
   emitUpdatedModelValue();
 }
 
-function updateGroupWeaponByWeaponName(weaponName: string) {
-  // Find the group and groupKey for this weapon name
-  for (const group of modelGroups.value) {
-    const groupMap = getGroupWeapons(group);
-    for (const groupKey in groupMap) {
-      if (groupMap[groupKey].some((w) => w.name === weaponName)) {
-        groupWeaponState[group.name][groupKey] = weaponName;
-        emitUpdatedModelValue();
-        return;
-      }
-    }
-  }
+// Group weapon counter logic
+function updateGroupWeaponCounter(
+  groupName: string,
+  groupKey: string,
+  weaponName: string,
+  value: number
+) {
+  if (!groupWeaponCounterState[groupName]) groupWeaponCounterState[groupName] = {};
+  if (!groupWeaponCounterState[groupName][groupKey])
+    groupWeaponCounterState[groupName][groupKey] = {};
+  groupWeaponCounterState[groupName][groupKey][weaponName] = value;
+  emitUpdatedModelValue();
 }
 
-function handleGroupWeaponSelect(weaponName: string) {
-  if (!weaponName) return;
-  updateGroupWeaponByWeaponName(weaponName);
+function getGroupWeaponMax(group: any) {
+  // group.count * (reinforced ? 2 : 1)
+  const base = group.count || 1;
+  return base * (props.modelValue.reinforced ? 2 : 1);
+}
+
+function getGroupWeaponUsedExcept(group: any, groupKey: string, exceptWeapon: string) {
+  // Sum all counts in the group except the one being edited
+  const state = groupWeaponCounterState[group.name]?.[groupKey] || {};
+  let sum = 0;
+  for (const w in state) {
+    if (w !== exceptWeapon) sum += state[w] || 0;
+  }
+  return sum;
 }
 
 function buildWeaponOptionsForSave() {
@@ -155,8 +232,10 @@ function buildWeaponOptionsForSave() {
     }
     const groupMap = getGroupWeapons(group);
     for (const groupKey in groupMap) {
-      const selected = groupWeaponState[group.name][groupKey];
-      if (selected) arr.push({ name: selected });
+      for (const w of groupMap[groupKey]) {
+        const count = groupWeaponCounterState[group.name]?.[groupKey]?.[w.name] || 0;
+        if (count > 0) arr.push({ name: w.name, count });
+      }
     }
     if (arr.length > 0) result.set(group.name, arr);
   }

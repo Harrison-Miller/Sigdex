@@ -106,7 +106,7 @@ describe('parseModelGroups', () => {
     const modelGroups = parseModelGroups(root);
     expect(modelGroups.length).toBe(3);
 
-    expect(modelGroups[0].name).toBe('Stormfiend');
+    expect(modelGroups[0].name).toBe('Stormfiend A');
     expect(modelGroups[0].count).toBe(1);
     expect(modelGroups[0].weapons.length).toBe(2);
     expect(modelGroups[0].weapons[0].name).toContain('Ratling Cannons and Clubbing Blows');
@@ -118,7 +118,7 @@ describe('parseModelGroups', () => {
     expect(modelGroups[0].weapons[1].replaces).toBeUndefined(); // no replaces for grouped weapons
     expect(modelGroups[0].weapons[1].group).toBe('Wargear Options'); // group name for selectionEntryGroup
 
-    expect(modelGroups[1].name).toBe('Stormfiend');
+    expect(modelGroups[1].name).toBe('Stormfiend B');
     expect(modelGroups[1].count).toBe(1);
     expect(modelGroups[1].weapons.length).toBe(2);
     expect(modelGroups[1].weapons[0].name).toContain('Warpfire Projectors and Clubbing Blows');
@@ -130,7 +130,7 @@ describe('parseModelGroups', () => {
     expect(modelGroups[1].weapons[1].group).toBe('Wargear Options'); // group name for selectionEntryGroup
     expect(modelGroups[1].weapons[1].replaces).toBeUndefined(); // no replaces for grouped weapons
 
-    expect(modelGroups[2].name).toBe('Stormfiend');
+    expect(modelGroups[2].name).toBe('Stormfiend C');
     expect(modelGroups[2].count).toBe(1);
     expect(modelGroups[2].weapons.length).toBe(2);
     expect(modelGroups[2].weapons[0].name).toContain('Doomflayer Gauntlets');
