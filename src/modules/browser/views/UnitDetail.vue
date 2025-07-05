@@ -192,6 +192,17 @@ const wardValue = computed(() => {
           <span v-html="`<i>This unit can not be reinforced.</i>`"></span>
         </div>
         <div
+          v-if="unit.undersize_condition"
+          class="unit-not-reinforceable"
+          style="margin-top: 0.5em"
+        >
+          <span
+            v-html="
+              `<i>You can include 1 unit of this type for each <b>${unit.undersize_condition}</b> in your army.</i>`
+            "
+          ></span>
+        </div>
+        <div
           v-if="unit.companion_units && unit.companion_units.length > 0"
           class="unit-companion-units"
           style="margin-top: 0.5em"
@@ -201,6 +212,7 @@ const wardValue = computed(() => {
         <div
           v-if="unit.models && unit.models.length"
           class="unit-model-groups"
+          style="margin-top: 0.5em"
           v-html="formatModelGroups(unit.models, unit)"
         ></div>
 
