@@ -48,11 +48,6 @@ watch(
 const unit = computed({
   get: () => {
     if (regimentIdx === 999) {
-      console.log(
-        'Fetching auxiliary unit at index:',
-        unitIdx,
-        list.value?.auxiliary_units?.[unitIdx as number]
-      );
       return list.value?.auxiliary_units?.[unitIdx as number];
     }
     if (unitIdx === 'leader') {
@@ -63,8 +58,8 @@ const unit = computed({
   set: (value) => {
     if (!list.value || !value) return;
     if (regimentIdx === 999) {
-      if (list.value.auxiliary_units && typeof unitIdx === 'number') {
-        list.value.auxiliary_units[unitIdx] = value;
+      if (list.value.auxiliary_units) {
+        list.value.auxiliary_units[unitIdx as number] = value;
       }
     } else if (unitIdx === 'leader') {
       list.value.regiments[regimentIdx].leader = value;

@@ -128,7 +128,7 @@ export function setupDefaultWeaponOptions(
     }
     for (const groupKey in groupMap) {
       if (groupMap[groupKey].length > 0) {
-        arr.push({ name: groupMap[groupKey][0].name });
+        arr.push({ name: groupMap[groupKey][0].name, count: group.count });
       }
     }
     if (arr.length > 0) result.set(group.name, arr);

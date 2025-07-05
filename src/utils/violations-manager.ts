@@ -462,28 +462,60 @@ export function calculateWeaponOptionViolations(unit: ListUnit, army: Army): str
         }
       }
     }
-    // 3. Check for multiple selections in grouped weapons
-    // For each group, only one selection allowed, and at least one must be selected
-    const groupMap: Record<string, string[]> = {};
+    // 3. For each set of grouped weapons, enforce shared max and total selection
+    // Build a map of group name -> { weapons: Weapon[], totalSelected: number, selectedCounts: Record<string, number> }
+    const groupInfo: Record<
+      string,
+      {
+        weapons: typeof groupWeapons;
+        totalSelected: number;
+        selectedCounts: Record<string, number>;
+        max: number;
+      }
+    > = {};
+
     for (const w of groupWeapons) {
       if (w.group) {
-        if (!groupMap[w.group]) groupMap[w.group] = [];
-        // Find if this weapon is selected in options
-        if (options.some((opt) => opt.name === w.name && typeof opt.count !== 'number')) {
-          groupMap[w.group].push(w.name);
+        if (!groupInfo[w.group]) {
+          // Calculate shared max for the group
+          const baseCount = typeof modelGroup.count === 'number' ? modelGroup.count : 1;
+          const max = baseCount * (reinforced ? 2 : 1);
+          groupInfo[w.group] = {
+            weapons: [],
+            totalSelected: 0,
+            selectedCounts: {},
+            max,
+          };
         }
+        groupInfo[w.group].weapons.push(w);
       }
     }
-    for (const groupKey in groupMap) {
-      if (groupMap[groupKey].length > 1) {
-        violations.push(
-          `Multiple selections (${groupMap[groupKey].join(', ')}) for weapon group '${groupKey}' in model group '${groupName}' for unit '${unit.name}'.`
-        );
+
+    // Count selections for each grouped weapon
+    for (const opt of options as { name: string; count?: number }[]) {
+      const weapon = groupWeapons.find((w) => w.name === opt.name && w.group);
+      if (weapon && weapon.group) {
+        const count = typeof opt.count === 'number' ? opt.count : 1;
+        groupInfo[weapon.group].selectedCounts[weapon.name] =
+          (groupInfo[weapon.group].selectedCounts[weapon.name] || 0) + count;
+        groupInfo[weapon.group].totalSelected += count;
       }
-      // New rule: must have at least one selection for grouped weapon options
-      if (groupMap[groupKey].length === 0) {
+    }
+
+    // Validate each group
+    for (const [groupKey, info] of Object.entries(groupInfo)) {
+      // Each weapon in the group must not exceed the shared max
+      for (const [weaponName, count] of Object.entries(info.selectedCounts)) {
+        if (count > info.max) {
+          violations.push(
+            `Weapon option '${weaponName}' in group '${groupKey}' exceeds shared max (${count} > ${info.max}) for unit '${unit.name}'.`
+          );
+        }
+      }
+      // The total selected for the group must be exactly equal to the shared max
+      if (info.totalSelected !== info.max) {
         violations.push(
-          `No selection for weapon group '${groupKey}' in model group '${groupName}' for unit '${unit.name}'.`
+          `Total selections for weapon group '${groupKey}' in model group '${groupName}' for unit '${unit.name}' must be exactly ${info.max} (currently ${info.totalSelected}).`
         );
       }
     }

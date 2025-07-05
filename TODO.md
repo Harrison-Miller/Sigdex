@@ -32,18 +32,14 @@
   - armies of renown - requires parsing armies of renow
   - probably don't select a manifestation lore by default if there isn't an army one (just allow a none option).
   - regiments of renown
-  - battle tactic cards
   - SoG enhancement table rule
   - notes option for the list and for each unit/renaming a unit: My cool hero name (actual unit name)
-  - badge to show a unit has artifact/heroic trait
   - don't allow enhancements taken from different tables in the same category.
   - limit list name length to like 30 characters
 
 - any time we load just make it load everthing, instead of only the current army.
 
 - set default weapon options on the unit detail page
-
-- grouped weapon options don't currently work with reinforcing. You should be able to take 1 of each or 2 of the same. It currently assumes 2 of the same.
 
 - all enhancement tables should probably work the same way
   - consider parsing the constraints on them, it might help us figure what armies can take more. Or when tables are mutually exclusive etc.

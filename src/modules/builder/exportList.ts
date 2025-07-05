@@ -117,14 +117,25 @@ function displayUnit(unit: ListUnit, army: Army): string {
   for (const [modelGroup, weaponOptions] of unit.weapon_options || new Map()) {
     for (const option of weaponOptions) {
       // look up weapon option in unitData
-      const optionData = findWeaponOption(modelGroup, option.name, unitData);
-      if (!optionData) continue; // Skip if option not found in unit data
+      const weaponData = findWeaponOption(modelGroup, option.name, unitData);
+      if (!weaponData) continue; // Skip if option not found in unit data
+      const optionData = weaponData.optionData;
+      const modelGroupCount = weaponData.modelGroupCount;
+
       if (!optionData.max && !optionData.replaces && !optionData.group) continue; // Skip because default weapon
 
       // the max for a grouped weapon is the modelGroup count * 2 if reinforced
       const maxCount =
-        (optionData.max ? optionData.max : modelGroup.count || 1) * (unit.reinforced ? 2 : 1);
+        (optionData.max ? optionData.max : modelGroupCount || 1) * (unit.reinforced ? 2 : 1);
       const count = Math.min(option.count, maxCount);
+      if (option.count > count) {
+        console.warn(
+          `Warning: Unit ${unit.name} has weapon option ${option.name} with count ${option.count}, but max is ${maxCount}. Adjusting to ${count}.`
+        );
+        console.log(`Original option:`, option);
+        console.log(`Option data:`, optionData);
+        console.log(`Model group:`, modelGroup);
+      }
 
       out += `• `;
       if (count > 1) {
@@ -157,11 +168,13 @@ function findWeaponOption(
   modelGroup: string,
   optionName: string,
   unitData: Unit
-): WeaponOption | undefined {
+): { optionData: WeaponOption; modelGroupCount: number } | undefined {
   if (!unitData.models) return undefined;
   const model = unitData.models.find((m) => m.name === modelGroup);
   if (!model || model.weapons.length === 0) return undefined;
-  return model.weapons.find((opt) => opt.name === optionName);
+  const option = model.weapons.find((opt) => opt.name === optionName);
+  if (!option) return undefined;
+  return { optionData: option, modelGroupCount: model.count || 1 };
 }
 
 function displayRegiment(regiment: ListRegiment, army: Army): string {

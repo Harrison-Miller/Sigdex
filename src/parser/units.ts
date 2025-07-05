@@ -18,7 +18,7 @@ import {
   parseRegimentTags,
   parseSubHeroRegimentOptions,
 } from './regimentoptions';
-import type { RegimentOption } from '../common/UnitData';
+import type { ModelGroup, RegimentOption } from '../common/UnitData';
 import { parseUnitsAsCategories } from './categories';
 import { parseUnitEnhancementTables } from './enhancementtables';
 import { parseUndersizeUnits } from './undersize';
@@ -161,6 +161,18 @@ export function parseUnits(
       // find the unit by name
       const unit = units.find((u) => u.name === underSizeUnit.name);
       if (unit) {
+        const modelGroups: ModelGroup[] = [];
+        if (unit.models) {
+          for (const modelGroup of unit.models) {
+            // make copy of each modelGroup and set the count to 1
+            const newModelGroup: ModelGroup = {
+              ...modelGroup,
+              count: 1, // Set the count to 1 for undersize units
+            };
+            modelGroups.push(newModelGroup);
+          }
+        }
+
         // create a copy of the unit with the undersize condition
         const undersizeUnit: Unit = {
           ...unit,
@@ -169,6 +181,7 @@ export function parseUnits(
           undersize_condition: underSizeUnit.condition, // Add the condition if it exists
           unit_size: 1, // Set the unit size to 1
           notReinforcable: true, // Undersize units are not reinforceable
+          models: modelGroups.length > 0 ? modelGroups : undefined, // Use the modified model groups
         };
 
         units.push(undersizeUnit);

@@ -18,6 +18,7 @@ export function parseModelGroups(root: Element): ModelGroup[] {
     return modelGroups;
   }
 
+  const nameCount: Map<string, number> = new Map();
   const modelEntries = findAllByTagAndAttr(root, 'selectionEntry', 'type', 'model');
   for (const entry of modelEntries) {
     const name = entry.getAttribute('name');
@@ -67,7 +68,21 @@ export function parseModelGroups(root: Element): ModelGroup[] {
       continue;
     }
 
+    nameCount.set(modelGroup.name, (nameCount.get(modelGroup.name) || 0) + 1);
+
     modelGroups.push(modelGroup);
+  }
+
+  // deduplicate model group names with the same name. i.e) Stormfiend, Stormfiend, Stormfiend becomes: Stormfiend A, Stormfiend B, Stormfiend C
+  const usedNameCount: Map<string, number> = new Map();
+  for (const modelGroup of modelGroups) {
+    const name = modelGroup.name;
+    const count = nameCount.get(name) || 0;
+    if (count > 1) {
+      const currentCount = usedNameCount.get(name) || 0;
+      modelGroup.name += ` ${String.fromCharCode(65 + currentCount)}`; // A, B, C, etc.
+      usedNameCount.set(name, currentCount + 1);
+    }
   }
 
   return modelGroups;
