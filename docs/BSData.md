@@ -18,7 +18,7 @@ This is the game system schema file.
 - Information about game mode, general's handbook, path to glory etc.
 - Unit profiles for universal units (mostly just universal manifestations)
 - Descriptions of shared rules (like crit mortals)
-- Descriptions of shared profiles (keywords like fly, ward
+- Descriptions of shared profiles (keywords like fly, ward)
 - battle tactic cards
 - publication ids - where rules are sourced from is noted in unit profiles
 

@@ -13,7 +13,9 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@vueuse/core": "^13.5.0",
+    "fast-xml-parser": "^5.2.5",
     "pluralize": "^8.0.0",
+    "superjson": "^2.2.2",
     "vue": "^3.5.13"
   },
   "devDependencies": {
