@@ -8,6 +8,7 @@ import { DOMParser } from 'xmldom';
 import type { Lore } from './common/ManifestationData';
 import { parseBattleTactics } from './parser/battletactics';
 import type { BattleTacticCard } from './common/BattleTacticsData';
+import { findFirstByTagAndAllAttrs } from './parser/utils';
 
 function getGithubBaseUrl() {
   return localStorage.getItem('GITHUB_BASE_URL') || 'https://raw.githubusercontent.com';
@@ -126,11 +127,22 @@ export async function loadArmy(armyName: string): Promise<Army> {
   //   }
   // }
 
-  const army = await parseArmy(gameInfo, unitLibrary, armyInfo);
+  // pull in orruk warclans if applicable, super hack that'll go away with rewrite
+  let orrukWarclansCatalogue: Element | null = null;
+  const orrukWarclansCatalogueNeeded = findFirstByTagAndAllAttrs(unitLibrary, 'catalogueLink', {
+    type: 'catalogue',
+    name: 'Orruk Warclans - Library',
+  });
+  if (orrukWarclansCatalogueNeeded) {
+    orrukWarclansCatalogue = await getOrrukWarclansCatalogue();
+  }
+
+  const army = await parseArmy(gameInfo, unitLibrary, armyInfo, orrukWarclansCatalogue);
   if (!army) {
     console.error(`Failed to parse army from ${armyInfoUrl}`);
     throw new Error(`Failed to parse army from ${armyInfoUrl}`);
   }
+
   try {
     localStorage.setItem(storageKey, JSON.stringify(cleanObject(army.toJSON())));
     localStorage.setItem(timestampKey, Date.now().toString());
@@ -140,6 +152,24 @@ export async function loadArmy(armyName: string): Promise<Army> {
   }
 
   return army;
+}
+
+async function getOrrukWarclansCatalogue(): Promise<Element | null> {
+  const fileName = `Orruk Warclans - Library.cat`;
+  const libraryUrl = `${GITHUB_BASE_URL}/${GITHUB_REPO}/refs/heads/main/${encodeURIComponent(fileName)}`;
+  return fetch(libraryUrl)
+    .then((res) => {
+      if (!res.ok) {
+        console.error(`Failed to fetch XML from ${libraryUrl}: ${res.statusText}`);
+        throw new Error(`Failed to fetch XML: ${res.statusText}`);
+      }
+      return res.text();
+    })
+    .then((xmlText) => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(xmlText, 'text/xml');
+      return doc.documentElement;
+    });
 }
 
 export async function loadLores(): Promise<Map<string, Lore>> {

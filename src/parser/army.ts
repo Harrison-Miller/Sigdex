@@ -9,7 +9,13 @@ import { parseBattleFormations } from './formations';
 import { parseCategories } from './categories';
 import { parseEnhancementTables } from './enhancementtables';
 
-export function parseArmy(gameInfo: Element, unitLibrary: Element, armyInfo: Element): Army {
+// super hack to get the orruk warclans catalogue
+export function parseArmy(
+  gameInfo: Element,
+  unitLibrary: Element,
+  armyInfo: Element,
+  orrukWarclans: Element | null = null
+): Army {
   const categories = parseCategories(gameInfo);
   const armyCategories = parseCategories(armyInfo);
   for (const [id, name] of armyCategories) {
@@ -32,6 +38,11 @@ export function parseArmy(gameInfo: Element, unitLibrary: Element, armyInfo: Ele
   const formations = parseBattleFormations(armyInfo);
 
   const enhancementTables = parseEnhancementTables(armyInfo);
+
+  if (orrukWarclans) {
+    const orrukWarclansUnits = parseUnits(orrukWarclans, armyInfo, points, categories);
+    units.push(...orrukWarclansUnits);
+  }
 
   return new Army(
     units,
