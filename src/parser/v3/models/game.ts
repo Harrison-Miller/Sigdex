@@ -12,7 +12,7 @@ export interface IBattleTacticCard {
   domination: string;
 }
 
-// TODO: we're assuming only 1 game mode ghb 2025-06, later we'll wan to support multiple game modes
+// TODO: we're assuming only 1 game mode ghb 2025-06, later we'll want to support multiple game modes
 // General object to store everything related to the game data
 export interface IGame {
   battleTacticCards: IBattleTacticCard[];

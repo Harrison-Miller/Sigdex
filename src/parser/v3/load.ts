@@ -3,12 +3,14 @@ import { listFiles } from '../../github/tree';
 import { getFileContent } from '../../github/content';
 
 // loadRepoFiles loads all the BSData XML files from a GitHub repository
-// @ts-ignore
-function loadRepoFiles(githubRepo: string): Map<string, any> {
-  const parser = new XMLParser();
+export function loadRepoFiles(githubRepo: string): Map<string, any> {
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+  });
   const pathToXml: Map<string, any> = new Map();
   listFiles(githubRepo).then((files) => {
     files = files.filter((filePath) => filePath.endsWith('.cat') || filePath.endsWith('.gst'));
+    files = files.filter((filePath) => !filePath.toLowerCase().includes('legends'));
     files.forEach((filePath) => {
       getFileContent(githubRepo, filePath)
         .then((content) => {

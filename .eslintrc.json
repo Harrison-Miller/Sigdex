@@ -26,6 +26,44 @@
       {
         "singleQuote": true
       }
+    ],
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "types": {
+          "String": {
+            "message": "Use 'string' instead.",
+            "fixWith": "string"
+          },
+          "Number": {
+            "message": "Use 'number' instead.",
+            "fixWith": "number"
+          },
+          "Boolean": {
+            "message": "Use 'boolean' instead.",
+            "fixWith": "boolean"
+          },
+          "Symbol": {
+            "message": "Use 'symbol' instead.",
+            "fixWith": "symbol"
+          },
+          "Object": {
+            "message": "Use '{}' or a more specific type instead.",
+            "fixWith": "{}"
+          },
+          "Function": {
+            "message": "Define a specific function type instead.",
+            "fixWith": "(...args: any[]) => any"
+          },
+          "BigInt": {
+            "message": "Use 'bigint' instead.",
+            "fixWith": "bigint"
+          },
+          "Date": {
+            "message": "Use 'Date' only for actual date objects, not as a type alias for string or number."
+          }
+        }
+      }
     ]
   }
 }

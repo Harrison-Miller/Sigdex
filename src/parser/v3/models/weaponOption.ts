@@ -8,3 +8,26 @@ export interface IWeaponOption {
   replaces: string[];
   group: string;
 }
+
+export class WeaponOption implements IWeaponOption {
+  name: string;
+  type: 'default' | 'optional' | 'grouped';
+  max: number;
+  replaces: string[];
+  group: string;
+
+  constructor(data?: Partial<IWeaponOption>) {
+    this.name = data?.name ?? '';
+    this.max = data?.max ?? 0;
+    this.replaces = data?.replaces ?? [];
+    this.group = data?.group ?? '';
+
+    if (this.group) {
+      this.type = 'grouped';
+    } else if (this.max > 0) {
+      this.type = 'optional';
+    } else {
+      this.type = 'default';
+    }
+  }
+}
