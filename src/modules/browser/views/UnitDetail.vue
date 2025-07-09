@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import StatCircle from '../components/StatCircle.vue';
@@ -10,14 +9,12 @@ import FavoriteToggle from '../../core/components/FavoriteToggle.vue';
 import BackButton from '../../core/components/BackButton.vue';
 import Section from '../../core/components/Section.vue';
 import { isFavorite, saveFavorite, removeFavorite } from '../../../favorites';
-import { loadArmy, loadLores, loadUniversalUnits } from '../../../army';
-import { MOCK_UNIT } from '../../../army';
-import type { Ability } from '../../../common/Ability';
 import {
   formatModelGroups,
   formatSubHeroTags,
   formatRegimentOptions,
 } from '../../../utils/formatter';
+import { useUnit } from '../../shared/composables/useGame';
 
 function formatCompanionUnits(unitName: string, companions: string[]): string {
   if (!companions || companions.length === 0) return '';
@@ -27,78 +24,13 @@ function formatCompanionUnits(unitName: string, companions: string[]): string {
   return `<i>${bold(unitName)} must be taken with ${companionsText}.</i>`;
 }
 
-// Accept unit and army as props for detail view
-const props = defineProps<{ unit?: any; army?: string }>();
+const props = defineProps<{ unit: string; army?: string }>();
 const route = useRoute();
 
-const unitPropIsObject = typeof props.unit === 'object' && props.unit !== null;
-let unitName = unitPropIsObject
-  ? props.unit.name
-  : (props.unit ?? (route?.params?.unit as string | undefined));
-let armyName = props.army ?? (route?.params?.army as string | undefined);
+const unitName = props.unit ?? (route?.params?.unit as string | undefined);
+const armyName = props.army ?? (route?.params?.army as string | undefined);
 
-const unit = ref(unitPropIsObject ? props.unit : null);
-const summoningAbility = ref<Ability | null>(null);
-
-onMounted(async () => {
-  if (!unitName || !armyName) return;
-
-  let units = [];
-  let manifestationLores: string[] = [];
-  let armyData: any = null;
-
-  if (armyName === 'UniversalManifestations') {
-    units = await loadUniversalUnits();
-    // No manifestationLores for universal units
-    manifestationLores = [];
-    unit.value = (units as any[]).find((u: any) => u.name === unitName) ?? MOCK_UNIT;
-  } else {
-    armyData = await loadArmy(armyName);
-    if (armyData) {
-      units = armyData.units || [];
-      manifestationLores = armyData.manifestationLores.map((lore: any) => lore.name) || [];
-    }
-    unit.value = (armyData.units as any[]).find((u: any) => u.name === unitName) ?? MOCK_UNIT;
-  }
-
-  // Summoning logic for Manifestation
-  if (unit.value && unit.value.category === 'Manifestation') {
-    const lores = await loadLores();
-    if (manifestationLores.length === 0) {
-      manifestationLores = Array.from(lores.keys());
-    }
-
-    let foundAbility: Ability | null = null;
-    for (const loreName of manifestationLores) {
-      const abilities = lores.get(loreName)?.abilities || [];
-      foundAbility =
-        abilities.find(
-          (a) =>
-            a.name.toLowerCase().includes(unit.value.name.toLowerCase()) ||
-            a.text.toLowerCase().includes(unit.value.name.toLowerCase())
-        ) || null;
-      if (foundAbility) break;
-    }
-    summoningAbility.value = foundAbility;
-    // try name split
-    if (!foundAbility) {
-      const nameParts = (unit.value.name as string).split(' ');
-      for (const loreName of manifestationLores) {
-        const abilities = lores.get(loreName)?.abilities || [];
-        foundAbility =
-          abilities.find((a) =>
-            nameParts.some(
-              (part) =>
-                a.name.toLowerCase().includes(part.toLowerCase()) ||
-                a.text.toLowerCase().includes(part.toLowerCase())
-            )
-          ) || null;
-        if (foundAbility) break;
-      }
-      summoningAbility.value = foundAbility;
-    }
-  }
-});
+const { unit, battleProfile } = useUnit(armyName ?? '', unitName ?? '');
 
 const unitFavorite = ref(isFavorite('unit', unitName));
 function toggleUnitFavoriteDetail(fav: boolean) {
@@ -110,24 +42,10 @@ function toggleUnitFavoriteDetail(fav: boolean) {
   }
 }
 const favoriteToggleSize = 36;
-
-function shouldShowUnitDetails(unit: any): boolean {
-  if (!unit) return false;
-  return (unit.points && unit.points > 0) || (unit.unit_size && unit.unit_size > 0);
-}
-
-// Computed: extract ward value from keywords like "Ward (5+)"
-const wardValue = computed(() => {
-  if (!unit.value || !unit.value.keywords) return null;
-  const match = unit.value.keywords.find((k: string) => /^ward \([^)]+\)$/i.test(k));
-  if (!match) return null;
-  const paren = match.match(/\(([^)]+)\)/);
-  return paren ? paren[1] : null;
-});
 </script>
 <template>
   <BackButton :size="36" />
-  <div v-if="unit && unit.stats" class="unit-detail">
+  <div class="unit-detail">
     <div class="unit-detail-header">
       <div v-if="armyName !== 'UniversalManifestations'" class="unit-detail-fav">
         <FavoriteToggle
@@ -140,36 +58,22 @@ const wardValue = computed(() => {
       <h1>{{ unit.name }}</h1>
     </div>
     <div class="stats-row">
-      <StatCircle :value="unit.stats.move" label="Move" />
-      <StatCircle :value="unit.stats.health" label="Health" />
-      <StatCircle
-        :value="
-          unit.stats.control !== undefined
-            ? unit.stats.control
-            : unit.stats.banishment !== undefined
-              ? unit.stats.banishment
-              : '-'
-        "
-        :label="
-          unit.stats.control !== undefined
-            ? 'Control'
-            : unit.stats.banishment !== undefined
-              ? 'Banishment'
-              : 'Control'
-        "
-      />
-      <StatCircle :value="unit.stats.save" label="Save" />
-      <StatCircle v-if="wardValue" :value="wardValue" label="Ward" />
+      <StatCircle v-if="unit.stats.move" :value="unit.stats.move" label="Move" />
+      <StatCircle v-if="unit.stats.health" :value="unit.stats.health" label="Health" />
+      <StatCircle v-if="unit.stats.control" :value="unit.stats.control" label="Control" />
+      <StatCircle v-if="unit.stats.banishment" :value="unit.stats.banishment" label="Banishment" />
+      <StatCircle v-if="unit.stats.save" :value="unit.stats.save" label="Save" />
+      <StatCircle v-if="unit.stats.ward" :value="unit.stats.ward" label="Ward" />
     </div>
-    <Section v-if="unit.melee_weapons && unit.melee_weapons.length">
+    <Section v-if="unit.meleeWeapons.length">
       <template #title>Melee Weapons</template>
-      <WeaponTable :weapons="unit.melee_weapons" short-headers />
+      <WeaponTable :weapons="unit.meleeWeapons" short-headers />
     </Section>
-    <Section v-if="unit.ranged_weapons && unit.ranged_weapons.length">
+    <Section v-if="unit.rangedWeapons.length">
       <template #title>Ranged Weapons</template>
-      <WeaponTable :weapons="unit.ranged_weapons" short-headers />
+      <WeaponTable :weapons="unit.rangedWeapons" short-headers />
     </Section>
-    <Section v-if="unit.abilities && unit.abilities.length">
+    <Section v-if="unit.abilities.length">
       <template #title>Abilities</template>
       <div class="abilities">
         <AbilityCard
@@ -179,75 +83,71 @@ const wardValue = computed(() => {
         />
       </div>
     </Section>
-    <Section v-if="summoningAbility && summoningAbility.text">
+    <Section v-if="unit.summoningSpell">
       <template #title>Summoning</template>
       <div class="abilities">
-        <AbilityCard :ability="summoningAbility" />
+        <AbilityCard :ability="unit.summoningSpell" />
       </div>
     </Section>
-    <Section v-if="shouldShowUnitDetails(unit)">
+    <Section>
       <template #title>Unit Details</template>
       <div class="unit-detail-points" style="font-size: 0.95em; color: #666; text-align: left">
-        <div v-if="unit.notReinforcable" class="unit-not-reinforceable" style="margin-top: 0.5em">
+        <div
+          v-if="battleProfile.reinforceable === false"
+          class="unit-not-reinforceable"
+          style="margin-top: 0.5em"
+        >
           <span v-html="`<i>This unit can not be reinforced.</i>`"></span>
         </div>
         <div
-          v-if="unit.undersize_condition"
+          v-if="battleProfile.undersizeCondition"
           class="unit-not-reinforceable"
           style="margin-top: 0.5em"
         >
           <span
             v-html="
-              `<i>You can include 1 unit of this type for each <b>${unit.undersize_condition}</b> in your army.</i>`
+              `<i>You can include 1 unit of this type for each <b>${battleProfile.undersizeCondition}</b> in your army.</i>`
             "
           ></span>
         </div>
         <div
-          v-if="unit.companion_units && unit.companion_units.length > 0"
+          v-if="battleProfile.companionUnits.length > 0"
           class="unit-companion-units"
           style="margin-top: 0.5em"
         >
-          <span v-html="formatCompanionUnits(unit.name, unit.companion_units)"></span>
+          <span v-html="formatCompanionUnits(unit.name, battleProfile.companionUnits)"></span>
         </div>
         <div
-          v-if="unit.models && unit.models.length"
+          v-if="unit.models.size > 1"
           class="unit-model-groups"
           style="margin-top: 0.5em"
-          v-html="formatModelGroups(unit.models, unit)"
+          v-html="formatModelGroups(Array.from(unit.models.values()), unit)"
         ></div>
-
-        <span v-if="unit.points && unit.points > 0">{{ unit.points }} Points</span>
-        <span v-if="unit.unit_size && unit.unit_size > 0" style="margin-left: 1.5em"
-          >Unit Size: {{ unit.unit_size }}</span
+        <span v-if="battleProfile.points > 0">{{ battleProfile.points }} Points</span>
+        <span v-if="unit.unitSize > 0" style="margin-left: 1.5em"
+          >Unit Size: {{ unit.unitSize }}</span
         >
 
         <div
-          v-if="unit.sub_hero_tags && unit.sub_hero_tags.length > 0"
+          v-if="battleProfile.regimentTags.length > 0"
           class="unit-sub-hero-tags"
           style="margin-top: 0.5em"
         >
-          <span v-html="formatSubHeroTags(unit.sub_hero_tags)"></span>
+          <span v-html="formatSubHeroTags(battleProfile.regimentTags)"></span>
         </div>
         <div
-          v-if="
-            (unit.regiment_options && unit.regiment_options.length > 0) ||
-            (unit.sub_hero_options && unit.sub_hero_options.length > 0)
-          "
+          v-if="battleProfile.regimentOptions.length > 0"
           class="unit-regiment-options"
           style="margin-top: 0.5em"
         >
-          <span v-html="formatRegimentOptions(unit.sub_hero_options, unit.regiment_options)"></span>
+          <span v-html="formatRegimentOptions(battleProfile.regimentOptions)"></span>
         </div>
       </div>
     </Section>
-    <Section v-if="unit.keywords && unit.keywords.length">
+    <Section v-if="unit.keywords.length">
       <template #title>Keywords</template>
       <KeywordsBar :keywords="unit.keywords" />
     </Section>
-  </div>
-  <div v-else>
-    <p style="color: red">Unit data is missing or incomplete.</p>
-    <pre>{{ unit }}</pre>
   </div>
 </template>
 <style src="./unit-detail.css" scoped></style>

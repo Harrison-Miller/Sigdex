@@ -8,6 +8,7 @@ import type { IAbility } from './models/ability';
 import type { GrandAlliance, IArmy } from './models/army';
 import { parseArmy, parseLoresByGroup } from './parse/parseArmy';
 import { parseCategories, type ICategory } from './parse/parseCommon';
+import { BattleProfile, type IBattleProfile } from './models/battleProfile';
 
 export class Parser {
   // configuration
@@ -116,6 +117,24 @@ export class Parser {
             ...lore,
             points: armyLore.points,
           });
+
+          // create a battle profile for each manifestation ability
+          for (const ability of lore.abilities) {
+            console.log(`Adding bp for manifestation: ${ability.name}`);
+            const unit = this.units.get(ability.summonedUnit);
+            if (!unit) continue; // skip if the unit is not found
+            const battleProfile: Partial<IBattleProfile> = {
+              name: unit.name,
+              category: unit.category,
+            };
+            army.battleProfiles.set(unit.name, new BattleProfile(battleProfile));
+
+            // update the unitList
+            army.unitList.get(unit.category)?.push({
+              name: unit.name,
+              points: 0,
+            });
+          }
         }
       }
 

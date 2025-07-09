@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { loadArmy } from '../../../army';
 import { ref, onMounted, watch, computed } from 'vue';
-import type { Unit } from '../../../common/UnitData';
+import { useArmy } from '../../shared/composables/useGame';
 import ListButton from '../../shared/components/ListButton.vue';
 import FavoriteToggle from '../../core/components/FavoriteToggle.vue';
 import BackButton from '../../core/components/BackButton.vue';
@@ -15,7 +14,6 @@ import {
   getArmyUnitFavoriteToggleState,
   setArmyUnitFavoriteToggleState,
 } from '../../../favorites';
-import { POSSIBLE_CATEGORIES } from '../../../common/UnitData';
 import Section from '../../core/components/Section.vue';
 
 // Accept army as a prop for this view
@@ -23,60 +21,27 @@ const props = defineProps<{ army?: string }>();
 
 // Use prop if provided, otherwise fallback to route param
 const route = useRoute();
-const army = props.army ?? (route.params.army as string);
+const armyName = props.army ?? (route.params.army as string);
 
-const CATEGORY_ORDER = POSSIBLE_CATEGORIES;
-
-const categorizedUnits = ref<Record<string, Unit[]>>({});
 const unitFavorites = ref<string[]>([]);
-const showOnlyFavorites = ref(getArmyUnitFavoriteToggleState(army));
+const showOnlyFavorites = ref(getArmyUnitFavoriteToggleState(armyName));
 const sortMode = ref<'alpha' | 'points'>('alpha');
 const sortLabel = computed(() => (sortMode.value === 'alpha' ? 'A-Z' : 'Points'));
 const leftActive = ref(true);
-const loadedArmy = ref<any>(null);
+
+// Use the new useArmy composable
+const { army, loading, error } = useArmy(armyName);
 
 function updateShowOnlyFavoritesState(newVal: boolean) {
   showOnlyFavorites.value = newVal;
-  setArmyUnitFavoriteToggleState(army, newVal);
+  setArmyUnitFavoriteToggleState(armyName, newVal);
 }
 
-onMounted(async () => {
+onMounted(() => {
   unitFavorites.value = getFavorites('unit');
-  showOnlyFavorites.value = getArmyUnitFavoriteToggleState(army);
-  try {
-    const armyData = await loadArmy(army);
-    loadedArmy.value = armyData;
-    const cats: Record<string, Unit[]> = {
-      Hero: [],
-      Infantry: [],
-      Cavalry: [],
-      Beast: [],
-      Monster: [],
-      'War Machine': [],
-      Manifestation: [],
-      'Faction Terrain': [],
-      Other: [],
-    };
-
-    for (const unit of armyData.units) {
-      const cat = unit.category;
-      if (!cat) continue; // Skip units without a category
-      if (!cats[cat]) cats[cat] = [];
-      cats[cat].push(unit);
-    }
-
-    // Sort units alphabetically within each category
-    for (const cat of CATEGORY_ORDER) {
-      if (!cats[cat]) continue; // Skip if category has no units
-      if (cats[cat].length === 0) continue; // Skip empty categories
-      cats[cat].sort((a, b) => a.name.localeCompare(b.name));
-    }
-    categorizedUnits.value = cats;
-  } catch (e) {
-    categorizedUnits.value = {};
-    loadedArmy.value = null;
-  }
+  showOnlyFavorites.value = getArmyUnitFavoriteToggleState(armyName);
 });
+
 function toggleUnitFavorite(unit: string, fav: boolean) {
   if (fav) {
     saveFavorite('unit', unit);
@@ -91,13 +56,13 @@ function toggleSortMode() {
   sortMode.value = sortMode.value === 'alpha' ? 'points' : 'alpha';
 }
 
-const filteredUnits = (cat: string) => {
-  let units = categorizedUnits.value?.[cat] || [];
+const filteredUnits = (units: any[]) => {
+  let filtered = units;
   if (showOnlyFavorites.value && hasAnyFavoriteInArmy.value) {
-    units = units.filter((x) => unitFavorites.value.includes(x.name));
+    filtered = filtered.filter((x) => unitFavorites.value.includes(x.name));
   }
   if (sortMode.value === 'points') {
-    units = [...units].sort((a, b) => {
+    filtered = [...filtered].sort((a, b) => {
       if (typeof a.points === 'number' && typeof b.points === 'number') {
         return a.points - b.points;
       } else if (typeof a.points === 'number') {
@@ -109,13 +74,13 @@ const filteredUnits = (cat: string) => {
       }
     });
   } else {
-    units = [...units].sort((a, b) => a.name.localeCompare(b.name));
+    filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
   }
-  return units;
+  return filtered;
 };
 
 const hasAnyFavoriteInArmy = computed(() => {
-  return Object.values(categorizedUnits.value).some((units) =>
+  return Array.from(army.value.unitList.values()).some((units) =>
     units.some((u) => unitFavorites.value.includes(u.name))
   );
 });
@@ -123,14 +88,14 @@ const hasAnyFavoriteInArmy = computed(() => {
 watch(unitFavorites, (favs) => {
   if (showOnlyFavorites.value && favs.length === 0) {
     showOnlyFavorites.value = false;
-    setArmyUnitFavoriteToggleState(army, false);
+    setArmyUnitFavoriteToggleState(armyName, false);
   }
 });
 </script>
 <template>
   <BackButton :size="36" />
-  <div class="list-container">
-    <h1>{{ army }}</h1>
+  <div class="list-container" v-if="!loading && !error">
+    <h1>{{ armyName }}</h1>
     <TwoTab :left-label="'Warscrolls'" :right-label="'Rules'" v-model:leftActive="leftActive">
       <template #left>
         <div class="filters-bar">
@@ -147,13 +112,13 @@ watch(unitFavorites, (favs) => {
             Sort: {{ sortLabel }}
           </button>
         </div>
-        <template v-for="cat in CATEGORY_ORDER" :key="cat">
-          <Section v-if="filteredUnits(cat).length">
+        <template v-for="[cat, units] in Array.from(army.unitList.entries())" :key="cat">
+          <Section v-if="filteredUnits(units).length">
             <template #title>{{ cat }}</template>
             <ul>
-              <li v-for="u in filteredUnits(cat)" :key="u.name">
+              <li v-for="u in filteredUnits(units)" :key="u.name">
                 <router-link
-                  :to="{ name: 'UnitDetail', params: { army, unit: u.name } }"
+                  :to="{ name: 'UnitDetail', params: { army: armyName, unit: u.name } }"
                   custom
                   v-slot="{ navigate, href }"
                 >
@@ -173,7 +138,7 @@ watch(unitFavorites, (favs) => {
         </template>
       </template>
       <template #right>
-        <ArmyRules :army="loadedArmy" />
+        <ArmyRules :army="army" />
       </template>
     </TwoTab>
   </div>

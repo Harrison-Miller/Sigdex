@@ -1,23 +1,13 @@
 <script setup lang="ts">
 import { formatText } from '../../../utils/formatter';
+import type { IWeapon } from '../../../parser/v3/models/weapon';
 const props = defineProps<{
-  weapons: Array<{
-    name: string;
-    abilities: string[];
-    attacks: string;
-    hit: string;
-    wound: string;
-    rend: string;
-    damage: string;
-    range?: string;
-  }>;
+  weapons: IWeapon[];
   shortHeaders?: boolean;
 }>();
 
-function displayRend(rend: string | number | undefined | null): string {
-  return rend === '' || rend === undefined || rend === null || rend === '0' || rend === 0
-    ? '-'
-    : String(rend);
+function displayRend(rend: string | undefined | null): string {
+  return rend === '' || rend === undefined || rend === null || rend === '0' ? '-' : String(rend);
 }
 
 const hasRange = props.weapons.some((w) => w.range && w.range !== '');

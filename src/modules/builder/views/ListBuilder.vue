@@ -25,7 +25,7 @@
       <AbilityCard
         v-for="(trait, i) in armyData.battleTraits"
         :key="trait.name + i"
-        :ability="trait"
+        :ability="new Ability({ name: trait.name })"
       />
     </Section>
     <Section
@@ -49,7 +49,7 @@
           <AbilityCard
             v-for="(ability, i) in armyData.formations.get(selectedFormation)"
             :key="ability.name + i"
-            :ability="ability"
+            :ability="new Ability({ name: ability.name })"
           />
         </div>
       </div>
@@ -174,6 +174,7 @@ import BattleTacticCard from '../../shared/components/BattleTacticCard.vue';
 import { loadBattleTacticCards } from '../../../army';
 import FactionTerrainSection from '../components/FactionTerrainSection.vue';
 import AuxiliaryUnitsSection from '../components/AuxiliaryUnitsSection.vue';
+import { Ability } from '../../../parser/v3/models/ability';
 
 const props = defineProps<{ id: string }>();
 const route = useRoute();

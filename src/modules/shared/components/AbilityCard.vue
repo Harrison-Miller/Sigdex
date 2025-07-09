@@ -2,20 +2,10 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import KeywordsBar from './KeywordsBar.vue';
 import { formatText } from '../../../utils/formatter';
+import type { IAbility } from '../../../parser/v3/models/ability';
+
 const props = defineProps<{
-  ability: {
-    timing: string;
-    color: string;
-    type: string;
-    text: string;
-    keywords: string[];
-    name: string;
-    declare?: string;
-    castingValue?: string;
-    chantingValue?: string;
-    cost?: string;
-    points?: number;
-  };
+  ability: IAbility;
 }>();
 // Map ability types to Font Awesome icon names
 const iconMap: Record<string, string> = {
@@ -42,9 +32,9 @@ function getAbilityIcon(type: string) {
       <font-awesome-icon :icon="['fas', 'diamond']" class="diamond-bg" />
       <span class="diamond-chanting-text">{{ props.ability.chantingValue }}</span>
     </div>
-    <div v-else-if="props.ability.cost" class="cost-hexagon-icon">
+    <div v-else-if="props.ability.commandPoints" class="cost-hexagon-icon">
       <font-awesome-icon :icon="['fas', 'stop']" class="hexagon-bg" />
-      <span class="hexagon-cost-text">{{ props.ability.cost }}</span>
+      <span class="hexagon-cost-text">{{ props.ability.commandPoints }}</span>
     </div>
     <div class="card-header ability-header" :class="(props.ability.color || 'black').toLowerCase()">
       <span class="icon">
@@ -61,16 +51,9 @@ function getAbilityIcon(type: string) {
       ></div>
       <div
         class="card-text ability-text"
-        v-html="formatText(`**Effect**: ${props.ability.text}`)"
+        v-html="formatText(`**Effect**: ${props.ability.effect}`)"
       ></div>
       <KeywordsBar :keywords="props.ability.keywords" />
-      <span
-        v-if="typeof props.ability.points === 'number' && props.ability.points > 0"
-        class="points-badge"
-        style="margin-left: 0.5em"
-      >
-        {{ props.ability.points }} pts
-      </span>
     </div>
   </div>
 </template>
@@ -165,20 +148,5 @@ function getAbilityIcon(type: string) {
 
 .card.ability-card {
   position: relative;
-}
-
-.points-badge {
-  background: #8b0000;
-  color: #fff;
-  font-size: 0.78em;
-  font-weight: 600;
-  border-radius: 1em;
-  padding: 0.08em 0.7em 0.08em 0.7em;
-  margin-top: 0;
-  margin-left: 0;
-  display: inline-block;
-  vertical-align: middle;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  letter-spacing: 0.01em;
 }
 </style>

@@ -15,7 +15,7 @@
         placeholder="No Heroic Trait"
       />
       <div v-if="selectedHeroicTraitAbility">
-        <AbilityCard :ability="selectedHeroicTraitAbility" />
+        <AbilityCard :ability="new Ability({ name: selectedHeroicTraitAbility?.name })" />
       </div>
     </div>
     <div v-if="isHero">
@@ -27,7 +27,7 @@
         placeholder="No Artifact"
       />
       <div v-if="selectedArtifactAbility">
-        <AbilityCard :ability="selectedArtifactAbility" />
+        <AbilityCard :ability="new Ability({ name: selectedArtifactAbility?.name })" />
       </div>
     </div>
     <div v-for="tableName in availableEnhancementTables" :key="tableName">
@@ -40,7 +40,9 @@
         @update:model-value="updateEnhancement(tableName, $event)"
       />
       <div v-if="getSelectedEnhancementAbility(tableName)">
-        <AbilityCard :ability="getSelectedEnhancementAbility(tableName)!" />
+        <AbilityCard
+          :ability="new Ability({ name: getSelectedEnhancementAbility(tableName)?.name })"
+        />
       </div>
     </div>
   </Section>
@@ -53,6 +55,7 @@ import type { ListUnit } from '../../../common/ListData';
 import type { Unit } from '../../../common/UnitData';
 import { ref, computed, onMounted } from 'vue';
 import type { Army } from '../../../common/ArmyData';
+import { Ability } from '../../../parser/v3/models/ability';
 
 const props = defineProps<{ modelValue: ListUnit; unitData?: Unit; army?: Army }>();
 const emit = defineEmits(['update:modelValue']);

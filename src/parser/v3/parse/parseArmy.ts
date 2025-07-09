@@ -13,7 +13,7 @@ export function parseArmy(
 ): IArmy {
   const catalogue = root?.catalogue;
   const name = catalogue?.['@_name'] || 'Unknown Catalogue';
-  const army: Partial<IArmy> = {
+  let army: Partial<IArmy> = {
     name,
     battleTraits: parseBattleTraits(catalogue),
     formations: parseFormations(catalogue),

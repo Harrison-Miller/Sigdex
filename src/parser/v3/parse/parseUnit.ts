@@ -106,7 +106,7 @@ export function parseUnitKeywords(unitNode: any): string[] {
   const keywords: string[] = [];
   keywordNodes.forEach((keywordNode: any) => {
     if (keywordNode['@_name']) {
-      keywords.push(keywordNode['@_name']);
+      keywords.push(keywordNode['@_name'].toUpperCase());
     }
   });
   return keywords;

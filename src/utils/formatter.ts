@@ -1,5 +1,9 @@
 import pluralize, { isPlural } from 'pluralize';
-import type { ModelGroup, Unit, WeaponOption, RegimentOption } from '../common/UnitData';
+import type { IModel } from '../parser/v3/models/model';
+import type { IUnit } from '../parser/v3/models/unit';
+import type { IWeaponOption } from '../parser/v3/models/weaponOption';
+import type { RegimentOption } from '../common/UnitData';
+import type { IRegimentOption } from '../parser/v3/models/battleProfile';
 
 export function formatText(text: string): string {
   if (!text) return '';
@@ -30,23 +34,21 @@ export function formatText(text: string): string {
   return text;
 }
 
-export function formatModelGroups(modelGroups: ModelGroup[], unit: Unit): string {
+export function formatModelGroups(modelGroups: IModel[], unit: IUnit): string {
   // contains champion keyword case insensitive
   const hasChampion = unit.keywords
     ? unit.keywords.some((k) => k.toLowerCase() === 'champion')
     : false;
 
-  const unitSize = modelGroups.reduce((sum, group) => sum + group.count, 0);
   const isOneGroup = modelGroups.length == 1;
 
   let text = ``;
   if (!isOneGroup) {
     text += `<ul>`;
-  } else {
   }
 
   for (const group of modelGroups) {
-    const groupText = formatModelGroup(unitSize, group, hasChampion);
+    const groupText = formatModelGroup(unit.unitSize, group, hasChampion);
     if (!isOneGroup) {
       text += `<li>${groupText}</li>`;
     } else {
@@ -61,7 +63,7 @@ export function formatModelGroups(modelGroups: ModelGroup[], unit: Unit): string
   return text;
 }
 
-function formatModelGroup(unitSize: number, group: ModelGroup, hasChampion: boolean): string {
+function formatModelGroup(unitSize: number, group: IModel, hasChampion: boolean): string {
   const isOneModel = group.count === 1;
   const isGroupSize = unitSize === group.count;
   let text = `<i>`;
@@ -77,7 +79,9 @@ function formatModelGroup(unitSize: number, group: ModelGroup, hasChampion: bool
   } else {
     text += `${group.count} in ${unitSize} models are <b>${pluralize(group.name)}</b>`;
   }
-  const defaultWeapons = group.weapons.filter((w) => !w.max && !w.group).map((w) => w.name);
+
+  const weaponArray = Array.from(group.weapons.values());
+  const defaultWeapons = weaponArray.filter((w) => w.type === 'default').map((w) => w.name);
   if (defaultWeapons.length > 0) {
     if (!isOneModel && !isGroupSize) {
       text += ` each`;
@@ -100,7 +104,7 @@ function formatModelGroup(unitSize: number, group: ModelGroup, hasChampion: bool
   text += `</i>`;
 
   // now in a bullet list write out optional weapons
-  const optionalWeapons = group.weapons.filter((w) => w.max && !w.group);
+  const optionalWeapons = weaponArray.filter((w) => w.type === 'optional');
   if (optionalWeapons.length > 0) {
     text += '<ul>';
     for (const weapon of optionalWeapons) {
@@ -137,9 +141,9 @@ function formatModelGroup(unitSize: number, group: ModelGroup, hasChampion: bool
   }
 
   // grouped weapons
-  const groupedWeapons: Map<string, WeaponOption[]> = new Map();
-  for (const weapon of group.weapons) {
-    if (weapon.group) {
+  const groupedWeapons: Map<string, IWeaponOption[]> = new Map();
+  for (const weapon of weaponArray) {
+    if (weapon.type === 'grouped' && weapon.group) {
       if (!groupedWeapons.has(weapon.group)) {
         groupedWeapons.set(weapon.group, []);
       }
@@ -175,12 +179,7 @@ export function formatSubHeroTags(tags: string[]): string {
   return `<i>This <b>Hero</b> can join an eligible regiment as a ${tags.map((tag) => `<b>${tag}</b>`).join(', ')}.</i>`;
 }
 
-export function formatRegimentOptions(
-  subHeroOptions: RegimentOption[],
-  options: RegimentOption[]
-): string {
-  const allOptions = [...(subHeroOptions || []), ...(options || [])];
-
+export function formatRegimentOptions(options: IRegimentOption[]): string {
   const formatItems = (opts: RegimentOption[]) =>
     opts
       .map((opt) => {
@@ -193,9 +192,9 @@ export function formatRegimentOptions(
       .join('');
 
   let html = '';
-  if (allOptions.length > 0) {
+  if (options.length > 0) {
     html += `<div style='font-weight:600;margin-bottom:0.2em;'>Regiment Options:</div>`;
-    html += `<ul style='margin:0 0 0 1.2em;padding:0;font-size:0.97em;'>${formatItems(allOptions)}</ul>`;
+    html += `<ul style='margin:0 0 0 1.2em;padding:0;font-size:0.97em;'>${formatItems(options)}</ul>`;
   }
 
   return html;

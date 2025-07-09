@@ -26,9 +26,19 @@ export function parseBattleProfiles(
   const battleProfileNodes = root.entryLinks?.entryLink || [];
   const bpMap = new Map<string, IBattleProfile>();
   for (const node of battleProfileNodes) {
-    if (node['@_name'].toLowerCase().includes('battle traits')) continue; // I'm not sure why there's an entryLink for battle traits with the bps - but there is sometimes.
+    const name = node['@_name']?.toLowerCase() || '';
+    // I'm not sure why there's an entryLink for battle traits with the bps - but there is sometimes.
+    if (
+      name == '' ||
+      name.includes('battle traits') ||
+      name.includes('apotheosis') ||
+      name.includes('khul')
+    )
+      continue;
 
     const profile = parseBattleProfile(node, units, categories, armyCategories, errorConditions);
+    if (profile.category === 'OTHER' || profile.category === 'LEGENDS') continue; // skip other and legends categories
+
     bpMap.set(profile.name, profile);
   }
   return bpMap;

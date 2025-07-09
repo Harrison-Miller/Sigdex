@@ -1,6 +1,5 @@
 <template>
-  <div v-if="loresLoading || !army">Loading rules...</div>
-  <div v-else>
+  <div>
     <Section v-if="army.battleTraits && army.battleTraits.length">
       <template #title>Battle Traits</template>
       <AbilityCard v-for="(trait, i) in army.battleTraits" :key="trait.name + i" :ability="trait" />
@@ -17,39 +16,49 @@
     </Section>
     <Section v-if="army.artifacts && army.artifacts.size">
       <template #title>Artifacts</template>
-      <div v-for="[group, abilities] in Array.from(army.artifacts.entries())" :key="group">
-        <h3 class="section-subheader">{{ group }}</h3>
+      <div v-for="[group, table] in Array.from(army.artifacts.entries())" :key="group">
+        <h3 class="section-subheader">{{ table.name }}</h3>
         <AbilityCard
-          v-for="(artifact, j) in abilities"
-          :key="artifact.name + j"
-          :ability="artifact"
+          v-for="(enh, j) in table.enhancements"
+          :key="enh.ability.name + j"
+          :ability="enh.ability"
         />
       </div>
     </Section>
     <Section v-if="army.heroicTraits && army.heroicTraits.size">
       <template #title>Heroic Traits</template>
-      <div v-for="[group, abilities] in Array.from(army.heroicTraits.entries())" :key="group">
-        <h3 class="section-subheader">{{ group }}</h3>
-        <AbilityCard v-for="(trait, j) in abilities" :key="trait.name + j" :ability="trait" />
+      <div v-for="[group, table] in Array.from(army.heroicTraits.entries())" :key="group">
+        <h3 class="section-subheader">{{ table.name }}</h3>
+        <AbilityCard
+          v-for="(enh, j) in table.enhancements"
+          :key="enh.ability.name + j"
+          :ability="enh.ability"
+        />
       </div>
     </Section>
-    <Section v-if="army.enhancementTables && army.enhancementTables.size">
+    <Section v-if="army.enhancements && army.enhancements.size">
       <template #title>Enhancements</template>
-      <div v-for="[table, abilities] in Array.from(army.enhancementTables.entries())" :key="table">
-        <h3 class="section-subheader">{{ table }}</h3>
-        <AbilityCard v-for="(ability, i) in abilities" :key="ability.name + i" :ability="ability" />
+      <div v-for="[table, enhTable] in Array.from(army.enhancements.entries())" :key="table">
+        <h3 class="section-subheader">{{ enhTable.name }}</h3>
+        <AbilityCard
+          v-for="(enh, i) in enhTable.enhancements"
+          :key="enh.ability.name + i"
+          :ability="enh.ability"
+        />
       </div>
     </Section>
     <!-- Spell Lores Dropdown -->
-    <Section v-if="army.spellLores && army.spellLores.length">
+    <Section v-if="Array.from(army.spellLores.values()).length">
       <template #title>Spell Lores</template>
-      <div v-if="army.spellLores.length === 1">
+      <div v-if="Array.from(army.spellLores.values()).length === 1">
         <h3 class="section-subheader">
-          {{ army.spellLores[0].name
-          }}<span v-if="army.spellLores[0].points"> ({{ army.spellLores[0].points }} pts)</span>
+          {{ Array.from(army.spellLores.values())[0].name
+          }}<span v-if="Array.from(army.spellLores.values())[0].points">
+            ({{ Array.from(army.spellLores.values())[0].points }} pts)</span
+          >
         </h3>
         <AbilityCard
-          v-for="(ability, i) in getLoreAbilities(army.spellLores[0].name)"
+          v-for="(ability, i) in Array.from(army.spellLores.values())[0].abilities"
           :key="ability.name + i"
           :ability="ability"
         />
@@ -57,11 +66,11 @@
       <div v-else>
         <OptionSelect
           v-model="selectedSpellLore"
-          :options="army.spellLores.map((lore) => lore.name)"
+          :options="Array.from(army.spellLores.values()).map((lore) => lore.name)"
         />
         <div v-if="selectedSpellLore">
           <AbilityCard
-            v-for="(ability, i) in getLoreAbilities(selectedSpellLore)"
+            v-for="(ability, i) in army.spellLores.get(selectedSpellLore)?.abilities || []"
             :key="ability.name + i"
             :ability="ability"
           />
@@ -69,15 +78,17 @@
       </div>
     </Section>
     <!-- Prayer Lores Dropdown -->
-    <Section v-if="army.prayerLores && army.prayerLores.length">
+    <Section v-if="Array.from(army.prayerLores.values()).length">
       <template #title>Prayer Lores</template>
-      <div v-if="army.prayerLores.length === 1">
+      <div v-if="Array.from(army.prayerLores.values()).length === 1">
         <h3 class="section-subheader">
-          {{ army.prayerLores[0].name
-          }}<span v-if="army.prayerLores[0].points"> ({{ army.prayerLores[0].points }} pts)</span>
+          {{ Array.from(army.prayerLores.values())[0].name
+          }}<span v-if="Array.from(army.prayerLores.values())[0].points">
+            ({{ Array.from(army.prayerLores.values())[0].points }} pts)</span
+          >
         </h3>
         <AbilityCard
-          v-for="(ability, i) in getLoreAbilities(army.prayerLores[0].name)"
+          v-for="(ability, i) in Array.from(army.prayerLores.values())[0].abilities"
           :key="ability.name + i"
           :ability="ability"
         />
@@ -85,13 +96,13 @@
       <div v-else>
         <OptionSelect
           v-model="selectedPrayerLore"
-          :options="army.prayerLores.map((lore) => lore.name)"
+          :options="Array.from(army.prayerLores.values()).map((lore) => lore.name)"
           class="lore-dropdown"
           placeholder="Select Prayer Lore"
         />
         <div v-if="selectedPrayerLore">
           <AbilityCard
-            v-for="(ability, i) in getLoreAbilities(selectedPrayerLore)"
+            v-for="(ability, i) in army.prayerLores.get(selectedPrayerLore)?.abilities || []"
             :key="ability.name + i"
             :ability="ability"
           />
@@ -99,17 +110,17 @@
       </div>
     </Section>
     <!-- Manifestation Lores Dropdown -->
-    <Section v-if="army.manifestationLores && army.manifestationLores.length">
+    <Section v-if="Array.from(army.manifestationLores.values()).length">
       <template #title>Manifestation Lores</template>
-      <div v-if="army.manifestationLores.length === 1">
+      <div v-if="Array.from(army.manifestationLores.values()).length === 1">
         <h3 class="section-subheader">
-          {{ army.manifestationLores[0].name
-          }}<span v-if="army.manifestationLores[0].points">
-            ({{ army.manifestationLores[0].points }} pts)</span
+          {{ Array.from(army.manifestationLores.values())[0].name
+          }}<span v-if="Array.from(army.manifestationLores.values())[0].points">
+            ({{ Array.from(army.manifestationLores.values())[0].points }} pts)</span
           >
         </h3>
         <AbilityCard
-          v-for="(ability, i) in getLoreAbilities(army.manifestationLores[0].name)"
+          v-for="(ability, i) in Array.from(army.manifestationLores.values())[0].abilities"
           :key="ability.name + i"
           :ability="ability"
         />
@@ -117,13 +128,14 @@
       <div v-else>
         <OptionSelect
           v-model="selectedManifestationLore"
-          :options="army.manifestationLores.map((lore) => lore.name)"
+          :options="Array.from(army.manifestationLores.values()).map((lore) => lore.name)"
           class="lore-dropdown"
           placeholder="Select Manifestation Lore"
         />
         <div v-if="selectedManifestationLore">
           <AbilityCard
-            v-for="(ability, i) in getLoreAbilities(selectedManifestationLore)"
+            v-for="(ability, i) in army.manifestationLores.get(selectedManifestationLore)
+              ?.abilities || []"
             :key="ability.name + i"
             :ability="ability"
           />
@@ -134,49 +146,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, watch } from 'vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
-import { loadLores } from '../../../army';
-import type { Army } from '../../../common/ArmyData';
+import type { IArmy } from '../../../parser/v3/models/army';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import Section from '../../core/components/Section.vue';
 
-const props = defineProps<{ army: Army | null }>();
-const lores = ref<Map<string, any> | null>(null);
-const loresLoading = ref(true);
+const props = defineProps<{ army: IArmy }>();
 
 const selectedSpellLore = ref<string | undefined>(undefined);
 const selectedPrayerLore = ref<string | undefined>(undefined);
 const selectedManifestationLore = ref<string | undefined>(undefined);
 
-onMounted(async () => {
-  loresLoading.value = true;
-  lores.value = await loadLores();
-  loresLoading.value = false;
-});
-
-// Set default selected lore when army changes or lores load
+// Set default selected lore when army changes
 watch(
-  () => [props.army, loresLoading.value, lores.value],
+  () => [props.army],
   () => {
-    if (props.army?.spellLores?.length && !selectedSpellLore.value) {
-      selectedSpellLore.value = props.army.spellLores[0].name;
+    if (!selectedSpellLore.value && props.army.spellLores.size > 0) {
+      selectedSpellLore.value = props.army.spellLores.values().next().value?.name || '';
     }
-    if (props.army?.prayerLores?.length && !selectedPrayerLore.value) {
-      selectedPrayerLore.value = props.army.prayerLores[0].name;
+    if (!selectedPrayerLore.value && props.army.prayerLores.size > 0) {
+      selectedPrayerLore.value = props.army.prayerLores.values().next().value?.name || '';
     }
-    if (props.army?.manifestationLores?.length && !selectedManifestationLore.value) {
-      selectedManifestationLore.value = props.army.manifestationLores[0].name;
+    if (!selectedManifestationLore.value && props.army.manifestationLores.size > 0) {
+      selectedManifestationLore.value =
+        props.army.manifestationLores.values().next().value?.name || '';
     }
   },
   { immediate: true }
 );
-
-const getLoreAbilities = (loreName: string): any[] => {
-  if (!lores.value) return [];
-  const lore = lores.value.get(loreName);
-  return lore?.abilities || [];
-};
 </script>
 
 <style scoped>

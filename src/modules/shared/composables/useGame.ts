@@ -1,4 +1,4 @@
-import { ref, readonly } from 'vue';
+import { ref, computed, toValue } from 'vue';
 import { Parser } from '../../../parser/v3/parser';
 import { Game, type IGame } from '../../../parser/v3/models/game';
 import { Unit } from '../../../parser/v3/models/unit';
@@ -6,6 +6,9 @@ import { Model } from '../../../parser/v3/models/model';
 import { Army } from '../../../parser/v3/models/army';
 import { GITHUB_REPO } from '../../../army';
 import SuperJSON from 'superjson';
+import { type MaybeRefOrGetter } from '@vueuse/core';
+import { BattleProfile } from '../../../parser/v3/models/battleProfile';
+import { Lore } from '../../../parser/v3/models/lore';
 
 const GAME_STORAGE_KEY = 'game';
 const GAME_TIMESTAMP_KEY = 'gameTimestamp';
@@ -55,9 +58,9 @@ export function useGame() {
     loadGame();
   }
   return {
-    game: readonly(_game),
-    loading: readonly(_loading),
-    error: readonly(_error),
+    game: _game,
+    loading: _loading,
+    error: _error,
   };
 }
 
@@ -91,4 +94,51 @@ function setupSuperJSON() {
   SuperJSON.registerClass(Model);
   SuperJSON.registerClass(Army);
   SuperJSON.registerClass(Game);
+}
+
+/**
+ * useArmy composable
+ * Returns a ref to the requested army by name, always non-null (default: new Army()).
+ * Usage:
+ *   const { army, loading, error } = useArmy(armyName);
+ */
+export function useArmy(armyName: MaybeRefOrGetter<string>) {
+  const { game, loading, error } = useGame();
+  const army = computed(() => {
+    if (!game.value) return new Army();
+    const name = toValue(armyName);
+    const found = game.value.armies.get(name);
+    return found ?? new Army();
+  });
+  return { army, loading, error };
+}
+
+/**
+ * useUnit composable
+ * Returns refs for the requested unit (from global game) and its battleProfile (from army), given armyName and unitName.
+ * Usage:
+ *   const { unit, battleProfile, loading, error } = useUnit(armyName, unitName);
+ */
+export function useUnit(armyName: MaybeRefOrGetter<string>, unitName: MaybeRefOrGetter<string>) {
+  const { game, loading, error } = useGame();
+  const { army } = useArmy(armyName);
+  const unit = computed(() => {
+    const name = toValue(unitName);
+    return game.value?.units.get(name) ?? new Unit({ name });
+  });
+  const battleProfile = computed(() => {
+    const name = toValue(unitName);
+    return army.value?.battleProfiles.get(name) ?? new BattleProfile({ name });
+  });
+  return { unit, battleProfile, loading, error };
+}
+
+export function useUniversalManifestationLore(loreName: MaybeRefOrGetter<string>) {
+  const { game, loading, error } = useGame();
+  const lore = computed(() => {
+    if (!game.value) return new Lore();
+    const name = toValue(loreName);
+    return game.value?.universalManifestationsLores.get(name) ?? new Lore({ name });
+  });
+  return { lore, loading, error };
 }

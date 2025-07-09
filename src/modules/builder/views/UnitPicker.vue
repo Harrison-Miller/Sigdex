@@ -97,8 +97,9 @@ const showRegimentOptions = computed(
 );
 const formattedRegimentOptions = computed(() =>
   showRegimentOptions.value
-    ? formatRegimentOptions(leaderSubHeroOptions.value, leaderRegimentOptions.value)
-    : ''
+    ? formatRegimentOptions([]) // TODO: replace after refactoring
+    : // ? formatRegimentOptions(leaderSubHeroOptions.value, leaderRegimentOptions.value)
+      ''
 );
 
 const categorizedUnits = computed(() => {
