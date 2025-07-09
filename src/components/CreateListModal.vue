@@ -12,44 +12,7 @@
       </label>
       <label>
         Army
-        <select v-model="faction">
-          <optgroup label="Order">
-            <option
-              v-for="army in allArmies.filter((a) => a.grandAlliance === 'Order')"
-              :key="army.name"
-              :value="army.name"
-            >
-              {{ army.name }}
-            </option>
-          </optgroup>
-          <optgroup label="Chaos">
-            <option
-              v-for="army in allArmies.filter((a) => a.grandAlliance === 'Chaos')"
-              :key="army.name"
-              :value="army.name"
-            >
-              {{ army.name }}
-            </option>
-          </optgroup>
-          <optgroup label="Death">
-            <option
-              v-for="army in allArmies.filter((a) => a.grandAlliance === 'Death')"
-              :key="army.name"
-              :value="army.name"
-            >
-              {{ army.name }}
-            </option>
-          </optgroup>
-          <optgroup label="Destruction">
-            <option
-              v-for="army in allArmies.filter((a) => a.grandAlliance === 'Destruction')"
-              :key="army.name"
-              :value="army.name"
-            >
-              {{ army.name }}
-            </option>
-          </optgroup>
-        </select>
+        <OptionSelect v-model="faction" :options="armyList" placeholder="Select an army" />
       </label>
       <div class="modal-actions">
         <button @click="handleClose">Cancel</button>
@@ -62,18 +25,19 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import Modal from './Modal.vue';
-import { allArmies } from '../common/ArmyData';
 import { useRouter } from 'vue-router';
+import type { GrandAlliance } from '../parser/v3/models/army';
+import OptionSelect from '../modules/core/components/OptionSelect.vue';
 
 const props = defineProps<{
   modelValue: boolean;
-  initialName?: string;
-  initialFaction?: string;
+  initialFaction: string;
+  armyList: Map<GrandAlliance, string[]>;
 }>();
 const emit = defineEmits(['update:modelValue', 'create', 'close']);
 
-const name = ref(props.initialName || '');
-const faction = ref(props.initialFaction || allArmies[0]?.name || '');
+const name = ref('');
+const faction = ref(props.initialFaction);
 
 const isNameValid = computed(() => !!name.value.trim());
 

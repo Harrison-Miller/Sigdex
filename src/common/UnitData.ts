@@ -1,3 +1,4 @@
+import type { IBattleProfile, IRegimentOption } from '../parser/v3/models/battleProfile';
 import type { Ability } from './Ability';
 
 export interface Stats {
@@ -95,7 +96,10 @@ export function isDefaultModelGroups(modelGroups: ModelGroup[]): boolean {
  * 2. Filter out all heroes except those where the regiment option is the exact name or the regiment option is the exact name of one of the sub_hero_tags.
  * 3. For all other units, filter by includes name, category, or keywords.
  */
-export function filterUnitsByRegimentOptions(units: Unit[], options: RegimentOption[]): Unit[] {
+export function filterBattleProfilesByRegimentOptions(
+  units: IBattleProfile[],
+  options: IRegimentOption[]
+): IBattleProfile[] {
   if (!options || options.length === 0) return units;
   const optionNames = options.map((opt) => opt.name.toLowerCase());
 
@@ -110,7 +114,7 @@ export function filterUnitsByRegimentOptions(units: Unit[], options: RegimentOpt
     const category = unit.category?.toLowerCase() || '';
     if (category === 'hero') {
       const name = unit.name?.toLowerCase() || '';
-      const tags = (unit.sub_hero_tags || []).map((t) => t.toLowerCase());
+      const tags = (unit.regimentTags || []).map((t) => t.toLowerCase());
       // Only keep hero if regiment option is exact name or exact sub_hero_tag
       return optionNames.some((optName) => name === optName || tags.includes(optName));
     }

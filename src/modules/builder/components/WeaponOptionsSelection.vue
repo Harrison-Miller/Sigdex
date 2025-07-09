@@ -22,7 +22,7 @@
           <!-- Group selection weapons as CounterBoxes -->
           <div v-for="(weapons, groupKey) in getGroupWeapons(group)" :key="groupKey">
             <span class="weapon-option-name">{{ groupKey }}</span>
-            <template v-if="unitData.unit_size === 1">
+            <template v-if="unitData.unitSize === 1">
               <div class="weapon-option-control">
                 <OptionSelect
                   :model-value="groupWeaponSingleSelect[group.name]?.[groupKey]"
@@ -61,14 +61,16 @@ import { computed, reactive, watch } from 'vue';
 import CounterBox from '../../core/components/CounterBox.vue';
 import Section from '../../core/components/Section.vue';
 import type { ListUnit } from '../../../common/ListData';
-import type { Unit } from '../../../common/UnitData';
 import OptionSelect from '../../core/components/OptionSelect.vue';
+import type { IUnit } from '../../../parser/v3/models/unit';
+import type { IWeaponOption } from '../../../parser/v3/models/weaponOption';
+import type { IModel } from '../../../parser/v3/models/model';
 
 // v-model:unit
-const props = defineProps<{ modelValue: ListUnit; unitData?: Unit }>();
+const props = defineProps<{ modelValue: ListUnit; unitData: IUnit }>();
 const emit = defineEmits(['update:modelValue']);
 
-const modelGroups = computed(() => props.unitData?.models ?? []);
+const modelGroups = computed(() => Array.from(props.unitData?.models?.values?.() ?? []));
 
 // State for optional weapons (max)
 const optionalWeaponState = reactive<Record<string, Record<string, number>>>({});
@@ -77,18 +79,20 @@ const groupWeaponCounterState = reactive<Record<string, Record<string, Record<st
   {}
 );
 
-function getEffectiveMax(w: any) {
-  if (!w.max) return 99;
+function getEffectiveMax(w: IWeaponOption) {
+  if (w.type !== 'optional' || !w.max) return 99;
   return props.modelValue.reinforced ? w.max * 2 : w.max;
 }
 
-function getOptionalWeapons(group: any) {
-  return (group.weapons || []).filter((w: any) => w.max && !w.group);
+function getOptionalWeapons(group: IModel) {
+  return Array.from(group.weapons.values()).filter(
+    (w: IWeaponOption) => w.type === 'optional' && w.max
+  );
 }
-function getGroupWeapons(group: any) {
-  const map: Record<string, any[]> = {};
-  for (const w of group.weapons || []) {
-    if (w.group) {
+function getGroupWeapons(group: IModel) {
+  const map: Record<string, IWeaponOption[]> = {};
+  for (const [_, w] of group.weapons || []) {
+    if (w.type === 'grouped' && w.group) {
       if (!map[w.group]) map[w.group] = [];
       map[w.group].push(w);
     }
@@ -141,7 +145,7 @@ function initWeaponStates() {
     for (const groupKey in groupMap) {
       if (!groupWeaponCounterState[group.name][groupKey])
         groupWeaponCounterState[group.name][groupKey] = {};
-      if (props.unitData?.unit_size === 1) {
+      if (props.unitData?.unitSize === 1) {
         // Single select: find which is selected (count==1)
         let selected = '';
         if (saved && saved instanceof Map && saved.has(group.name)) {

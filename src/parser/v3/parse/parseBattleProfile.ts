@@ -82,10 +82,11 @@ export function parseBattleProfile(
     // TODO: undersize unit stuff
   };
 
-  // category is derived from the unit's category
+  // category and keywords is derived from the unit
   const unit = units.get(battleProfile.name || '');
   if (unit) {
     battleProfile.category = unit.category;
+    battleProfile.keywords = unit.keywords;
   }
 
   return new BattleProfile(battleProfile);

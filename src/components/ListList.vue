@@ -1,48 +1,3 @@
-<script setup lang="ts">
-import { ref } from 'vue';
-import type { List } from '../common/ListData';
-import { allArmies } from '../common/ArmyData';
-import ListButton from '../modules/shared/components/ListButton.vue';
-import { createList as createListInStorage, getAllLists } from '../utils/list-manager';
-import { useRouter } from 'vue-router';
-import CreateListModal from './CreateListModal.vue';
-
-const router = useRouter();
-const lists = ref<List[]>(getAllLists());
-const showModal = ref(false);
-const newListName = ref('');
-const newListFaction = ref(allArmies[0]?.name || '');
-
-function openModal() {
-  showModal.value = true;
-}
-function closeModal() {
-  showModal.value = false;
-  newListName.value = '';
-  newListFaction.value = allArmies[0]?.name || '';
-}
-function handleCreate({ name, faction }: { name: string; faction: string }) {
-  createListInStorage({
-    name,
-    setup: false,
-    faction,
-    formation: '',
-    regiments: [{ leader: { name: '' }, units: [] }],
-    id: '', // id will be generated in createListInStorage
-    battle_tactics: [], // Initialize with empty array
-  });
-  lists.value = getAllLists();
-  closeModal();
-  // Find the newly created list by name and faction (should be unique enough)
-  const created = lists.value.find((l) => l.name === name && l.faction === faction);
-  if (created) {
-    router.push({ name: 'ListBuilder', params: { id: created.id } });
-  }
-}
-function goToList(list: List) {
-  router.push({ name: 'ListBuilder', params: { id: list.id } });
-}
-</script>
 <template>
   <h2>Your Lists</h2>
   <div v-if="lists.length === 0" class="empty-message">You have no saved lists yet.</div>
@@ -57,13 +12,64 @@ function goToList(list: List) {
   <button class="fab" @click="openModal">+</button>
   <CreateListModal
     v-model="showModal"
-    :initialName="''"
-    :initialFaction="allArmies[0]?.name || ''"
-    :existingNames="lists.map((l) => l.name)"
+    initialFaction="Cities of Sigmar"
+    :armyList="game?.armyList || new Map()"
     @create="handleCreate"
     @close="closeModal"
   />
 </template>
+<script setup lang="ts">
+import { ref } from 'vue';
+import type { List } from '../common/ListData';
+import ListButton from '../modules/shared/components/ListButton.vue';
+import {
+  createList as createListInStorage,
+  getAllLists,
+  setListDefaultOptions,
+} from '../utils/list-manager';
+import { useRouter } from 'vue-router';
+import CreateListModal from './CreateListModal.vue';
+import { useGame } from '../modules/shared/composables/useGame';
+
+const router = useRouter();
+const lists = ref<List[]>(getAllLists());
+const showModal = ref(false);
+
+const { game } = useGame();
+
+function openModal() {
+  showModal.value = true;
+}
+function closeModal() {
+  showModal.value = false;
+}
+function handleCreate({ name, faction }: { name: string; faction: string }) {
+  const army = game.value?.armies.get(faction);
+  if (!army) {
+    console.error(`Army not found: ${faction}`);
+    return;
+  }
+
+  let list: List = {
+    name,
+    faction,
+    formation: '',
+    regiments: [],
+    id: '', // id will be generated in createListInStorage
+    battle_tactics: [], // Initialize with empty array
+    setup: false,
+  };
+  setListDefaultOptions(list, army);
+
+  const id = createListInStorage(list);
+  lists.value = getAllLists();
+  closeModal();
+  router.push({ name: 'ListBuilder', params: { id: id } });
+}
+function goToList(list: List) {
+  router.push({ name: 'ListBuilder', params: { id: list.id } });
+}
+</script>
 <style scoped>
 .list-list-component {
   padding: 1.5em 0.5em;

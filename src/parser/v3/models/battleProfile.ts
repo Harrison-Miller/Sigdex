@@ -12,6 +12,7 @@ export interface IBattleProfile {
   // this is duplicate info but will be useful so we don't have to look up the unit for sorting
   // and filtering.
   category: UnitCategory;
+  keywords: string[]; // also duplicate info, but useful for sorting and filtering.
 
   points: number;
   reinforceable: boolean;
@@ -36,6 +37,7 @@ export interface IBattleProfile {
 export class BattleProfile implements IBattleProfile {
   name: string;
   category: UnitCategory;
+  keywords: string[];
   points: number;
   reinforceable: boolean;
 
@@ -51,6 +53,7 @@ export class BattleProfile implements IBattleProfile {
   constructor(profile?: Partial<IBattleProfile>) {
     this.name = profile?.name ?? '';
     this.category = profile?.category ?? 'OTHER';
+    this.keywords = profile?.keywords ?? [];
     this.points = profile?.points ?? 0;
     this.reinforceable = profile?.reinforceable ?? false;
 

@@ -1,213 +1,3 @@
-<script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import {
-  getList,
-  saveList,
-  setupDefaultWeaponOptions,
-  setupDefaultEnhancements,
-} from '../../../utils/list-manager';
-import { loadArmy } from '../../../army';
-import { filterUnitsByRegimentOptions, POSSIBLE_CATEGORIES } from '../../../common/UnitData';
-import { formatRegimentOptions } from '../../../utils/formatter';
-import type { List } from '../../../common/ListData';
-import type { Army } from '../../../common/ArmyData';
-import type { Unit } from '../../../common/UnitData';
-import ListButton from '../../shared/components/ListButton.vue';
-import BackButton from '../../core/components/BackButton.vue';
-import Section from '../../core/components/Section.vue';
-
-const route = useRoute();
-const router = useRouter();
-const listId = route.params.id as string;
-const regimentIdx = Number(route.params.regimentIdx);
-const filter = (route.params.filter as string) || '';
-
-const list = ref<List | undefined>();
-const army = ref<Army | null>(null);
-const loading = ref(true);
-const search = ref('');
-
-onMounted(async () => {
-  const found = getList(listId);
-  list.value = found;
-  if (found) {
-    army.value = await loadArmy(found.faction);
-  }
-  loading.value = false;
-});
-
-const units = computed(() => (army.value ? army.value.units : []));
-
-const filteredUnits = computed(() => {
-  let us = units.value;
-  if (filter === 'unit') {
-    // If leader exists and has regiment_options, filter by those
-    const regiment = list.value?.regiments?.[regimentIdx];
-    const leaderName = regiment?.leader?.name;
-    const leaderUnit = leaderName ? us.find((u) => u.name === leaderName) : undefined;
-    const options = [
-      ...(leaderUnit?.regiment_options || []),
-      ...(leaderUnit?.sub_hero_options || []),
-    ];
-    if (options.length > 0) {
-      us = filterUnitsByRegimentOptions(us, options);
-    } else {
-      // No leader or no options: filter out heroes
-      us = us.filter((u) => u.category?.toLowerCase() !== 'hero');
-    }
-  } else if (filter) {
-    if (filter.toLowerCase() === 'terrain') {
-      us = us.filter((u) => (u.category || '').toLowerCase() === 'faction terrain');
-    } else if (filter.toLowerCase() === 'aux') {
-      // For aux, allow all units except manifestations and faction terrain
-      us = us.filter((u) => {
-        const cat = (u.category || '').toLowerCase();
-        return cat !== 'manifestation' && cat !== 'faction terrain';
-      });
-    } else {
-      const actualFilter = filter.toLowerCase() == 'leader' ? 'Hero' : filter;
-      us = us.filter((u) => u.category?.toLowerCase() === actualFilter.toLowerCase());
-    }
-  }
-  if (search.value) {
-    us = us.filter((u) => u.name.toLowerCase().includes(search.value.toLowerCase()));
-  }
-  return us;
-});
-
-const sortMode = ref<'alpha' | 'points'>('alpha');
-const sortLabel = computed(() => (sortMode.value === 'alpha' ? 'A-Z' : 'Points'));
-function toggleSortMode() {
-  sortMode.value = sortMode.value === 'alpha' ? 'points' : 'alpha';
-}
-
-const regiment = computed(() => list.value?.regiments?.[regimentIdx]);
-const leaderName = computed(() => regiment.value?.leader?.name);
-const leaderUnit = computed(() =>
-  leaderName.value ? units.value.find((u) => u.name === leaderName.value) : undefined
-);
-const leaderRegimentOptions = computed(() => leaderUnit.value?.regiment_options || []);
-const leaderSubHeroOptions = computed(() => leaderUnit.value?.sub_hero_options || []);
-const showRegimentOptions = computed(
-  () =>
-    filter === 'unit' &&
-    leaderUnit.value &&
-    (leaderRegimentOptions.value.length > 0 || leaderSubHeroOptions.value.length > 0)
-);
-const formattedRegimentOptions = computed(() =>
-  showRegimentOptions.value
-    ? formatRegimentOptions([]) // TODO: replace after refactoring
-    : // ? formatRegimentOptions(leaderSubHeroOptions.value, leaderRegimentOptions.value)
-      ''
-);
-
-const categorizedUnits = computed(() => {
-  const cats: Record<string, Unit[]> = {};
-  for (const cat of POSSIBLE_CATEGORIES) {
-    cats[cat] = [];
-  }
-  for (const unit of filteredUnits.value) {
-    const cat = unit.category || 'Other';
-    if (!cats[cat]) cats[cat] = [];
-    cats[cat].push(unit);
-  }
-  // Sort units within each category by selected mode
-  for (const cat of POSSIBLE_CATEGORIES) {
-    if (cats[cat]) {
-      if (sortMode.value === 'points') {
-        cats[cat].sort((a, b) => {
-          if (typeof a.points === 'number' && typeof b.points === 'number') {
-            return a.points - b.points;
-          } else if (typeof a.points === 'number') {
-            return -1;
-          } else if (typeof b.points === 'number') {
-            return 1;
-          } else {
-            return a.name.localeCompare(b.name);
-          }
-        });
-      } else {
-        cats[cat].sort((a, b) => a.name.localeCompare(b.name));
-      }
-    }
-  }
-  return cats;
-});
-
-function goToDetail(unit: Unit) {
-  router.push({
-    name: 'UnitDetail',
-    params: { army: list.value?.faction || '', unit: unit.name },
-  });
-}
-
-function addUnitToRegiment(unit: Unit) {
-  if (!list.value) return;
-  if (filter.toLowerCase() === 'terrain') {
-    // Set as faction terrain
-    list.value.faction_terrain = unit.name;
-    saveList(list.value);
-    router.back();
-    return;
-  }
-  if (filter.toLowerCase() === 'aux') {
-    if (!list.value.auxiliary_units) list.value.auxiliary_units = [];
-    list.value.auxiliary_units.push({
-      name: unit.name,
-      weapon_options: army.value ? setupDefaultWeaponOptions(unit.name, army.value) : undefined,
-      enhancements: army.value ? setupDefaultEnhancements(unit.name, army.value) : undefined,
-    });
-    saveList(list.value);
-    router.back();
-    return;
-  }
-  if (isNaN(regimentIdx) || !list.value.regiments[regimentIdx]) return;
-  if (filter.toLowerCase() === 'leader') {
-    list.value.regiments[regimentIdx].leader = {
-      name: unit.name,
-      weapon_options: army.value ? setupDefaultWeaponOptions(unit.name, army.value) : undefined,
-      enhancements: army.value ? setupDefaultEnhancements(unit.name, army.value) : undefined,
-    };
-  } else {
-    list.value.regiments[regimentIdx].units.push({
-      name: unit.name,
-      weapon_options: army.value ? setupDefaultWeaponOptions(unit.name, army.value) : undefined,
-      enhancements: army.value ? setupDefaultEnhancements(unit.name, army.value) : undefined,
-    });
-  }
-
-  // --- Companion auto-add logic ---
-  // Only for leader, points > 0, and has companions
-  const isLeader = filter.toLowerCase() === 'leader';
-  const hasPoints = typeof unit.points === 'number' && unit.points > 0;
-  const companions = Array.isArray(unit.companion_units) ? unit.companion_units : [];
-  if (isLeader && hasPoints && companions.length > 0) {
-    const regimentUnits = list.value.regiments[regimentIdx].units;
-    for (const companionName of companions) {
-      const alreadyPresent = regimentUnits.some((u) => u.name === companionName);
-      if (!alreadyPresent) {
-        // Find the companion unit in the army
-        const companionUnit = army.value?.units.find((u) => u.name === companionName);
-        if (companionUnit) {
-          regimentUnits.push({
-            name: companionUnit.name,
-            weapon_options: army.value
-              ? setupDefaultWeaponOptions(companionUnit.name, army.value)
-              : undefined,
-            enhancements: army.value
-              ? setupDefaultEnhancements(companionUnit.name, army.value)
-              : undefined,
-          });
-        }
-      }
-    }
-  }
-
-  saveList(list.value);
-  router.back();
-}
-</script>
 <template>
   <BackButton />
   <h2>Select a Unit</h2>
@@ -228,18 +18,18 @@ function addUnitToRegiment(unit: Unit) {
         Sort: {{ sortLabel }}
       </button>
     </div>
-    <template v-for="cat in POSSIBLE_CATEGORIES" :key="cat">
-      <Section v-if="categorizedUnits[cat] && categorizedUnits[cat].length">
+    <template v-for="cat in UnitCategories" :key="cat">
+      <Section v-if="categorizedBattleProfiles.get(cat)?.length">
         <template #title>{{ cat }}</template>
         <ul class="unit-list">
-          <li v-for="unit in categorizedUnits[cat]" :key="unit.name" class="unit-row">
+          <li v-for="bp in categorizedBattleProfiles.get(cat)" :key="bp.name" class="unit-row">
             <ListButton
-              :label="unit.name"
-              :points="unit.points"
-              @click="() => goToDetail(unit)"
+              :label="bp.name"
+              :points="bp.points"
+              @click="() => goToDetail(bp)"
               class="unit-list-btn"
             />
-            <button class="add-btn" @click="() => addUnitToRegiment(unit)" title="Add to Regiment">
+            <button class="add-btn" @click="() => addUnitToRegiment(bp)" title="Add to Regiment">
               +
             </button>
           </li>
@@ -248,6 +38,196 @@ function addUnitToRegiment(unit: Unit) {
     </template>
   </div>
 </template>
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { getList, saveList, setupDefaultWeaponOptions } from '../../../utils/list-manager';
+import { filterBattleProfilesByRegimentOptions } from '../../../common/UnitData';
+import { formatRegimentOptions } from '../../../utils/formatter';
+import ListButton from '../../shared/components/ListButton.vue';
+import BackButton from '../../core/components/BackButton.vue';
+import Section from '../../core/components/Section.vue';
+import { useGame } from '../../shared/composables/useGame';
+import { BattleProfile, type IBattleProfile } from '../../../parser/v3/models/battleProfile';
+import { UnitCategories, type UnitCategory } from '../../../parser/v3/models/unit';
+import { Army } from '../../../parser/v3/models/army';
+
+const route = useRoute();
+const router = useRouter();
+const listId = route.params.id as string;
+const regimentIdx = Number(route.params.regimentIdx);
+const filter = (route.params.filter as string) || '';
+
+const list = ref(getList(listId));
+const { game, loading } = useGame();
+const army = computed(
+  () =>
+    game.value?.armies.get(list.value?.faction || '') ||
+    new Army({ name: list.value?.faction || '' })
+);
+const search = ref('');
+
+const filteredBPs = computed(() => {
+  let us: IBattleProfile[] = [];
+  switch (filter.toLowerCase()) {
+    case 'leader':
+      us =
+        Array.from(army.value?.battleProfiles.values()).filter((u) => u.category === 'HERO') || [];
+      break;
+    case 'unit':
+      if (leaderRegimentOptions.value.length > 0) {
+        // If leader has regiment options, filter by those
+        us = filterBattleProfilesByRegimentOptions(
+          Array.from(army.value?.battleProfiles.values()),
+          leaderRegimentOptions.value
+        );
+      } else {
+        // Otherwise, show all units except heroes
+        us =
+          Array.from(army.value?.battleProfiles.values()).filter((u) => u.category !== 'HERO') ||
+          [];
+      }
+      break;
+    case 'terrain':
+      us =
+        Array.from(army.value?.battleProfiles.values()).filter(
+          (u) => u.category === 'FACTION TERRAIN'
+        ) || [];
+      break;
+    case 'aux':
+      us =
+        Array.from(army.value?.battleProfiles.values()).filter(
+          (u) => u.category !== 'MANIFESTATION' && u.category !== 'FACTION TERRAIN'
+        ) || [];
+      break;
+    default:
+      us =
+        Array.from(army.value?.battleProfiles.values()).filter(
+          (u) => u.category === (filter.toUpperCase() as UnitCategory)
+        ) || [];
+  }
+
+  if (search.value) {
+    us = us.filter((u) => u.name.toLowerCase().includes(search.value.toLowerCase()));
+  }
+  return us;
+});
+
+const sortMode = ref<'alpha' | 'points'>('alpha');
+const sortLabel = computed(() => (sortMode.value === 'alpha' ? 'A-Z' : 'Points'));
+function toggleSortMode() {
+  sortMode.value = sortMode.value === 'alpha' ? 'points' : 'alpha';
+}
+
+const regiment = computed(() => list.value?.regiments?.[regimentIdx]);
+const leaderName = computed(() => regiment.value?.leader?.name || '');
+const leaderBattleProfile = computed(
+  () =>
+    army.value?.battleProfiles.get(leaderName.value) ||
+    new BattleProfile({ name: leaderName.value })
+);
+const leaderRegimentOptions = computed(() => leaderBattleProfile.value?.regimentOptions || []);
+const showRegimentOptions = computed(
+  () => filter === 'unit' && leaderRegimentOptions.value.length > 0
+);
+const formattedRegimentOptions = computed(() => formatRegimentOptions(leaderRegimentOptions.value));
+
+const categorizedBattleProfiles = computed(() => {
+  const cats: Map<string, IBattleProfile[]> = new Map();
+  for (const bp of filteredBPs.value) {
+    const cat = bp.category;
+    if (!cats.has(cat)) cats.set(cat, []);
+    cats.get(cat)?.push(bp);
+  }
+  // Sort bps within each category by selected mode
+  for (const cat of Array.from(cats.keys())) {
+    if (sortMode.value === 'points') {
+      cats.get(cat)?.sort((a, b) => {
+        if (a.points === b.points) return a.name.localeCompare(b.name);
+        return a.points - b.points;
+      });
+    } else {
+      cats.get(cat)?.sort((a, b) => a.name.localeCompare(b.name));
+    }
+  }
+  return cats;
+});
+
+function goToDetail(bp: IBattleProfile) {
+  router.push({
+    name: 'UnitDetail',
+    params: { army: list.value?.faction || '', unit: bp.name },
+  });
+}
+
+function addUnitToRegiment(bp: IBattleProfile) {
+  if (!list.value) return;
+  const unit = game.value?.units.get(bp.name) || undefined;
+  if (!unit) {
+    console.error(`Unit ${bp.name} not found in game data.`);
+    return;
+  }
+
+  if (filter.toLowerCase() === 'terrain') {
+    // Set as faction terrain
+    list.value.faction_terrain = bp.name;
+    saveList(list.value);
+    router.back();
+    return;
+  }
+  if (filter.toLowerCase() === 'aux') {
+    if (!list.value.auxiliary_units) list.value.auxiliary_units = [];
+    list.value.auxiliary_units.push({
+      name: unit.name,
+      weapon_options: setupDefaultWeaponOptions(unit),
+      enhancements: new Map(),
+    });
+    saveList(list.value);
+    router.back();
+    return;
+  }
+  if (isNaN(regimentIdx) || !list.value.regiments[regimentIdx]) return;
+  if (filter.toLowerCase() === 'leader') {
+    list.value.regiments[regimentIdx].leader = {
+      name: unit.name,
+      weapon_options: setupDefaultWeaponOptions(unit),
+      enhancements: new Map(),
+    };
+  } else {
+    list.value.regiments[regimentIdx].units.push({
+      name: unit.name,
+      weapon_options: setupDefaultWeaponOptions(unit),
+      enhancements: new Map(),
+    });
+  }
+
+  // --- Companion auto-add logic ---
+  // Only for leader, points > 0, and has companions
+  const isLeader = filter.toLowerCase() === 'leader';
+  const hasPoints = bp.points > 0;
+  const companions = bp.companionUnits;
+  if (isLeader && hasPoints && companions.length > 0) {
+    const regimentUnits = list.value?.regiments?.[regimentIdx].units || [];
+    for (const companionName of companions) {
+      const alreadyPresent = regimentUnits.some((u) => u.name === companionName);
+      if (!alreadyPresent) {
+        // Find the companion unit in the game
+        const companionUnit = game.value?.units.get(companionName) || undefined;
+        if (companionUnit) {
+          regimentUnits.push({
+            name: companionUnit.name,
+            weapon_options: setupDefaultWeaponOptions(companionUnit),
+            enhancements: new Map(),
+          });
+        }
+      }
+    }
+  }
+
+  saveList(list.value);
+  router.back();
+}
+</script>
 <style scoped>
 .unit-picker-view {
   max-width: 400px;
