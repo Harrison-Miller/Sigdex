@@ -89,5 +89,8 @@ export class Unit implements IUnit {
     this.unitSize = Array.from(this.models.values()).reduce((total, model) => {
       return total + model.count;
     }, 0);
+    if (this.unitSize === 0) {
+      this.unitSize = 1; // default to 1 if no models are present
+    }
   }
 }

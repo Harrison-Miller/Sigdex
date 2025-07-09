@@ -1,5 +1,36 @@
 // fast-xml-parse utilities
 
+import { XMLParser } from 'fast-xml-parser';
+
+export function xmlParser(): XMLParser {
+  return new XMLParser({
+    ignoreAttributes: false,
+    parseTagValue: false,
+    parseAttributeValue: false,
+    isArray: (name) => {
+      const arrayNames = [
+        'selectionEntry',
+        'selectionEntryGroup',
+        'profile',
+        'constraint',
+        'condition',
+        'modifier',
+        'categoryLink',
+        'cost',
+        'characteristic',
+        'attribute',
+        'entryLink',
+        'categoryEntry',
+        'modifierGroup',
+      ];
+      if (arrayNames.includes(name)) {
+        return true;
+      }
+      return false;
+    },
+  });
+}
+
 // get the value of a node as an array even if it has a single value
 export function nodeArray(node: any): any[] {
   if (!node) return [];
@@ -8,7 +39,7 @@ export function nodeArray(node: any): any[] {
 }
 
 export function mapTextNodesByName(node: any, tagName: string): Map<string, string> {
-  const elements = nodeArray(node[tagName]);
+  const elements = nodeArray(node?.[tagName]);
   const values = new Map<string, string>();
   elements.forEach((element: any) => {
     const name = element['@_name'] || '';
@@ -31,6 +62,8 @@ export function findAllByTagAndAttrs(
   while (queue.length > 0) {
     const currentNode = queue.shift();
     if (!currentNode) continue;
+
+    if (typeof currentNode !== 'object') continue;
 
     const keys = Object.keys(currentNode);
     keys
@@ -110,12 +143,4 @@ export function nodeMatchesAttrs(node: any, attrs: Record<string, string>): bool
     }
   }
   return true;
-}
-
-export function toMapByName<T>(data: T[]): Map<string, T> {
-  const map = new Map<string, T>();
-  data.forEach((item) => {
-    map.set((item as any).name, item);
-  });
-  return map;
 }

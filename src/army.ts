@@ -335,7 +335,8 @@ export function clearBSData() {
         k === 'loreData' ||
         k === 'loreDataTimestamp' ||
         k === 'universalUnitsData' ||
-        k === 'universalUnitsDataTimestamp'
+        k === 'universalUnitsDataTimestamp' ||
+        k.startsWith('game')
     )
     .forEach((k) => localStorage.removeItem(k));
 }

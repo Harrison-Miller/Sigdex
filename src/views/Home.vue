@@ -1,15 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { orderArmies, chaosArmies, deathArmies, destructionArmies } from '../common/ArmyData';
-import { universalManifestationLores } from '../common/ManifestationData';
-import {
-  saveFavorite,
-  removeFavorite,
-  getFavorites,
-  getFavoriteToggleState,
-  setFavoriteToggleState,
-} from '../favorites';
+import { useGame } from '../modules/shared/composables/useGame';
 import ListButton from '../modules/shared/components/ListButton.vue';
 import FavoriteToggle from '../modules/core/components/FavoriteToggle.vue';
 import SettingsButton from '../modules/core/components/SettingsButton.vue';
@@ -17,10 +9,21 @@ import { SIGDEX_VERSION } from '../version';
 import Section from '../modules/core/components/Section.vue';
 import ListList from '../components/ListList.vue';
 import TwoTab from '../modules/core/components/TwoTab.vue';
+import {
+  saveFavorite,
+  removeFavorite,
+  getFavorites,
+  getFavoriteToggleState,
+  setFavoriteToggleState,
+} from '../favorites';
+
 const router = useRouter();
 const armyFavorites = ref<string[]>([]);
 const showOnlyFavorites = ref(getFavoriteToggleState('army'));
 const leftActive = ref(true);
+
+// Load game data (reactive, not awaited)
+const { game, loading, error } = useGame();
 
 onMounted(() => {
   armyFavorites.value = getFavorites('army');
@@ -46,28 +49,27 @@ function goToSettings() {
   router.push({ name: 'Settings' });
 }
 
-const grandAlliances = [
-  { name: 'Order', armies: orderArmies },
-  { name: 'Chaos', armies: chaosArmies },
-  { name: 'Death', armies: deathArmies },
-  { name: 'Destruction', armies: destructionArmies },
-];
-
+// Use game data for grand alliances and armies
 const filteredArmiesByAlliance = computed(() => {
-  return grandAlliances.map(({ name, armies }) => {
+  if (!game.value) return [];
+  // game.value.armyList is Map<GrandAlliance, string[]>
+  return Array.from(game.value.armyList.entries()).map(([name, armies]) => {
     let filtered = armies;
     if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
-      filtered = armies.filter((a) => armyFavorites.value.includes(a.name));
+      filtered = armies.filter((armyName) => armyFavorites.value.includes(armyName));
     }
-    return { name, armies: filtered };
+    return { name: String(name), armies: filtered };
   });
 });
 
 const filteredManifestationLores = computed(() => {
+  if (!game.value) return [];
+  // Use the keys (lore names) from the map
+  const allLoreNames = Array.from(game.value.universalManifestationsLores.keys());
   if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
-    return universalManifestationLores.filter((lore) => armyFavorites.value.includes(lore));
+    return allLoreNames.filter((loreName) => armyFavorites.value.includes(loreName));
   }
-  return universalManifestationLores;
+  return allLoreNames;
 });
 
 watch(armyFavorites, (favs) => {
@@ -110,13 +112,13 @@ watch(armyFavorites, (favs) => {
           <Section v-if="alliance && alliance.armies.length > 0">
             <template #title>{{ alliance.name }}</template>
             <ul>
-              <li v-for="army in alliance.armies" :key="army.name">
+              <li v-for="army in alliance.armies" :key="army">
                 <ListButton
-                  :label="army.name"
-                  :favorite="armyFavorites.includes(army.name)"
+                  :label="army"
+                  :favorite="armyFavorites.includes(army)"
                   :showFavoriteToggle="true"
-                  @click="selectArmy(army.name)"
-                  @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
+                  @click="selectArmy(army)"
+                  @toggle-favorite="(fav) => toggleArmyFavorite(army, fav)"
                 />
               </li>
             </ul>
@@ -128,6 +130,8 @@ watch(armyFavorites, (favs) => {
       </template>
     </TwoTab>
     <div class="sigdex-version">Sigdex v{{ SIGDEX_VERSION }}</div>
+    <div v-if="loading">Loading game data...</div>
+    <div v-if="error" class="error">{{ error }}</div>
   </div>
 </template>
 <style src="./list-shared.css" scoped></style>
@@ -172,5 +176,10 @@ watch(armyFavorites, (favs) => {
   text-align: center;
   color: #888;
   font-size: 0.95em;
+}
+.error {
+  color: #c00;
+  text-align: center;
+  margin-top: 1rem;
 }
 </style>

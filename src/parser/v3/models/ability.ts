@@ -12,11 +12,10 @@ export interface IAbility {
   // only present for command abilities
   commandPoints: string;
 
-  points: number;
   keywords: string[];
 
   // the name of the manifestation summoned by this spell if it is a summoning spell
-  summonable: string;
+  summonedUnit: string;
 }
 
 const DEFAULT_ABILITY_COLOR = 'Gray';
@@ -32,9 +31,8 @@ export class Ability implements IAbility {
   castingValue: string;
   chantingValue: string;
   commandPoints: string;
-  points: number;
   keywords: string[];
-  summonable: string;
+  summonedUnit: string;
 
   constructor(data?: Partial<IAbility>) {
     this.name = data?.name ?? '';
@@ -46,9 +44,8 @@ export class Ability implements IAbility {
     this.castingValue = data?.castingValue ?? '';
     this.chantingValue = data?.chantingValue ?? '';
     this.commandPoints = data?.commandPoints ?? '';
-    this.points = data?.points ?? 0;
     this.keywords = data?.keywords ?? [];
-    this.summonable = data?.summonable ?? '';
+    this.summonedUnit = data?.summonedUnit ?? '';
 
     if (this.color == 'Grey') {
       this.color = 'Gray';

@@ -49,3 +49,5 @@
 - fix ko ather runners display -> this is an actual problem in data I can't fix
 
 - neave's companions shouldn't be reinforcable (probably because unique).
+
+- account for shared abilities like wall crawler in gloomspite gitz

@@ -1,18 +1,36 @@
 import { Model, type IModel } from '../models/model';
 import { WeaponOption, type IWeaponOption } from '../models/weaponOption';
-import { findFirstByTagAndAttrs, nodeArray } from '../util';
+import { findFirstByTagAndAttrs } from '../util';
 
-export function parseModels(unitNode: any): IModel[] {
-  const modelNodes = nodeArray(unitNode.selectionEntries?.selectionEntry).filter((node: any) => {
-    return node['@_type'] === 'model';
-  });
+export function parseModels(unitNode: any): Map<string, IModel> {
+  const modelNodes =
+    unitNode?.selectionEntries?.selectionEntry?.filter((node: any) => {
+      return node['@_type'] === 'model';
+    }) || [];
 
-  const models: IModel[] = [];
+  const models: Map<string, IModel> = new Map<string, IModel>();
+  const nameCounts: Record<string, number> = {};
+
   for (const modelNode of modelNodes) {
     const weapons = parseWeaponOptions(modelNode);
 
+    const baseName = modelNode['@_name'];
+    nameCounts[baseName] = (nameCounts[baseName] || 0) + 1;
+    let modelName = baseName;
+    if (
+      nameCounts[baseName] === 1 &&
+      modelNodes.filter((n: any) => n['@_name'] === baseName).length > 1
+    ) {
+      // First occurrence of a duplicate, rename as {name} A
+      modelName = `${baseName} A`;
+    } else if (nameCounts[baseName] > 1) {
+      // Subsequent duplicates: {name} B, {name} C, etc.
+      const suffix = String.fromCharCode(64 + nameCounts[baseName]);
+      modelName = `${baseName} ${suffix}`;
+    }
+
     const model: Partial<IModel> = {
-      name: modelNode['@_name'],
+      name: modelName,
       count: parseInt(
         findFirstByTagAndAttrs(modelNode, 'constraint', { type: 'min', scope: 'parent' })?.[
           '@_value'
@@ -27,9 +45,9 @@ export function parseModels(unitNode: any): IModel[] {
       }, new Map<string, IWeaponOption>()),
     };
 
-    console.log(`parsed model:`, model);
-    models.push(new Model(model));
+    models.set(modelName, new Model(model));
   }
+
   return models;
 }
 
@@ -37,17 +55,18 @@ export function parseWeaponOptions(modelNode: any): IWeaponOption[] {
   const weaponOptions: IWeaponOption[] = [];
   weaponOptions.push(...parseWeaponOptionsFromSelectionEntries(modelNode.selectionEntries));
   weaponOptions.push(
-    ...nodeArray(modelNode.selectionEntryGroups?.selectionEntryGroup).flatMap((group: any) => {
+    ...(modelNode?.selectionEntryGroups?.selectionEntryGroup?.flatMap((group: any) => {
       return parseWeaponOptionsFromSelectionEntryGroup(group);
-    })
+    }) || [])
   );
   return weaponOptions;
 }
 
 export function parseWeaponOptionsFromSelectionEntries(selectionEntriesNode: any): IWeaponOption[] {
-  const weaponNodes = nodeArray(selectionEntriesNode?.selectionEntry).filter((node: any) => {
-    return node['@_type'] === 'upgrade';
-  });
+  const weaponNodes =
+    selectionEntriesNode?.selectionEntry.filter((node: any) => {
+      return node['@_type'] === 'upgrade';
+    }) || [];
 
   const weaponOptions: Map<string, Partial<IWeaponOption>> = new Map();
   const exclusiveWeapons: Map<string, string[]> = new Map();
@@ -59,7 +78,7 @@ export function parseWeaponOptionsFromSelectionEntries(selectionEntriesNode: any
       name: weaponNode['@_name'],
     };
 
-    const constraints = nodeArray(weaponNode.constraints?.constraint);
+    const constraints = weaponNode.constraints?.constraint;
     const maxConstraint = constraints.find((c: any) => c['@_type'] === 'max');
     const minConstraint = constraints.find((c: any) => c['@_type'] === 'min');
 
@@ -69,16 +88,19 @@ export function parseWeaponOptionsFromSelectionEntries(selectionEntriesNode: any
     }
 
     // exclusive modifiers
-    const exclusiveModifiers = nodeArray(weaponNode.modifiers?.modifier).filter((m: any) => {
-      return m['@_type'] === 'set' && m['@_value'] === '0';
-    });
+
+    const exclusiveModifiers =
+      weaponNode?.modifiers?.modifier?.filter((m: any) => {
+        return m['@_type'] === 'set' && m['@_value'] === '0';
+      }) || [];
 
     for (const modifier of exclusiveModifiers) {
-      const exclusiveIds = nodeArray(modifier.conditions?.condition)
-        .filter((c: any) => {
-          return c['@_type'] === 'atLeast' && c['@_value'] === '1';
-        })
-        .map((c: any) => c['@_childId']);
+      const exclusiveIds =
+        modifier.conditions?.condition
+          .filter((c: any) => {
+            return c['@_type'] === 'atLeast' && c['@_value'] === '1';
+          })
+          .map((c: any) => c['@_childId']) || [];
       exclusiveWeapons.set(id, exclusiveIds);
     }
 
@@ -122,11 +144,10 @@ export function parseWeaponOptionsFromSelectionEntryGroup(
   selectionEntryGroup: any
 ): IWeaponOption[] {
   const groupName = selectionEntryGroup['@_name'];
-  const weaponNodes = nodeArray(selectionEntryGroup?.selectionEntries?.selectionEntry).filter(
-    (node: any) => {
+  const weaponNodes =
+    selectionEntryGroup?.selectionEntries?.selectionEntry.filter((node: any) => {
       return node['@_type'] === 'upgrade';
-    }
-  );
+    }) || [];
 
   const weaponOptions: WeaponOption[] = [];
   for (const weaponNode of weaponNodes) {

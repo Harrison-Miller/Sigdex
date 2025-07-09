@@ -30,5 +30,9 @@ export class Weapon implements IWeapon {
     this.rend = data?.rend ?? '';
     this.damage = data?.damage ?? '';
     this.range = data?.range ?? '';
+
+    if (this.rend === '-') {
+      this.rend = '';
+    }
   }
 }

@@ -1,17 +1,16 @@
 import { Stats, type IStats } from '../models/stats';
 import { Unit, type IUnit } from '../models/unit';
 import { Weapon, type IWeapon } from '../models/weapon';
-import { findAllByTagAndAttrs, mapTextNodesByName, nodeArray, toMapByName } from '../util';
+import { findAllByTagAndAttrs, mapTextNodesByName } from '../util';
 import { parseAbilities } from './parseAbility';
 import { parseModels } from './parseModels';
 
 export function parseUnits(rootNode: any): IUnit[] {
   const units: IUnit[] = [];
-  const unitNodes: any[] = nodeArray(rootNode.selectionEntries?.selectionEntry).filter(
-    (node: any) => {
+  const unitNodes =
+    rootNode?.sharedSelectionEntries?.selectionEntry.filter((node: any) => {
       return node['@_type'] === 'unit';
-    }
-  );
+    }) || [];
   unitNodes.forEach((unitNode: any) => {
     const unit = parseUnit(unitNode);
     if (unit.name) {
@@ -31,9 +30,10 @@ export function parseUnit(unitNode: any): IUnit {
     rangedWeapons: parseRangedWeapons(unitNode),
     keywords: parseUnitKeywords(unitNode),
     abilities: parseAbilities(unitNode.profiles),
-    models: toMapByName(parseModels(unitNode)),
-    summoningSpell: null, // this will be set later if relevant as it requires data outside the unit node
+    models: parseModels(unitNode),
   };
+
+  // TODO: handle parsing shared abilities like wall crawler
 
   return new Unit(unit);
 }
@@ -49,7 +49,7 @@ export function parseMeleeWeapons(unitNode: any): IWeapon[] {
 export function parseWeapons(unitNode: any, weaponType: string): IWeapon[] {
   const weaponNodes = findAllByTagAndAttrs(unitNode, 'profile', {
     typeName: weaponType,
-  });
+  }); // this is causing issues
 
   return weaponNodes.map((node: any) => parseUnitWeapon(node));
 }
@@ -80,8 +80,8 @@ export function splitWeaponAbilities(text: string): string[] {
 }
 
 export function parseUnitStats(unitNode: any): IStats {
-  const statsNode = nodeArray(unitNode.profiles?.profile).find((profile: any) => {
-    return profile['@_typeName'] === 'Unit';
+  const statsNode = unitNode.profiles?.profile.find((profile: any) => {
+    return profile['@_typeName'] === 'Unit' || profile['@_typeName'] === 'Manifestation';
   });
 
   if (!statsNode) {
@@ -102,7 +102,7 @@ export function parseUnitStats(unitNode: any): IStats {
 }
 
 export function parseUnitKeywords(unitNode: any): string[] {
-  const keywordNodes = nodeArray(unitNode.categoryLinks?.categoryLink);
+  const keywordNodes = unitNode.categoryLinks?.categoryLink;
   const keywords: string[] = [];
   keywordNodes.forEach((keywordNode: any) => {
     if (keywordNode['@_name']) {

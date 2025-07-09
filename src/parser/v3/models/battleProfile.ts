@@ -24,12 +24,43 @@ export interface IBattleProfile {
   // units that must be taken with this unit
   companionUnits: string[];
 
-  subHeroOptions: IRegimentOption[]; // subHero by category that this unit can take
-  subHeroTags: string[]; // tags that this unit has like: Moonclan Agitator
+  regimentTags: string[]; // tags that this unit has like: "Moonclan Agitator" or compound keywords like "Moonclan Infantry"
   regimentOptions: IRegimentOption[]; // other regiment options. It may be important to double check what ends up here to see if a unit is a Hero and should be moved to subHeroOptions and set to max: 1.
 
   // the condition to take this undersize unit, e.g For each Knight-Draconis you may take 1 Stormdrake Guard (1 model)
   undersizeCondition: string;
 
   // TODO: probably have boolean flags for: must be in list, must be general, may not be general.
+}
+
+export class BattleProfile implements IBattleProfile {
+  name: string;
+  category: UnitCategory;
+  points: number;
+  reinforceable: boolean;
+
+  enhancement_tables: string[];
+  companionLeader: string;
+  companionUnits: string[];
+
+  regimentTags: string[];
+  regimentOptions: IRegimentOption[];
+
+  undersizeCondition: string;
+
+  constructor(profile?: Partial<IBattleProfile>) {
+    this.name = profile?.name ?? '';
+    this.category = profile?.category ?? 'OTHER';
+    this.points = profile?.points ?? 0;
+    this.reinforceable = profile?.reinforceable ?? false;
+
+    this.enhancement_tables = profile?.enhancement_tables ?? [];
+    this.companionLeader = profile?.companionLeader ?? '';
+    this.companionUnits = profile?.companionUnits ?? [];
+
+    this.regimentTags = profile?.regimentTags ?? [];
+    this.regimentOptions = profile?.regimentOptions ?? [];
+
+    this.undersizeCondition = profile?.undersizeCondition ?? '';
+  }
 }
