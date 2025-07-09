@@ -9,15 +9,15 @@
       <ToggleBox v-model="reinforced">Reinforce</ToggleBox>
     </div>
     <WeaponOptionsSelection v-model="unit" :unit-data="unitData" />
-    <EnhancementsSelection v-if="!isUnique" v-model="unit" :unit-data="unitData" :army="army" />
+    <!-- <EnhancementsSelection v-if="!isUnique" v-model="unit" :unit-data="unitData" :army="army" /> -->
   </div>
 </template>
 <script setup lang="ts">
 // Unique check: unit is unique if it has the 'unique' keyword
-const isUnique = computed(() => {
-  if (!unitData.value) return false;
-  return (unitData.value.keywords || []).some((k: string) => k.toLowerCase() === 'unique');
-});
+// const isUnique = computed(() => {
+//   if (!unitData.value) return false;
+//   return (unitData.value.keywords || []).some((k: string) => k.toLowerCase() === 'unique');
+// });
 import { ref, computed, watch } from 'vue';
 import { getList, saveList } from '../../../utils/list-manager';
 import { loadArmy } from '../../../army';
@@ -25,7 +25,7 @@ import { computedAsync } from '@vueuse/core';
 import { useRoute } from 'vue-router';
 import ToggleBox from '../../core/components/ToggleBox.vue';
 import WeaponOptionsSelection from '../components/WeaponOptionsSelection.vue';
-import EnhancementsSelection from '../components/EnhancementsSelection.vue';
+// import EnhancementsSelection from '../components/EnhancementsSelection.vue';
 import BackButton from '../../core/components/BackButton.vue';
 
 const route = useRoute();

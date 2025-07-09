@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { BattleTacticCard } from '../../../common/BattleTacticsData';
+import type { IBattleTacticCard } from '../../../parser/v3/models/game';
 import { formatText } from '../../../utils/formatter';
-defineProps<{ card: BattleTacticCard }>();
+defineProps<{ card: IBattleTacticCard }>();
 </script>
 <template>
   <div class="battle-tactic-card">
@@ -9,12 +9,12 @@ defineProps<{ card: BattleTacticCard }>();
     <div class="card-content">
       <div v-if="card.text" class="main-text" v-html="formatText(card.text)"></div>
       <div class="subsection">
-        <div class="subheader">Strike</div>
-        <div class="subtext" v-html="formatText(card.strike)"></div>
-      </div>
-      <div class="subsection">
         <div class="subheader">Affray</div>
         <div class="subtext" v-html="formatText(card.affray)"></div>
+      </div>
+      <div class="subsection">
+        <div class="subheader">Strike</div>
+        <div class="subtext" v-html="formatText(card.strike)"></div>
       </div>
       <div class="subsection">
         <div class="subheader">Domination</div>

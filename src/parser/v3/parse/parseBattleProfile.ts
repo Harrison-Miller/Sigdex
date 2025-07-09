@@ -75,7 +75,7 @@ export function parseBattleProfile(
     name: bpNode['@_name'],
     points: parsePoints(bpNode),
     reinforceable: parseReinforceable(bpNode),
-    enhancement_tables: parseAllowedEnhancementTables(bpNode),
+    enhancementTables: parseAllowedEnhancementTables(bpNode),
     // TODO: companion unit stuff
     regimentTags: parseRegimentTags(bpNode, armyCategories),
     regimentOptions: parseRegimentOptions(bpNode, allCategories, armyCategories, errorConditions),

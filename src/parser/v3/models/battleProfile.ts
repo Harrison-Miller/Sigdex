@@ -17,7 +17,7 @@ export interface IBattleProfile {
   reinforceable: boolean;
 
   // the names of enhancement tables that this unit can use.
-  enhancement_tables: string[];
+  enhancementTables: string[];
 
   // the leader of the companion units (This is the unit in companionUnits list that is a hero and has points).
   companionLeader: string;
@@ -39,7 +39,7 @@ export class BattleProfile implements IBattleProfile {
   points: number;
   reinforceable: boolean;
 
-  enhancement_tables: string[];
+  enhancementTables: string[];
   companionLeader: string;
   companionUnits: string[];
 
@@ -54,7 +54,7 @@ export class BattleProfile implements IBattleProfile {
     this.points = profile?.points ?? 0;
     this.reinforceable = profile?.reinforceable ?? false;
 
-    this.enhancement_tables = profile?.enhancement_tables ?? [];
+    this.enhancementTables = profile?.enhancementTables ?? [];
     this.companionLeader = profile?.companionLeader ?? '';
     this.companionUnits = profile?.companionUnits ?? [];
 

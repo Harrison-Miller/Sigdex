@@ -1,204 +1,38 @@
-<script setup lang="ts">
-import OptionSelect from '../../core/components/OptionSelect.vue';
-import { ref, watch, computed } from 'vue';
-import Section from '../../core/components/Section.vue';
-import AbilityCard from '../../shared/components/AbilityCard.vue';
-import ListButton from '../../shared/components/ListButton.vue';
-import { universalManifestationLores } from '../../../common/ManifestationData';
-import { loadUniversalUnits } from '../../../army';
-import type { Unit } from '../../../common/UnitData';
-import type { Lore } from '../../../common/ManifestationData';
-import type { Army } from '../../../common/ArmyData';
-
-const props = defineProps<{
-  armyLore: any[] | null | undefined; // spellLores, prayerLores, or manifestationLores
-  lores: Map<string, any> | null;
-  modelValue: boolean;
-  selectedLore: string;
-  manifestationMode?: boolean;
-  currentArmy?: Army | null;
-  armyName?: string; // Optional, used for universal manifestation lores
-}>();
-const emit = defineEmits(['update:modelValue', 'update:selectedLore', 'saveLore']);
-
-const collapsed = computed({
-  get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val),
-});
-
-const selectedLore = ref(props.selectedLore);
-
-watch(
-  () => props.selectedLore,
-  (val) => {
-    selectedLore.value = val;
-  }
-);
-
-watch(selectedLore, (val) => {
-  emit('update:selectedLore', val);
-  // Only emit saveLore if the value actually changed
-  if (val !== props.selectedLore) {
-    emit('saveLore', val);
-  }
-});
-
-const computedArmyLore = computed(() => {
-  if (props.manifestationMode) {
-    // Merge armyLore with universalManifestationLores (avoid duplicates)
-    const base = Array.isArray(props.armyLore) ? [...props.armyLore] : [];
-    const names = new Set(base.map((l) => l.name));
-    for (const name of universalManifestationLores) {
-      if (!names.has(name)) {
-        base.push({ name });
-      }
-    }
-    return base;
-  }
-  return props.armyLore || [];
-});
-
-const sectionTitle = computed(() => {
-  return (
-    selectedLore.value ||
-    (props.armyLore === undefined
-      ? ''
-      : props.armyLore?.[0]?.type === 'prayer'
-        ? 'Prayer Lores'
-        : 'Spell Lores')
-  );
-});
-
-const getLorePoints = (loreName: string): number | undefined => {
-  // Try to get points from armyLore first
-  const armyLorePoints = Array.isArray(props.armyLore)
-    ? props.armyLore.find((l) => l.name === loreName)?.points
-    : undefined;
-  if (typeof armyLorePoints === 'number') return armyLorePoints;
-  // Fallback to lores Map
-  return props.lores?.get(loreName)?.points;
-};
-
-const manifestationUnits = ref<Unit[]>([]);
-const manifestationLoading = ref(false);
-
-async function loadManifestationUnits() {
-  manifestationLoading.value = true;
-  manifestationUnits.value = [];
-  if (!props.manifestationMode || !selectedLore.value || !props.lores) {
-    manifestationLoading.value = false;
-    return;
-  }
-  const lore: Lore | undefined = props.lores.get(selectedLore.value);
-  if (!lore) {
-    manifestationLoading.value = false;
-    return;
-  }
-  let units: Unit[] = [];
-  // Army lore: use army units, else universal units
-  const isArmyLore =
-    Array.isArray(props.armyLore) && props.armyLore.some((l) => l.name === selectedLore.value);
-  if (isArmyLore && props.currentArmy && Array.isArray(props.currentArmy.units)) {
-    units = props.currentArmy.units;
-  } else {
-    units = await loadUniversalUnits();
-  }
-  // Find all units that are referenced by any spell/ability in this lore (match logic from ManifestationLore.vue)
-  const unitNames = new Set<string>();
-  for (const unit of units) {
-    if (unit.category !== 'Manifestation') continue;
-    for (const ability of lore.abilities) {
-      if (
-        (ability.name && ability.name.includes(unit.name)) ||
-        (ability.text && ability.text.includes(unit.name))
-      ) {
-        unitNames.add(unit.name);
-        break; // No need to check other abilities for this unit
-      }
-
-      // to lowercase and filter out of/and/or/a/an
-      const nameParts = unit.name
-        .split(' ')
-        .map((part) => part.toLowerCase())
-        .filter((part) => !['of', 'and', 'or', 'a', 'an', 'the'].includes(part));
-      if (
-        nameParts.some((part) => {
-          return (
-            ability.name?.toLowerCase().includes(part.toLowerCase()) ||
-            ability.text?.toLowerCase().includes(part.toLowerCase())
-          );
-        })
-      ) {
-        unitNames.add(unit.name);
-        break; // No need to check other abilities for this unit
-      }
-    }
-  }
-  manifestationUnits.value = units.filter((u) => unitNames.has(u.name));
-  manifestationLoading.value = false;
-}
-
-watch(
-  [() => props.manifestationMode, selectedLore, () => props.lores],
-  () => {
-    if (props.manifestationMode) loadManifestationUnits();
-  },
-  { immediate: true }
-);
-
-const isUniversalLore = computed(() => {
-  // If the selected lore is in universalManifestationLores, it's universal
-  return universalManifestationLores.includes(selectedLore.value);
-});
-</script>
 <template>
-  <Section v-if="computedArmyLore && computedArmyLore.length > 0" v-model="collapsed">
+  <Section v-if="computedArmyLore.size > 0" v-model="collapsed">
     <template #title>
-      <span>{{ sectionTitle }}</span>
-      <span v-if="computedArmyLore && selectedLore">
-        <span v-for="lore in computedArmyLore" :key="lore.name">
-          <span
-            v-if="lore.name === selectedLore && getLorePoints(lore.name)"
-            class="lore-points-badge"
-          >
-            {{ getLorePoints(lore.name) }} pts
-          </span>
-        </span>
-      </span>
+      <span>{{ selectedLoreName }}</span>
+      <span v-if="lore.points > 0" class="lore-points-badge"> {{ lore.points }} pts </span>
     </template>
     <div class="spell-lores-section">
-      <template v-if="computedArmyLore.length > 1">
-        <OptionSelect v-model="selectedLore" :options="computedArmyLore.map((lore) => lore.name)" />
+      <template v-if="computedArmyLore.size > 1">
+        <OptionSelect v-model="selectedLoreName" :options="Array.from(computedArmyLore.keys())" />
       </template>
-      <div v-if="props.manifestationMode">
-        <div v-if="manifestationLoading" style="margin: 1em 0">Loading...</div>
-        <ul v-else>
-          <li v-for="unit in manifestationUnits" :key="unit.name">
+      <div v-if="props.manifestationMode && !loading && !error">
+        <ul>
+          <li v-for="unitName in manifestationUnits" :key="unitName">
             <router-link
               :to="{
                 name: 'UnitDetail',
                 params: {
-                  army: isUniversalLore ? 'UniversalManifestations' : props.armyName || '',
-                  unit: unit.name,
+                  army: isUniversalLore ? 'UniversalManifestations' : armyName,
+                  unit: unitName,
                 },
               }"
               custom
               v-slot="{ navigate, href }"
             >
-              <ListButton :label="unit.name" :points="unit.points" @click="navigate" :href="href" />
+              <ListButton :label="unitName" @click="navigate" :href="href" />
             </router-link>
           </li>
         </ul>
-        <div
-          v-if="!manifestationLoading && manifestationUnits.length === 0"
-          style="margin: 1em 0; color: #a00"
-        >
+        <div v-if="manifestationUnits.length === 0" style="margin: 1em 0; color: #a00">
           No summonable Manifestations found for this lore.
         </div>
       </div>
-      <div v-else-if="selectedLore && lores && lores.get(selectedLore)">
+      <div v-else-if="lore.name">
         <AbilityCard
-          v-for="(ability, i) in lores.get(selectedLore).abilities"
+          v-for="(ability, i) in lore.abilities"
           :key="ability.name + i"
           :ability="ability"
         />
@@ -206,6 +40,66 @@ const isUniversalLore = computed(() => {
     </div>
   </Section>
 </template>
+<script setup lang="ts">
+import OptionSelect from '../../core/components/OptionSelect.vue';
+import { ref, computed } from 'vue';
+import Section from '../../core/components/Section.vue';
+import AbilityCard from '../../shared/components/AbilityCard.vue';
+import ListButton from '../../shared/components/ListButton.vue';
+import { Lore, type ILore } from '../../../parser/v3/models/lore';
+import { useGame } from '../../shared/composables/useGame';
+
+const props = defineProps<{
+  armyLore: Map<string, ILore>;
+  modelValue: string;
+  manifestationMode?: boolean;
+  armyName: string;
+}>();
+const emit = defineEmits(['update:modelValue']);
+
+const { game, loading, error } = useGame();
+
+const collapsed = ref(true);
+
+const selectedLoreName = computed({
+  get: () => props.modelValue,
+  set: (val: string) => emit('update:modelValue', val),
+});
+
+const computedArmyLore = computed(() => {
+  if (props.manifestationMode) {
+    // Clone the map to avoid mutating the prop
+    const base = new Map(props.armyLore);
+    for (const lore of game.value?.universalManifestationsLores?.values() || []) {
+      base.set(lore.name, lore);
+    }
+    return base;
+  }
+  return props.armyLore;
+});
+
+const lore = computed(() => {
+  return (
+    computedArmyLore.value.get(selectedLoreName.value) ||
+    new Lore({ name: selectedLoreName.value, abilities: [] })
+  );
+});
+
+const manifestationUnits = computed(() => {
+  return (
+    computedArmyLore.value
+      .get(selectedLoreName.value)
+      ?.abilities.map((ability) => {
+        return ability.summonedUnit;
+      })
+      .filter((unit) => unit.length > 0) || []
+  );
+});
+
+const isUniversalLore = computed(() => {
+  return game.value?.universalManifestationsLores?.has(selectedLoreName.value);
+});
+</script>
 <style scoped>
 .spell-lores-section {
   margin: 1.5em 0 0 0;

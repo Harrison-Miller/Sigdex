@@ -5,7 +5,7 @@
       <div v-for="(unit, i) in auxiliaryUnits" :key="unit?.name + i" class="aux-unit-row">
         <ListButton
           :label="unit.name"
-          :points="armyData?.units.find((u: any) => u.name === unit.name)?.points"
+          :points="battleProfiles.get(unit.name)?.points"
           :show-reinforced="unit.reinforced || false"
           :show-ellipsis="true"
           :enhancement-count="getEnhancementCount(unit)"
@@ -14,7 +14,7 @@
               router &&
               router.push({
                 name: 'UnitDetail',
-                params: { army: listFaction, unit: unit.name },
+                params: { army: armyName, unit: unit.name },
               })
           "
           @ellipsis="() => goToAuxUnitSettings(i)"
@@ -38,13 +38,13 @@ import Section from '../../core/components/Section.vue';
 import { ref, watch, computed, onMounted } from 'vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
-import type { Army } from '../../../common/ArmyData';
 import type { ListUnit } from '../../../common/ListData';
+import type { IBattleProfile } from '../../../parser/v3/models/battleProfile';
 
 const props = defineProps<{
   modelValue?: ListUnit[];
-  armyData: Army;
-  listFaction: string;
+  battleProfiles: Map<string, IBattleProfile>;
+  armyName: string;
   listId: string;
 }>();
 const emit = defineEmits(['update:modelValue', 'update']);

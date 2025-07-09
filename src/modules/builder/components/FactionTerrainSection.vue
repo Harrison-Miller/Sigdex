@@ -2,18 +2,11 @@
   <Section v-model="collapsed" v-if="hasFactionTerrain">
     <template #title> Faction Terrain </template>
     <div>
-      <div v-if="factionTerrain && armyData" class="faction-terrain-controls">
+      <div v-if="factionTerrain" class="faction-terrain-controls">
         <ListButton
           :label="factionTerrain"
-          :points="armyData.units.find((u: any) => u.name === factionTerrain)?.points"
-          @click="
-            () =>
-              router &&
-              router.push({
-                name: 'UnitDetail',
-                params: { army: listFaction, unit: factionTerrain },
-              })
-          "
+          :points="battleProfiles.get(factionTerrain)?.points"
+          @click="goToUnitDetail"
         />
         <button
           class="delete-terrain-btn"
@@ -34,25 +27,24 @@ import { computed, ref, onMounted } from 'vue';
 import Section from '../../core/components/Section.vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
-import type { Army } from '../../../common/ArmyData';
+import type { IBattleProfile } from '../../../parser/v3/models/battleProfile';
 
 const props = defineProps<{
   modelValue: string | undefined;
-  armyData: Army;
-  listFaction: string;
+  battleProfiles: Map<string, IBattleProfile>;
+  armyName: string;
   listId: string;
 }>();
 
 const emit = defineEmits(['update:modelValue']);
 const router = useRouter();
 
-// Expose to template
-const hasFactionTerrain = computed(
-  () =>
-    props.armyData &&
-    Array.isArray(props.armyData.units) &&
-    props.armyData.units.some((u: any) => (u.category || '').toLowerCase() === 'faction terrain')
-);
+const terrainUnits = computed(() => {
+  return Array.from(props.battleProfiles.values()).filter(
+    (u: any) => u.category === 'FACTION TERRAIN'
+  );
+});
+const hasFactionTerrain = computed(() => terrainUnits.value.length > 0);
 
 const collapsed = ref(true);
 onMounted(() => {
@@ -68,13 +60,9 @@ const factionTerrain = computed({
 });
 
 function handleAddFactionTerrain() {
-  if (!props.armyData) return;
-  const terrainUnits = props.armyData.units.filter(
-    (u: any) => (u.category || '').toLowerCase() === 'faction terrain'
-  );
-  if (terrainUnits.length === 1) {
-    factionTerrain.value = terrainUnits[0].name;
-  } else if (terrainUnits.length > 1 && props.listFaction) {
+  if (terrainUnits.value.length === 1) {
+    factionTerrain.value = terrainUnits.value[0].name;
+  } else if (terrainUnits.value.length > 1) {
     router.push({
       name: 'UnitPicker',
       params: { id: props.listId, regimentIdx: '0', filter: 'terrain' },
@@ -86,9 +74,13 @@ function handleDeleteFactionTerrain() {
   factionTerrain.value = undefined;
 }
 
-// Make sure all variables used in the template are exposed
-// (in <script setup> this is automatic, but for clarity):
-// hasFactionTerrain, collapsed, factionTerrain, handleAddFactionTerrain, handleDeleteFactionTerrain, router, props
+function goToUnitDetail() {
+  if (!factionTerrain.value) return;
+  router.push({
+    name: 'UnitDetail',
+    params: { army: props.armyName, unit: factionTerrain.value },
+  });
+}
 </script>
 <style scoped>
 .faction-terrain-controls {

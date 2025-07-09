@@ -1,20 +1,71 @@
-function getEnhancementCount(unit) { let count = 0; if (unit.heroic_trait) count += 1; if
-(unit.artifact) count += 1; if (unit.enhancements && typeof unit.enhancements.size === 'number')
-count += unit.enhancements.size; return count; }
+<template>
+  <Section>
+    <template #title>
+      <span>{{ title }}</span>
+      <button class="delete-regiment-btn" @click="$emit('delete')" title="Delete Regiment">
+        <font-awesome-icon icon="trash" />
+      </button>
+    </template>
+    <div class="regiment-leader">
+      <div v-if="props.regiment.leader && props.regiment.leader.name" class="regiment-unit-row">
+        <ListButton
+          :label="props.regiment.leader.name"
+          :points="battleProfiles.get(props.regiment.leader.name)?.points"
+          :showEllipsis="true"
+          :showGeneral="!!props.regiment.leader.general"
+          :enhancementCount="getEnhancementCount(props.regiment.leader)"
+          @click="() => goToUnitDetail(props.regiment.leader.name)"
+          @ellipsis="() => goToUnitSettings('leader')"
+        />
+        <button
+          class="delete-unit-btn"
+          @click="$emit('delete-unit', 'leader')"
+          title="Remove leader"
+        >
+          <font-awesome-icon icon="trash" />
+        </button>
+      </div>
+      <button v-else class="add-leader-btn" @click="goToAddLeader">+ Add Leader</button>
+    </div>
+    <div class="divider"></div>
+    <div class="regiment-units">
+      <ul>
+        <li v-for="(unit, idx) in props.regiment.units" :key="unit.name" class="regiment-unit-row">
+          <div class="regiment-unit-btn">
+            <ListButton
+              :label="unit.name"
+              :points="battleProfiles.get(unit.name)?.points"
+              :showEllipsis="true"
+              :showReinforced="!!unit.reinforced"
+              :enhancementCount="getEnhancementCount(unit)"
+              @click="() => goToUnitDetail(unit.name)"
+              @ellipsis="() => goToUnitSettings(idx)"
+              class="regiment-unit-btn"
+            />
+          </div>
+          <button class="delete-unit-btn" @click="$emit('delete-unit', idx)" title="Remove unit">
+            <font-awesome-icon icon="trash" />
+          </button>
+        </li>
+      </ul>
+    </div>
+    <button class="add-unit-btn" @click="goToAddUnit">+ Add Unit</button>
+  </Section>
+</template>
 <script setup lang="ts">
 import { defineProps, defineEmits, computed } from 'vue';
 import type { ListRegiment } from '../../../common/ListData';
 import ListButton from '../../shared/components/ListButton.vue';
 import Section from '../../core/components/Section.vue';
 import { useRouter } from 'vue-router';
-import type { Army } from '../../../common/ArmyData';
+import type { IBattleProfile } from '../../../parser/v3/models/battleProfile';
 
 const props = defineProps<{
   regimentIdx: number;
   regiment: ListRegiment;
   listId: string;
-  army: Army;
-  armyName: string; // This should be stored in the army data
+  battleProfiles: Map<string, IBattleProfile>;
+  armyName: string;
 }>();
 const emit = defineEmits(['delete', 'delete-unit']);
 const router = useRouter();
@@ -41,10 +92,6 @@ function goToAddUnit() {
       filter: 'unit',
     },
   });
-}
-
-function getUnitByName(name: string) {
-  return props.army?.units?.find((u: any) => u.name === name);
 }
 
 function goToUnitDetail(unitName: string) {
@@ -74,60 +121,6 @@ function getEnhancementCount(unit: any) {
   return count;
 }
 </script>
-<template>
-  <Section>
-    <template #title>
-      <span>{{ title }}</span>
-      <button class="delete-regiment-btn" @click="$emit('delete')" title="Delete Regiment">
-        <font-awesome-icon icon="trash" />
-      </button>
-    </template>
-    <div class="regiment-leader">
-      <div v-if="props.regiment.leader && props.regiment.leader.name" class="regiment-unit-row">
-        <ListButton
-          :label="props.regiment.leader.name"
-          :points="getUnitByName(props.regiment.leader.name)?.points"
-          :showEllipsis="true"
-          :showGeneral="!!props.regiment.leader.general"
-          :enhancementCount="getEnhancementCount(props.regiment.leader)"
-          @click="() => goToUnitDetail(props.regiment.leader.name)"
-          @ellipsis="() => goToUnitSettings('leader')"
-        />
-        <button
-          class="delete-unit-btn"
-          @click="$emit('delete-unit', 'leader')"
-          title="Remove leader"
-        >
-          <font-awesome-icon icon="trash" />
-        </button>
-      </div>
-      <button v-else class="add-leader-btn" @click="goToAddLeader">+ Add Leader</button>
-    </div>
-    <div class="divider"></div>
-    <div class="regiment-units">
-      <ul>
-        <li v-for="(unit, idx) in props.regiment.units" :key="unit.name" class="regiment-unit-row">
-          <div class="regiment-unit-btn">
-            <ListButton
-              :label="unit.name"
-              :points="getUnitByName(unit.name)?.points"
-              :showEllipsis="true"
-              :showReinforced="!!unit.reinforced"
-              :enhancementCount="getEnhancementCount(unit)"
-              @click="() => goToUnitDetail(unit.name)"
-              @ellipsis="() => goToUnitSettings(idx)"
-              class="regiment-unit-btn"
-            />
-          </div>
-          <button class="delete-unit-btn" @click="$emit('delete-unit', idx)" title="Remove unit">
-            <font-awesome-icon icon="trash" />
-          </button>
-        </li>
-      </ul>
-    </div>
-    <button class="add-unit-btn" @click="goToAddUnit">+ Add Unit</button>
-  </Section>
-</template>
 <style scoped>
 .regiment-header {
   display: flex;
