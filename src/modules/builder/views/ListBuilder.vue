@@ -96,16 +96,19 @@
       <ListBuilderLoreSection
         :armyLore="army.spellLores"
         :armyName="list.faction"
+        title="Spell Lore"
         v-model="selectedSpellLore"
       />
       <ListBuilderLoreSection
         :armyLore="army.prayerLores"
         :armyName="list.faction"
+        title="Prayer Lore"
         v-model="selectedPrayerLore"
       />
       <ListBuilderLoreSection
         :armyLore="army.manifestationLores"
         :armyName="list.faction"
+        title="Manifestation Lore"
         v-model="selectedManifestationLore"
         manifestationMode
       />

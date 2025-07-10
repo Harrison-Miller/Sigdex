@@ -1,14 +1,18 @@
 <template>
   <Section v-if="computedArmyLore.size > 0" v-model="collapsed">
     <template #title>
-      <span>{{ selectedLoreName }}</span>
+      <span>{{ selectedLoreName || title }}</span>
       <span v-if="lore.points > 0" class="lore-points-badge"> {{ lore.points }} pts </span>
     </template>
     <div class="spell-lores-section">
       <template v-if="computedArmyLore.size > 1">
-        <OptionSelect v-model="selectedLoreName" :options="Array.from(computedArmyLore.keys())" />
+        <OptionSelect
+          v-model="selectedLoreName"
+          :options="Array.from(computedArmyLore.keys())"
+          placeholder="No Lore Selected"
+        />
       </template>
-      <div v-if="props.manifestationMode && !loading && !error">
+      <div v-if="props.manifestationMode && !loading && !error && selectedLoreName">
         <ul>
           <li v-for="unitName in manifestationUnits" :key="unitName">
             <router-link
@@ -54,6 +58,7 @@ const props = defineProps<{
   modelValue: string;
   manifestationMode?: boolean;
   armyName: string;
+  title?: string;
 }>();
 const emit = defineEmits(['update:modelValue']);
 
