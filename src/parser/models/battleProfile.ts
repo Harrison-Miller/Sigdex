@@ -28,6 +28,7 @@ export interface IBattleProfile {
   regimentTags: string[]; // tags that this unit has like: "Moonclan Agitator" or compound keywords like "Moonclan Infantry"
   regimentOptions: IRegimentOption[]; // other regiment options. It may be important to double check what ends up here to see if a unit is a Hero and should be moved to subHeroOptions and set to max: 1.
 
+  isUndersize: boolean; // true if this is an undersize unit, false otherwise
   // the condition to take this undersize unit, e.g For each Knight-Draconis you may take 1 Stormdrake Guard (1 model)
   undersizeCondition: string;
 
@@ -48,6 +49,7 @@ export class BattleProfile implements IBattleProfile {
   regimentTags: string[];
   regimentOptions: IRegimentOption[];
 
+  isUndersize: boolean;
   undersizeCondition: string;
 
   constructor(profile?: Partial<IBattleProfile>) {
@@ -64,6 +66,7 @@ export class BattleProfile implements IBattleProfile {
     this.regimentTags = profile?.regimentTags ?? [];
     this.regimentOptions = profile?.regimentOptions ?? [];
 
+    this.isUndersize = profile?.isUndersize ?? false;
     this.undersizeCondition = profile?.undersizeCondition ?? '';
   }
 }

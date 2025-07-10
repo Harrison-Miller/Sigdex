@@ -1,6 +1,6 @@
 import { Model, type IModel } from '../models/model';
 import { WeaponOption, type IWeaponOption } from '../models/weaponOption';
-import { findFirstByTagAndAttrs } from '../util';
+import { findAllByTagAndAttrs, findFirstByTagAndAttrs } from '../util';
 
 export function parseModels(unitNode: any): Map<string, IModel> {
   const modelNodes =
@@ -78,9 +78,13 @@ export function parseWeaponOptionsFromSelectionEntries(selectionEntriesNode: any
       name: weaponNode['@_name'],
     };
 
+    // NOTE: we don't add weaponOptions here like in original
+
     const constraints = weaponNode.constraints?.constraint;
     const maxConstraint = constraints.find((c: any) => c['@_type'] === 'max');
-    const minConstraint = constraints.find((c: any) => c['@_type'] === 'min');
+    const minConstraint = constraints.find(
+      (c: any) => c['@_type'] === 'min' && c['@_scope'] === 'parent'
+    );
 
     // optional weapon
     if (!minConstraint && maxConstraint) {
@@ -96,11 +100,10 @@ export function parseWeaponOptionsFromSelectionEntries(selectionEntriesNode: any
 
     for (const modifier of exclusiveModifiers) {
       const exclusiveIds =
-        modifier.conditions?.condition
-          .filter((c: any) => {
-            return c['@_type'] === 'atLeast' && c['@_value'] === '1';
-          })
-          .map((c: any) => c['@_childId']) || [];
+        findAllByTagAndAttrs(modifier, 'condition', {
+          type: 'atLeast',
+          value: '1',
+        }).map((c: any) => c['@_childId']) || [];
       exclusiveWeapons.set(id, exclusiveIds);
     }
 
@@ -112,7 +115,7 @@ export function parseWeaponOptionsFromSelectionEntries(selectionEntriesNode: any
     const weaponOption = weaponOptions.get(weaponId);
     if (!weaponOption) continue;
 
-    if (weaponOption.max == undefined) {
+    if (weaponOption.max == undefined || weaponOption.max === 0) {
       // this weapon is a default weapon and will not replace anything.
       // for each exclusive weapon, we will set that weapon's replaces to this weapon's name
 

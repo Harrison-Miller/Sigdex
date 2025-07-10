@@ -118,7 +118,6 @@ const favoriteToggleSize = 36;
           <span v-html="formatCompanionUnits(unit.name, battleProfile.companionUnits)"></span>
         </div>
         <div
-          v-if="unit.models.size > 1"
           class="unit-model-groups"
           style="margin-top: 0.5em"
           v-html="formatModelGroups(Array.from(unit.models.values()), unit)"

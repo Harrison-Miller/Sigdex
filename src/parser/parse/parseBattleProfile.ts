@@ -1,5 +1,7 @@
 import { BattleProfile, type IBattleProfile, type IRegimentOption } from '../models/battleProfile';
+import { Model, type IModel } from '../models/model';
 import type { IUnit } from '../models/unit';
+import { WeaponOption } from '../models/weaponOption';
 import { findAllByTagAndAttrs, findFirstByTagAndAttrs } from '../util';
 import {
   filterIgnoredEnhancementTables,
@@ -15,13 +17,14 @@ export function parseBattleProfiles(
 ): Map<string, IBattleProfile> {
   const bpCategories = parseBattleProfileCategories(root);
   // add bp categories to the main categories map
+  const allCategories = new Map<string, ICategory>(categories);
   for (const [id, category] of bpCategories.entries()) {
-    if (!categories.has(id)) {
-      categories.set(id, category);
+    if (!allCategories.has(id)) {
+      allCategories.set(id, category);
     }
   }
   const armyCategories = parseCategories(root);
-  const errorConditions = parseErrorConditions(root, categories);
+  const errorConditions = parseErrorConditions(root, allCategories);
 
   const battleProfileNodes = root.entryLinks?.entryLink || [];
   const bpMap = new Map<string, IBattleProfile>();
@@ -36,7 +39,7 @@ export function parseBattleProfiles(
     )
       continue;
 
-    const profile = parseBattleProfile(node, units, categories, armyCategories, errorConditions);
+    const profile = parseBattleProfile(node, units, allCategories, armyCategories, errorConditions);
     if (profile.category === 'OTHER' || profile.category === 'LEGENDS') continue; // skip other and legends categories
 
     bpMap.set(profile.name, profile);
@@ -79,7 +82,6 @@ export function parseBattleProfile(
     // TODO: companion unit stuff
     regimentTags: parseRegimentTags(bpNode, armyCategories),
     regimentOptions: parseRegimentOptions(bpNode, allCategories, armyCategories, errorConditions),
-    // TODO: undersize unit stuff
   };
 
   // category and keywords is derived from the unit
@@ -87,6 +89,44 @@ export function parseBattleProfile(
   if (unit) {
     battleProfile.category = unit.category;
     battleProfile.keywords = unit.keywords;
+  }
+
+  const undersizeInfo = parseUndersizeUnitCondition(bpNode, allCategories);
+  if (undersizeInfo) {
+    console.log(`Found undersize unit condition for ${battleProfile.name}:`, undersizeInfo);
+    battleProfile.isUndersize = true;
+    battleProfile.name = battleProfile.name + ` (1 model)`;
+    battleProfile.undersizeCondition = undersizeInfo.condition;
+    battleProfile.reinforceable = false; // undersize units are not reinforceable
+    if (unit && !units.has(battleProfile.name)) {
+      // create a new unit for this bp
+      const undersizeUnit = {
+        ...unit,
+        name: battleProfile.name,
+        unitSize: 1, // undersize units are always 1 model
+        models: new Map<string, IModel>(), // create a new models map
+      };
+      for (const [_, model] of unit.models) {
+        undersizeUnit.models.set(
+          model.name,
+          new Model({
+            ...model,
+            count: 1,
+          })
+        );
+        for (const [_, w] of model.weapons) {
+          let wp = new WeaponOption({
+            ...w,
+          });
+          if (wp.max > 0) {
+            wp.max = 1; // undersize units can only take 1 of each weapon
+          }
+          undersizeUnit.models.get(model.name)?.weapons.set(w.name, wp);
+        }
+      }
+      console.log(`Created undersize unit:`, undersizeUnit);
+      units.set(battleProfile.name, undersizeUnit);
+    }
   }
 
   return new BattleProfile(battleProfile);
@@ -240,4 +280,33 @@ export function parseErrorConditions(
     }
   }
   return errorConditions;
+}
+
+export function parseUndersizeUnitCondition(
+  bpNode: any,
+  bpCategories: Map<string, ICategory>
+): { isUndersize: boolean; condition?: string } | null {
+  const undersizeCategoryLink = bpNode?.categoryLinks?.categoryLink?.find(
+    (link: any) => link['@_name'] === 'Undersize Unit'
+  );
+  if (!undersizeCategoryLink) return null;
+
+  const condition = findFirstByTagAndAttrs(bpNode, 'repeat', {
+    value: '1',
+    scope: 'roster',
+  });
+  if (condition) {
+    const conditionId = condition['@_childId'];
+    const conditionUnit = bpCategories.get(conditionId);
+    if (conditionUnit) {
+      return {
+        isUndersize: true,
+        condition: conditionUnit.name,
+      };
+    }
+  }
+
+  return {
+    isUndersize: true,
+  };
 }
