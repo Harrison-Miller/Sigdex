@@ -3,8 +3,8 @@ import type { ILore } from '../parser/v3/models/lore';
 import type { List, ListRegiment } from '../common/ListData';
 import { serializeListUnit, deserializeListUnit } from '../common/ArrayData';
 import type { ListUnitWeaponOption } from '../common/ListData';
-import type { WeaponOption } from '../common/UnitData';
 import type { IUnit } from '../parser/v3/models/unit';
+import type { IWeaponOption } from '../parser/v3/models/weaponOption';
 
 const STORAGE_PREFIX = 'sigdex_list:';
 
@@ -191,7 +191,7 @@ export function setupDefaultWeaponOptions(unit: IUnit): Map<string, ListUnitWeap
       }
     }
     // Grouped weapons: select first in each group
-    const groupMap: Record<string, WeaponOption[]> = {};
+    const groupMap: Record<string, IWeaponOption[]> = {};
     for (const [_, w] of model.weapons || []) {
       if (w.type === 'grouped' && w.group) {
         if (!groupMap[w.group]) groupMap[w.group] = [];

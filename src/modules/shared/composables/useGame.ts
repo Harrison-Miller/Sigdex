@@ -4,11 +4,11 @@ import { Game, type IGame } from '../../../parser/v3/models/game';
 import { Unit } from '../../../parser/v3/models/unit';
 import { Model } from '../../../parser/v3/models/model';
 import { Army } from '../../../parser/v3/models/army';
-import { GITHUB_REPO } from '../../../army';
 import SuperJSON from 'superjson';
 import { type MaybeRefOrGetter } from '@vueuse/core';
 import { BattleProfile } from '../../../parser/v3/models/battleProfile';
 import { Lore } from '../../../parser/v3/models/lore';
+import { GITHUB_REPO } from '../../../github/config';
 
 const GAME_STORAGE_KEY = 'game';
 const GAME_TIMESTAMP_KEY = 'gameTimestamp';

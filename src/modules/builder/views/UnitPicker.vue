@@ -42,7 +42,6 @@
 import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getList, saveList, setupDefaultWeaponOptions } from '../../../utils/list-manager';
-import { filterBattleProfilesByRegimentOptions } from '../../../common/UnitData';
 import { formatRegimentOptions } from '../../../utils/formatter';
 import ListButton from '../../shared/components/ListButton.vue';
 import BackButton from '../../core/components/BackButton.vue';
@@ -51,6 +50,7 @@ import { useGame } from '../../shared/composables/useGame';
 import { BattleProfile, type IBattleProfile } from '../../../parser/v3/models/battleProfile';
 import { UnitCategories, type UnitCategory } from '../../../parser/v3/models/unit';
 import { Army } from '../../../parser/v3/models/army';
+import { filterBattleProfilesByRegimentOptions } from '../filter';
 
 const route = useRoute();
 const router = useRouter();

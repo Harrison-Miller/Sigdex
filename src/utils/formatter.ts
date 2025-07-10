@@ -2,7 +2,6 @@ import pluralize, { isPlural } from 'pluralize';
 import type { IModel } from '../parser/v3/models/model';
 import type { IUnit } from '../parser/v3/models/unit';
 import type { IWeaponOption } from '../parser/v3/models/weaponOption';
-import type { RegimentOption } from '../common/UnitData';
 import type { IRegimentOption } from '../parser/v3/models/battleProfile';
 
 export function formatText(text: string): string {
@@ -180,7 +179,7 @@ export function formatSubHeroTags(tags: string[]): string {
 }
 
 export function formatRegimentOptions(options: IRegimentOption[]): string {
-  const formatItems = (opts: RegimentOption[]) =>
+  const formatItems = (opts: IRegimentOption[]) =>
     opts
       .map((opt) => {
         if (!opt.max || opt.max === 0) {

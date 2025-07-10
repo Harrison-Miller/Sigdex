@@ -1,40 +1,3 @@
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { SIGDEX_VERSION } from '../version';
-import BackButton from '../modules/core/components/BackButton.vue';
-import ListButton from '../modules/shared/components/ListButton.vue';
-import { clearAllFavorites } from '../favorites';
-import { clearBSData, saveGithubBaseUrl, saveGithubRepo } from '../army';
-import { clearAllLists } from '../utils/list-manager';
-
-const githubBaseUrlKey = 'GITHUB_BASE_URL';
-const githubRepoKey = 'GITHUB_REPO';
-
-const githubBaseUrl = ref('');
-const githubRepo = ref('');
-
-onMounted(() => {
-  githubBaseUrl.value = localStorage.getItem(githubBaseUrlKey) || '';
-  githubRepo.value = localStorage.getItem(githubRepoKey) || '';
-});
-
-function clearBSDataHandler() {
-  clearBSData();
-}
-function saveGithubBaseUrlHandler() {
-  saveGithubBaseUrl(githubBaseUrl.value);
-}
-function saveGithubRepoHandler() {
-  saveGithubRepo(githubRepo.value);
-}
-
-function clearFavorites() {
-  clearAllFavorites();
-}
-function clearLists() {
-  clearAllLists();
-}
-</script>
 <template>
   <div class="settings-view">
     <BackButton class="back-btn" :size="36" />
@@ -56,15 +19,6 @@ function clearLists() {
     </div>
     <div class="section">
       <label class="input-label"
-        >GITHUB_BASE_URL
-        <input
-          class="settings-input"
-          v-model="githubBaseUrl"
-          @change="saveGithubBaseUrlHandler"
-          placeholder="https://raw.githubusercontent.com"
-        />
-      </label>
-      <label class="input-label"
         >GITHUB_REPO
         <input
           class="settings-input"
@@ -85,7 +39,37 @@ function clearLists() {
     <div class="section version"><strong>Version:</strong> {{ SIGDEX_VERSION }}</div>
   </div>
 </template>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { SIGDEX_VERSION } from '../version';
+import BackButton from '../modules/core/components/BackButton.vue';
+import ListButton from '../modules/shared/components/ListButton.vue';
+import { clearAllFavorites } from '../favorites';
+import { clearAllLists } from '../utils/list-manager';
+import { clearGameCache } from '../modules/shared/composables/useGame';
+import { saveGithubRepo } from '../github/config';
 
+const githubRepoKey = 'GITHUB_REPO';
+const githubRepo = ref('');
+
+onMounted(() => {
+  githubRepo.value = localStorage.getItem(githubRepoKey) || '';
+});
+
+function clearBSDataHandler() {
+  clearGameCache();
+}
+function saveGithubRepoHandler() {
+  saveGithubRepo(githubRepo.value);
+}
+
+function clearFavorites() {
+  clearAllFavorites();
+}
+function clearLists() {
+  clearAllLists();
+}
+</script>
 <style scoped>
 .back-btn {
   position: absolute;

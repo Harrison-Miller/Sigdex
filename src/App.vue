@@ -3,7 +3,6 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { RouterView, useRouter } from 'vue-router';
 import NoticeModal from './components/NoticeModal.vue';
 import { findNextNoticeToShow, markNoticeSeen } from './utils/notices';
-import { clearBSData } from './army';
 import { clearGameCache, useGame } from './modules/shared/composables/useGame';
 
 const showNotice = ref(false);
@@ -28,7 +27,6 @@ function handleClearBSDataShortcut(e: KeyboardEvent) {
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b' && e.code === 'KeyB' && e.shiftKey) {
     // Only trigger on Cmd+Shift+B (or Ctrl+Shift+B)
     e.preventDefault();
-    clearBSData();
     clearGameCache();
     useGame();
     router.push({ name: 'Armies' });
