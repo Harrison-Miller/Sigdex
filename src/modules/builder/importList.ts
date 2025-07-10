@@ -1,18 +1,17 @@
-import { loadArmy } from '../../army';
-import { allArmies, Army } from '../../common/ArmyData';
 import type { List, ListUnit } from '../../common/ListData';
-import { universalManifestationLores } from '../../common/ManifestationData';
+import type { IArmy } from '../../parser/v3/models/army';
+import type { IGame } from '../../parser/v3/models/game';
 
-export async function importList(text: string): Promise<List> {
+export async function importList(text: string, game: IGame): Promise<List> {
   const listText = text.toLowerCase().trim();
   // search the text for the name of a faction
-  const faction = findFaction(listText);
+  const faction = findFaction(listText, Array.from(game.armies.keys()));
   if (!faction) {
     console.log('No faction found in the list.');
     throw new Error('No faction found in the list.');
   }
 
-  const army = await loadArmy(faction);
+  const army = game.armies.get(faction);
   if (!army) {
     console.log(`No army data found for faction: ${faction}`);
     throw new Error(`No army data found for faction: ${faction}`);
@@ -30,14 +29,18 @@ export async function importList(text: string): Promise<List> {
     faction_terrain: findFactionTerrain(listText, army),
     spell_lore: findSpellLore(listText, army),
     prayer_lore: findPrayerLore(listText, army),
-    manifestation_lore: findManifestationLore(listText, army),
+    manifestation_lore: findManifestationLore(
+      listText,
+      army,
+      Array.from(game.universalManifestationLores.keys())
+    ),
     battle_tactics: [], // will be filled later
   };
 
   // split the text into regiment chunks
   const { regiments, auxiliary } = splitIntoRegimentChunks(listText);
   for (const regimentText of regiments) {
-    const units = parseUnits(regimentText, army);
+    const units = parseUnits(regimentText, army, game);
     if (units.length > 0) {
       const leader = units[0];
       list.regiments.push({
@@ -48,7 +51,7 @@ export async function importList(text: string): Promise<List> {
   }
 
   if (auxiliary) {
-    const auxUnits = parseUnits(auxiliary, army);
+    const auxUnits = parseUnits(auxiliary, army, game);
     if (auxUnits.length > 0) {
       list.auxiliary_units = auxUnits;
     }
@@ -57,16 +60,16 @@ export async function importList(text: string): Promise<List> {
   return list;
 }
 
-function findFaction(text: string): string | null {
-  for (const faction of allArmies) {
-    if (text.includes(faction.name.toLowerCase())) {
-      return faction.name;
+function findFaction(text: string, armyNames: string[]): string | null {
+  for (const faction of armyNames) {
+    if (text.includes(faction.toLowerCase())) {
+      return faction;
     }
   }
   return null;
 }
 
-function findFormationOrFirst(text: string, army: Army): string {
+function findFormationOrFirst(text: string, army: IArmy): string {
   for (const formation of army.formations.keys()) {
     if (text.includes(formation.toLowerCase())) {
       return formation;
@@ -91,9 +94,8 @@ function findName(text: string): string {
   return firstLine;
 }
 
-function findFactionTerrain(text: string, army: Army): string | undefined {
-  for (const unit of army.units) {
-    if (unit.category != 'Faction Terrain') continue;
+function findFactionTerrain(text: string, army: IArmy): string | undefined {
+  for (const unit of army.unitList.get('FACTION TERRAIN') || []) {
     if (text.toLowerCase().includes(unit.name.toLowerCase())) {
       return unit.name;
     }
@@ -101,28 +103,32 @@ function findFactionTerrain(text: string, army: Army): string | undefined {
   return undefined;
 }
 
-function findSpellLore(text: string, army: Army): string | undefined {
-  for (const lore of army.spellLores) {
-    if (text.toLowerCase().includes(lore.name.toLowerCase())) {
-      return lore.name;
+function findSpellLore(text: string, army: IArmy): string | undefined {
+  for (const lore of army.spellLores.keys()) {
+    if (text.toLowerCase().includes(lore.toLowerCase())) {
+      return lore;
     }
   }
   return undefined;
 }
 
-function findPrayerLore(text: string, army: Army): string | undefined {
-  for (const lore of army.prayerLores) {
-    if (text.toLowerCase().includes(lore.name.toLowerCase())) {
-      return lore.name;
+function findPrayerLore(text: string, army: IArmy): string | undefined {
+  for (const lore of army.prayerLores.keys()) {
+    if (text.toLowerCase().includes(lore.toLowerCase())) {
+      return lore;
     }
   }
   return undefined;
 }
 
-function findManifestationLore(text: string, army: Army): string | undefined {
-  for (const lore of army.manifestationLores) {
-    if (text.toLowerCase().includes(lore.name.toLowerCase())) {
-      return lore.name;
+function findManifestationLore(
+  text: string,
+  army: IArmy,
+  universalManifestationLores: string[]
+): string | undefined {
+  for (const lore of army.manifestationLores.keys()) {
+    if (text.toLowerCase().includes(lore.toLowerCase())) {
+      return lore;
     }
   }
   for (const lore of universalManifestationLores) {
@@ -157,26 +163,26 @@ function splitIntoRegimentChunks(text: string): {
   return { regiments, auxiliary };
 }
 
-function parseUnits(text: string, army: Army): ListUnit[] {
+function parseUnits(text: string, army: IArmy, game: IGame): ListUnit[] {
   // go line by line until we find a unit name that we recognize
   const lines = text
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
   const units: ListUnit[] = [];
-  const filteredArmyUnits = army.units.filter((unit: any) => {
+  const filteredArmyBPs = Array.from(army.battleProfiles.values()).filter((bp: any) => {
     // filter manifestation and faction terrain units
-    return unit.category !== 'Manifestation' && unit.category !== 'Faction Terrain';
+    return bp.category !== 'Manifestation' && bp.category !== 'Faction Terrain';
   });
 
   let currentUnit: ListUnit | null = null;
   for (const line of lines) {
     // scourge of ghyran may be formatted in a different fashion than our app.
     const SoG = line.includes('scourge of ghyran');
-    const unit = filteredArmyUnits.find((unit) => {
+    const bp = filteredArmyBPs.find((bp) => {
       if (SoG) {
-        if (unit.name.toLowerCase().includes('scourge of ghyran')) {
-          const cleanUnitName = unit.name
+        if (bp.name.toLowerCase().includes('scourge of ghyran')) {
+          const cleanUnitName = bp.name
             .toLowerCase()
             .replace('scourge of ghyran', '')
             .replace(/\(.*?\)/g, '')
@@ -190,15 +196,15 @@ function parseUnits(text: string, army: Army): ListUnit[] {
         }
         return false;
       } else {
-        return line.includes(unit.name.toLowerCase());
+        return line.includes(bp.name.toLowerCase());
       }
     });
-    if (unit) {
+    if (bp) {
       if (currentUnit) {
         units.push(currentUnit);
       }
       currentUnit = {
-        name: unit.name,
+        name: bp.name,
       };
     }
 
@@ -210,22 +216,22 @@ function parseUnits(text: string, army: Army): ListUnit[] {
       if (line.includes('reinforce')) {
         currentUnit.reinforced = true;
       }
-      if (unit && unit.points && line.includes(`${unit.points * 2}`)) {
+      if (bp && bp.points && line.includes(`${bp.points * 2}`)) {
         currentUnit.reinforced = true;
       }
 
       // Weapon options
-      const currentUnitData = army.units.find((u) => u.name === currentUnit?.name);
-      if (currentUnitData && currentUnitData.models && currentUnitData.models.length > 0) {
+      const currentUnitData = game.units.get(currentUnit.name);
+      if (currentUnitData && currentUnitData.models && currentUnitData.models.size > 0) {
         // Try to find weapon option names in the line
-        for (const group of currentUnitData.models) {
-          for (const weapon of group.weapons) {
-            if (!weapon.max && !weapon.replaces && !weapon.group) continue; // skip default weapons
+        for (const [_, model] of currentUnitData.models) {
+          for (const [_, weapon] of model.weapons) {
+            if (weapon.type === 'default') continue; // skip default weapons
 
             if (line.includes(weapon.name.toLowerCase())) {
               if (!currentUnit.weapon_options) currentUnit.weapon_options = new Map();
-              if (!currentUnit.weapon_options.has(group.name)) {
-                currentUnit.weapon_options.set(group.name, []);
+              if (!currentUnit.weapon_options.has(model.name)) {
+                currentUnit.weapon_options.set(model.name, []);
               }
 
               // search the line for a number anywhere
@@ -236,10 +242,10 @@ function parseUnits(text: string, army: Army): ListUnit[] {
               }
 
               const maxCount =
-                (weapon.max ? weapon.max : group.count || 1) * (currentUnit.reinforced ? 2 : 1);
+                (weapon.max ? weapon.max : model.count || 1) * (currentUnit.reinforced ? 2 : 1);
               const actualCount = count ? Math.min(count, maxCount) : undefined;
 
-              const arr = currentUnit.weapon_options.get(group.name)!;
+              const arr = currentUnit.weapon_options.get(model.name)!;
               arr.push({ name: weapon.name, count: actualCount });
             }
           }
@@ -248,10 +254,10 @@ function parseUnits(text: string, army: Army): ListUnit[] {
 
       // Heroic traits
       if (army.heroicTraits) {
-        for (const [_, abilities] of army.heroicTraits.entries()) {
-          for (const ability of abilities) {
-            if (line.includes(ability.name.toLowerCase())) {
-              currentUnit.heroic_trait = ability.name;
+        for (const [_, table] of army.heroicTraits) {
+          for (const enhancement of table.enhancements) {
+            if (line.includes(enhancement.ability.name.toLowerCase())) {
+              currentUnit.heroic_trait = enhancement.ability.name;
               break;
             }
           }
@@ -260,10 +266,10 @@ function parseUnits(text: string, army: Army): ListUnit[] {
 
       // Artifacts
       if (army.artifacts) {
-        for (const [_, abilities] of army.artifacts.entries()) {
-          for (const ability of abilities) {
-            if (line.includes(ability.name.toLowerCase())) {
-              currentUnit.artifact = ability.name;
+        for (const [_, table] of army.artifacts) {
+          for (const enhancement of table.enhancements) {
+            if (line.includes(enhancement.ability.name.toLowerCase())) {
+              currentUnit.artifact = enhancement.ability.name;
               break;
             }
           }
@@ -271,12 +277,12 @@ function parseUnits(text: string, army: Army): ListUnit[] {
       }
 
       // Enhancements
-      if (army.enhancementTables) {
-        for (const [table, abilities] of army.enhancementTables.entries()) {
-          for (const ability of abilities) {
-            if (line.includes(ability.name.toLowerCase())) {
+      if (army.enhancements.size > 0) {
+        for (const [_, table] of army.enhancements) {
+          for (const enhancement of table.enhancements) {
+            if (line.includes(enhancement.ability.name.toLowerCase())) {
               if (!currentUnit.enhancements) currentUnit.enhancements = new Map();
-              currentUnit.enhancements.set(table, ability.name);
+              currentUnit.enhancements.set(table.name, enhancement.ability.name);
               break;
             }
           }

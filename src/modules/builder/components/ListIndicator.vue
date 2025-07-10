@@ -1,5 +1,5 @@
 <template>
-  <div class="points-validity-fab" v-if="list && armyData">
+  <div class="points-validity-fab" v-if="list && army">
     <button
       class="validity-indicator"
       :class="isListValid ? 'valid' : 'invalid'"
@@ -36,23 +36,27 @@ import Modal from '../../../components/Modal.vue';
 import { calculatePoints } from '../../../utils/points-manager';
 import { calculateViolations } from '../../../utils/violations-manager';
 import type { List } from '../../../common/ListData';
-import type { Army } from '../../../common/ArmyData';
+import type { IGame } from '../../../parser/v3/models/game';
+import { Army } from '../../../parser/v3/models/army';
 
 const props = defineProps<{
   list: List;
-  armyData: Army;
-  lores?: Map<string, any> | null;
+  game: IGame;
   pointsCap: number;
 }>();
 
+const army = computed(
+  () => props.game.armies.get(props.list.faction) || new Army({ name: props.list.faction })
+);
+
 const showViolationsModal = ref(false);
 const pointsTotal = computed(() => {
-  if (!props.list || !props.armyData) return 0;
-  return calculatePoints(props.list, props.armyData, props.lores ?? undefined);
+  if (!props.list || !army) return 0;
+  return calculatePoints(props.list, army.value, props.game.universalManifestationLores);
 });
 const violations = computed(() => {
-  if (!props.list || !props.armyData) return [];
-  return calculateViolations(props.list, props.armyData, props.lores ?? undefined);
+  if (!props.list || !army) return [];
+  return calculateViolations(props.list, props.game);
 });
 const isListValid = computed(() => violations.value.length === 0);
 </script>

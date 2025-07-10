@@ -9,7 +9,7 @@
         </button>
         <h1 class="export-title" v-if="list">{{ list.name }} - Export</h1>
       </div>
-      <div v-if="list && armyData" class="export-container">
+      <div v-if="list && !loading" class="export-container">
         <textarea
           :value="exportedText"
           readonly
@@ -23,24 +23,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { getList } from '../../../utils/list-manager';
-import type { List } from '../../../common/ListData';
-import { loadArmy, loadLores } from '../../../army';
-import type { Army } from '../../../common/ArmyData';
-import type { Lore } from '../../../common/ManifestationData';
 import { exportList } from '../exportList';
 import BackButton from '../../core/components/BackButton.vue';
-
+import { useGame } from '../../shared/composables/useGame';
 const route = useRoute();
-const list = ref<List | undefined>();
-const armyData = ref<Army | undefined>();
-const lores = ref<Map<string, Lore>>();
+const id = route.params.id as string;
+
+const list = ref(getList(id));
+const { game, loading } = useGame();
 
 const exportedText = computed(() => {
-  if (!list.value || !armyData.value) return '';
-  return exportList(list.value, armyData.value, lores.value);
+  if (!list.value || !game.value) return '';
+  return exportList(list.value, game.value);
 });
 
 const copyToClipboard = async () => {
@@ -59,21 +56,6 @@ const copyToClipboard = async () => {
     document.body.removeChild(textArea);
   }
 };
-
-onMounted(async () => {
-  const id = route.params.id as string;
-  if (id) {
-    list.value = getList(id);
-    if (list.value) {
-      try {
-        armyData.value = await loadArmy(list.value.faction);
-        lores.value = await loadLores();
-      } catch (error) {
-        console.error('Error loading army data:', error);
-      }
-    }
-  }
-});
 </script>
 
 <style scoped>

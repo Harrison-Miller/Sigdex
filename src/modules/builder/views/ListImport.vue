@@ -31,11 +31,13 @@ import { useRouter } from 'vue-router';
 import { importList } from '../importList';
 import { createList } from '../../../utils/list-manager';
 import BackButton from '../../core/components/BackButton.vue';
+import { useGame } from '../../shared/composables/useGame';
 
 const router = useRouter();
 const importText = ref('');
 const listName = ref('');
 const error = ref<string | null>(null);
+const { game } = useGame();
 
 const canImport = computed(
   () => importText.value.trim().length > 0 && listName.value.trim().length > 0
@@ -46,9 +48,14 @@ function handleBack() {
 }
 
 async function handleImport() {
+  if (!game.value) {
+    error.value = 'Game data not loaded.';
+    return;
+  }
+
   error.value = null;
   try {
-    const imported = await importList(importText.value);
+    const imported = await importList(importText.value, game.value);
     imported.name = listName.value;
     createList(imported);
     router.push({ name: 'ListBuilder', params: { id: imported.id } });

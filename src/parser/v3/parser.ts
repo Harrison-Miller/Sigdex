@@ -188,7 +188,7 @@ export class Parser {
       weaponAbilityDescriptions: new Map(), // TODO: later
       keywordAbility: new Map(), // TODO: later
       units: this.units,
-      universalManifestationsLores: universalManifestationLores,
+      universalManifestationLores: universalManifestationLores,
       armies: this.armies,
       armyList: armyList,
       regimentsOfRenown: new Map(), // TODO: later

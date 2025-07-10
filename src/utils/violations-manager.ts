@@ -1,6 +1,8 @@
-import type { Army } from '../common/ArmyData';
 import type { List, ListUnit, ListRegiment } from '../common/ListData';
-import type { Lore } from '../common/ManifestationData';
+import type { IArmy } from '../parser/v3/models/army';
+import type { IBattleProfile } from '../parser/v3/models/battleProfile';
+import type { IGame } from '../parser/v3/models/game';
+import type { IWeaponOption } from '../parser/v3/models/weaponOption';
 import { calculatePoints } from './points-manager';
 
 /**
@@ -10,7 +12,7 @@ import { calculatePoints } from './points-manager';
  * @param army The loaded Army data
  * @returns Array of violation strings
  */
-export function calculateUndersizeUnitViolations(list: List, army: Army): string[] {
+export function calculateUndersizeUnitViolations(list: List, army: IArmy): string[] {
   // Map: undersize unit name -> { condition: string, count: number }
   const undersizeMap = new Map<string, { condition: string; count: number }>();
   // Map: condition unit name -> count
@@ -19,24 +21,24 @@ export function calculateUndersizeUnitViolations(list: List, army: Army): string
   // builder undersizeMap
   for (const regiment of list.regiments) {
     for (const unit of regiment.units) {
-      const unitData = army.units.find((u) => u.name === unit.name);
-      if (unitData && unitData.undersize_condition) {
+      const unitData = army.battleProfiles.get(unit.name);
+      if (unitData && unitData.undersizeCondition) {
         undersizeMap.set(unit.name, {
-          condition: unitData.undersize_condition,
+          condition: unitData.undersizeCondition,
           count: (undersizeMap.get(unit.name)?.count || 0) + 1,
         });
-        conditionCountMap.set(unitData.undersize_condition, 0);
+        conditionCountMap.set(unitData.undersizeCondition, 0);
       }
     }
   }
   for (const unit of list.auxiliary_units || []) {
-    const unitData = army.units.find((u) => u.name === unit.name);
-    if (unitData && unitData.undersize_condition) {
+    const unitData = army.battleProfiles.get(unit.name);
+    if (unitData && unitData.undersizeCondition) {
       undersizeMap.set(unit.name, {
-        condition: unitData.undersize_condition,
+        condition: unitData.undersizeCondition,
         count: (undersizeMap.get(unit.name)?.count || 0) + 1,
       });
-      conditionCountMap.set(unitData.undersize_condition, 0);
+      conditionCountMap.set(unitData.undersizeCondition, 0);
     }
   }
 
@@ -86,14 +88,17 @@ export function calculateUndersizeUnitViolations(list: List, army: Army): string
  * @param lores The loaded lores data
  * @returns Array of violation strings
  */
-export function calculateViolations(list: List, army: Army, lores?: Map<string, Lore>): string[] {
+export function calculateViolations(list: List, game: IGame): string[] {
+  const army = game.armies.get(list.faction);
+  if (!army) return ['Army not found in game data.'];
+
   const violations: string[] = [];
   // Unique units cannot take heroic traits, artifacts, or enhancements
   for (const regiment of list.regiments) {
     const allUnits = [regiment.leader, ...regiment.units];
     for (const unit of allUnits) {
       if (!unit || !unit.name) continue;
-      const armyUnit = army.units.find((u) => u.name === unit.name);
+      const armyUnit = army.battleProfiles.get(unit.name);
       if (!armyUnit) continue;
       const isUnique =
         armyUnit.keywords && armyUnit.keywords.some((k) => k.toLowerCase() === 'unique');
@@ -113,12 +118,12 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   // Companion unit violations
   for (const [i, regiment] of list.regiments.entries()) {
     if (!regiment.leader || !regiment.leader.name) continue;
-    const leaderUnit = army.units.find((u) => u.name === regiment.leader.name);
+    const leaderUnit = army.battleProfiles.get(regiment.leader.name);
     if (!leaderUnit) continue;
     // 1. If a leader with points has companion units, the regiment must contain all those companion units.
-    if (leaderUnit.companion_units && leaderUnit.companion_units.length > 0) {
+    if (leaderUnit.companionUnits && leaderUnit.companionUnits.length > 0) {
       if (leaderUnit.points && leaderUnit.points > 0) {
-        for (const companionName of leaderUnit.companion_units) {
+        for (const companionName of leaderUnit.companionUnits) {
           const found = regiment.units.some((u) => u.name === companionName);
           if (!found) {
             violations.push(
@@ -135,11 +140,11 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
     }
     // 3. If any other unit with companion is taken in a regiment not lead by a leader with them as companion, error
     for (const unit of regiment.units) {
-      const armyUnit = army.units.find((u) => u.name === unit.name);
+      const armyUnit = army.battleProfiles.get(unit.name);
       if (!armyUnit) continue;
-      if (armyUnit.companion_units && armyUnit.companion_units.length > 0) {
+      if (armyUnit.companionUnits && armyUnit.companionUnits.length > 0) {
         // Only allowed if this unit is a companion of the leader
-        if (!leaderUnit.companion_units || !leaderUnit.companion_units.includes(armyUnit.name)) {
+        if (!leaderUnit.companionUnits || !leaderUnit.companionUnits.includes(armyUnit.name)) {
           violations.push(
             `Regiment ${i + 1}: Unit '${armyUnit.name}' cannot be included in regiment led by '${leaderUnit.name}'.`
           );
@@ -148,7 +153,7 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
     }
   }
   // 1. Points cap
-  const points = calculatePoints(list, army, lores);
+  const points = calculatePoints(list, army, game.universalManifestationLores);
   if (points > 2000) {
     violations.push('List exceeds 2000 points.');
   }
@@ -175,7 +180,7 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   for (const regiment of list.regiments) {
     // Check leader
     if (regiment.leader && regiment.leader.name) {
-      const armyUnit = army.units.find((u) => u.name === regiment.leader.name);
+      const armyUnit = army.battleProfiles.get(regiment.leader.name);
       if (
         armyUnit &&
         armyUnit.keywords &&
@@ -186,7 +191,7 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
     }
     // Check units
     for (const unit of regiment.units) {
-      const armyUnit = army.units.find((u) => u.name === unit.name);
+      const armyUnit = army.battleProfiles.get(unit.name);
       if (
         armyUnit &&
         armyUnit.keywords &&
@@ -212,7 +217,7 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   // 6. Regiment leader must have the hero category
   for (const regiment of list.regiments) {
     if (regiment.leader && regiment.leader.name) {
-      const armyUnit = army.units.find((u) => u.name === regiment.leader.name);
+      const armyUnit = army.battleProfiles.get(regiment.leader.name);
       if (!armyUnit || !armyUnit.keywords.some((k) => k.toLowerCase() === 'hero')) {
         violations.push('Regiment leader must have the Hero category.');
       }
@@ -223,14 +228,14 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   for (const regiment of list.regiments) {
     // Check leader
     if (regiment.leader && regiment.leader.name) {
-      const armyUnit = army.units.find((u) => u.name === regiment.leader.name);
+      const armyUnit = army.battleProfiles.get(regiment.leader.name);
       if (armyUnit && armyUnit.keywords.some((k) => k.toLowerCase() === 'unique')) {
         uniqueUnits[regiment.leader.name] = (uniqueUnits[regiment.leader.name] || 0) + 1;
       }
     }
     // Check units
     for (const unit of regiment.units) {
-      const armyUnit = army.units.find((u) => u.name === unit.name);
+      const armyUnit = army.battleProfiles.get(unit.name);
       if (armyUnit && armyUnit.keywords.some((k) => k.toLowerCase() === 'unique')) {
         uniqueUnits[unit.name] = (uniqueUnits[unit.name] || 0) + 1;
       }
@@ -239,7 +244,7 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   // Check auxillary units for unique
   if (list.auxiliary_units) {
     for (const unit of list.auxiliary_units) {
-      const armyUnit = army.units.find((u) => u.name === unit.name);
+      const armyUnit = army.battleProfiles.get(unit.name);
       if (armyUnit && armyUnit.keywords.some((k) => k.toLowerCase() === 'unique')) {
         uniqueUnits[unit.name] = (uniqueUnits[unit.name] || 0) + 1;
       }
@@ -254,8 +259,9 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   for (const regiment of list.regiments) {
     for (const unit of regiment.units) {
       if (unit.reinforced) {
-        const armyUnit = army.units.find((u) => u.name === unit.name);
-        if (!armyUnit || armyUnit.notReinforcable || (armyUnit.unit_size ?? 1) <= 1) {
+        const armyUnit = army.battleProfiles.get(unit.name);
+        const unitData = game.units.get(unit.name);
+        if (!unitData || !armyUnit || !armyUnit.reinforceable || (unitData.unitSize ?? 1) <= 1) {
           violations.push(`Unit ${unit.name} cannot be reinforced.`);
         }
       }
@@ -265,8 +271,9 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   if (list.auxiliary_units) {
     for (const unit of list.auxiliary_units) {
       if (unit.reinforced) {
-        const armyUnit = army.units.find((u) => u.name === unit.name);
-        if (!armyUnit || armyUnit.notReinforcable || (armyUnit.unit_size ?? 1) <= 1) {
+        const armyUnit = army.battleProfiles.get(unit.name);
+        const unitData = game.units.get(unit.name);
+        if (!unitData || !armyUnit || !armyUnit.reinforceable || (unitData.unitSize ?? 1) <= 1) {
           violations.push(`Unit ${unit.name} cannot be reinforced.`);
         }
       }
@@ -275,18 +282,18 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   // 9. Weapon option violations
   for (const regiment of list.regiments) {
     if (regiment.leader) {
-      const leaderViolations = calculateWeaponOptionViolations(regiment.leader, army);
+      const leaderViolations = calculateWeaponOptionViolations(regiment.leader, game);
       violations.push(...leaderViolations);
     }
     for (const unit of regiment.units) {
-      const unitViolations = calculateWeaponOptionViolations(unit, army);
+      const unitViolations = calculateWeaponOptionViolations(unit, game);
       violations.push(...unitViolations);
     }
   }
   // Check auxillary units for weapon violations
   if (list.auxiliary_units) {
     for (const unit of list.auxiliary_units) {
-      const unitViolations = calculateWeaponOptionViolations(unit, army);
+      const unitViolations = calculateWeaponOptionViolations(unit, game);
       violations.push(...unitViolations);
     }
   }
@@ -299,7 +306,7 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   // 11. All units must be present in ArmyData
   for (const [i, regiment] of list.regiments.entries()) {
     if (regiment.leader && regiment.leader.name) {
-      const found = army.units.find((u) => u.name === regiment.leader.name);
+      const found = army.battleProfiles.get(regiment.leader.name);
       if (!found) {
         violations.push(
           `Regiment ${i + 1} leader '${regiment.leader.name}' is not present in ArmyData.`
@@ -308,7 +315,7 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
     }
     for (const unit of regiment.units) {
       if (unit && unit.name) {
-        const found = army.units.find((u) => u.name === unit.name);
+        const found = army.battleProfiles.get(unit.name);
         if (!found) {
           violations.push(`Unit '${unit.name}' in regiment ${i + 1} is not present in ArmyData.`);
         }
@@ -319,9 +326,9 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
   if (list.auxiliary_units) {
     for (const unit of list.auxiliary_units) {
       if (unit && unit.name) {
-        const found = army.units.find((u) => u.name === unit.name);
+        const found = army.battleProfiles.get(unit.name);
         if (!found) {
-          violations.push(`Auxillary unit '${unit.name}' is not present in ArmyData.`);
+          violations.push(`Auxiliary unit '${unit.name}' is not present in ArmyData.`);
         }
       }
     }
@@ -430,14 +437,14 @@ export function calculateViolations(list: List, army: Army, lores?: Map<string, 
  * 2. If the weapon option has a count higher than the max (the max is doubled when reinforced).
  * 3. If there are multiple selections for a grouped weapon option.
  */
-export function calculateWeaponOptionViolations(unit: ListUnit, army: Army): string[] {
+export function calculateWeaponOptionViolations(unit: ListUnit, game: IGame): string[] {
   const violations: string[] = [];
   if (!unit.weapon_options || !(unit.weapon_options instanceof Map)) return violations;
-  const armyUnit = army.units.find((u) => u.name === unit.name);
+  const armyUnit = game.units.get(unit.name);
   if (!armyUnit || !armyUnit.models) return violations;
   const reinforced = !!unit.reinforced;
   for (const [groupName, options] of unit.weapon_options.entries()) {
-    const modelGroup = (armyUnit.models || []).find((g) => g.name === groupName);
+    const modelGroup = armyUnit.models.get(groupName);
     if (!modelGroup) {
       violations.push(`Model group '${groupName}' does not exist for unit '${unit.name}'.`);
       continue;
@@ -445,7 +452,7 @@ export function calculateWeaponOptionViolations(unit: ListUnit, army: Army): str
     const groupWeapons = modelGroup.weapons || [];
     // 1. Check for non-existent weapon options
     for (const opt of options as { name: string; count?: number }[]) {
-      const weapon = groupWeapons.find((w) => w.name === opt.name);
+      const weapon = groupWeapons.get(opt.name);
       if (!weapon) {
         violations.push(
           `Weapon option '${opt.name}' does not exist in model group '${groupName}' for unit '${unit.name}'.`
@@ -453,7 +460,7 @@ export function calculateWeaponOptionViolations(unit: ListUnit, army: Army): str
         continue;
       }
       // 2. Check for count > max (for optional weapons)
-      if (weapon.max && !weapon.group && typeof opt.count === 'number') {
+      if (weapon.type === 'optional' && typeof opt.count === 'number') {
         const effectiveMax = reinforced ? weapon.max * 2 : weapon.max;
         if (opt.count > effectiveMax) {
           violations.push(
@@ -467,15 +474,15 @@ export function calculateWeaponOptionViolations(unit: ListUnit, army: Army): str
     const groupInfo: Record<
       string,
       {
-        weapons: typeof groupWeapons;
+        weapons: IWeaponOption[];
         totalSelected: number;
         selectedCounts: Record<string, number>;
         max: number;
       }
     > = {};
 
-    for (const w of groupWeapons) {
-      if (w.group) {
+    for (const [_, w] of groupWeapons) {
+      if (w.type === 'grouped' && w.group) {
         if (!groupInfo[w.group]) {
           // Calculate shared max for the group
           const baseCount = typeof modelGroup.count === 'number' ? modelGroup.count : 1;
@@ -493,8 +500,8 @@ export function calculateWeaponOptionViolations(unit: ListUnit, army: Army): str
 
     // Count selections for each grouped weapon
     for (const opt of options as { name: string; count?: number }[]) {
-      const weapon = groupWeapons.find((w) => w.name === opt.name && w.group);
-      if (weapon && weapon.group) {
+      const weapon = groupWeapons.get(opt.name);
+      if (weapon && weapon.group && weapon.type === 'grouped') {
         const count = typeof opt.count === 'number' ? opt.count : 1;
         groupInfo[weapon.group].selectedCounts[weapon.name] =
           (groupInfo[weapon.group].selectedCounts[weapon.name] || 0) + count;
@@ -525,7 +532,7 @@ export function calculateWeaponOptionViolations(unit: ListUnit, army: Army): str
 
 // Returns a list of violations for regiment option rules
 // Helper: does a unit (from ArmyData) match a regiment option name?
-function unitMatchesRegimentOption(armyUnit: any, optName: string): boolean {
+function unitMatchesRegimentOption(armyUnit: IBattleProfile, optName: string): boolean {
   const name = armyUnit.name?.toLowerCase() || '';
   const category = armyUnit.category?.toLowerCase() || '';
   const keywords = (armyUnit.keywords || []).map((k: string) => k.toLowerCase());
@@ -540,10 +547,10 @@ function unitMatchesRegimentOption(armyUnit: any, optName: string): boolean {
   );
 }
 
-export function calculateRegimentOptionViolations(regiment: ListRegiment, army: Army): string[] {
+export function calculateRegimentOptionViolations(regiment: ListRegiment, army: IArmy): string[] {
   const violations: string[] = [];
   if (!regiment.leader || !regiment.leader.name) return violations; // skip if no leader
-  const leaderUnit = army.units.find((u) => u.name === regiment.leader.name);
+  const leaderUnit = army.battleProfiles.get(regiment.leader.name);
   if (!leaderUnit) return violations;
 
   // 1. Hero presence: Only allow a hero in a regiment if:
@@ -551,20 +558,16 @@ export function calculateRegimentOptionViolations(regiment: ListRegiment, army: 
   // - Its sub_hero_tags match a sub_hero_option, or
   // - A regular regiment_option has its exact name (case-insensitive)
   for (const regUnit of regiment.units) {
-    const armyUnit = army.units.find((u) => u.name === regUnit.name);
+    const armyUnit = army.battleProfiles.get(regUnit.name);
     if (!armyUnit) continue;
     const isHero = (armyUnit.category || '').toLowerCase() === 'hero';
     if (isHero) {
       let allowed = false;
       // Check sub_hero_tags vs sub_hero_options
-      if (
-        leaderUnit.sub_hero_options &&
-        leaderUnit.sub_hero_options.length > 0 &&
-        armyUnit.sub_hero_tags
-      ) {
-        for (const tag of armyUnit.sub_hero_tags) {
+      if (leaderUnit.regimentOptions && armyUnit.regimentTags) {
+        for (const tag of armyUnit.regimentTags) {
           if (
-            leaderUnit.sub_hero_options.some((opt) => opt.name.toLowerCase() === tag.toLowerCase())
+            leaderUnit.regimentOptions.some((opt) => opt.name.toLowerCase() === tag.toLowerCase())
           ) {
             allowed = true;
             break;
@@ -572,9 +575,9 @@ export function calculateRegimentOptionViolations(regiment: ListRegiment, army: 
         }
       }
       // Check regiment_options for exact name match
-      if (!allowed && leaderUnit.regiment_options && leaderUnit.regiment_options.length > 0) {
+      if (!allowed && leaderUnit.regimentOptions && leaderUnit.regimentOptions.length > 0) {
         if (
-          leaderUnit.regiment_options.some(
+          leaderUnit.regimentOptions.some(
             (opt) => opt.name.toLowerCase() === armyUnit.name.toLowerCase()
           )
         ) {
@@ -590,15 +593,15 @@ export function calculateRegimentOptionViolations(regiment: ListRegiment, army: 
   }
 
   // 2. Sub-hero options: enforce max for sub-hero tags
-  if (leaderUnit.sub_hero_options && leaderUnit.sub_hero_options.length > 0) {
-    for (const option of leaderUnit.sub_hero_options) {
+  if (leaderUnit.regimentOptions && leaderUnit.regimentOptions.length > 0) {
+    for (const option of leaderUnit.regimentOptions) {
       const optName = option.name.toLowerCase();
       const max = option.max ?? 1;
       let count = 0;
       for (const regUnit of regiment.units) {
-        const armyUnit = army.units.find((u) => u.name === regUnit.name);
+        const armyUnit = army.battleProfiles.get(regUnit.name);
         if (!armyUnit) continue;
-        const tags = (armyUnit.sub_hero_tags || []).map((t: string) => t.toLowerCase());
+        const tags = (armyUnit.regimentTags || []).map((t: string) => t.toLowerCase());
         if (tags.includes(optName)) {
           count++;
         }
@@ -612,10 +615,10 @@ export function calculateRegimentOptionViolations(regiment: ListRegiment, army: 
   }
 
   // 3. Regiment options: check that all non-hero units match at least one option
-  const allOptions = leaderUnit.regiment_options || [];
+  const allOptions = leaderUnit.regimentOptions || [];
   if (allOptions.length > 0) {
     for (const regUnit of regiment.units) {
-      const armyUnit = army.units.find((u) => u.name === regUnit.name);
+      const armyUnit = army.battleProfiles.get(regUnit.name);
       if (!armyUnit) continue;
       const isHero = (armyUnit.category || '').toLowerCase() === 'hero';
       if (isHero) continue; // skip heroes, already validated above
@@ -631,14 +634,14 @@ export function calculateRegimentOptionViolations(regiment: ListRegiment, army: 
   }
 
   // 4. Regiment options with max > 0: enforce max for matching units
-  if (leaderUnit.regiment_options && leaderUnit.regiment_options.length > 0) {
-    for (const option of leaderUnit.regiment_options) {
+  if (leaderUnit.regimentOptions && leaderUnit.regimentOptions.length > 0) {
+    for (const option of leaderUnit.regimentOptions) {
       const optName = option.name.toLowerCase();
       const max = option.max;
       if (max && max > 0) {
         let count = 0;
         for (const regUnit of regiment.units) {
-          const armyUnit = army.units.find((u) => u.name === regUnit.name);
+          const armyUnit = army.battleProfiles.get(regUnit.name);
           if (!armyUnit) continue;
           if (unitMatchesRegimentOption(armyUnit, optName)) count++;
         }

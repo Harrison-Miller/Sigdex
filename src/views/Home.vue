@@ -65,7 +65,7 @@ const filteredArmiesByAlliance = computed(() => {
 const filteredManifestationLores = computed(() => {
   if (!game.value) return [];
   // Use the keys (lore names) from the map
-  const allLoreNames = Array.from(game.value.universalManifestationsLores.keys());
+  const allLoreNames = Array.from(game.value.universalManifestationLores.keys());
   if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
     return allLoreNames.filter((loreName) => armyFavorites.value.includes(loreName));
   }

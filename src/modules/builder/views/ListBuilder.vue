@@ -112,13 +112,7 @@
     </div>
     <div class="scroll-buffer"></div>
   </div>
-  <!-- <ListIndicator
-    v-if="list && armyData"
-    :list="list"
-    :army-data="(armyData as any)"
-    :lores="lores"
-    :points-cap="POINTS_CAP"
-  /> -->
+  <ListIndicator v-if="list && game" :list="list" :game="game" :pointsCap="POINTS_CAP" />
 </template>
 
 <script setup lang="ts">
@@ -133,8 +127,8 @@ import { useGame } from '../../shared/composables/useGame';
 import Section from '../../core/components/Section.vue';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import ListBuilderLoreSection from '../components/ListBuilderLoreSection.vue';
-// import ListIndicator from '../components/ListIndicator.vue';
-// import { POINTS_CAP } from '../../../common/ListData';
+import ListIndicator from '../components/ListIndicator.vue';
+import { POINTS_CAP } from '../../../common/ListData';
 import ListRegiment from '../components/ListRegiment.vue';
 import BattleTacticCard from '../../shared/components/BattleTacticCard.vue';
 import FactionTerrainSection from '../components/FactionTerrainSection.vue';

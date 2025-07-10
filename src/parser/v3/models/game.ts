@@ -38,7 +38,7 @@ export interface IGame {
   keywordAbility: Map<string, IAbility>;
 
   units: Map<string, IUnit>;
-  universalManifestationsLores: Map<string, ILore>;
+  universalManifestationLores: Map<string, ILore>;
   armies: Map<string, IArmy>;
   armyList: Map<GrandAlliance, string[]>; // list of army names by grand alliance
 
@@ -51,7 +51,7 @@ export class Game implements IGame {
   keywordAbility: Map<string, IAbility> = new Map();
 
   units: Map<string, IUnit> = new Map();
-  universalManifestationsLores: Map<string, ILore> = new Map();
+  universalManifestationLores: Map<string, ILore> = new Map();
   armies: Map<string, IArmy> = new Map();
   armyList: Map<GrandAlliance, string[]> = new Map();
 

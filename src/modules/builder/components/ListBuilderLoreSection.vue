@@ -70,7 +70,7 @@ const computedArmyLore = computed(() => {
   if (props.manifestationMode) {
     // Clone the map to avoid mutating the prop
     const base = new Map(props.armyLore);
-    for (const lore of game.value?.universalManifestationsLores?.values() || []) {
+    for (const lore of game.value?.universalManifestationLores?.values() || []) {
       base.set(lore.name, lore);
     }
     return base;
@@ -97,7 +97,7 @@ const manifestationUnits = computed(() => {
 });
 
 const isUniversalLore = computed(() => {
-  return game.value?.universalManifestationsLores?.has(selectedLoreName.value);
+  return game.value?.universalManifestationLores?.has(selectedLoreName.value);
 });
 </script>
 <style scoped>

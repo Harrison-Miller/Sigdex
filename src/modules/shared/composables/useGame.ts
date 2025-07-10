@@ -138,7 +138,7 @@ export function useUniversalManifestationLore(loreName: MaybeRefOrGetter<string>
   const lore = computed(() => {
     if (!game.value) return new Lore();
     const name = toValue(loreName);
-    return game.value?.universalManifestationsLores.get(name) ?? new Lore({ name });
+    return game.value?.universalManifestationLores.get(name) ?? new Lore({ name });
   });
   return { lore, loading, error };
 }
