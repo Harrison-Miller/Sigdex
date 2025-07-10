@@ -92,18 +92,19 @@ export function parseBattleProfile(
   }
 
   const undersizeInfo = parseUndersizeUnitCondition(bpNode, allCategories);
-  if (undersizeInfo) {
-    console.log(`Found undersize unit condition for ${battleProfile.name}:`, undersizeInfo);
+  if (undersizeInfo && unit) {
+    const newUnitSize = unit.unitSize - 1 || 0; // -1 because undersize units are always 1 model less than the original unit, because of the special hero version
     battleProfile.isUndersize = true;
-    battleProfile.name = battleProfile.name + ` (1 model)`;
+    battleProfile.name =
+      battleProfile.name + ` (${newUnitSize} model${newUnitSize > 1 ? 's' : ''})`;
     battleProfile.undersizeCondition = undersizeInfo.condition;
     battleProfile.reinforceable = false; // undersize units are not reinforceable
-    if (unit && !units.has(battleProfile.name)) {
+    if (!units.has(battleProfile.name)) {
       // create a new unit for this bp
       const undersizeUnit = {
         ...unit,
         name: battleProfile.name,
-        unitSize: 1, // undersize units are always 1 model
+        unitSize: newUnitSize, // undersize units are always 1 model
         models: new Map<string, IModel>(), // create a new models map
       };
       for (const [_, model] of unit.models) {
@@ -111,20 +112,19 @@ export function parseBattleProfile(
           model.name,
           new Model({
             ...model,
-            count: 1,
+            count: newUnitSize,
           })
         );
         for (const [_, w] of model.weapons) {
           let wp = new WeaponOption({
             ...w,
           });
-          if (wp.max > 0) {
-            wp.max = 1; // undersize units can only take 1 of each weapon
+          if (wp.max > newUnitSize) {
+            wp.max = newUnitSize; // undersize units can only take 1 of each weapon
           }
           undersizeUnit.models.get(model.name)?.weapons.set(w.name, wp);
         }
       }
-      console.log(`Created undersize unit:`, undersizeUnit);
       units.set(battleProfile.name, undersizeUnit);
     }
   }

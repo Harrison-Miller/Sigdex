@@ -120,7 +120,6 @@ export class Parser {
 
           // create a battle profile for each manifestation ability
           for (const ability of lore.abilities) {
-            console.log(`Adding bp for manifestation: ${ability.name}`);
             const unit = this.units.get(ability.summonedUnit);
             if (!unit) continue; // skip if the unit is not found
             const battleProfile: Partial<IBattleProfile> = {
