@@ -1,3 +1,79 @@
+<template>
+  <div class="list-container">
+    <div class="header-bar">
+      <SettingsButton class="settings-btn" :size="36" @click="goToSettings" />
+      <h1>Select an Army</h1>
+    </div>
+    <TwoTab :left-label="'Browse'" :right-label="'Lists'" v-model:leftActive="leftActive">
+      <template #left>
+        <div class="filters-bar">
+          <FavoriteToggle
+            :model-value="showOnlyFavorites"
+            @update:modelValue="updateShowOnlyFavoritesState"
+            :disabled="armyFavorites.length === 0"
+          />
+        </div>
+        <Section v-if="filteredManifestationLores && filteredManifestationLores.length > 0">
+          <template #title>Universal Manifestations</template>
+          <ul>
+            <li v-for="lore in filteredManifestationLores" :key="lore">
+              <ListButton
+                :label="lore"
+                :favorite="armyFavorites.includes(lore)"
+                :showFavoriteToggle="true"
+                @click="() => $router.push({ name: 'ManifestationLore', params: { lore } })"
+                @toggle-favorite="(fav) => toggleArmyFavorite(lore, fav)"
+              />
+            </li>
+          </ul>
+        </Section>
+        <div v-for="alliance in filteredArmiesByAlliance" :key="alliance.name">
+          <Section v-if="alliance && alliance.armies.length > 0">
+            <template #title>{{ alliance.name }}</template>
+            <ul>
+              <li v-for="army in alliance.armies" :key="army.name">
+                <template v-if="army.armiesOfRenown && army.armiesOfRenown.length > 0">
+                  <ListButtonSection
+                    :label="army.name"
+                    :favorite="armyFavorites.includes(army.name)"
+                    :showFavoriteToggle="true"
+                    @click="selectArmy(army.name)"
+                    @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
+                  >
+                    <ul>
+                      <li v-for="aor in army.armiesOfRenown" :key="aor">
+                        <ListButton
+                          :label="aor"
+                          :showFavoriteToggle="false"
+                          @click="selectArmy(army.name + ' - ' + aor)"
+                        />
+                      </li>
+                    </ul>
+                  </ListButtonSection>
+                </template>
+                <template v-else>
+                  <ListButton
+                    :label="army.name"
+                    :favorite="armyFavorites.includes(army.name)"
+                    :showFavoriteToggle="true"
+                    @click="selectArmy(army.name)"
+                    @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
+                  />
+                </template>
+              </li>
+            </ul>
+          </Section>
+        </div>
+      </template>
+      <template #right>
+        <ListList />
+      </template>
+    </TwoTab>
+    <div class="sigdex-version">Sigdex v{{ SIGDEX_VERSION }}</div>
+    <div v-if="loading">Loading game data...</div>
+    <div v-if="error" class="error">{{ error }}</div>
+  </div>
+</template>
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -9,6 +85,7 @@ import { SIGDEX_VERSION } from '../version';
 import Section from '../modules/core/components/Section.vue';
 import ListList from '../components/ListList.vue';
 import TwoTab from '../modules/core/components/TwoTab.vue';
+import ListButtonSection from '../modules/shared/components/ListButtonSection.vue';
 import {
   saveFavorite,
   removeFavorite,
@@ -52,11 +129,11 @@ function goToSettings() {
 // Use game data for grand alliances and armies
 const filteredArmiesByAlliance = computed(() => {
   if (!game.value) return [];
-  // game.value.armyList is Map<GrandAlliance, string[]>
+  // game.value.armyList is Map<GrandAlliance, IArmyListItem[]>
   return Array.from(game.value.armyList.entries()).map(([name, armies]) => {
     let filtered = armies;
     if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
-      filtered = armies.filter((armyName) => armyFavorites.value.includes(armyName));
+      filtered = armies.filter((army) => armyFavorites.value.includes(army.name));
     }
     return { name: String(name), armies: filtered };
   });
@@ -79,61 +156,6 @@ watch(armyFavorites, (favs) => {
   }
 });
 </script>
-<template>
-  <div class="list-container">
-    <div class="header-bar">
-      <SettingsButton class="settings-btn" :size="36" @click="goToSettings" />
-      <h1>Select an Army</h1>
-    </div>
-    <TwoTab :left-label="'Browse'" :right-label="'Lists'" v-model:leftActive="leftActive">
-      <template #left>
-        <div class="filters-bar">
-          <FavoriteToggle
-            :model-value="showOnlyFavorites"
-            @update:modelValue="updateShowOnlyFavoritesState"
-            :disabled="armyFavorites.length === 0"
-          />
-        </div>
-        <Section v-if="filteredManifestationLores && filteredManifestationLores.length > 0">
-          <template #title>Universal Manifestations</template>
-          <ul>
-            <li v-for="lore in filteredManifestationLores" :key="lore">
-              <ListButton
-                :label="lore"
-                :favorite="armyFavorites.includes(lore)"
-                :showFavoriteToggle="true"
-                @click="() => $router.push({ name: 'ManifestationLore', params: { lore } })"
-                @toggle-favorite="(fav) => toggleArmyFavorite(lore, fav)"
-              />
-            </li>
-          </ul>
-        </Section>
-        <div v-for="alliance in filteredArmiesByAlliance" :key="alliance.name">
-          <Section v-if="alliance && alliance.armies.length > 0">
-            <template #title>{{ alliance.name }}</template>
-            <ul>
-              <li v-for="army in alliance.armies" :key="army">
-                <ListButton
-                  :label="army"
-                  :favorite="armyFavorites.includes(army)"
-                  :showFavoriteToggle="true"
-                  @click="selectArmy(army)"
-                  @toggle-favorite="(fav) => toggleArmyFavorite(army, fav)"
-                />
-              </li>
-            </ul>
-          </Section>
-        </div>
-      </template>
-      <template #right>
-        <ListList />
-      </template>
-    </TwoTab>
-    <div class="sigdex-version">Sigdex v{{ SIGDEX_VERSION }}</div>
-    <div v-if="loading">Loading game data...</div>
-    <div v-if="error" class="error">{{ error }}</div>
-  </div>
-</template>
 <style src="./list-shared.css" scoped></style>
 <style scoped>
 .header-bar {

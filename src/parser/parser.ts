@@ -1,6 +1,6 @@
 import { parseUnits } from './parse/parseUnit';
 import { loadRepoFiles } from './load';
-import type { IBattleTacticCard, IGame } from './models/game';
+import type { IArmyListItem, IBattleTacticCard, IGame } from './models/game';
 import type { IUnit } from './models/unit';
 import { parseBattleTacticCards, parseLores } from './parse/parseGame';
 import type { ILore } from './models/lore';
@@ -151,7 +151,7 @@ export class Parser {
         // find all armies of renown that are based on this army
         const aors = Array.from(this.armies.values())
           .filter((a) => a.baseArmyName === army.name && a.isArmyOfRenown)
-          .map((a) => a.name);
+          .map((a) => a.name.split(' - ')[1].trim());
         army.armiesOfRenown = aors;
       }
     });
@@ -169,17 +169,22 @@ export class Parser {
     });
 
     // sorted list of armies by grand alliance
-    const armyList: Map<GrandAlliance, string[]> = new Map();
+    const armyList: Map<GrandAlliance, IArmyListItem[]> = new Map();
     armyList.set('Order', []);
     armyList.set('Chaos', []);
     armyList.set('Death', []);
     armyList.set('Destruction', []);
     this.armies.forEach((army) => {
-      armyList.get(army.grandAlliance)?.push(army.name);
+      if (!army.isArmyOfRenown) {
+        armyList.get(army.grandAlliance)?.push({
+          name: army.name,
+          armiesOfRenown: army.armiesOfRenown,
+        });
+      }
     });
     // sort the armies in each grand alliance by name
     armyList.forEach((armies, ga) => {
-      armies.sort((a, b) => a.localeCompare(b));
+      armies.sort((a, b) => a.name.localeCompare(b.name));
       armyList.set(ga, armies);
     });
 

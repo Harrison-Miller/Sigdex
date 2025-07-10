@@ -28,6 +28,11 @@ export class BattleTacticCard implements IBattleTacticCard {
   }
 }
 
+export interface IArmyListItem {
+  name: string;
+  armiesOfRenown: string[];
+}
+
 // TODO: we're assuming only 1 game mode ghb 2025-06, later we'll want to support multiple game modes
 // General object to store everything related to the game data
 export interface IGame {
@@ -40,7 +45,7 @@ export interface IGame {
   units: Map<string, IUnit>;
   universalManifestationLores: Map<string, ILore>;
   armies: Map<string, IArmy>;
-  armyList: Map<GrandAlliance, string[]>; // list of army names by grand alliance
+  armyList: Map<GrandAlliance, IArmyListItem[]>; // list of army names by grand alliance
 
   regimentsOfRenown: Map<string, IRegimentOfRenown>;
 }
@@ -53,7 +58,7 @@ export class Game implements IGame {
   units: Map<string, IUnit> = new Map();
   universalManifestationLores: Map<string, ILore> = new Map();
   armies: Map<string, IArmy> = new Map();
-  armyList: Map<GrandAlliance, string[]> = new Map();
+  armyList: Map<GrandAlliance, IArmyListItem[]> = new Map();
 
   regimentsOfRenown: Map<string, IRegimentOfRenown> = new Map();
 }

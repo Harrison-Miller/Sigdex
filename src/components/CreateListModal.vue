@@ -12,7 +12,7 @@
       </label>
       <label>
         Army
-        <OptionSelect v-model="faction" :options="armyList" placeholder="Select an army" />
+        <OptionSelect v-model="faction" :options="flattenedArmyList" placeholder="Select an army" />
       </label>
       <div class="modal-actions">
         <button @click="handleClose">Cancel</button>
@@ -28,11 +28,12 @@ import Modal from './Modal.vue';
 import { useRouter } from 'vue-router';
 import type { GrandAlliance } from '../parser/models/army';
 import OptionSelect from '../modules/core/components/OptionSelect.vue';
+import type { IArmyListItem } from '../parser/models/game';
 
 const props = defineProps<{
   modelValue: boolean;
   initialFaction: string;
-  armyList: Map<GrandAlliance, string[]>;
+  armyList: Map<GrandAlliance, IArmyListItem[]>;
 }>();
 const emit = defineEmits(['update:modelValue', 'create', 'close']);
 
@@ -40,6 +41,25 @@ const name = ref('');
 const faction = ref(props.initialFaction);
 
 const isNameValid = computed(() => !!name.value.trim());
+
+const flattenedArmyList = computed(() => {
+  const list: Map<string, string[]> = new Map();
+  for (const key of props.armyList.keys()) {
+    list.set(key, []);
+  }
+
+  props.armyList.forEach((armies, alliance) => {
+    armies.forEach((army) => {
+      list.get(alliance)?.push(army.name);
+      if (army.armiesOfRenown) {
+        army.armiesOfRenown.forEach((aor) => {
+          list.get(alliance)?.push(`${army.name} - ${aor}`);
+        });
+      }
+    });
+  });
+  return list;
+});
 
 const router = useRouter();
 function emitCreate() {

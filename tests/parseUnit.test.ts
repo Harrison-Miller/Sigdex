@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { XMLParser } from 'fast-xml-parser';
-import { parseUnit, parseUnits } from '../../../src/parser/parse/parseUnit';
-import { IModel } from '../../../src/parser/models/model';
-import { findAllByTagAndAttrs, xmlParser } from '../../../src/parser/util';
+import { parseUnit, parseUnits } from '../src/parser/parse/parseUnit';
+import { IModel } from '../src/parser/models/model';
+import { findAllByTagAndAttrs, xmlParser } from '../src/parser/util';
 
 describe('Unit Parser', () => {
   it.skip('should parse a unit correctly', () => {
