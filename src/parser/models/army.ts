@@ -115,6 +115,8 @@ export class Army implements IArmy {
       const unitCategory = profile.category || 'OTHER'; // default to 'OTHER' if no category is specified
       const points = profile.points || 0; // default to 0 if no points are specified
 
+      if (profile.isUndersize) continue; // don't want to show undersize units in the unit list
+
       if (this.unitList.has(unitCategory)) {
         this.unitList.get(unitCategory)?.push({ name, points });
       } else {

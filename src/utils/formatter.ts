@@ -182,10 +182,14 @@ export function formatRegimentOptions(options: IRegimentOption[]): string {
   const formatItems = (opts: IRegimentOption[]) =>
     opts
       .map((opt) => {
-        if (!opt.max || opt.max === 0) {
-          return `<li><i>any <b>${opt.name}</b></i></li>`;
-        } else {
+        if (opt.min > 0 && opt.max == opt.min) {
+          return `<li><i>${opt.min} <b>${opt.name}</b> (required)</i></li>`;
+        } else if (opt.min > 0 && opt.max > 0) {
+          return `<li><i>${opt.min}-${opt.max} <b>${opt.name}</b></i></li>`;
+        } else if (opt.min === 0 && opt.max > 0) {
           return `<li><i>0-${opt.max} <b>${opt.name}</b></i></li>`;
+        } else {
+          return `<li><i>any <b>${opt.name}</b></i></li>`;
         }
       })
       .join('');

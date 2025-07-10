@@ -8,7 +8,8 @@ import type { IBattleProfile, IRegimentOption } from '../../parser/models/battle
  */
 export function filterBattleProfilesByRegimentOptions(
   units: IBattleProfile[],
-  options: IRegimentOption[]
+  options: IRegimentOption[],
+  companionUnits: string[]
 ): IBattleProfile[] {
   if (!options || options.length === 0) return units;
   const optionNames = options.map((opt) => opt.name.toLowerCase());
@@ -53,15 +54,13 @@ export function filterBattleProfilesByRegimentOptions(
     });
   });
 
+  // Readd companion units always - make sure not duplicated
+  if (companionUnits && companionUnits.length > 0) {
+    // first remove them so we don't duplicate
+    filtered = filtered.filter((unit) => !companionUnits.includes(unit.name));
+    const companions = units.filter((unit) => companionUnits.includes(unit.name));
+    filtered.push(...companions);
+  }
+
   return filtered;
 }
-
-// export function isDefaultModelGroups(modelGroups: ModelGroup[]): boolean {
-// 	if (!modelGroups) return true;
-// 	if (modelGroups.length > 1) return false;
-// 	if (modelGroups.length === 0) return true;
-// 	const group = modelGroups[0];
-// 	return group.weapons.every(
-// 		(w) => (w.max === 0 || w.max === undefined) && !w.replaces && !w.group
-// 	);
-// }

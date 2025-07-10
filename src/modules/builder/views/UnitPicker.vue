@@ -73,16 +73,21 @@ const filteredBPs = computed(() => {
     case 'leader':
       us =
         Array.from(army.value?.battleProfiles.values()).filter((u) => u.category === 'HERO') || [];
+      us = us.filter((u) => u.companionLeader === ''); // filter out units that are companions
       break;
     case 'unit':
       if (leaderRegimentOptions.value.length > 0) {
         // If leader has regiment options, filter by those
         us = filterBattleProfilesByRegimentOptions(
           Array.from(army.value?.battleProfiles.values()),
-          leaderRegimentOptions.value
+          leaderRegimentOptions.value,
+          leaderCompanionUnits.value
         );
       } else {
         // Otherwise, show all units except heroes
+        console.warn(
+          `No regiment options for leader ${leaderName.value}, showing all units except heroes`
+        ); // TODO: this should never happen in practice, but my parsing doesn't always set this up correctly
         us =
           Array.from(army.value?.battleProfiles.values()).filter((u) => u.category !== 'HERO') ||
           [];
@@ -127,6 +132,7 @@ const leaderBattleProfile = computed(
     new BattleProfile({ name: leaderName.value })
 );
 const leaderRegimentOptions = computed(() => leaderBattleProfile.value?.regimentOptions || []);
+const leaderCompanionUnits = computed(() => leaderBattleProfile.value?.companionUnits || []);
 const showRegimentOptions = computed(
   () => filter === 'unit' && leaderRegimentOptions.value.length > 0
 );
@@ -202,23 +208,23 @@ function addUnitToRegiment(bp: IBattleProfile) {
   }
 
   // --- Companion auto-add logic ---
-  // Only for leader, points > 0, and has companions
-  const isLeader = filter.toLowerCase() === 'leader';
-  const hasPoints = bp.points > 0;
-  const companions = bp.companionUnits;
-  if (isLeader && hasPoints && companions.length > 0) {
-    const regimentUnits = list.value?.regiments?.[regimentIdx].units || [];
-    for (const companionName of companions) {
-      const alreadyPresent = regimentUnits.some((u) => u.name === companionName);
-      if (!alreadyPresent) {
-        // Find the companion unit in the game
-        const companionUnit = game.value?.units.get(companionName) || undefined;
-        if (companionUnit) {
-          regimentUnits.push({
-            name: companionUnit.name,
-            weapon_options: setupDefaultWeaponOptions(companionUnit),
-            enhancements: new Map(),
-          });
+  if (filter === 'leader') {
+    const leaderBp = army.value?.battleProfiles.get(unit.name);
+    if (leaderBp) {
+      for (const companionName of leaderBp.companionUnits) {
+        const alreadyPresent = list.value.regiments[regimentIdx].units.some(
+          (u) => u.name === companionName
+        );
+        if (!alreadyPresent) {
+          // Find the companion unit in the game
+          const companionUnit = game.value?.units.get(companionName) || undefined;
+          if (companionUnit) {
+            list.value.regiments[regimentIdx].units.push({
+              name: companionUnit.name,
+              weapon_options: setupDefaultWeaponOptions(companionUnit),
+              enhancements: new Map(),
+            });
+          }
         }
       }
     }

@@ -9,6 +9,7 @@ import {
   parsePoints,
   type ICategory,
 } from './parseCommon';
+import { parseCompanionUnitLeader } from './parseCompanionUnits';
 
 export function parseBattleProfiles(
   root: any,
@@ -44,6 +45,54 @@ export function parseBattleProfiles(
 
     bpMap.set(profile.name, profile);
   }
+
+  // link together companion units
+  // leader to companionUnits
+  const companionGroups = new Map<string, string[]>();
+  for (const [name, bp] of bpMap.entries()) {
+    if (bp.companionLeader) {
+      if (!companionGroups.has(bp.companionLeader)) {
+        companionGroups.set(bp.companionLeader, []);
+      }
+      companionGroups.get(bp.companionLeader)?.push(name);
+    }
+  }
+
+  // link together companion units
+  // companionUnits to leader
+  for (const [leader, companions] of companionGroups.entries()) {
+    const leaderBp = bpMap.get(leader);
+    if (leaderBp) {
+      leaderBp.companionUnits.push(...companions);
+      // modify regiment options to make companions required
+      leaderBp.regimentOptions = leaderBp.regimentOptions.map((option: IRegimentOption) => {
+        if (companions.includes(option.name)) {
+          return {
+            ...option,
+            min: 1, // companions are always required
+            max: 1, // companions can only be taken once
+          };
+        }
+        return option;
+      });
+    }
+  }
+
+  // cap regiment options of heroes to 1 per regiment
+  // TODO: figure out how to remove units filtered out by checks above (legends)
+  for (const bp of bpMap.values()) {
+    bp.regimentOptions = bp.regimentOptions.map((option: IRegimentOption) => {
+      const optionUnit = bpMap.get(option.name);
+      if (optionUnit && optionUnit.category === 'HERO') {
+        return {
+          ...option,
+          max: 1, // heroes can only be taken once in a regiment
+        };
+      }
+      return option;
+    });
+  }
+
   return bpMap;
 }
 
@@ -79,9 +128,9 @@ export function parseBattleProfile(
     points: parsePoints(bpNode),
     reinforceable: parseReinforceable(bpNode),
     enhancementTables: parseAllowedEnhancementTables(bpNode),
-    // TODO: companion unit stuff
     regimentTags: parseRegimentTags(bpNode, armyCategories),
     regimentOptions: parseRegimentOptions(bpNode, allCategories, armyCategories, errorConditions),
+    companionLeader: parseCompanionUnitLeader(bpNode, allCategories),
   };
 
   // category and keywords is derived from the unit
@@ -176,6 +225,7 @@ export function parseRegimentOptions(
       const option: IRegimentOption = {
         name: category.name,
         max: 1, // these are always 1
+        min: 0,
       };
       options.push(option);
     }
@@ -209,6 +259,7 @@ export function parseRegimentOptions(
         const option: IRegimentOption = {
           name: category.name,
           max: errorCondition?.max || 0, // use max from error condition, or 0 (any amount)
+          min: 0,
         };
         options.push(option);
       }

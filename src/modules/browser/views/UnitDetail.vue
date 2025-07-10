@@ -16,12 +16,12 @@ import {
 } from '../../../utils/formatter';
 import { useUnit } from '../../shared/composables/useGame';
 
-function formatCompanionUnits(unitName: string, companions: string[]): string {
-  if (!companions || companions.length === 0) return '';
+function formatCompanionUnits(unitName: string, companionLeader: string): string {
   const bold = (name: string) => `<b>${name}</b>`;
-  const companionsText = companions.map(bold).join(' and ');
-  // Italicize the whole sentence
-  return `<i>${bold(unitName)} must be taken with ${companionsText}.</i>`;
+  if (companionLeader) {
+    return `<i>${bold(unitName)} must be in a regiment led by ${bold(companionLeader)}.</i>`;
+  }
+  return '';
 }
 
 const props = defineProps<{ unit: string; army?: string }>();
@@ -111,11 +111,11 @@ const favoriteToggleSize = 36;
           ></span>
         </div>
         <div
-          v-if="battleProfile.companionUnits.length > 0"
+          v-if="battleProfile.companionUnits.length > 0 || battleProfile.companionLeader"
           class="unit-companion-units"
           style="margin-top: 0.5em"
         >
-          <span v-html="formatCompanionUnits(unit.name, battleProfile.companionUnits)"></span>
+          <span v-html="formatCompanionUnits(unit.name, battleProfile.companionLeader)"></span>
         </div>
         <div
           class="unit-model-groups"

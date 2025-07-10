@@ -3,6 +3,7 @@ import type { UnitCategory } from './unit';
 export interface IRegimentOption {
   name: string; // the keyword, category or name of a thing that can be taken in the regiment
   max: number; // the maximum number of this option that can be taken in the regiment (0 means any)
+  min: number; // the minimum number of this option that must be taken in the regiment (0 means none required)
 }
 
 // A battle profile describes a unit's configuration in a specific army.
@@ -20,9 +21,9 @@ export interface IBattleProfile {
   // the names of enhancement tables that this unit can use.
   enhancementTables: string[];
 
-  // the leader of the companion units (This is the unit in companionUnits list that is a hero and has points).
+  // if this unit is a companion unit, this will be the name of the leader that must lead the regiment this unit is in.
   companionLeader: string;
-  // units that must be taken with this unit
+  // if this unit is the leader of companion units, this will be the names of the companion units that must be taken with this leader.
   companionUnits: string[];
 
   regimentTags: string[]; // tags that this unit has like: "Moonclan Agitator" or compound keywords like "Moonclan Infantry"

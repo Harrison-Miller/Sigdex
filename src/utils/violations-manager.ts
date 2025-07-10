@@ -118,35 +118,37 @@ export function calculateViolations(list: List, game: IGame): string[] {
   // Companion unit violations
   for (const [i, regiment] of list.regiments.entries()) {
     if (!regiment.leader || !regiment.leader.name) continue;
-    const leaderUnit = army.battleProfiles.get(regiment.leader.name);
-    if (!leaderUnit) continue;
-    // 1. If a leader with points has companion units, the regiment must contain all those companion units.
-    if (leaderUnit.companionUnits && leaderUnit.companionUnits.length > 0) {
-      if (leaderUnit.points && leaderUnit.points > 0) {
-        for (const companionName of leaderUnit.companionUnits) {
-          const found = regiment.units.some((u) => u.name === companionName);
-          if (!found) {
-            violations.push(
-              `Regiment ${i + 1}: Leader '${leaderUnit.name}' requires companion unit '${companionName}' in the regiment.`
-            );
+    const regimentLeaderBp = army.battleProfiles.get(regiment.leader.name);
+    if (regimentLeaderBp && regimentLeaderBp.companionUnits.length > 0) {
+      // Check if the leader is leading the required companion units
+      const foundCompanions: Map<string, boolean> = new Map();
+      for (const unit of regiment.units) {
+        if (unit && unit.name) {
+          if (regimentLeaderBp.companionUnits.includes(unit.name)) {
+            foundCompanions.set(unit.name, true);
           }
         }
-      } else {
-        // 2. If a leader with no points has companion units, error
-        violations.push(
-          `Regiment ${i + 1}: Unit '${leaderUnit.name}' must not lead a regiment (has companion units but no points).`
-        );
       }
-    }
-    // 3. If any other unit with companion is taken in a regiment not lead by a leader with them as companion, error
-    for (const unit of regiment.units) {
-      const armyUnit = army.battleProfiles.get(unit.name);
-      if (!armyUnit) continue;
-      if (armyUnit.companionUnits && armyUnit.companionUnits.length > 0) {
-        // Only allowed if this unit is a companion of the leader
-        if (!leaderUnit.companionUnits || !leaderUnit.companionUnits.includes(armyUnit.name)) {
+
+      // Check if all required companions are found
+      for (const companionName of regimentLeaderBp.companionUnits) {
+        if (!foundCompanions.has(companionName)) {
           violations.push(
-            `Regiment ${i + 1}: Unit '${armyUnit.name}' cannot be included in regiment led by '${leaderUnit.name}'.`
+            `Regiment ${i + 1} leader '${regiment.leader.name}' must lead companion: ${companionName}.`
+          );
+        }
+      }
+    } else {
+      for (const unit of regiment.units) {
+        const unitBp = army.battleProfiles.get(unit.name);
+        if (
+          unitBp &&
+          unitBp.companionLeader !== '' &&
+          unitBp.companionLeader !== regiment.leader.name
+        ) {
+          // This unit is a companion unit but not led by the correct leader
+          violations.push(
+            `Unit '${unit.name}' in regiment ${i + 1} must be led by '${unitBp.companionLeader}'.`
           );
         }
       }

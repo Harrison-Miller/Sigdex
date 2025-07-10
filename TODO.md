@@ -1,4 +1,3 @@
-- LotFP units special case (only relevant in AoR and points are in the AorR).
 - Parse and save AoRs.
   - Do we have the restriction text? We can at least show the restricted unit text.
   - We may need to relink together lores/artifacts/traits etc that are shared.
@@ -10,9 +9,6 @@
 - report error in warscroll
 - back to top button
 - track scroll height
-
-- reinforceable todo/fixes:
-  - loftp demons can be reinforced (they show as not reinforeable).
 
 - data issues
   - KO regiment options are incorrect/to permissive
@@ -30,24 +26,15 @@
   - disbale/remove already selected 0-1 unit from the unit picker.
   - GameView - show rules and, non duplicate entries, etc.
   - armies of renown - requires parsing armies of renow
-  - probably don't select a manifestation lore by default if there isn't an army one (just allow a none option).
   - regiments of renown
   - SoG enhancement table rule
   - notes option for the list and for each unit/renaming a unit: My cool hero name (actual unit name)
   - don't allow enhancements taken from different tables in the same category.
   - limit list name length to like 30 characters
 
-- any time we load just make it load everthing, instead of only the current army.
-
 - set default weapon options on the unit detail page
 
 - all enhancement tables should probably work the same way
   - consider parsing the constraints on them, it might help us figure what armies can take more. Or when tables are mutually exclusive etc.
-- summon abilitiy should probably be stored with the manifestation directly so we don't have to do lookups and vice-a-versa
-- lore abilities should be stored directly in the army so we don't have to do lookups.
-
-- fix ko ather runners display -> this is an actual problem in data I can't fix
-
-- neave's companions shouldn't be reinforcable (probably because unique).
 
 - account for shared abilities like wall crawler in gloomspite gitz

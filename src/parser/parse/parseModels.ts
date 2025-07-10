@@ -48,6 +48,11 @@ export function parseModels(unitNode: any): Map<string, IModel> {
     models.set(modelName, new Model(model));
   }
 
+  if (isDefaultModels(Array.from(models.values()))) {
+    // if all models are default, we can just return an empty map
+    return new Map<string, IModel>();
+  }
+
   return models;
 }
 
@@ -162,4 +167,11 @@ export function parseWeaponOptionsFromSelectionEntryGroup(
   }
 
   return weaponOptions;
+}
+
+export function isDefaultModels(modelGroups: IModel[]): boolean {
+  if (modelGroups.length > 1) return false;
+  if (modelGroups.length === 0) return true;
+  const group = modelGroups[0];
+  return Array.from(group.weapons.values()).every((w) => w.type === 'default');
 }
