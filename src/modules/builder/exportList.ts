@@ -1,6 +1,6 @@
 import type { List, ListRegiment, ListUnit } from '../../common/ListData';
-import type { IArmy } from '../../parser/v3/models/army';
-import type { IGame } from '../../parser/v3/models/game';
+import type { IArmy } from '../../parser/models/army';
+import type { IGame } from '../../parser/models/game';
 import { calculatePoints } from '../../utils/points-manager';
 import { SIGDEX_VERSION } from '../../version';
 

@@ -1,8 +1,8 @@
 import type { List, ListUnit, ListRegiment } from '../common/ListData';
-import type { IArmy } from '../parser/v3/models/army';
-import type { IBattleProfile } from '../parser/v3/models/battleProfile';
-import type { IGame } from '../parser/v3/models/game';
-import type { IWeaponOption } from '../parser/v3/models/weaponOption';
+import type { IArmy } from '../parser/models/army';
+import type { IBattleProfile } from '../parser/models/battleProfile';
+import type { IGame } from '../parser/models/game';
+import type { IWeaponOption } from '../parser/models/weaponOption';
 import { calculatePoints } from './points-manager';
 
 /**

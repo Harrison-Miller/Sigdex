@@ -1,5 +1,5 @@
-import { listFiles } from '../../github/tree';
-import { getFileContent } from '../../github/content';
+import { listFiles } from '../github/tree';
+import { getFileContent } from '../github/content';
 import { xmlParser } from './util';
 
 // loadRepoFiles loads all the BSData XML files from a GitHub repository

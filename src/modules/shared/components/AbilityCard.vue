@@ -2,7 +2,7 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import KeywordsBar from './KeywordsBar.vue';
 import { formatText } from '../../../utils/formatter';
-import type { IAbility } from '../../../parser/v3/models/ability';
+import type { IAbility } from '../../../parser/models/ability';
 
 const props = defineProps<{
   ability: IAbility;

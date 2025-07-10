@@ -1,8 +1,8 @@
 import pluralize, { isPlural } from 'pluralize';
-import type { IModel } from '../parser/v3/models/model';
-import type { IUnit } from '../parser/v3/models/unit';
-import type { IWeaponOption } from '../parser/v3/models/weaponOption';
-import type { IRegimentOption } from '../parser/v3/models/battleProfile';
+import type { IModel } from '../parser/models/model';
+import type { IUnit } from '../parser/models/unit';
+import type { IWeaponOption } from '../parser/models/weaponOption';
+import type { IRegimentOption } from '../parser/models/battleProfile';
 
 export function formatText(text: string): string {
   if (!text) return '';

@@ -5,7 +5,7 @@ import ListButton from '../../shared/components/ListButton.vue';
 import BackButton from '../../core/components/BackButton.vue';
 import ArmyRules from '../components/ArmyRules.vue';
 import TwoTab from '../../core/components/TwoTab.vue';
-import { Army } from '../../../parser/v3/models/army';
+import { Army } from '../../../parser/models/army';
 
 const props = defineProps<{ lore: string }>();
 const loreName = props.lore;

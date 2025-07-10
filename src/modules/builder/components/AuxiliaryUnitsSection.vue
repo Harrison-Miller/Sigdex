@@ -39,7 +39,7 @@ import { ref, watch, computed, onMounted } from 'vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
 import type { ListUnit } from '../../../common/ListData';
-import type { IBattleProfile } from '../../../parser/v3/models/battleProfile';
+import type { IBattleProfile } from '../../../parser/models/battleProfile';
 
 const props = defineProps<{
   modelValue?: ListUnit[];

@@ -136,8 +136,8 @@ import ListRegiment from '../components/ListRegiment.vue';
 import BattleTacticCard from '../../shared/components/BattleTacticCard.vue';
 import FactionTerrainSection from '../components/FactionTerrainSection.vue';
 import AuxiliaryUnitsSection from '../components/AuxiliaryUnitsSection.vue';
-import { Army } from '../../../parser/v3/models/army';
-import { BattleTacticCard as BattleTacticCardType } from '../../../parser/v3/models/game';
+import { Army } from '../../../parser/models/army';
+import { BattleTacticCard as BattleTacticCardType } from '../../../parser/models/game';
 
 const props = defineProps<{ id: string }>();
 const route = useRoute();

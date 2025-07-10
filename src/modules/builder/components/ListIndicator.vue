@@ -36,8 +36,8 @@ import Modal from '../../../components/Modal.vue';
 import { calculatePoints } from '../../../utils/points-manager';
 import { calculateViolations } from '../../../utils/violations-manager';
 import type { List } from '../../../common/ListData';
-import type { IGame } from '../../../parser/v3/models/game';
-import { Army } from '../../../parser/v3/models/army';
+import type { IGame } from '../../../parser/models/game';
+import { Army } from '../../../parser/models/army';
 
 const props = defineProps<{
   list: List;

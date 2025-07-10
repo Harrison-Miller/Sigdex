@@ -1,13 +1,13 @@
 import { ref, computed, toValue } from 'vue';
-import { Parser } from '../../../parser/v3/parser';
-import { Game, type IGame } from '../../../parser/v3/models/game';
-import { Unit } from '../../../parser/v3/models/unit';
-import { Model } from '../../../parser/v3/models/model';
-import { Army } from '../../../parser/v3/models/army';
+import { Parser } from '../../../parser/parser';
+import { Game, type IGame } from '../../../parser/models/game';
+import { Unit } from '../../../parser/models/unit';
+import { Model } from '../../../parser/models/model';
+import { Army } from '../../../parser/models/army';
 import SuperJSON from 'superjson';
 import { type MaybeRefOrGetter } from '@vueuse/core';
-import { BattleProfile } from '../../../parser/v3/models/battleProfile';
-import { Lore } from '../../../parser/v3/models/lore';
+import { BattleProfile } from '../../../parser/models/battleProfile';
+import { Lore } from '../../../parser/models/lore';
 import { GITHUB_REPO } from '../../../github/config';
 
 const GAME_STORAGE_KEY = 'game';

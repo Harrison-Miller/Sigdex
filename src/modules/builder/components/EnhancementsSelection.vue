@@ -50,9 +50,9 @@ import Section from '../../core/components/Section.vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import type { ListUnit } from '../../../common/ListData';
 import { ref, computed, onMounted } from 'vue';
-import { Ability } from '../../../parser/v3/models/ability';
-import type { IArmy } from '../../../parser/v3/models/army';
-import { BattleProfile } from '../../../parser/v3/models/battleProfile';
+import { Ability } from '../../../parser/models/ability';
+import type { IArmy } from '../../../parser/models/army';
+import { BattleProfile } from '../../../parser/models/battleProfile';
 
 const props = defineProps<{ modelValue: ListUnit; army: IArmy }>();
 const emit = defineEmits(['update:modelValue']);

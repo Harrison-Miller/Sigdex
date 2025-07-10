@@ -21,9 +21,9 @@ import WeaponOptionsSelection from '../components/WeaponOptionsSelection.vue';
 import EnhancementsSelection from '../components/EnhancementsSelection.vue';
 import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
-import { Army } from '../../../parser/v3/models/army';
-import { Unit } from '../../../parser/v3/models/unit';
-import { BattleProfile } from '../../../parser/v3/models/battleProfile';
+import { Army } from '../../../parser/models/army';
+import { Unit } from '../../../parser/models/unit';
+import { BattleProfile } from '../../../parser/models/battleProfile';
 
 const route = useRoute();
 const listId = route.params.id as string;

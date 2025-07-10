@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { xmlParser } from '../../../src/parser/v3/util';
-import { parseAbilities, parseAbility } from '../../../src/parser/v3/parse/parseAbility';
+import { xmlParser } from '../../../src/parser/util';
+import { parseAbilities, parseAbility } from '../../../src/parser/parse/parseAbility';
 
 describe('parseAbility', () => {
   it('simple ability', () => {

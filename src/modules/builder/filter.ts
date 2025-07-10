@@ -1,4 +1,4 @@
-import type { IBattleProfile, IRegimentOption } from '../../parser/v3/models/battleProfile';
+import type { IBattleProfile, IRegimentOption } from '../../parser/models/battleProfile';
 
 /**
  * Filters units by regiment options in stages:

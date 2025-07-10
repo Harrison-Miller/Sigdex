@@ -148,7 +148,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
-import type { IArmy } from '../../../parser/v3/models/army';
+import type { IArmy } from '../../../parser/models/army';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import Section from '../../core/components/Section.vue';
 

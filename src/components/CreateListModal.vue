@@ -26,7 +26,7 @@
 import { ref, computed } from 'vue';
 import Modal from './Modal.vue';
 import { useRouter } from 'vue-router';
-import type { GrandAlliance } from '../parser/v3/models/army';
+import type { GrandAlliance } from '../parser/models/army';
 import OptionSelect from '../modules/core/components/OptionSelect.vue';
 
 const props = defineProps<{

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { formatText } from '../../../utils/formatter';
-import type { IWeapon } from '../../../parser/v3/models/weapon';
+import type { IWeapon } from '../../../parser/models/weapon';
 const props = defineProps<{
   weapons: IWeapon[];
   shortHeaders?: boolean;

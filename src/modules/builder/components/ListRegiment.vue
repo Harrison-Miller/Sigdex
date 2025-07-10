@@ -58,7 +58,7 @@ import type { ListRegiment } from '../../../common/ListData';
 import ListButton from '../../shared/components/ListButton.vue';
 import Section from '../../core/components/Section.vue';
 import { useRouter } from 'vue-router';
-import type { IBattleProfile } from '../../../parser/v3/models/battleProfile';
+import type { IBattleProfile } from '../../../parser/models/battleProfile';
 
 const props = defineProps<{
   regimentIdx: number;

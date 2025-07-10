@@ -1,6 +1,6 @@
 import type { List, ListUnit } from '../../common/ListData';
-import type { IArmy } from '../../parser/v3/models/army';
-import type { IGame } from '../../parser/v3/models/game';
+import type { IArmy } from '../../parser/models/army';
+import type { IGame } from '../../parser/models/game';
 
 export async function importList(text: string, game: IGame): Promise<List> {
   const listText = text.toLowerCase().trim();

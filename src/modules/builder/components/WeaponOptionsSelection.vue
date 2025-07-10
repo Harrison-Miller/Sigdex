@@ -62,9 +62,9 @@ import CounterBox from '../../core/components/CounterBox.vue';
 import Section from '../../core/components/Section.vue';
 import type { ListUnit } from '../../../common/ListData';
 import OptionSelect from '../../core/components/OptionSelect.vue';
-import type { IUnit } from '../../../parser/v3/models/unit';
-import type { IWeaponOption } from '../../../parser/v3/models/weaponOption';
-import type { IModel } from '../../../parser/v3/models/model';
+import type { IUnit } from '../../../parser/models/unit';
+import type { IWeaponOption } from '../../../parser/models/weaponOption';
+import type { IModel } from '../../../parser/models/model';
 
 // v-model:unit
 const props = defineProps<{ modelValue: ListUnit; unitData: IUnit }>();

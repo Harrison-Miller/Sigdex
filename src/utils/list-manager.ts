@@ -1,10 +1,10 @@
-import type { IArmy, IUnitListItem } from '../parser/v3/models/army';
-import type { ILore } from '../parser/v3/models/lore';
+import type { IArmy, IUnitListItem } from '../parser/models/army';
+import type { ILore } from '../parser/models/lore';
 import type { List, ListRegiment } from '../common/ListData';
 import { serializeListUnit, deserializeListUnit } from '../common/ArrayData';
 import type { ListUnitWeaponOption } from '../common/ListData';
-import type { IUnit } from '../parser/v3/models/unit';
-import type { IWeaponOption } from '../parser/v3/models/weaponOption';
+import type { IUnit } from '../parser/models/unit';
+import type { IWeaponOption } from '../parser/models/weaponOption';
 
 const STORAGE_PREFIX = 'sigdex_list:';
 

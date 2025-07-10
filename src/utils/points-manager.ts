@@ -1,6 +1,6 @@
 import type { List } from '../common/ListData';
-import type { ILore } from '../parser/v3/models/lore';
-import type { IArmy, IEnhancementTable } from '../parser/v3/models/army';
+import type { ILore } from '../parser/models/lore';
+import type { IArmy, IEnhancementTable } from '../parser/models/army';
 
 /**
  * Calculates the total points for a list by summing the points of all units in all regiments (including leaders),
