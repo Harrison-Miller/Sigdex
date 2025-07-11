@@ -41,11 +41,13 @@
   - consider parsing the constraints on them, it might help us figure what armies can take more. Or when tables are mutually exclusive etc.
 
 - parse weird AoR things
-  - must be selected
-  - unique may take enhancements
+  - unique may take enhancements (I'm not sure if this is a thing still)
   - gainging a keyword? This isn't super important
 
 - repeated units like kragnos need to accumulate their keywords (each army has him repeated, but with their own keyword). Same with nagash.
 
 - AoR todo
   - lofnir regiment option seems messed up, might be a data issue
+  - murkvast regiments seem messed up
+  - murkvast skumdrek, not marked as required general
+    - I think this is just a data issue
