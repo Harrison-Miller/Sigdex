@@ -15,6 +15,9 @@
   - skitterstrand shouldn't be reinforceable
   - typo in scrapskuttle name
   - dracoth single model doesn't have constraints
+  - maleneth witch blade should be restricted general in DoK AoR
+  - heroes of the first-forged random shit can be the general
+  - same with ruination brotherhood
 
 - regiment options todos:
   - drekki flynt, should be 0-1 frigate but is any frigate. The 0-1 skyvessel covers this, but indirectly, so we don't parse it correctly.
@@ -39,7 +42,10 @@
 
 - parse weird AoR things
   - must be selected
-  - must be general
   - unique may take enhancements
+  - gainging a keyword? This isn't super important
 
 - repeated units like kragnos need to accumulate their keywords (each army has him repeated, but with their own keyword). Same with nagash.
+
+- AoR todo
+  - lofnir regiment option seems messed up, might be a data issue

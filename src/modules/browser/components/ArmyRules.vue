@@ -1,5 +1,21 @@
 <template>
   <div>
+    <Section v-if="army.requiredGeneral.length">
+      <template #title>Details</template>
+      <ul class="details-list">
+        <li v-if="army.requiredGeneral.length === 1">
+          <span
+            ><strong>{{ army.requiredGeneral[0] }}</strong> must be your general.</span
+          >
+        </li>
+        <li v-else-if="army.requiredGeneral.length > 1">
+          <span
+            >One of the following units must be your general:
+            <strong>{{ army.requiredGeneral.join(', ') }}</strong></span
+          >
+        </li>
+      </ul>
+    </Section>
     <Section v-if="army.battleTraits && army.battleTraits.length">
       <template #title>Battle Traits</template>
       <AbilityCard v-for="(trait, i) in army.battleTraits" :key="trait.name + i" :ability="trait" />
@@ -178,6 +194,14 @@ watch(
 </script>
 
 <style scoped>
+.details-list {
+  margin: 0 0 1em 0;
+  padding-left: 1.2em;
+  list-style: disc inside;
+}
+.details-list strong {
+  font-weight: bold;
+}
 .lore-dropdown {
   margin-bottom: 1em;
   font-size: 1.1em;

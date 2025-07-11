@@ -67,6 +67,9 @@ export interface IArmy {
 
   // convience for UI
   unitList: Map<UnitCategory, IUnitListItem[]>; // list of units in the army with their points by category
+
+  // aor restrictions
+  requiredGeneral: string[]; // names of units, one of which must be the general
 }
 
 export class Army implements IArmy {
@@ -95,26 +98,30 @@ export class Army implements IArmy {
 
   unitList: Map<UnitCategory, IUnitListItem[]> = new Map();
 
+  requiredGeneral: string[];
+
   constructor(data?: Partial<IArmy>) {
-    this.name = data?.name || '';
-    this.battleProfiles = data?.battleProfiles || new Map();
-    this.grandAlliance = data?.grandAlliance || 'Order'; // default to order if not specified
+    this.name = data?.name ?? '';
+    this.battleProfiles = data?.battleProfiles ?? new Map();
+    this.grandAlliance = data?.grandAlliance ?? 'Order'; // default to order if not specified
 
-    this.battleTraits = data?.battleTraits || [];
-    this.formations = data?.formations || new Map();
+    this.battleTraits = data?.battleTraits ?? [];
+    this.formations = data?.formations ?? new Map();
 
-    this.artifacts = data?.artifacts || new Map();
-    this.heroicTraits = data?.heroicTraits || new Map();
+    this.artifacts = data?.artifacts ?? new Map();
+    this.heroicTraits = data?.heroicTraits ?? new Map();
 
-    this.enhancements = data?.enhancements || new Map();
+    this.enhancements = data?.enhancements ?? new Map();
 
-    this.spellLores = data?.spellLores || new Map();
-    this.prayerLores = data?.prayerLores || new Map();
-    this.manifestationLores = data?.manifestationLores || new Map();
+    this.spellLores = data?.spellLores ?? new Map();
+    this.prayerLores = data?.prayerLores ?? new Map();
+    this.manifestationLores = data?.manifestationLores ?? new Map();
 
-    this.regimentsOfRenown = data?.regimentsOfRenown || [];
+    this.regimentsOfRenown = data?.regimentsOfRenown ?? [];
 
-    this.armiesOfRenown = data?.armiesOfRenown || []; // this will be computed elsewhere
+    this.armiesOfRenown = data?.armiesOfRenown ?? []; // this will be computed elsewhere
+
+    this.requiredGeneral = data?.requiredGeneral ?? [];
 
     // determine if this is an army of renown
     const armyParts = this.name.split(' - ');

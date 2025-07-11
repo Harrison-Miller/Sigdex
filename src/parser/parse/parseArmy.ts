@@ -3,6 +3,7 @@ import { Army, Enhancement, EnhancementTable, type IArmy } from '../models/army'
 import { Lore } from '../models/lore';
 import type { Unit } from '../models/unit';
 import { parseAbilities, parseAbility } from './parseAbility';
+import { parseRequiredGenerals } from './parseArmyOfRenown';
 import { parseBattleProfiles } from './parseBattleProfile';
 import { filterIgnoredEnhancementTables, parsePoints, type ICategory } from './parseCommon';
 
@@ -24,6 +25,7 @@ export function parseArmy(
     prayerLores: parseLoresByGroup(catalogue, 'Prayer Lores'),
     manifestationLores: parseLoresByGroup(catalogue, 'Manifestation Lores'),
     battleProfiles: parseBattleProfiles(catalogue, units, categories),
+    requiredGeneral: parseRequiredGenerals(catalogue, units),
   };
 
   // get the first unit

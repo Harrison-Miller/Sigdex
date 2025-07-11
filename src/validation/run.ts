@@ -1,5 +1,6 @@
 import type { List } from '../list/models/list';
 import type { Game } from '../parser/models/game';
+import { aorChecks } from './checks/aor';
 import { basicChecks } from './checks/basic';
 import { regimentOptionsChecks } from './checks/regimentOptions';
 import { sanityChecks } from './checks/sanity';
@@ -13,6 +14,7 @@ export const baseValidators: ListValidator[] = [
   ...unitConfigurationChecks,
   ...regimentOptionsChecks,
   ...sogChecks,
+  ...aorChecks,
 ];
 
 function getValidatorsForList(_: List): ListValidator[] {

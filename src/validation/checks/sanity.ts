@@ -17,12 +17,15 @@ function validArmySelections(list: List, game: Game): string[] {
   const errors: string[] = [];
 
   // formation
-  if (list.formation && list.formation === '') {
-    errors.push('Formation must be selected.');
-  } else {
-    const formation = army.formations.get(list.formation);
-    if (!formation) {
-      errors.push(`${list.formation} is not a valid formation for army ${list.faction}.`);
+  // armies of renown do not have formations
+  if (!army.isArmyOfRenown) {
+    if (list.formation && list.formation === '') {
+      errors.push('Formation must be selected.');
+    } else {
+      const formation = army.formations.get(list.formation);
+      if (!formation) {
+        errors.push(`${list.formation} is not a valid formation for army ${list.faction}.`);
+      }
     }
   }
 
@@ -65,6 +68,8 @@ function validArmySelections(list: List, game: Game): string[] {
   // units
   const units = list.allUnits();
   for (const unit of units) {
+    if (unit.name === '') continue; // skip empty units
+
     if (!army.battleProfiles.has(unit.name)) {
       errors.push(`${unit.name} is not a valid unit for army ${list.faction}.`);
     }
@@ -117,6 +122,11 @@ function validGameSelections(list: List, game: Game): string[] {
   }
   if (game.battleTacticCards.find((card) => card.name === list.battleTacticCard2) === undefined) {
     errors.push(`${list.battleTacticCard2} is not a valid battle tactic card.`);
+  }
+
+  // can not have the same battle tactic card twice
+  if (list.battleTacticCard1 === list.battleTacticCard2) {
+    errors.push('Battle tactic cards must be different.');
   }
   return errors;
 }

@@ -134,3 +134,12 @@ Basically the same as Faction.cat
 
 Special consideration must be paid to things like forced general and units that must be taken.
 Sometimes unique units may take enhancements in AoR, which breaks the regular rules.
+
+### Restrict General
+
+Some units will be marked restrict general. Meaning they can no be taken as the general.
+This is the reverse of the restriction we want.
+We want the validation to say you must include "this unit as your general".
+Not you can't have any of these units as general, So if we find restrict general we should gather them all and save it to the army for validation.
+
+There is also sometimes a constraint (but not always), that is more accurate for detecting this.
