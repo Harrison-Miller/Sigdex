@@ -70,4 +70,9 @@ export class BattleProfile implements IBattleProfile {
     this.isUndersize = profile?.isUndersize ?? false;
     this.undersizeCondition = profile?.undersizeCondition ?? '';
   }
+
+  hasKeyword(keyword: string): boolean {
+    if (!keyword) return false;
+    return this.keywords.some((k) => k.toLowerCase() === keyword.toLowerCase());
+  }
 }

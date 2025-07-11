@@ -45,9 +45,9 @@ import { SIGDEX_VERSION } from '../version';
 import BackButton from '../modules/core/components/BackButton.vue';
 import ListButton from '../modules/shared/components/ListButton.vue';
 import { clearAllFavorites } from '../favorites';
-import { clearAllLists } from '../utils/list-manager';
 import { clearGameCache } from '../modules/shared/composables/useGame';
 import { saveGithubRepo } from '../github/config';
+import { clearAllLists } from '../list/manage';
 
 const githubRepoKey = 'GITHUB_REPO';
 const githubRepo = ref('');

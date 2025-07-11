@@ -3,10 +3,7 @@
   <div v-if="lists.length === 0" class="empty-message">You have no saved lists yet.</div>
   <ul v-else>
     <li v-for="list in lists" :key="list.id">
-      <ListButton
-        :label="`${list.name} | ${list.faction}${list.formation && list.formation.trim() ? ' | ' + list.formation : ''}`"
-        @click="goToList(list)"
-      />
+      <ListButton :label="`${list.name} | ${list.faction}`" @click="goToList(list)" />
     </li>
   </ul>
   <button class="fab" @click="openModal">+</button>
@@ -20,19 +17,15 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { List } from '../common/ListData';
 import ListButton from '../modules/shared/components/ListButton.vue';
-import {
-  createList as createListInStorage,
-  getAllLists,
-  setListDefaultOptions,
-} from '../utils/list-manager';
 import { useRouter } from 'vue-router';
 import CreateListModal from './CreateListModal.vue';
 import { useGame } from '../modules/shared/composables/useGame';
+import { createList, getAllLists, type IListItem } from '../list/manage';
+import { setDefaultArmyOptions } from '../list/models/list';
 
 const router = useRouter();
-const lists = ref<List[]>(getAllLists());
+const lists = ref<IListItem[]>(getAllLists());
 const showModal = ref(false);
 
 const { game } = useGame();
@@ -50,23 +43,14 @@ function handleCreate({ name, faction }: { name: string; faction: string }) {
     return;
   }
 
-  let list: List = {
-    name,
-    faction,
-    formation: '',
-    regiments: [],
-    id: '', // id will be generated in createListInStorage
-    battle_tactics: [], // Initialize with empty array
-    setup: false,
-  };
-  setListDefaultOptions(list, army);
+  const list = setDefaultArmyOptions({ name, faction }, army);
 
-  const id = createListInStorage(list);
+  const id = createList(list);
   lists.value = getAllLists();
   closeModal();
   router.push({ name: 'ListBuilder', params: { id: id } });
 }
-function goToList(list: List) {
+function goToList(list: IListItem) {
   router.push({ name: 'ListBuilder', params: { id: list.id } });
 }
 </script>

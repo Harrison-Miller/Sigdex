@@ -24,7 +24,7 @@ export function parsePoints(root: any): number {
 }
 
 export function filterIgnoredEnhancementTables(entries: any[]): any[] {
-  return entries.filter(
+  return entries?.filter(
     (entry: any) =>
       !IGNORED_ENHANCEMENT_TABLES.some((ignored) =>
         entry['@_name'].toLowerCase().includes(ignored.toLowerCase())

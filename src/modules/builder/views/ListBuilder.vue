@@ -22,13 +22,9 @@
       <AbilityCard v-for="(trait, i) in army.battleTraits" :key="trait.name + i" :ability="trait" />
     </Section>
     <Section v-if="army.formations.size > 0" v-model="formationCollapsed">
-      <template #title>{{ selectedFormationName || 'Formation' }}</template>
+      <template #title>{{ list.formation || 'Formations' }}</template>
       <div class="formation-section">
-        <OptionSelect
-          v-model="selectedFormationName"
-          :options="Array.from(army.formations.keys())"
-          @update:modelValue="onFormationSelect"
-        />
+        <OptionSelect v-model="list.formation" :options="Array.from(army.formations.keys())" />
         <div>
           <AbilityCard
             v-for="(ability, i) in selectedFormation"
@@ -43,7 +39,7 @@
       <div class="battle-tactic-selectors">
         <div class="battle-tactic-selector">
           <OptionSelect
-            v-model="selectedBattleTacticCardName1"
+            v-model="list.battleTacticCard1"
             :options="battleTacticCards.map((card) => card.name)"
             placeholder="Select Battle Tactic Card 1"
           />
@@ -54,7 +50,7 @@
         </div>
         <div class="battle-tactic-selector">
           <OptionSelect
-            v-model="selectedBattleTacticCardName2"
+            v-model="list.battleTacticCard2"
             :options="battleTacticCards.map((card) => card.name)"
             placeholder="Select Battle Tactic Card 2"
           />
@@ -80,14 +76,13 @@
       <button class="add-regiment-btn" @click="addRegiment">Add regiment</button>
 
       <AuxiliaryUnitsSection
-        v-model="list.auxiliary_units"
+        v-model="list.auxiliaryUnits as ListUnit[]"
         :battleProfiles="army.battleProfiles"
         :armyName="list.faction"
         :listId="list.id"
-        @update:modelValue="onListChange"
       />
       <FactionTerrainSection
-        v-model="factionTerrainRef"
+        v-model="list.factionTerrain"
         :battleProfiles="army.battleProfiles"
         :armyName="list.faction"
         :listId="list.id"
@@ -97,32 +92,32 @@
         :armyLore="army.spellLores"
         :armyName="list.faction"
         title="Spell Lore"
-        v-model="selectedSpellLore"
+        v-model="list.spellLore"
       />
       <ListBuilderLoreSection
         :armyLore="army.prayerLores"
         :armyName="list.faction"
         title="Prayer Lore"
-        v-model="selectedPrayerLore"
+        v-model="list.prayerLore"
       />
       <ListBuilderLoreSection
         :armyLore="army.manifestationLores"
         :armyName="list.faction"
         title="Manifestation Lore"
-        v-model="selectedManifestationLore"
+        v-model="list.manifestationLore"
         manifestationMode
       />
     </div>
     <div class="scroll-buffer"></div>
   </div>
-  <ListIndicator v-if="list && game" :list="list" :game="game" :pointsCap="POINTS_CAP" />
+  <ListIndicator v-if="list && game" :list="list" :game="game" />
 </template>
 
 <script setup lang="ts">
 import OptionSelect from '../../core/components/OptionSelect.vue';
-import { ref, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { saveList, getList } from '../../../utils/list-manager';
+import { useList } from '../../shared/composables/useList';
 import BackButton from '../../core/components/BackButton.vue';
 import SettingsButton from '../../core/components/SettingsButton.vue';
 import CircleIconButton from '../../core/components/CircleIconButton.vue';
@@ -131,178 +126,65 @@ import Section from '../../core/components/Section.vue';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import ListBuilderLoreSection from '../components/ListBuilderLoreSection.vue';
 import ListIndicator from '../components/ListIndicator.vue';
-import { POINTS_CAP } from '../../../common/ListData';
 import ListRegiment from '../components/ListRegiment.vue';
 import BattleTacticCard from '../../shared/components/BattleTacticCard.vue';
 import FactionTerrainSection from '../components/FactionTerrainSection.vue';
 import AuxiliaryUnitsSection from '../components/AuxiliaryUnitsSection.vue';
 import { Army } from '../../../parser/models/army';
 import { BattleTacticCard as BattleTacticCardType } from '../../../parser/models/game';
+import { ListUnit } from '../../../list/models/unit';
+import { ListRegiment as ListRegimentModel } from '../../../list/models/regiment';
 
 const props = defineProps<{ id: string }>();
 const route = useRoute();
 const router = useRouter();
 const listId = props.id ?? (route.params.id as string);
-const list = ref(getList(listId));
+const list = useList(listId);
 const { game, loading } = useGame();
 const army = computed(() => {
   return game.value?.armies.get(list.value?.faction || '') || new Army();
 });
-const selectedFormationName = computed({
-  get: () => list.value?.formation || '',
-  set: (val: string) => {
-    if (list.value) {
-      list.value.formation = val;
-      saveList(list.value);
-    }
-  },
-});
 const selectedFormation = computed(() => {
-  return army.value.formations.get(selectedFormationName.value) || [];
+  return army.value.formations.get(list.value.formation) || [];
 });
-const selectedSpellLore = computed({
-  get: () => list.value?.spell_lore || '',
-  set: (val: string) => {
-    if (list.value) {
-      list.value.spell_lore = val;
-      saveList(list.value);
-    }
-  },
+const selectedBattleTacticCard1 = computed(() => {
+  return (
+    battleTacticCards.value.find((card) => card.name === list.value.battleTacticCard1) ||
+    new BattleTacticCardType()
+  );
 });
-const selectedPrayerLore = computed({
-  get: () => list.value?.prayer_lore || '',
-  set: (val: string) => {
-    if (list.value) {
-      list.value.prayer_lore = val;
-      saveList(list.value);
-    }
-  },
+const selectedBattleTacticCard2 = computed(() => {
+  return (
+    battleTacticCards.value.find((card) => card.name === list.value.battleTacticCard2) ||
+    new BattleTacticCardType()
+  );
 });
-const selectedManifestationLore = computed({
-  get: () => list.value?.manifestation_lore || '',
-  set: (val: string) => {
-    if (list.value) {
-      list.value.manifestation_lore = val;
-      saveList(list.value);
-    }
-  },
-});
+
 const battleTraitsCollapsed = ref(true);
 const formationCollapsed = ref(true);
-const auxCollapsed = ref(true);
 const battleTacticCardsCollapsed = ref(true);
 const battleTacticCards = computed(() => {
   return game.value?.battleTacticCards || [];
 });
-// Removed legacy refs and computed for selectedBattleTactic1/2 and cards
-
-const selectedBattleTacticCardName1 = computed({
-  get: () => list.value?.battle_tactics?.[0] || '',
-  set: (val: string) => {
-    if (list.value) {
-      const val1 = val || '';
-      const val2 = list.value.battle_tactics?.[1] || '';
-      list.value.battle_tactics = [val1, val2];
-      saveList(list.value);
-    }
-  },
-});
-
-const selectedBattleTacticCard1 = computed(() => {
-  return (
-    battleTacticCards.value.find((card) => card.name === selectedBattleTacticCardName1.value) ||
-    new BattleTacticCardType()
-  );
-});
-
-const selectedBattleTacticCardName2 = computed({
-  get: () => list.value?.battle_tactics?.[1] || '',
-  set: (val: string) => {
-    if (list.value) {
-      const val1 = list.value.battle_tactics?.[0] || '';
-      const val2 = val || '';
-      list.value.battle_tactics = [val1, val2];
-      saveList(list.value);
-    }
-  },
-});
-
-const selectedBattleTacticCard2 = computed(() => {
-  return (
-    battleTacticCards.value.find((card) => card.name === selectedBattleTacticCardName2.value) ||
-    new BattleTacticCardType()
-  );
-});
-
-const factionTerrainRef = ref<string | undefined>(undefined);
-
-watch(
-  () => list.value?.auxiliary_units?.length,
-  (len) => {
-    if (len && len > 0) auxCollapsed.value = false;
-    else auxCollapsed.value = true;
-  },
-  { immediate: true }
-);
-
-// Sync ref with list value on mount and when list changes
-watch(
-  () => list.value?.faction_terrain,
-  (val) => {
-    factionTerrainRef.value = val;
-  },
-  { immediate: true }
-);
-
-// Watch the ref and update the list and save when it changes
-watch(factionTerrainRef, (val) => {
-  if (list.value) {
-    list.value.faction_terrain = val;
-    saveList(list.value);
-  }
-});
 
 function addRegiment() {
-  if (!list.value) return;
-  list.value.regiments.push({ leader: { name: '' }, units: [] });
-  saveList(list.value);
+  list.value.regiments.push(new ListRegimentModel());
 }
-
 function openSettings() {
   router.push({ name: 'BuilderSettings', params: { id: listId } });
 }
-
 function openExport() {
   router.push({ name: 'ListExport', params: { id: listId } });
 }
-
 function deleteRegiment(idx: number) {
-  if (!list.value) return;
   list.value.regiments.splice(idx, 1);
-  saveList(list.value);
 }
 function handleDeleteUnit(regimentIdx: number, unitIdx: number | string) {
-  if (!list.value) return;
   if (!list.value.regiments[regimentIdx]) return;
   if (unitIdx === 'leader') {
-    list.value.regiments[regimentIdx].leader = { name: '' };
+    list.value.regiments[regimentIdx].leader = new ListUnit();
   } else if (typeof unitIdx === 'number') {
     list.value.regiments[regimentIdx].units.splice(unitIdx, 1);
-  }
-  saveList(list.value);
-}
-function onFormationSelect(newFormation: string | undefined) {
-  if (!newFormation) return;
-  selectedFormationName.value = newFormation;
-  if (list.value) {
-    list.value.formation = newFormation;
-    saveList(list.value);
-  }
-}
-
-function onListChange() {
-  if (list.value) {
-    saveList(list.value);
   }
 }
 </script>

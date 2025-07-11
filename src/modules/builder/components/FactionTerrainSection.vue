@@ -30,7 +30,7 @@ import { useRouter } from 'vue-router';
 import type { IBattleProfile } from '../../../parser/models/battleProfile';
 
 const props = defineProps<{
-  modelValue: string | undefined;
+  modelValue: string;
   battleProfiles: Map<string, IBattleProfile>;
   armyName: string;
   listId: string;
@@ -54,7 +54,7 @@ onMounted(() => {
 
 const factionTerrain = computed({
   get: () => props.modelValue,
-  set: (val: string | undefined) => {
+  set: (val: string) => {
     emit('update:modelValue', val);
   },
 });
@@ -71,7 +71,7 @@ function handleAddFactionTerrain() {
 }
 
 function handleDeleteFactionTerrain() {
-  factionTerrain.value = undefined;
+  factionTerrain.value = '';
 }
 
 function goToUnitDetail() {

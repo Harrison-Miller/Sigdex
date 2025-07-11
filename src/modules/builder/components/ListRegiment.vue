@@ -7,14 +7,14 @@
       </button>
     </template>
     <div class="regiment-leader">
-      <div v-if="props.regiment.leader && props.regiment.leader.name" class="regiment-unit-row">
+      <div v-if="leader.name" class="regiment-unit-row">
         <ListButton
-          :label="props.regiment.leader.name"
-          :points="battleProfiles.get(props.regiment.leader.name)?.points"
+          :label="leader.name"
+          :points="battleProfiles.get(leader.name)?.points"
           :showEllipsis="true"
-          :showGeneral="!!props.regiment.leader.general"
-          :enhancementCount="getEnhancementCount(props.regiment.leader)"
-          @click="() => goToUnitDetail(props.regiment.leader.name)"
+          :showGeneral="leader.general"
+          :enhancementCount="leader.getEnhancementCount()"
+          @click="() => goToUnitDetail(leader.name)"
           @ellipsis="() => goToUnitSettings('leader')"
         />
         <button
@@ -30,14 +30,14 @@
     <div class="divider"></div>
     <div class="regiment-units">
       <ul>
-        <li v-for="(unit, idx) in props.regiment.units" :key="unit.name" class="regiment-unit-row">
+        <li v-for="(unit, idx) in units" :key="unit.name" class="regiment-unit-row">
           <div class="regiment-unit-btn">
             <ListButton
               :label="unit.name"
               :points="battleProfiles.get(unit.name)?.points"
               :showEllipsis="true"
-              :showReinforced="!!unit.reinforced"
-              :enhancementCount="getEnhancementCount(unit)"
+              :showReinforced="unit.reinforced"
+              :enhancementCount="unit.getEnhancementCount()"
               @click="() => goToUnitDetail(unit.name)"
               @ellipsis="() => goToUnitSettings(idx)"
               class="regiment-unit-btn"
@@ -54,7 +54,8 @@
 </template>
 <script setup lang="ts">
 import { defineProps, defineEmits, computed } from 'vue';
-import type { ListRegiment } from '../../../common/ListData';
+import type { ListRegiment } from '../../../list/models/regiment';
+import type { ListUnit } from '../../../list/models/unit';
 import ListButton from '../../shared/components/ListButton.vue';
 import Section from '../../core/components/Section.vue';
 import { useRouter } from 'vue-router';
@@ -71,6 +72,9 @@ const emit = defineEmits(['delete', 'delete-unit']);
 const router = useRouter();
 
 const title = computed(() => `Regiment ${props.regimentIdx + 1}`);
+
+const leader = computed(() => props.regiment.leader as ListUnit);
+const units = computed(() => props.regiment.units as ListUnit[]);
 
 function goToAddLeader() {
   router.push({
@@ -111,14 +115,6 @@ function goToUnitSettings(unitIdx: number | 'leader') {
       unitIdx: unitIdx.toString(),
     },
   });
-}
-function getEnhancementCount(unit: any) {
-  let count = 0;
-  if (unit.heroic_trait) count += 1;
-  if (unit.artifact) count += 1;
-  if (unit.enhancements && typeof unit.enhancements.size === 'number')
-    count += unit.enhancements.size;
-  return count;
 }
 </script>
 <style scoped>

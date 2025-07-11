@@ -23,16 +23,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { getList } from '../../../utils/list-manager';
 import { exportList } from '../exportList';
 import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
+import { useList } from '../../shared/composables/useList';
+
 const route = useRoute();
 const id = route.params.id as string;
-
-const list = ref(getList(id));
+const list = useList(id);
 const { game, loading } = useGame();
 
 const exportedText = computed(() => {

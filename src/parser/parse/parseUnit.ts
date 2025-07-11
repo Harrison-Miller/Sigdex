@@ -1,3 +1,4 @@
+import type { IModel } from '../models/model';
 import { Stats, type IStats } from '../models/stats';
 import { Unit, type IUnit } from '../models/unit';
 import { Weapon, type IWeapon } from '../models/weapon';
@@ -32,6 +33,20 @@ export function parseUnit(unitNode: any): IUnit {
     abilities: parseAbilities(unitNode.profiles),
     models: parseModels(unitNode),
   };
+
+  // calculate unit size based on models
+  if (unit.models && unit.models.size > 0) {
+    unit.unitSize = Array.from(unit.models.values()).reduce((sum: number, model: any) => {
+      return sum + (model.count || 1); // default count to 1 if not specified
+    }, 0);
+  } else {
+    unit.unitSize = 1; // default to 1 if no models are present
+  }
+
+  // remove models if it's only default models
+  if (unit.models && isDefaultModels(Array.from(unit.models.values()))) {
+    unit.models = new Map<string, IModel>(); // return empty map if all models are default
+  }
 
   // TODO: handle parsing shared abilities like wall crawler
 
@@ -110,4 +125,11 @@ export function parseUnitKeywords(unitNode: any): string[] {
     }
   });
   return keywords;
+}
+
+export function isDefaultModels(modelGroups: IModel[]): boolean {
+  if (modelGroups.length > 1) return false;
+  if (modelGroups.length === 0) return true;
+  const group = modelGroups[0];
+  return Array.from(group.weapons.values()).every((w) => w.type === 'default');
 }

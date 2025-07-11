@@ -99,18 +99,20 @@ export function parseEnhancementTables(
 
 export function parseOtherEnhancementTables(root: any): Map<string, IEnhancementTable> {
   // other enhancement groups have the same nested structure, but only ever have one table per a group
-  const otherEnhancementTables =
-    filterIgnoredEnhancementTables(root?.sharedSelectionEntryGroups?.selectionEntryGroup || []).map(
-      (entry: any) => entry?.selectionEntryGroups?.selectionEntryGroup[0] || {}
-    ) || [];
+  const tableGroups =
+    filterIgnoredEnhancementTables(root?.sharedSelectionEntryGroups?.selectionEntryGroup) || [];
 
   const tablesMap = new Map<string, IEnhancementTable>();
-  otherEnhancementTables?.forEach((tableNode: any) => {
-    const name = tableNode['@_name'];
+  tableGroups.forEach((groupNode: any) => {
+    const name = groupNode['@_name']; // enhancement table type name
+    const tableNode = groupNode?.selectionEntryGroups?.selectionEntryGroup[0] || {};
+
     const enhancements: IEnhancement[] =
-      tableNode.selectionEntries?.selectionEntry?.map((entry: any) => parseEnhancement(entry)) ||
+      tableNode?.selectionEntries?.selectionEntry?.map((entry: any) => parseEnhancement(entry)) ||
       [];
-    tablesMap.set(name, { name, enhancements });
+    if (enhancements.length > 0) {
+      tablesMap.set(name, { name, enhancements });
+    }
   });
   return tablesMap;
 }

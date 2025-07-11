@@ -7,7 +7,7 @@
       <h3>Heroic Trait</h3>
       <OptionSelect
         id="heroic-trait-select"
-        v-model="unit.heroic_trait"
+        v-model="unit.heroicTrait"
         :options="heroicTraitsOptions"
         placeholder="No Heroic Trait"
       />
@@ -48,7 +48,7 @@
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import Section from '../../core/components/Section.vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
-import type { ListUnit } from '../../../common/ListData';
+import { ListUnit } from '../../../list/models/unit';
 import { ref, computed, onMounted } from 'vue';
 import { Ability } from '../../../parser/models/ability';
 import type { IArmy } from '../../../parser/models/army';
@@ -59,8 +59,10 @@ const emit = defineEmits(['update:modelValue']);
 
 const unit = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val),
+  set: (val: ListUnit) => emit('update:modelValue', val),
 });
+
+const enhancementCount = computed(() => unit.value.getEnhancementCount());
 
 const battleProfile = computed(() => {
   return (
@@ -97,31 +99,21 @@ const artifactsOptions = computed(() => {
 });
 
 const selectedHeroicTraitAbility = computed(() => {
-  if (!unit.value?.heroic_trait) return null;
+  if (!unit.value.heroicTrait) return null;
   for (const table of props.army.heroicTraits.values()) {
-    const found = table.enhancements.find((a: any) => a.name === unit.value?.heroic_trait);
+    const found = table.enhancements.find((a: any) => a.ability.name === unit.value?.heroicTrait);
     if (found) return found;
   }
   return null;
 });
 
 const selectedArtifactAbility = computed(() => {
-  if (!unit.value?.artifact) return null;
+  if (!unit.value.artifact) return null;
   for (const table of props.army.artifacts.values()) {
-    const found = table.enhancements.find((a: any) => a.name === unit.value?.artifact);
+    const found = table.enhancements.find((a: any) => a.ability.name === unit.value?.artifact);
     if (found) return found;
   }
   return null;
-});
-
-const enhancementCount = computed(() => {
-  let count = 0;
-  if (unit.value?.heroic_trait) count++;
-  if (unit.value?.artifact) count++;
-  if (unit.value?.enhancements) {
-    count += unit.value.enhancements.size;
-  }
-  return count;
 });
 
 // Only collapse on first mount if no enhancements are selected
@@ -146,7 +138,7 @@ const getEnhancementTableOptions = (tableName: string) => {
 
 const getSelectedEnhancementAbility = (tableName: string) => {
   if (
-    !unit.value?.enhancements ||
+    !unit.value.enhancements ||
     props.army.enhancements.size === 0 ||
     !props.army.enhancements.has(tableName)
   )
@@ -174,6 +166,6 @@ const updateEnhancement = (tableName: string, enhancementName: string | undefine
   }
 
   // Trigger reactivity by creating a new object
-  unit.value = { ...unit.value, enhancements: new Map(unit.value.enhancements) };
+  unit.value = new ListUnit({ ...unit.value, enhancements: new Map(unit.value.enhancements) });
 };
 </script>

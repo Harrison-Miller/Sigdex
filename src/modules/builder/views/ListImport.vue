@@ -29,9 +29,9 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { importList } from '../importList';
-import { createList } from '../../../utils/list-manager';
 import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
+import { createList } from '../../../list/manage';
 
 const router = useRouter();
 const importText = ref('');

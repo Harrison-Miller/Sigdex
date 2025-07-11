@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getList, saveList, setupDefaultWeaponOptions } from '../../../utils/list-manager';
+import { getDefaultWeaponOptions } from '../../../list/models/unit';
 import { formatRegimentOptions } from '../../../utils/formatter';
 import ListButton from '../../shared/components/ListButton.vue';
 import BackButton from '../../core/components/BackButton.vue';
@@ -51,6 +51,8 @@ import { BattleProfile, type IBattleProfile } from '../../../parser/models/battl
 import { UnitCategories, type UnitCategory } from '../../../parser/models/unit';
 import { Army } from '../../../parser/models/army';
 import { filterBattleProfilesByRegimentOptions } from '../filter';
+import { useList } from '../../shared/composables/useList';
+import { ListUnit } from '../../../list/models/unit';
 
 const route = useRoute();
 const router = useRouter();
@@ -58,7 +60,7 @@ const listId = route.params.id as string;
 const regimentIdx = Number(route.params.regimentIdx);
 const filter = (route.params.filter as string) || '';
 
-const list = ref(getList(listId));
+const list = useList(listId);
 const { game, loading } = useGame();
 const army = computed(
   () =>
@@ -176,35 +178,36 @@ function addUnitToRegiment(bp: IBattleProfile) {
 
   if (filter.toLowerCase() === 'terrain') {
     // Set as faction terrain
-    list.value.faction_terrain = bp.name;
-    saveList(list.value);
+    list.value.factionTerrain = bp.name;
     router.back();
     return;
   }
+
   if (filter.toLowerCase() === 'aux') {
-    if (!list.value.auxiliary_units) list.value.auxiliary_units = [];
-    list.value.auxiliary_units.push({
-      name: unit.name,
-      weapon_options: setupDefaultWeaponOptions(unit),
-      enhancements: new Map(),
-    });
-    saveList(list.value);
+    if (!list.value.auxiliaryUnits) list.value.auxiliaryUnits = [];
+    list.value.auxiliaryUnits.push(
+      new ListUnit({
+        name: unit.name,
+        weaponOptions: getDefaultWeaponOptions(unit),
+      })
+    );
     router.back();
     return;
   }
+
   if (isNaN(regimentIdx) || !list.value.regiments[regimentIdx]) return;
   if (filter.toLowerCase() === 'leader') {
-    list.value.regiments[regimentIdx].leader = {
+    list.value.regiments[regimentIdx].leader = new ListUnit({
       name: unit.name,
-      weapon_options: setupDefaultWeaponOptions(unit),
-      enhancements: new Map(),
-    };
-  } else {
-    list.value.regiments[regimentIdx].units.push({
-      name: unit.name,
-      weapon_options: setupDefaultWeaponOptions(unit),
-      enhancements: new Map(),
+      weaponOptions: getDefaultWeaponOptions(unit),
     });
+  } else {
+    list.value.regiments[regimentIdx].units.push(
+      new ListUnit({
+        name: unit.name,
+        weaponOptions: getDefaultWeaponOptions(unit),
+      })
+    );
   }
 
   // --- Companion auto-add logic ---
@@ -219,18 +222,17 @@ function addUnitToRegiment(bp: IBattleProfile) {
           // Find the companion unit in the game
           const companionUnit = game.value?.units.get(companionName) || undefined;
           if (companionUnit) {
-            list.value.regiments[regimentIdx].units.push({
-              name: companionUnit.name,
-              weapon_options: setupDefaultWeaponOptions(companionUnit),
-              enhancements: new Map(),
-            });
+            list.value.regiments[regimentIdx].units.push(
+              new ListUnit({
+                name: companionUnit.name,
+                weaponOptions: getDefaultWeaponOptions(companionUnit),
+              })
+            );
           }
         }
       }
     }
   }
-
-  saveList(list.value);
   router.back();
 }
 </script>

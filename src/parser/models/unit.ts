@@ -65,6 +65,7 @@ export class Unit implements IUnit {
     this.rangedWeapons = unit?.rangedWeapons ?? [];
     this.abilities = unit?.abilities ?? [];
     this.keywords = unit?.keywords ?? [];
+    this.unitSize = unit?.unitSize ?? 1; // default to 1 if not specified
     this.models = unit?.models ?? new Map<string, IModel>();
     this.summoningSpell = unit?.summoningSpell ?? null;
 
@@ -84,13 +85,10 @@ export class Unit implements IUnit {
         }
         return false; // continue searching
       }) || 'OTHER'; // default to 'OTHER' if no match found
+  }
 
-    // calculate unit size based on models
-    this.unitSize = Array.from(this.models.values()).reduce((total, model) => {
-      return total + model.count;
-    }, 0);
-    if (this.unitSize === 0) {
-      this.unitSize = 1; // default to 1 if no models are present
-    }
+  hasKeyword(keyword: string): boolean {
+    if (!keyword) return false;
+    return this.keywords.some((k) => k.toLowerCase() === keyword.toLowerCase());
   }
 }

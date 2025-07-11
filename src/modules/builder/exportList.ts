@@ -1,16 +1,18 @@
-import type { List, ListRegiment, ListUnit } from '../../common/ListData';
+import type { IList } from '../../list/models/list';
+import type { IListRegiment } from '../../list/models/regiment';
+import type { IListUnit } from '../../list/models/unit';
 import type { IArmy } from '../../parser/models/army';
 import type { IGame } from '../../parser/models/game';
 import { calculatePoints } from '../../utils/points-manager';
 import { SIGDEX_VERSION } from '../../version';
 
-function calculateDrops(list: List): number {
+function calculateDrops(list: IList): number {
   if (!list || !list.regiments) return 0;
-  let drops = list.regiments.length + (list.auxiliary_units?.length || 0);
+  let drops = list.regiments.length + (list.auxiliaryUnits?.length || 0);
   return drops;
 }
 
-function calculateWounds(list: List, game: IGame): number {
+function calculateWounds(list: IList, game: IGame): number {
   if (!list || !list.regiments) return 0;
   let totalWounds = 0;
   for (const regiment of list.regiments) {
@@ -33,7 +35,7 @@ function calculateWounds(list: List, game: IGame): number {
   }
 
   // aux
-  for (const unit of list.auxiliary_units || []) {
+  for (const unit of list.auxiliaryUnits || []) {
     const unitData = game.units.get(unit.name);
     if (unitData) {
       totalWounds +=
@@ -88,7 +90,7 @@ function displayWithPoints(text: string, points: number | undefined): string {
   return `${text}\n`; // No points, just the name
 }
 
-function displayUnit(unit: ListUnit, army: IArmy, game: IGame): string {
+function displayUnit(unit: IListUnit, army: IArmy, game: IGame): string {
   if (!unit) return '';
   const unitData = game.units.get(unit.name);
   const bp = army.battleProfiles.get(unit.name);
@@ -105,7 +107,7 @@ function displayUnit(unit: ListUnit, army: IArmy, game: IGame): string {
     out += '• Reinforced\n';
   }
   // weapon options
-  for (const [modelGroup, weaponOptions] of unit.weapon_options || new Map()) {
+  for (const [modelGroup, weaponOptions] of unit.weaponOptions || new Map()) {
     for (const option of weaponOptions) {
       // look up weapon option in unitData
       // const weaponData = findWeaponOption(modelGroup, option.name, unitData);
@@ -135,9 +137,9 @@ function displayUnit(unit: ListUnit, army: IArmy, game: IGame): string {
     const artifactPoints = getArtifactPoints(unit.artifact, army);
     out += displayWithPoints(`• ${unit.artifact}`, artifactPoints);
   }
-  if (unit.heroic_trait) {
-    const heroicTraitPoints = getHeroicTraitPoints(unit.heroic_trait, army);
-    out += displayWithPoints(`• ${unit.heroic_trait}`, heroicTraitPoints);
+  if (unit.heroicTrait) {
+    const heroicTraitPoints = getHeroicTraitPoints(unit.heroicTrait, army);
+    out += displayWithPoints(`• ${unit.heroicTrait}`, heroicTraitPoints);
   }
   if (unit.enhancements) {
     for (const [_, enhancement] of unit.enhancements) {
@@ -149,7 +151,7 @@ function displayUnit(unit: ListUnit, army: IArmy, game: IGame): string {
   return out;
 }
 
-function displayRegiment(regiment: ListRegiment, army: IArmy, game: IGame): string {
+function displayRegiment(regiment: IListRegiment, army: IArmy, game: IGame): string {
   let out = '';
   if (regiment.leader) {
     out += `${displayUnit(regiment.leader, army, game)}`;
@@ -162,7 +164,7 @@ function displayRegiment(regiment: ListRegiment, army: IArmy, game: IGame): stri
   return out;
 }
 
-export function exportList(list: List, game: IGame): string {
+export function exportList(list: IList, game: IGame): string {
   let out = '';
 
   const army = game.armies.get(list.faction);
@@ -181,27 +183,31 @@ export function exportList(list: List, game: IGame): string {
   out += `Wounds: ${calculateWounds(list, game)}\n`;
 
   // lores
-  if (list.spell_lore) {
-    const spellPoints = army.spellLores.get(list.spell_lore)?.points || 0;
-    out += displayWithPoints(`Spell Lore - ${list.spell_lore}`, spellPoints);
+  if (list.spellLore) {
+    const spellPoints = army.spellLores.get(list.spellLore)?.points || 0;
+    out += displayWithPoints(`Spell Lore - ${list.spellLore}`, spellPoints);
   }
-  if (list.prayer_lore) {
-    const prayerPoints = army.prayerLores.get(list.prayer_lore)?.points || 0;
-    out += displayWithPoints(`Prayer Lore - ${list.prayer_lore}`, prayerPoints);
+  if (list.prayerLore) {
+    const prayerPoints = army.prayerLores.get(list.prayerLore)?.points || 0;
+    out += displayWithPoints(`Prayer Lore - ${list.prayerLore}`, prayerPoints);
   }
-  if (list.manifestation_lore) {
+  if (list.manifestationLore) {
     const manifestationPoints =
-      army.manifestationLores.get(list.manifestation_lore)?.points ||
-      game.universalManifestationLores.get(list.manifestation_lore)?.points ||
+      army.manifestationLores.get(list.manifestationLore)?.points ||
+      game.universalManifestationLores.get(list.manifestationLore)?.points ||
       0;
-    out += displayWithPoints(
-      `Manifestation Lore - ${list.manifestation_lore}`,
-      manifestationPoints
-    );
+    out += displayWithPoints(`Manifestation Lore - ${list.manifestationLore}`, manifestationPoints);
   }
 
-  if (list.battle_tactics && list.battle_tactics.length > 0) {
-    out += `\nBattle Tactic Cards: ${list.battle_tactics.join(', ')}\n`;
+  if (list.battleTacticCard1 || list.battleTacticCard2) {
+    out += `\nBattle Tactic Cards: `;
+    if (list.battleTacticCard1 && list.battleTacticCard2) {
+      out += `${list.battleTacticCard1}, ${list.battleTacticCard2}\n`;
+    } else if (list.battleTacticCard1) {
+      out += `${list.battleTacticCard1}\n`;
+    } else if (list.battleTacticCard2) {
+      out += `${list.battleTacticCard2}\n`;
+    }
   }
 
   // display the general
@@ -229,19 +235,19 @@ export function exportList(list: List, game: IGame): string {
   }
 
   // auxiliary units
-  if (list.auxiliary_units && list.auxiliary_units.length > 0) {
+  if (list.auxiliaryUnits && list.auxiliaryUnits.length > 0) {
     out += `Auxiliary Units\n`;
-    for (const auxUnit of list.auxiliary_units) {
+    for (const auxUnit of list.auxiliaryUnits) {
       out += `${displayUnit(auxUnit, army, game)}`;
     }
     out += `\n`;
   }
 
   // faction terrain
-  if (list.faction_terrain) {
+  if (list.factionTerrain) {
     out += `Faction Terrain\n`;
-    const terrainPoints = army.battleProfiles.get(list.faction_terrain)?.points || 0;
-    out += displayWithPoints(list.faction_terrain, terrainPoints);
+    const terrainPoints = army.battleProfiles.get(list.factionTerrain)?.points || 0;
+    out += displayWithPoints(list.factionTerrain, terrainPoints);
   }
 
   // app info

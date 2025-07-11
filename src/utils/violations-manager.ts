@@ -1,4 +1,6 @@
-import type { List, ListUnit, ListRegiment } from '../common/ListData';
+import type { IList } from '../list/models/list';
+import type { IListRegiment } from '../list/models/regiment';
+import type { IListUnit } from '../list/models/unit';
 import type { IArmy } from '../parser/models/army';
 import type { IBattleProfile } from '../parser/models/battleProfile';
 import type { IGame } from '../parser/models/game';
@@ -12,7 +14,7 @@ import { calculatePoints } from './points-manager';
  * @param army The loaded Army data
  * @returns Array of violation strings
  */
-export function calculateUndersizeUnitViolations(list: List, army: IArmy): string[] {
+export function calculateUndersizeUnitViolations(list: IList, army: IArmy): string[] {
   // Map: undersize unit name -> { condition: string, count: number }
   const undersizeMap = new Map<string, { condition: string; count: number }>();
   // Map: condition unit name -> count
@@ -31,7 +33,7 @@ export function calculateUndersizeUnitViolations(list: List, army: IArmy): strin
       }
     }
   }
-  for (const unit of list.auxiliary_units || []) {
+  for (const unit of list.auxiliaryUnits || []) {
     const unitData = army.battleProfiles.get(unit.name);
     if (unitData && unitData.undersizeCondition) {
       undersizeMap.set(unit.name, {
@@ -59,7 +61,7 @@ export function calculateUndersizeUnitViolations(list: List, army: IArmy): strin
     }
   }
 
-  for (const unit of list.auxiliary_units || []) {
+  for (const unit of list.auxiliaryUnits || []) {
     if (conditionCountMap.has(unit.name)) {
       // This unit is a condition unit, increment its count
       conditionCountMap.set(unit.name, (conditionCountMap.get(unit.name) || 0) + 1);
@@ -88,7 +90,7 @@ export function calculateUndersizeUnitViolations(list: List, army: IArmy): strin
  * @param lores The loaded lores data
  * @returns Array of violation strings
  */
-export function calculateViolations(list: List, game: IGame): string[] {
+export function calculateViolations(list: IList, game: IGame): string[] {
   const army = game.armies.get(list.faction);
   if (!army) return ['Army not found in game data.'];
 
@@ -103,7 +105,7 @@ export function calculateViolations(list: List, game: IGame): string[] {
       const isUnique =
         armyUnit.keywords && armyUnit.keywords.some((k) => k.toLowerCase() === 'unique');
       if (isUnique) {
-        if (unit.heroic_trait) {
+        if (unit.heroicTrait) {
           violations.push(`Unique unit '${unit.name}' cannot have a heroic trait.`);
         }
         if (unit.artifact) {
@@ -244,8 +246,8 @@ export function calculateViolations(list: List, game: IGame): string[] {
     }
   }
   // Check auxillary units for unique
-  if (list.auxiliary_units) {
-    for (const unit of list.auxiliary_units) {
+  if (list.auxiliaryUnits) {
+    for (const unit of list.auxiliaryUnits) {
       const armyUnit = army.battleProfiles.get(unit.name);
       if (armyUnit && armyUnit.keywords.some((k) => k.toLowerCase() === 'unique')) {
         uniqueUnits[unit.name] = (uniqueUnits[unit.name] || 0) + 1;
@@ -270,8 +272,8 @@ export function calculateViolations(list: List, game: IGame): string[] {
     }
   }
   // Check auxillary units for reinforce
-  if (list.auxiliary_units) {
-    for (const unit of list.auxiliary_units) {
+  if (list.auxiliaryUnits) {
+    for (const unit of list.auxiliaryUnits) {
       if (unit.reinforced) {
         const armyUnit = army.battleProfiles.get(unit.name);
         const unitData = game.units.get(unit.name);
@@ -293,8 +295,8 @@ export function calculateViolations(list: List, game: IGame): string[] {
     }
   }
   // Check auxillary units for weapon violations
-  if (list.auxiliary_units) {
-    for (const unit of list.auxiliary_units) {
+  if (list.auxiliaryUnits) {
+    for (const unit of list.auxiliaryUnits) {
       const unitViolations = calculateWeaponOptionViolations(unit, game);
       violations.push(...unitViolations);
     }
@@ -325,8 +327,8 @@ export function calculateViolations(list: List, game: IGame): string[] {
     }
   }
   // Check auxillary units for presence in ArmyData
-  if (list.auxiliary_units) {
-    for (const unit of list.auxiliary_units) {
+  if (list.auxiliaryUnits) {
+    for (const unit of list.auxiliaryUnits) {
       if (unit && unit.name) {
         const found = army.battleProfiles.get(unit.name);
         if (!found) {
@@ -341,12 +343,12 @@ export function calculateViolations(list: List, game: IGame): string[] {
   const assignedEnhancements: Record<string, Record<string, number>> = {};
 
   // Helper to count assignments
-  function countEnhancements(unit: ListUnit | undefined) {
+  function countEnhancements(unit: IListUnit | undefined) {
     if (!unit) return;
     if (unit.artifact)
       assignedArtifacts[unit.artifact] = (assignedArtifacts[unit.artifact] || 0) + 1;
-    if (unit.heroic_trait)
-      assignedHeroicTraits[unit.heroic_trait] = (assignedHeroicTraits[unit.heroic_trait] || 0) + 1;
+    if (unit.heroicTrait)
+      assignedHeroicTraits[unit.heroicTrait] = (assignedHeroicTraits[unit.heroicTrait] || 0) + 1;
 
     // Count misc enhancements
     if (unit.enhancements) {
@@ -363,8 +365,8 @@ export function calculateViolations(list: List, game: IGame): string[] {
     countEnhancements(regiment.leader);
     for (const unit of regiment.units) countEnhancements(unit);
   }
-  if (list.auxiliary_units) {
-    for (const unit of list.auxiliary_units) countEnhancements(unit);
+  if (list.auxiliaryUnits) {
+    for (const unit of list.auxiliaryUnits) countEnhancements(unit);
   }
   for (const [name, count] of Object.entries(assignedArtifacts)) {
     if (count > 1) violations.push(`Duplicate artifact assigned: ${name}`);
@@ -409,8 +411,8 @@ export function calculateViolations(list: List, game: IGame): string[] {
     if (regiment.leader && regiment.leader.name) allUnits.push(regiment.leader.name);
     for (const unit of regiment.units) if (unit && unit.name) allUnits.push(unit.name);
   }
-  if (list.auxiliary_units) {
-    for (const unit of list.auxiliary_units) if (unit && unit.name) allUnits.push(unit.name);
+  if (list.auxiliaryUnits) {
+    for (const unit of list.auxiliaryUnits) if (unit && unit.name) allUnits.push(unit.name);
   }
   const scourgePattern = /(.*) \(Scourge of Ghyran\)$/;
   const scourgeMap = new Map<string, boolean>();
@@ -439,13 +441,13 @@ export function calculateViolations(list: List, game: IGame): string[] {
  * 2. If the weapon option has a count higher than the max (the max is doubled when reinforced).
  * 3. If there are multiple selections for a grouped weapon option.
  */
-export function calculateWeaponOptionViolations(unit: ListUnit, game: IGame): string[] {
+export function calculateWeaponOptionViolations(unit: IListUnit, game: IGame): string[] {
   const violations: string[] = [];
-  if (!unit.weapon_options || !(unit.weapon_options instanceof Map)) return violations;
+  if (!unit.weaponOptions || !(unit.weaponOptions instanceof Map)) return violations;
   const armyUnit = game.units.get(unit.name);
   if (!armyUnit || !armyUnit.models) return violations;
   const reinforced = !!unit.reinforced;
-  for (const [groupName, options] of unit.weapon_options.entries()) {
+  for (const [groupName, options] of unit.weaponOptions.entries()) {
     const modelGroup = armyUnit.models.get(groupName);
     if (!modelGroup) {
       violations.push(`Model group '${groupName}' does not exist for unit '${unit.name}'.`);
@@ -549,7 +551,7 @@ function unitMatchesRegimentOption(armyUnit: IBattleProfile, optName: string): b
   );
 }
 
-export function calculateRegimentOptionViolations(regiment: ListRegiment, army: IArmy): string[] {
+export function calculateRegimentOptionViolations(regiment: IListRegiment, army: IArmy): string[] {
   const violations: string[] = [];
   if (!regiment.leader || !regiment.leader.name) return violations; // skip if no leader
   const leaderUnit = army.battleProfiles.get(regiment.leader.name);

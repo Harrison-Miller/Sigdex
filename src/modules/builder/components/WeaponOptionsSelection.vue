@@ -60,11 +60,11 @@
 import { computed, reactive, watch } from 'vue';
 import CounterBox from '../../core/components/CounterBox.vue';
 import Section from '../../core/components/Section.vue';
-import type { ListUnit } from '../../../common/ListData';
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import type { IUnit } from '../../../parser/models/unit';
 import type { IWeaponOption } from '../../../parser/models/weaponOption';
 import type { IModel } from '../../../parser/models/model';
+import { ListUnit } from '../../../list/models/unit';
 
 // v-model:unit
 const props = defineProps<{ modelValue: ListUnit; unitData: IUnit }>();
@@ -126,7 +126,7 @@ function handleSingleSelectChange(groupName: string, groupKey: string, weapon: s
 }
 
 function initWeaponStates() {
-  const saved = props.modelValue.weapon_options;
+  const saved = props.modelValue.weaponOptions;
   for (const group of modelGroups.value) {
     if (!optionalWeaponState[group.name]) optionalWeaponState[group.name] = {};
     if (!groupWeaponCounterState[group.name]) groupWeaponCounterState[group.name] = {};
@@ -247,10 +247,13 @@ function buildWeaponOptionsForSave() {
 }
 
 function emitUpdatedModelValue() {
-  emit('update:modelValue', {
-    ...props.modelValue,
-    weapon_options: buildWeaponOptionsForSave(),
-  });
+  emit(
+    'update:modelValue',
+    new ListUnit({
+      ...props.modelValue,
+      weaponOptions: buildWeaponOptionsForSave(),
+    })
+  );
 }
 
 const showModelGroupHeader = computed(() => modelGroups.value.length > 1);

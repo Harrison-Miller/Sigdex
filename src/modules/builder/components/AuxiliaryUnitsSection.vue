@@ -1,14 +1,14 @@
 <template>
   <Section :model-value="internalCollapsed" @update:modelValue="internalCollapsed = $event">
     <template #title>Auxillary Units</template>
-    <div v-if="Array.isArray(auxiliaryUnits) && auxiliaryUnits.length > 0">
-      <div v-for="(unit, i) in auxiliaryUnits" :key="unit?.name + i" class="aux-unit-row">
+    <div v-if="props.modelValue.length > 0">
+      <div v-for="(unit, i) in props.modelValue" :key="unit?.name + i" class="aux-unit-row">
         <ListButton
           :label="unit.name"
           :points="battleProfiles.get(unit.name)?.points"
-          :show-reinforced="unit.reinforced || false"
+          :show-reinforced="unit.reinforced"
           :show-ellipsis="true"
-          :enhancement-count="getEnhancementCount(unit)"
+          :enhancement-count="unit.getEnhancementCount()"
           @click="
             () =>
               router &&
@@ -35,14 +35,14 @@
 </template>
 <script lang="ts" setup>
 import Section from '../../core/components/Section.vue';
-import { ref, watch, computed, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
-import type { ListUnit } from '../../../common/ListData';
+import { ListUnit } from '../../../list/models/unit';
 import type { IBattleProfile } from '../../../parser/models/battleProfile';
 
 const props = defineProps<{
-  modelValue?: ListUnit[];
+  modelValue: ListUnit[];
   battleProfiles: Map<string, IBattleProfile>;
   armyName: string;
   listId: string;
@@ -54,7 +54,7 @@ const router = useRouter();
 const internalCollapsed = ref(true);
 
 onMounted(() => {
-  if (Array.isArray(props.modelValue) && props.modelValue.length > 0) {
+  if (props.modelValue.length > 0) {
     internalCollapsed.value = false;
   } else {
     internalCollapsed.value = true;
@@ -64,7 +64,7 @@ onMounted(() => {
 watch(
   () => props.modelValue,
   (val) => {
-    if (Array.isArray(val) && val.length > 0) {
+    if (val.length > 0) {
       internalCollapsed.value = false;
     } else {
       internalCollapsed.value = true;
@@ -72,14 +72,6 @@ watch(
   },
   { immediate: false }
 );
-
-const auxiliaryUnits = computed({
-  get: () => props.modelValue,
-  set: (val: any[] | undefined) => {
-    emit('update:modelValue', val);
-    emit('update');
-  },
-});
 
 function handleAddAuxUnit() {
   router.push({
@@ -89,19 +81,9 @@ function handleAddAuxUnit() {
 }
 
 function handleDeleteAuxUnit(idx: number) {
-  if (!auxiliaryUnits.value) return;
-  const newUnits = [...auxiliaryUnits.value];
+  const newUnits = [...props.modelValue];
   newUnits.splice(idx, 1);
-  auxiliaryUnits.value = newUnits;
-}
-
-function getEnhancementCount(unit: any) {
-  let count = 0;
-  if (unit.heroic_trait) count += 1;
-  if (unit.artifact) count += 1;
-  if (unit.enhancements && typeof unit.enhancements.size === 'number')
-    count += unit.enhancements.size;
-  return count;
+  emit('update:modelValue', newUnits);
 }
 
 function goToAuxUnitSettings(unitIdx: number) {

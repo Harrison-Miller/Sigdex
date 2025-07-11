@@ -8,7 +8,7 @@
       <h3>Create New List</h3>
       <label>
         Name
-        <input v-model="name" type="text" placeholder="List name" />
+        <input v-model="name" type="text" placeholder="List name" @keyup.enter="emitCreate" />
       </label>
       <label>
         Army

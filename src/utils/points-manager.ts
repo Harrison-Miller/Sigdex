@@ -1,6 +1,6 @@
-import type { List } from '../common/ListData';
 import type { ILore } from '../parser/models/lore';
 import type { IArmy, IEnhancementTable } from '../parser/models/army';
+import type { IList } from '../list/models/list';
 
 /**
  * Calculates the total points for a list by summing the points of all units in all regiments (including leaders),
@@ -11,7 +11,7 @@ import type { IArmy, IEnhancementTable } from '../parser/models/army';
  * @returns The total points for the list
  */
 export function calculatePoints(
-  list: List,
+  list: IList,
   army: IArmy,
   universalManifestationLores: Map<string, ILore>
 ): number {
@@ -31,8 +31,8 @@ export function calculatePoints(
     if (regiment.leader) {
       total += army.battleProfiles.get(regiment.leader.name)?.points || 0;
       // Add heroic trait, artifact, and enhancement points for leader
-      if (regiment.leader.heroic_trait) {
-        total += getEnhancementPoints(regiment.leader.heroic_trait, army.heroicTraits);
+      if (regiment.leader.heroicTrait) {
+        total += getEnhancementPoints(regiment.leader.heroicTrait, army.heroicTraits);
       }
       if (regiment.leader.artifact) {
         total += getEnhancementPoints(regiment.leader.artifact, army.artifacts);
@@ -50,8 +50,8 @@ export function calculatePoints(
       }
       total += unitPoints;
       // Add heroic trait, artifact, and enhancement points for unit
-      if (unit.heroic_trait) {
-        total += getEnhancementPoints(unit.heroic_trait, army.heroicTraits);
+      if (unit.heroicTrait) {
+        total += getEnhancementPoints(unit.heroicTrait, army.heroicTraits);
       }
       if (unit.artifact) {
         total += getEnhancementPoints(unit.artifact, army.artifacts);
@@ -65,16 +65,16 @@ export function calculatePoints(
   }
 
   // Add points for auxiliary units
-  if (list.auxiliary_units) {
-    for (const unit of list.auxiliary_units) {
+  if (list.auxiliaryUnits) {
+    for (const unit of list.auxiliaryUnits) {
       let unitPoints = army.battleProfiles.get(unit.name)?.points || 0;
       if (unit.reinforced) {
         unitPoints *= 2;
       }
       total += unitPoints;
       // Add heroic trait, artifact, and enhancement points for aux unit
-      if (unit.heroic_trait) {
-        total += getEnhancementPoints(unit.heroic_trait, army.heroicTraits);
+      if (unit.heroicTrait) {
+        total += getEnhancementPoints(unit.heroicTrait, army.heroicTraits);
       }
       if (unit.artifact) {
         total += getEnhancementPoints(unit.artifact, army.artifacts);
@@ -88,23 +88,23 @@ export function calculatePoints(
   }
 
   // Add points for faction terrain if present
-  if (list.faction_terrain) {
-    total += army.battleProfiles.get(list.faction_terrain)?.points || 0;
+  if (list.factionTerrain) {
+    total += army.battleProfiles.get(list.factionTerrain)?.points || 0;
   }
   // Add points for spell lore if present
-  if (list.spell_lore) {
-    total += army.spellLores.get(list.spell_lore)?.points || 0;
+  if (list.spellLore) {
+    total += army.spellLores.get(list.spellLore)?.points || 0;
   }
 
   // Add points for prayer lore if present
-  if (list.prayer_lore) {
-    total += army.prayerLores.get(list.prayer_lore)?.points || 0;
+  if (list.prayerLore) {
+    total += army.prayerLores.get(list.prayerLore)?.points || 0;
   }
 
   // Add points for manifestation lore if present, using lores Map
-  if (list.manifestation_lore) {
-    total += army.manifestationLores.get(list.manifestation_lore)?.points || 0;
-    total += universalManifestationLores.get(list.manifestation_lore)?.points || 0;
+  if (list.manifestationLore) {
+    total += army.manifestationLores.get(list.manifestationLore)?.points || 0;
+    total += universalManifestationLores.get(list.manifestationLore)?.points || 0;
   }
   return total;
 }

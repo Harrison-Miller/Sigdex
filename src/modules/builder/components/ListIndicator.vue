@@ -35,14 +35,13 @@ import { ref, computed } from 'vue';
 import Modal from '../../../components/Modal.vue';
 import { calculatePoints } from '../../../utils/points-manager';
 import { calculateViolations } from '../../../utils/violations-manager';
-import type { List } from '../../../common/ListData';
+import type { List } from '../../../list/models/list';
 import type { IGame } from '../../../parser/models/game';
 import { Army } from '../../../parser/models/army';
 
 const props = defineProps<{
   list: List;
   game: IGame;
-  pointsCap: number;
 }>();
 
 const army = computed(
@@ -51,14 +50,15 @@ const army = computed(
 
 const showViolationsModal = ref(false);
 const pointsTotal = computed(() => {
-  if (!props.list || !army) return 0;
+  if (!props.list || !army.value) return 0;
   return calculatePoints(props.list, army.value, props.game.universalManifestationLores);
 });
 const violations = computed(() => {
-  if (!props.list || !army) return [];
+  if (!props.list || !army.value) return [];
   return calculateViolations(props.list, props.game);
 });
 const isListValid = computed(() => violations.value.length === 0);
+const pointsCap = computed(() => props.list.pointsCap);
 </script>
 
 <style scoped>

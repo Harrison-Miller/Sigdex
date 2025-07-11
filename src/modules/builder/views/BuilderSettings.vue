@@ -16,36 +16,27 @@
 </template>
 <script setup lang="ts">
 import BackButton from '../../core/components/BackButton.vue';
-import { ref, computed, watch } from 'vue';
-import { deleteList, renameList, getList } from '../../../utils/list-manager';
+import { ref, computed } from 'vue';
+import { useList } from '../../shared/composables/useList';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const listId = route.params.id as string;
-const list = ref(getList(listId));
+const list = useList(listId);
 const listName = computed(() => list.value?.name || '');
 const newName = ref(listName.value);
 
 const router = useRouter();
 
-watch(
-  () => listId,
-  () => {
-    list.value = getList(listId);
-    newName.value = list.value?.name || '';
-  },
-  { immediate: true }
-);
-
 function deleteCurrentList() {
-  deleteList(listId);
+  list.value = null;
   router.push({ path: '/' });
 }
 
 function renameCurrentList() {
-  renameList(listId, newName.value);
-  list.value = getList(listId); // update local list after rename
-  router.replace({ name: 'BuilderSettings', params: { id: listId } });
+  if (list.value) {
+    list.value.name = newName.value;
+  }
 }
 </script>
 <style scoped>
