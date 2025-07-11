@@ -1,7 +1,7 @@
 import { Ability, type IAbility } from '../models/ability';
 import { mapTextNodesByName } from '../util';
 
-export function parseAbility(abilityNode: any): IAbility {
+export function parseAbility(abilityNode: any): Ability {
   if (!abilityNode) return new Ability();
 
   const typeName = abilityNode['@_typeName'] || '';
@@ -30,7 +30,7 @@ export function parseAbility(abilityNode: any): IAbility {
   return new Ability(ability);
 }
 
-export function parseAbilities(profilesNode: any): IAbility[] {
+export function parseAbilities(profilesNode: any): Ability[] {
   return profilesNode?.profile
     .filter((profile: any) => {
       const typeName = profile['@_typeName'] || '';

@@ -1,6 +1,11 @@
-import { BattleProfile, type IBattleProfile, type IRegimentOption } from '../models/battleProfile';
-import { Model, type IModel } from '../models/model';
-import type { IUnit } from '../models/unit';
+import {
+  BattleProfile,
+  RegimentOption,
+  type IBattleProfile,
+  type IRegimentOption,
+} from '../models/battleProfile';
+import { Model } from '../models/model';
+import { Unit, type IUnit } from '../models/unit';
 import { WeaponOption } from '../models/weaponOption';
 import { findAllByTagAndAttrs, findFirstByTagAndAttrs } from '../util';
 import {
@@ -13,9 +18,9 @@ import { parseCompanionUnitLeader } from './parseCompanionUnits';
 
 export function parseBattleProfiles(
   root: any,
-  units: Map<string, IUnit>,
+  units: Map<string, Unit>,
   categories: Map<string, ICategory>
-): Map<string, IBattleProfile> {
+): Map<string, BattleProfile> {
   const bpCategories = parseBattleProfileCategories(root);
   // add bp categories to the main categories map
   const allCategories = new Map<string, ICategory>(categories);
@@ -28,7 +33,7 @@ export function parseBattleProfiles(
   const errorConditions = parseErrorConditions(root, allCategories);
 
   const battleProfileNodes = root.entryLinks?.entryLink || [];
-  const bpMap = new Map<string, IBattleProfile>();
+  const bpMap = new Map<string, BattleProfile>();
   for (const node of battleProfileNodes) {
     const name = node['@_name']?.toLowerCase() || '';
     // I'm not sure why there's an entryLink for battle traits with the bps - but there is sometimes.
@@ -65,7 +70,7 @@ export function parseBattleProfiles(
     if (leaderBp) {
       leaderBp.companionUnits.push(...companions);
       // modify regiment options to make companions required
-      leaderBp.regimentOptions = leaderBp.regimentOptions.map((option: IRegimentOption) => {
+      leaderBp.regimentOptions = leaderBp.regimentOptions.map((option: RegimentOption) => {
         if (companions.includes(option.name)) {
           return {
             ...option,
@@ -81,7 +86,7 @@ export function parseBattleProfiles(
   // cap regiment options of heroes to 1 per regiment
   // TODO: figure out how to remove units filtered out by checks above (legends)
   for (const bp of bpMap.values()) {
-    bp.regimentOptions = bp.regimentOptions.map((option: IRegimentOption) => {
+    bp.regimentOptions = bp.regimentOptions.map((option: RegimentOption) => {
       const optionUnit = bpMap.get(option.name);
       if (optionUnit && optionUnit.category === 'HERO') {
         return {
@@ -118,11 +123,11 @@ export function parseBattleProfileCategories(root: any): Map<string, ICategory> 
 
 export function parseBattleProfile(
   bpNode: any,
-  units: Map<string, IUnit>,
+  units: Map<string, Unit>,
   allCategories: Map<string, ICategory>,
   armyCategories: Map<string, ICategory>,
   errorConditions: IErrorCondition[]
-): IBattleProfile {
+): BattleProfile {
   const battleProfile: Partial<IBattleProfile> = {
     name: bpNode['@_name'],
     points: parsePoints(bpNode),
@@ -150,11 +155,11 @@ export function parseBattleProfile(
     battleProfile.reinforceable = false; // undersize units are not reinforceable
     if (!units.has(battleProfile.name)) {
       // create a new unit for this bp
-      const undersizeUnit = {
+      const undersizeUnit: IUnit = {
         ...unit,
         name: battleProfile.name,
         unitSize: newUnitSize, // undersize units are always 1 model
-        models: new Map<string, IModel>(), // create a new models map
+        models: new Map<string, Model>(), // create a new models map
       };
       for (const [_, model] of unit.models) {
         undersizeUnit.models.set(
@@ -174,7 +179,7 @@ export function parseBattleProfile(
           undersizeUnit.models.get(model.name)?.weapons.set(w.name, wp);
         }
       }
-      units.set(battleProfile.name, undersizeUnit);
+      units.set(battleProfile.name, new Unit(undersizeUnit));
     }
   }
 
@@ -213,8 +218,8 @@ export function parseRegimentOptions(
   allCategories: Map<string, ICategory>,
   armyCategories: Map<string, ICategory>,
   errorConditions: IErrorCondition[]
-): IRegimentOption[] {
-  const options: IRegimentOption[] = [];
+): RegimentOption[] {
+  const options: RegimentOption[] = [];
   const name = bpNode['@_name'] || '';
   const id = bpNode['@_id'] || '';
 
@@ -227,7 +232,7 @@ export function parseRegimentOptions(
         max: 1, // these are always 1
         min: 0,
       };
-      options.push(option);
+      options.push(new RegimentOption(option));
     }
   }
 
@@ -261,7 +266,7 @@ export function parseRegimentOptions(
           max: errorCondition?.max || 0, // use max from error condition, or 0 (any amount)
           min: 0,
         };
-        options.push(option);
+        options.push(new RegimentOption(option));
       }
     }
   });

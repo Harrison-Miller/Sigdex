@@ -47,7 +47,7 @@ import ListButton from '../../shared/components/ListButton.vue';
 import BackButton from '../../core/components/BackButton.vue';
 import Section from '../../core/components/Section.vue';
 import { useGame } from '../../shared/composables/useGame';
-import { BattleProfile, type IBattleProfile } from '../../../parser/models/battleProfile';
+import { BattleProfile } from '../../../parser/models/battleProfile';
 import { UnitCategories, type UnitCategory } from '../../../parser/models/unit';
 import { Army } from '../../../parser/models/army';
 import { filterBattleProfilesByRegimentOptions } from '../filter';
@@ -70,7 +70,7 @@ const army = computed(
 const search = ref('');
 
 const filteredBPs = computed(() => {
-  let us: IBattleProfile[] = [];
+  let us: BattleProfile[] = [];
   switch (filter.toLowerCase()) {
     case 'leader':
       us =
@@ -141,7 +141,7 @@ const showRegimentOptions = computed(
 const formattedRegimentOptions = computed(() => formatRegimentOptions(leaderRegimentOptions.value));
 
 const categorizedBattleProfiles = computed(() => {
-  const cats: Map<string, IBattleProfile[]> = new Map();
+  const cats: Map<string, BattleProfile[]> = new Map();
   for (const bp of filteredBPs.value) {
     const cat = bp.category;
     if (!cats.has(cat)) cats.set(cat, []);
@@ -161,14 +161,14 @@ const categorizedBattleProfiles = computed(() => {
   return cats;
 });
 
-function goToDetail(bp: IBattleProfile) {
+function goToDetail(bp: BattleProfile) {
   router.push({
     name: 'UnitDetail',
     params: { army: list.value?.faction || '', unit: bp.name },
   });
 }
 
-function addUnitToRegiment(bp: IBattleProfile) {
+function addUnitToRegiment(bp: BattleProfile) {
   if (!list.value) return;
   const unit = game.value?.units.get(bp.name) || undefined;
   if (!unit) {

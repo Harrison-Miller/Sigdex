@@ -1,18 +1,38 @@
-import type { IAbility } from './ability';
-import type { IBattleProfile } from './battleProfile';
-import type { ILore } from './lore';
+import { Ability } from './ability';
+import type { BattleProfile } from './battleProfile';
+import type { Lore } from './lore';
 import { UnitCategories, type UnitCategory } from './unit';
 
 export type GrandAlliance = 'Order' | 'Chaos' | 'Death' | 'Destruction';
 
 export interface IEnhancement {
   points: number; // points cost of the enhancement
-  ability: IAbility;
+  ability: Ability;
+}
+
+export class Enhancement implements IEnhancement {
+  points: number;
+  ability: Ability;
+
+  constructor(data?: Partial<IEnhancement>) {
+    this.points = data?.points ?? 0;
+    this.ability = data?.ability ?? new Ability();
+  }
 }
 
 export interface IEnhancementTable {
   name: string;
-  enhancements: IEnhancement[];
+  enhancements: Enhancement[];
+}
+
+export class EnhancementTable implements IEnhancementTable {
+  name: string;
+  enhancements: Enhancement[];
+
+  constructor(data?: Partial<IEnhancementTable>) {
+    this.name = data?.name ?? '';
+    this.enhancements = data?.enhancements ?? [];
+  }
 }
 
 export interface IUnitListItem {
@@ -24,20 +44,20 @@ export interface IArmy {
   name: string;
   grandAlliance: GrandAlliance; // probably computed by looking up the keywords of the first unit in battleProfiles
 
-  battleTraits: IAbility[];
-  formations: Map<string, IAbility[]>; // a formation may have more than one ability
+  battleTraits: Ability[];
+  formations: Map<string, Ability[]>; // a formation may have more than one ability
 
-  artifacts: Map<string, IEnhancementTable>; // there can be multiple artifact tables
-  heroicTraits: Map<string, IEnhancementTable>; // there can be multiple heroic trait tables
+  artifacts: Map<string, EnhancementTable>; // there can be multiple artifact tables
+  heroicTraits: Map<string, EnhancementTable>; // there can be multiple heroic trait tables
 
   // other enhancement tables like "Monstrous Traits"
-  enhancements: Map<string, IEnhancementTable>;
+  enhancements: Map<string, EnhancementTable>;
 
-  spellLores: Map<string, ILore>;
-  prayerLores: Map<string, ILore>;
-  manifestationLores: Map<string, ILore>;
+  spellLores: Map<string, Lore>;
+  prayerLores: Map<string, Lore>;
+  manifestationLores: Map<string, Lore>;
 
-  battleProfiles: Map<string, IBattleProfile>;
+  battleProfiles: Map<string, BattleProfile>;
 
   regimentsOfRenown: string[]; // names of regiments of renown this army can use
 
@@ -53,19 +73,19 @@ export class Army implements IArmy {
   name: string;
   grandAlliance: GrandAlliance;
 
-  battleTraits: IAbility[];
-  formations: Map<string, IAbility[]>;
+  battleTraits: Ability[];
+  formations: Map<string, Ability[]>;
 
-  artifacts: Map<string, IEnhancementTable>;
-  heroicTraits: Map<string, IEnhancementTable>;
+  artifacts: Map<string, EnhancementTable>;
+  heroicTraits: Map<string, EnhancementTable>;
 
-  enhancements: Map<string, IEnhancementTable>;
+  enhancements: Map<string, EnhancementTable>;
 
-  spellLores: Map<string, ILore>;
-  prayerLores: Map<string, ILore>;
-  manifestationLores: Map<string, ILore>;
+  spellLores: Map<string, Lore>;
+  prayerLores: Map<string, Lore>;
+  manifestationLores: Map<string, Lore>;
 
-  battleProfiles: Map<string, IBattleProfile>;
+  battleProfiles: Map<string, BattleProfile>;
 
   regimentsOfRenown: string[];
 

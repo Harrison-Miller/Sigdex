@@ -39,11 +39,11 @@ import { ref, watch, onMounted } from 'vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
 import { ListUnit } from '../../../list/models/unit';
-import type { IBattleProfile } from '../../../parser/models/battleProfile';
+import type { BattleProfile } from '../../../parser/models/battleProfile';
 
 const props = defineProps<{
   modelValue: ListUnit[];
-  battleProfiles: Map<string, IBattleProfile>;
+  battleProfiles: Map<string, BattleProfile>;
   armyName: string;
   listId: string;
 }>();

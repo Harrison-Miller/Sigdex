@@ -35,12 +35,12 @@ import { ref, computed } from 'vue';
 import Modal from '../../../components/Modal.vue';
 import { calculatePoints } from '../../../validation/points';
 import type { List } from '../../../list/models/list';
-import type { IGame } from '../../../parser/models/game';
+import type { Game } from '../../../parser/models/game';
 import { validateList } from '../../../validation/run';
 
 const props = defineProps<{
   list: List;
-  game: IGame;
+  game: Game;
 }>();
 
 const showViolationsModal = ref(false);

@@ -1,5 +1,5 @@
-import type { IUnit } from '../../parser/models/unit';
-import type { IWeaponOption } from '../../parser/models/weaponOption';
+import type { Unit } from '../../parser/models/unit';
+import type { WeaponOption } from '../../parser/models/weaponOption';
 
 export interface IListUnit {
   name: string;
@@ -53,7 +53,7 @@ export class ListUnit implements IListUnit {
   }
 }
 
-export function getDefaultWeaponOptions(unit: IUnit): Map<string, IListUnitWeaponOption[]> {
+export function getDefaultWeaponOptions(unit: Unit): Map<string, IListUnitWeaponOption[]> {
   const result = new Map<string, IListUnitWeaponOption[]>();
   for (const [modelName, model] of unit.models) {
     const arr: IListUnitWeaponOption[] = [];
@@ -64,7 +64,7 @@ export function getDefaultWeaponOptions(unit: IUnit): Map<string, IListUnitWeapo
       }
     }
     // Grouped weapons: select first in each group
-    const groupMap: Record<string, IWeaponOption[]> = {};
+    const groupMap: Record<string, WeaponOption[]> = {};
     for (const [_, w] of model.weapons || []) {
       if (w.type === 'grouped' && w.group) {
         if (!groupMap[w.group]) groupMap[w.group] = [];

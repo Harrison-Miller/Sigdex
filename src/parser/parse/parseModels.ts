@@ -2,13 +2,13 @@ import { Model, type IModel } from '../models/model';
 import { WeaponOption, type IWeaponOption } from '../models/weaponOption';
 import { findAllByTagAndAttrs, findFirstByTagAndAttrs } from '../util';
 
-export function parseModels(unitNode: any): Map<string, IModel> {
+export function parseModels(unitNode: any): Map<string, Model> {
   const modelNodes =
     unitNode?.selectionEntries?.selectionEntry?.filter((node: any) => {
       return node['@_type'] === 'model';
     }) || [];
 
-  const models: Map<string, IModel> = new Map<string, IModel>();
+  const models: Map<string, Model> = new Map<string, Model>();
   const nameCounts: Record<string, number> = {};
 
   for (const modelNode of modelNodes) {
@@ -37,12 +37,12 @@ export function parseModels(unitNode: any): Map<string, IModel> {
         ] || '1',
         10
       ),
-      weapons: weapons.reduce((map: Map<string, IWeaponOption>, option: IWeaponOption) => {
+      weapons: weapons.reduce((map: Map<string, WeaponOption>, option: WeaponOption) => {
         if (option.name) {
           map.set(option.name, option);
         }
         return map;
-      }, new Map<string, IWeaponOption>()),
+      }, new Map<string, WeaponOption>()),
     };
 
     models.set(modelName, new Model(model));
@@ -51,8 +51,8 @@ export function parseModels(unitNode: any): Map<string, IModel> {
   return models;
 }
 
-export function parseWeaponOptions(modelNode: any): IWeaponOption[] {
-  const weaponOptions: IWeaponOption[] = [];
+export function parseWeaponOptions(modelNode: any): WeaponOption[] {
+  const weaponOptions: WeaponOption[] = [];
   weaponOptions.push(...parseWeaponOptionsFromSelectionEntries(modelNode.selectionEntries));
   weaponOptions.push(
     ...(modelNode?.selectionEntryGroups?.selectionEntryGroup?.flatMap((group: any) => {
@@ -62,7 +62,7 @@ export function parseWeaponOptions(modelNode: any): IWeaponOption[] {
   return weaponOptions;
 }
 
-export function parseWeaponOptionsFromSelectionEntries(selectionEntriesNode: any): IWeaponOption[] {
+export function parseWeaponOptionsFromSelectionEntries(selectionEntriesNode: any): WeaponOption[] {
   const weaponNodes =
     selectionEntriesNode?.selectionEntry.filter((node: any) => {
       return node['@_type'] === 'upgrade';
@@ -145,7 +145,7 @@ export function parseWeaponOptionsFromSelectionEntries(selectionEntriesNode: any
 
 export function parseWeaponOptionsFromSelectionEntryGroup(
   selectionEntryGroup: any
-): IWeaponOption[] {
+): WeaponOption[] {
   const groupName = selectionEntryGroup['@_name'];
   const weaponNodes =
     selectionEntryGroup?.selectionEntries?.selectionEntry.filter((node: any) => {

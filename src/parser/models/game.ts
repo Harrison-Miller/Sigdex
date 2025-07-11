@@ -1,8 +1,8 @@
-import type { IAbility } from './ability';
-import type { GrandAlliance, IArmy } from './army';
-import type { ILore } from './lore';
-import type { IRegimentOfRenown } from './regimentOfRenown';
-import type { IUnit } from './unit';
+import type { Ability } from './ability';
+import type { GrandAlliance, Army } from './army';
+import type { Lore } from './lore';
+import type { RegimentOfRenown } from './regimentOfRenown';
+import type { Unit } from './unit';
 
 export interface IBattleTacticCard {
   name: string;
@@ -36,29 +36,29 @@ export interface IArmyListItem {
 // TODO: we're assuming only 1 game mode ghb 2025-06, later we'll want to support multiple game modes
 // General object to store everything related to the game data
 export interface IGame {
-  battleTacticCards: IBattleTacticCard[];
+  battleTacticCards: BattleTacticCard[];
   // weapon ability to the rule description
   weaponAbilityDescriptions: Map<string, string>;
   // some keywords grant abilities like fly, ward.
-  keywordAbility: Map<string, IAbility>;
+  keywordAbility: Map<string, Ability>;
 
-  units: Map<string, IUnit>;
-  universalManifestationLores: Map<string, ILore>;
-  armies: Map<string, IArmy>;
+  units: Map<string, Unit>;
+  universalManifestationLores: Map<string, Lore>;
+  armies: Map<string, Army>;
   armyList: Map<GrandAlliance, IArmyListItem[]>; // list of army names by grand alliance
 
-  regimentsOfRenown: Map<string, IRegimentOfRenown>;
+  regimentsOfRenown: Map<string, RegimentOfRenown>;
 }
 
 export class Game implements IGame {
-  battleTacticCards: IBattleTacticCard[] = [];
+  battleTacticCards: BattleTacticCard[] = [];
   weaponAbilityDescriptions: Map<string, string> = new Map();
-  keywordAbility: Map<string, IAbility> = new Map();
+  keywordAbility: Map<string, Ability> = new Map();
 
-  units: Map<string, IUnit> = new Map();
-  universalManifestationLores: Map<string, ILore> = new Map();
-  armies: Map<string, IArmy> = new Map();
+  units: Map<string, Unit> = new Map();
+  universalManifestationLores: Map<string, Lore> = new Map();
+  armies: Map<string, Army> = new Map();
   armyList: Map<GrandAlliance, IArmyListItem[]> = new Map();
 
-  regimentsOfRenown: Map<string, IRegimentOfRenown> = new Map();
+  regimentsOfRenown: Map<string, RegimentOfRenown> = new Map();
 }

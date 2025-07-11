@@ -48,11 +48,11 @@ import { ref, computed } from 'vue';
 import Section from '../../core/components/Section.vue';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import ListButton from '../../shared/components/ListButton.vue';
-import { Lore, type ILore } from '../../../parser/models/lore';
+import { Lore } from '../../../parser/models/lore';
 import { useGame } from '../../shared/composables/useGame';
 
 const props = defineProps<{
-  armyLore: Map<string, ILore>;
+  armyLore: Map<string, Lore>;
   modelValue: string;
   manifestationMode?: boolean;
   armyName: string;

@@ -76,7 +76,7 @@
       <button class="add-regiment-btn" @click="addRegiment">Add regiment</button>
 
       <AuxiliaryUnitsSection
-        v-model="list.auxiliaryUnits as ListUnit[]"
+        v-model="list.auxiliaryUnits"
         :battleProfiles="army.battleProfiles"
         :armyName="list.faction"
         :listId="list.id"
@@ -131,7 +131,7 @@ import BattleTacticCard from '../../shared/components/BattleTacticCard.vue';
 import FactionTerrainSection from '../components/FactionTerrainSection.vue';
 import AuxiliaryUnitsSection from '../components/AuxiliaryUnitsSection.vue';
 import { Army } from '../../../parser/models/army';
-import { BattleTacticCard as BattleTacticCardType } from '../../../parser/models/game';
+import { BattleTacticCard as BattleTacticCardModel } from '../../../parser/models/game';
 import { ListUnit } from '../../../list/models/unit';
 import { ListRegiment as ListRegimentModel } from '../../../list/models/regiment';
 
@@ -150,13 +150,13 @@ const selectedFormation = computed(() => {
 const selectedBattleTacticCard1 = computed(() => {
   return (
     battleTacticCards.value.find((card) => card.name === list.value.battleTacticCard1) ||
-    new BattleTacticCardType()
+    new BattleTacticCardModel()
   );
 });
 const selectedBattleTacticCard2 = computed(() => {
   return (
     battleTacticCards.value.find((card) => card.name === list.value.battleTacticCard2) ||
-    new BattleTacticCardType()
+    new BattleTacticCardModel()
   );
 });
 

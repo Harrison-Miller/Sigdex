@@ -1,14 +1,14 @@
-import type { IAbility } from './ability';
+import type { Ability } from './ability';
 
 export interface ILore {
   name: string;
-  abilities: IAbility[]; // spells, prayers or summoning spells
+  abilities: Ability[]; // spells, prayers or summoning spells
   points: number;
 }
 
 export class Lore implements ILore {
   name: string;
-  abilities: IAbility[];
+  abilities: Ability[];
   points: number;
 
   constructor(lore?: Partial<ILore>) {

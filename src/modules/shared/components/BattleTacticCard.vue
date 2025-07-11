@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { IBattleTacticCard } from '../../../parser/models/game';
+import type { BattleTacticCard } from '../../../parser/models/game';
 import { formatText } from '../../../utils/formatter';
-defineProps<{ card: IBattleTacticCard }>();
+defineProps<{ card: BattleTacticCard }>();
 </script>
 <template>
   <div class="battle-tactic-card">

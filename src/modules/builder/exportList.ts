@@ -1,18 +1,18 @@
-import type { IList } from '../../list/models/list';
-import type { IListRegiment } from '../../list/models/regiment';
-import type { IListUnit } from '../../list/models/unit';
-import type { IArmy } from '../../parser/models/army';
-import type { IGame } from '../../parser/models/game';
+import type { List } from '../../list/models/list';
+import type { ListRegiment } from '../../list/models/regiment';
+import type { ListUnit } from '../../list/models/unit';
+import type { Army } from '../../parser/models/army';
+import type { Game } from '../../parser/models/game';
 import { calculatePoints } from '../../validation/points';
 import { SIGDEX_VERSION } from '../../version';
 
-function calculateDrops(list: IList): number {
+function calculateDrops(list: List): number {
   if (!list || !list.regiments) return 0;
   let drops = list.regiments.length + (list.auxiliaryUnits?.length || 0);
   return drops;
 }
 
-function calculateWounds(list: IList, game: IGame): number {
+function calculateWounds(list: List, game: Game): number {
   if (!list || !list.regiments) return 0;
   let totalWounds = 0;
   for (const regiment of list.regiments) {
@@ -47,7 +47,7 @@ function calculateWounds(list: IList, game: IGame): number {
   return totalWounds;
 }
 
-function getArtifactPoints(artifact: string, army: IArmy): number {
+function getArtifactPoints(artifact: string, army: Army): number {
   if (!artifact || !army.artifacts) return 0;
   for (const [_, table] of army.artifacts) {
     for (const enhancement of table.enhancements) {
@@ -59,7 +59,7 @@ function getArtifactPoints(artifact: string, army: IArmy): number {
   return 0; // Fallback if artifact not found
 }
 
-function getHeroicTraitPoints(trait: string, army: IArmy): number {
+function getHeroicTraitPoints(trait: string, army: Army): number {
   if (!trait || !army.heroicTraits) return 0;
   for (const [_, table] of army.heroicTraits) {
     for (const enhancement of table.enhancements) {
@@ -71,7 +71,7 @@ function getHeroicTraitPoints(trait: string, army: IArmy): number {
   return 0; // Fallback if trait not found
 }
 
-function getEnhancementPoints(enhancement: string, army: IArmy): number {
+function getEnhancementPoints(enhancement: string, army: Army): number {
   if (!enhancement || army.enhancements.size === 0) return 0;
   for (const [_, table] of army.enhancements) {
     for (const enh of table.enhancements) {
@@ -90,7 +90,7 @@ function displayWithPoints(text: string, points: number | undefined): string {
   return `${text}\n`; // No points, just the name
 }
 
-function displayUnit(unit: IListUnit, army: IArmy, game: IGame): string {
+function displayUnit(unit: ListUnit, army: Army, game: Game): string {
   if (!unit) return '';
   const unitData = game.units.get(unit.name);
   const bp = army.battleProfiles.get(unit.name);
@@ -151,7 +151,7 @@ function displayUnit(unit: IListUnit, army: IArmy, game: IGame): string {
   return out;
 }
 
-function displayRegiment(regiment: IListRegiment, army: IArmy, game: IGame): string {
+function displayRegiment(regiment: ListRegiment, army: Army, game: Game): string {
   let out = '';
   if (regiment.leader) {
     out += `${displayUnit(regiment.leader, army, game)}`;
@@ -164,7 +164,7 @@ function displayRegiment(regiment: IListRegiment, army: IArmy, game: IGame): str
   return out;
 }
 
-export function exportList(list: IList, game: IGame): string {
+export function exportList(list: List, game: Game): string {
   let out = '';
 
   const army = game.armies.get(list.faction);

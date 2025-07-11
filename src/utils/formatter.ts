@@ -1,8 +1,8 @@
 import pluralize, { isPlural } from 'pluralize';
-import type { IModel } from '../parser/models/model';
-import type { IUnit } from '../parser/models/unit';
-import type { IWeaponOption } from '../parser/models/weaponOption';
-import type { IRegimentOption } from '../parser/models/battleProfile';
+import type { Model } from '../parser/models/model';
+import type { Unit } from '../parser/models/unit';
+import type { WeaponOption } from '../parser/models/weaponOption';
+import type { RegimentOption } from '../parser/models/battleProfile';
 
 export function formatText(text: string): string {
   if (!text) return '';
@@ -33,7 +33,7 @@ export function formatText(text: string): string {
   return text;
 }
 
-export function formatModelGroups(modelGroups: IModel[], unit: IUnit): string {
+export function formatModelGroups(modelGroups: Model[], unit: Unit): string {
   // contains champion keyword case insensitive
   const hasChampion = unit.keywords
     ? unit.keywords.some((k) => k.toLowerCase() === 'champion')
@@ -62,7 +62,7 @@ export function formatModelGroups(modelGroups: IModel[], unit: IUnit): string {
   return text;
 }
 
-function formatModelGroup(unitSize: number, group: IModel, hasChampion: boolean): string {
+function formatModelGroup(unitSize: number, group: Model, hasChampion: boolean): string {
   const isOneModel = group.count === 1;
   const isGroupSize = unitSize === group.count;
   let text = `<i>`;
@@ -140,7 +140,7 @@ function formatModelGroup(unitSize: number, group: IModel, hasChampion: boolean)
   }
 
   // grouped weapons
-  const groupedWeapons: Map<string, IWeaponOption[]> = new Map();
+  const groupedWeapons: Map<string, WeaponOption[]> = new Map();
   for (const weapon of weaponArray) {
     if (weapon.type === 'grouped' && weapon.group) {
       if (!groupedWeapons.has(weapon.group)) {
@@ -178,8 +178,8 @@ export function formatSubHeroTags(tags: string[]): string {
   return `<i>This <b>Hero</b> can join an eligible regiment as a ${tags.map((tag) => `<b>${tag}</b>`).join(', ')}.</i>`;
 }
 
-export function formatRegimentOptions(options: IRegimentOption[]): string {
-  const formatItems = (opts: IRegimentOption[]) =>
+export function formatRegimentOptions(options: RegimentOption[]): string {
+  const formatItems = (opts: RegimentOption[]) =>
     opts
       .map((opt) => {
         if (opt.min > 0 && opt.max == opt.min) {

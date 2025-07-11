@@ -8,10 +8,10 @@
     <div v-if="bp.reinforceable" class="option-row">
       <ToggleBox v-model="unit.reinforced">Reinforce</ToggleBox>
     </div>
-    <WeaponOptionsSelection v-model="unit as ListUnit" :unit-data="unitData" />
+    <WeaponOptionsSelection v-model="unit" :unit-data="unitData" />
     <EnhancementsSelection
       v-if="!unitData.hasKeyword('unique')"
-      v-model="unit as ListUnit"
+      v-model="unit"
       :unit-data="unitData"
       :army="army"
     />
@@ -29,7 +29,6 @@ import { useList } from '../../shared/composables/useList';
 import { Army } from '../../../parser/models/army';
 import { Unit } from '../../../parser/models/unit';
 import { BattleProfile } from '../../../parser/models/battleProfile';
-import { ListUnit } from '../../../list/models/unit';
 
 const route = useRoute();
 const listId = route.params.id as string;

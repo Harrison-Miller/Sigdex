@@ -61,13 +61,13 @@ import { computed, reactive, watch } from 'vue';
 import CounterBox from '../../core/components/CounterBox.vue';
 import Section from '../../core/components/Section.vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
-import type { IUnit } from '../../../parser/models/unit';
-import type { IWeaponOption } from '../../../parser/models/weaponOption';
-import type { IModel } from '../../../parser/models/model';
+import type { Unit } from '../../../parser/models/unit';
+import type { WeaponOption } from '../../../parser/models/weaponOption';
+import type { Model } from '../../../parser/models/model';
 import { ListUnit } from '../../../list/models/unit';
 
 // v-model:unit
-const props = defineProps<{ modelValue: ListUnit; unitData: IUnit }>();
+const props = defineProps<{ modelValue: ListUnit; unitData: Unit }>();
 const emit = defineEmits(['update:modelValue']);
 
 const modelGroups = computed(() => Array.from(props.unitData?.models?.values?.() ?? []));
@@ -79,18 +79,18 @@ const groupWeaponCounterState = reactive<Record<string, Record<string, Record<st
   {}
 );
 
-function getEffectiveMax(w: IWeaponOption) {
+function getEffectiveMax(w: WeaponOption) {
   if (w.type !== 'optional' || !w.max) return 99;
   return props.modelValue.reinforced ? w.max * 2 : w.max;
 }
 
-function getOptionalWeapons(group: IModel) {
+function getOptionalWeapons(group: Model) {
   return Array.from(group.weapons.values()).filter(
-    (w: IWeaponOption) => w.type === 'optional' && w.max
+    (w: WeaponOption) => w.type === 'optional' && w.max
   );
 }
-function getGroupWeapons(group: IModel) {
-  const map: Record<string, IWeaponOption[]> = {};
+function getGroupWeapons(group: Model) {
+  const map: Record<string, WeaponOption[]> = {};
   for (const [_, w] of group.weapons || []) {
     if (w.type === 'grouped' && w.group) {
       if (!map[w.group]) map[w.group] = [];

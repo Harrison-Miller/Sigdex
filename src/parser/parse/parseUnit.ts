@@ -1,4 +1,4 @@
-import type { IModel } from '../models/model';
+import type { Model } from '../models/model';
 import { Stats, type IStats } from '../models/stats';
 import { Unit, type IUnit } from '../models/unit';
 import { Weapon, type IWeapon } from '../models/weapon';
@@ -6,8 +6,8 @@ import { findAllByTagAndAttrs, mapTextNodesByName } from '../util';
 import { parseAbilities } from './parseAbility';
 import { parseModels } from './parseModels';
 
-export function parseUnits(rootNode: any): IUnit[] {
-  const units: IUnit[] = [];
+export function parseUnits(rootNode: any): Unit[] {
+  const units: Unit[] = [];
   const unitNodes =
     rootNode?.sharedSelectionEntries?.selectionEntry.filter((node: any) => {
       return node['@_type'] === 'unit';
@@ -23,7 +23,7 @@ export function parseUnits(rootNode: any): IUnit[] {
   return units;
 }
 
-export function parseUnit(unitNode: any): IUnit {
+export function parseUnit(unitNode: any): Unit {
   const unit: Partial<IUnit> = {
     name: unitNode['@_name'],
     stats: parseUnitStats(unitNode),
@@ -45,7 +45,7 @@ export function parseUnit(unitNode: any): IUnit {
 
   // remove models if it's only default models
   if (unit.models && isDefaultModels(Array.from(unit.models.values()))) {
-    unit.models = new Map<string, IModel>(); // return empty map if all models are default
+    unit.models = new Map<string, Model>(); // return empty map if all models are default
   }
 
   // TODO: handle parsing shared abilities like wall crawler
@@ -53,15 +53,15 @@ export function parseUnit(unitNode: any): IUnit {
   return new Unit(unit);
 }
 
-export function parseRangedWeapons(unitNode: any): IWeapon[] {
+export function parseRangedWeapons(unitNode: any): Weapon[] {
   return parseWeapons(unitNode, 'Ranged Weapon');
 }
 
-export function parseMeleeWeapons(unitNode: any): IWeapon[] {
+export function parseMeleeWeapons(unitNode: any): Weapon[] {
   return parseWeapons(unitNode, 'Melee Weapon');
 }
 
-export function parseWeapons(unitNode: any, weaponType: string): IWeapon[] {
+export function parseWeapons(unitNode: any, weaponType: string): Weapon[] {
   const weaponNodes = findAllByTagAndAttrs(unitNode, 'profile', {
     typeName: weaponType,
   }); // this is causing issues
@@ -69,7 +69,7 @@ export function parseWeapons(unitNode: any, weaponType: string): IWeapon[] {
   return weaponNodes.map((node: any) => parseUnitWeapon(node));
 }
 
-export function parseUnitWeapon(weaponNode: any): IWeapon {
+export function parseUnitWeapon(weaponNode: any): Weapon {
   const characteristics = mapTextNodesByName(weaponNode.characteristics, 'characteristic');
   const weapon: Partial<IWeapon> = {
     name: weaponNode['@_name'],
@@ -94,7 +94,7 @@ export function splitWeaponAbilities(text: string): string[] {
   );
 }
 
-export function parseUnitStats(unitNode: any): IStats {
+export function parseUnitStats(unitNode: any): Stats {
   const statsNode = unitNode.profiles?.profile.find((profile: any) => {
     return profile['@_typeName'] === 'Unit' || profile['@_typeName'] === 'Manifestation';
   });
@@ -127,7 +127,7 @@ export function parseUnitKeywords(unitNode: any): string[] {
   return keywords;
 }
 
-export function isDefaultModels(modelGroups: IModel[]): boolean {
+export function isDefaultModels(modelGroups: Model[]): boolean {
   if (modelGroups.length > 1) return false;
   if (modelGroups.length === 0) return true;
   const group = modelGroups[0];

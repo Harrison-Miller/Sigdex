@@ -27,11 +27,11 @@ import { computed, ref, onMounted } from 'vue';
 import Section from '../../core/components/Section.vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
-import type { IBattleProfile } from '../../../parser/models/battleProfile';
+import type { BattleProfile } from '../../../parser/models/battleProfile';
 
 const props = defineProps<{
   modelValue: string;
-  battleProfiles: Map<string, IBattleProfile>;
+  battleProfiles: Map<string, BattleProfile>;
   armyName: string;
   listId: string;
 }>();

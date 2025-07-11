@@ -6,6 +6,18 @@ export interface IRegimentOption {
   min: number; // the minimum number of this option that must be taken in the regiment (0 means none required)
 }
 
+export class RegimentOption implements IRegimentOption {
+  name: string;
+  max: number;
+  min: number;
+
+  constructor(data?: Partial<IRegimentOption>) {
+    this.name = data?.name ?? '';
+    this.max = data?.max ?? 0;
+    this.min = data?.min ?? 0;
+  }
+}
+
 // A battle profile describes a unit's configuration in a specific army.
 export interface IBattleProfile {
   name: string; // the name of unit, this will be the same as the unit.
@@ -27,7 +39,7 @@ export interface IBattleProfile {
   companionUnits: string[];
 
   regimentTags: string[]; // tags that this unit has like: "Moonclan Agitator" or compound keywords like "Moonclan Infantry"
-  regimentOptions: IRegimentOption[]; // other regiment options. It may be important to double check what ends up here to see if a unit is a Hero and should be moved to subHeroOptions and set to max: 1.
+  regimentOptions: RegimentOption[]; // other regiment options. It may be important to double check what ends up here to see if a unit is a Hero and should be moved to subHeroOptions and set to max: 1.
 
   isUndersize: boolean; // true if this is an undersize unit, false otherwise
   // the condition to take this undersize unit, e.g For each Knight-Draconis you may take 1 Stormdrake Guard (1 model)
@@ -48,7 +60,7 @@ export class BattleProfile implements IBattleProfile {
   companionUnits: string[];
 
   regimentTags: string[];
-  regimentOptions: IRegimentOption[];
+  regimentOptions: RegimentOption[];
 
   isUndersize: boolean;
   undersizeCondition: string;

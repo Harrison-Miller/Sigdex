@@ -1,16 +1,16 @@
-import type { IAbility } from '../models/ability';
-import { Army, type IArmy, type IEnhancement, type IEnhancementTable } from '../models/army';
-import type { ILore } from '../models/lore';
-import type { IUnit } from '../models/unit';
+import type { Ability } from '../models/ability';
+import { Army, Enhancement, EnhancementTable, type IArmy } from '../models/army';
+import { Lore } from '../models/lore';
+import type { Unit } from '../models/unit';
 import { parseAbilities, parseAbility } from './parseAbility';
 import { parseBattleProfiles } from './parseBattleProfile';
 import { filterIgnoredEnhancementTables, parsePoints, type ICategory } from './parseCommon';
 
 export function parseArmy(
   root: any,
-  units: Map<string, IUnit>,
+  units: Map<string, Unit>,
   categories: Map<string, ICategory>
-): IArmy {
+): Army {
   const catalogue = root?.catalogue;
   const name = catalogue?.['@_name'] || 'Unknown Catalogue';
   let army: Partial<IArmy> = {
@@ -44,7 +44,7 @@ export function parseArmy(
   return new Army(army);
 }
 
-export function parseBattleTraits(root: any): IAbility[] {
+export function parseBattleTraits(root: any): Ability[] {
   const battleTraitsNode = root?.sharedSelectionEntries?.selectionEntry?.find((entry: any) =>
     entry['@_name'].startsWith('Battle Traits')
   );
@@ -52,13 +52,13 @@ export function parseBattleTraits(root: any): IAbility[] {
   return parseAbilities(battleTraitsNode?.profiles);
 }
 
-export function parseFormations(root: any): Map<string, IAbility[]> {
+export function parseFormations(root: any): Map<string, Ability[]> {
   const formationsNode = root?.sharedSelectionEntryGroups?.selectionEntryGroup?.find((entry: any) =>
     entry['@_name'].startsWith('Battle Formations')
   );
 
   const formationNodes = formationsNode?.selectionEntries?.selectionEntry || [];
-  const formationsMap = new Map<string, IAbility[]>();
+  const formationsMap = new Map<string, Ability[]>();
   formationNodes.forEach((formationNode: any) => {
     const name = formationNode['@_name'];
     const abilities = parseAbilities(formationNode.profiles);
@@ -68,57 +68,57 @@ export function parseFormations(root: any): Map<string, IAbility[]> {
   return formationsMap;
 }
 
-export function parseEnhancement(enhancementNode: any): IEnhancement {
+export function parseEnhancement(enhancementNode: any): Enhancement {
   const points = parsePoints(enhancementNode);
-  return {
+  return new Enhancement({
     points,
     ability: parseAbility(enhancementNode.profiles?.profile?.[0]),
-  };
+  });
 }
 
 export function parseEnhancementTables(
   root: any,
   groupName: string
-): Map<string, IEnhancementTable> {
+): Map<string, EnhancementTable> {
   const groupNode = root?.sharedSelectionEntryGroups?.selectionEntryGroup?.find((entry: any) =>
     entry['@_name'].toLowerCase().includes(groupName.toLowerCase())
   );
 
   const tableNodes = groupNode?.selectionEntryGroups?.selectionEntryGroup || [];
 
-  const tablesMap = new Map<string, IEnhancementTable>();
+  const tablesMap = new Map<string, EnhancementTable>();
   tableNodes.forEach((tableNode: any) => {
     const name = tableNode['@_name'];
-    const enhancements: IEnhancement[] =
+    const enhancements: Enhancement[] =
       tableNode.selectionEntries?.selectionEntry?.map((entry: any) => parseEnhancement(entry)) ||
       [];
-    tablesMap.set(name, { name, enhancements });
+    tablesMap.set(name, new EnhancementTable({ name, enhancements }));
   });
   return tablesMap;
 }
 
-export function parseOtherEnhancementTables(root: any): Map<string, IEnhancementTable> {
+export function parseOtherEnhancementTables(root: any): Map<string, EnhancementTable> {
   // other enhancement groups have the same nested structure, but only ever have one table per a group
   const tableGroups =
     filterIgnoredEnhancementTables(root?.sharedSelectionEntryGroups?.selectionEntryGroup) || [];
 
-  const tablesMap = new Map<string, IEnhancementTable>();
+  const tablesMap = new Map<string, EnhancementTable>();
   tableGroups.forEach((groupNode: any) => {
     const name = groupNode['@_name']; // enhancement table type name
     const tableNode = groupNode?.selectionEntryGroups?.selectionEntryGroup[0] || {};
 
-    const enhancements: IEnhancement[] =
+    const enhancements: Enhancement[] =
       tableNode?.selectionEntries?.selectionEntry?.map((entry: any) => parseEnhancement(entry)) ||
       [];
     if (enhancements.length > 0) {
-      tablesMap.set(name, { name, enhancements });
+      tablesMap.set(name, new EnhancementTable({ name, enhancements }));
     }
   });
   return tablesMap;
 }
 
-export function parseLoresByGroup(root: any, group: string): Map<string, ILore> {
-  const loresMap = new Map<string, ILore>();
+export function parseLoresByGroup(root: any, group: string): Map<string, Lore> {
+  const loresMap = new Map<string, Lore>();
 
   const loreGroupNode = root?.sharedSelectionEntryGroups?.selectionEntryGroup?.find(
     (entry: any) => entry['@_name'].toLowerCase() === group.toLowerCase()
@@ -128,11 +128,7 @@ export function parseLoresByGroup(root: any, group: string): Map<string, ILore> 
   loreEntries.forEach((entry: any) => {
     const name = entry['@_name'] || '';
     const points = parsePoints(entry);
-    loresMap.set(name, {
-      name,
-      abilities: [],
-      points: points,
-    });
+    loresMap.set(name, new Lore({ name, abilities: [], points }));
   });
 
   return loresMap;

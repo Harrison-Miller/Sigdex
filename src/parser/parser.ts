@@ -1,11 +1,11 @@
 import { parseUnits } from './parse/parseUnit';
 import { loadRepoFiles } from './load';
-import type { IArmyListItem, IBattleTacticCard, IGame } from './models/game';
-import type { IUnit } from './models/unit';
+import type { BattleTacticCard, Game, IArmyListItem } from './models/game';
+import type { Unit } from './models/unit';
 import { parseBattleTacticCards, parseLores } from './parse/parseGame';
-import type { ILore } from './models/lore';
-import type { IAbility } from './models/ability';
-import type { GrandAlliance, IArmy } from './models/army';
+import type { Lore } from './models/lore';
+import type { Ability } from './models/ability';
+import type { Army, GrandAlliance } from './models/army';
 import { parseArmy, parseLoresByGroup } from './parse/parseArmy';
 import { parseCategories, type ICategory } from './parse/parseCommon';
 import { BattleProfile, type IBattleProfile } from './models/battleProfile';
@@ -32,14 +32,14 @@ export class Parser {
   private allFiles: any[] = [];
 
   private categories: Map<string, ICategory> = new Map();
-  private units: Map<string, IUnit> = new Map();
-  private battleTacticCards: IBattleTacticCard[] = [];
+  private units: Map<string, Unit> = new Map();
+  private battleTacticCards: BattleTacticCard[] = [];
 
-  private allLores: Map<string, ILore> = new Map();
+  private allLores: Map<string, Lore> = new Map();
 
-  private armies: Map<string, IArmy> = new Map();
+  private armies: Map<string, Army> = new Map();
 
-  async parse(): Promise<IGame> {
+  async parse(): Promise<Game> {
     await this.initFiles();
 
     this.parseGameFile();
@@ -61,7 +61,7 @@ export class Parser {
     this.units.forEach((unit) => {
       if (unit.category === 'MANIFESTATION') {
         this.allLores.forEach((lore) => {
-          lore.abilities.forEach((ability: IAbility) => {
+          lore.abilities.forEach((ability: Ability) => {
             if (ability.keywords.includes('**^^Summon^^**')) {
               if (ability.name.includes(unit.name)) {
                 unit.summoningSpell = ability;

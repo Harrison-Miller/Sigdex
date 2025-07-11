@@ -1,11 +1,11 @@
 import { type IBattleTacticCard, BattleTacticCard } from '../models/game';
-import type { ILore } from '../models/lore';
+import { Lore } from '../models/lore';
 import { findFirstByTagAndAttrs, mapTextNodesByName } from '../util';
 import { parseAbility } from './parseAbility';
 import { parsePoints } from './parseCommon';
 
-export function parseBattleTacticCards(root: any): IBattleTacticCard[] {
-  const battleTacticCards: IBattleTacticCard[] = [];
+export function parseBattleTacticCards(root: any): BattleTacticCard[] {
+  const battleTacticCards: BattleTacticCard[] = [];
 
   const cardGroupNode = findFirstByTagAndAttrs(root, 'selectionEntryGroup', {
     name: 'Battle Tactic Cards',
@@ -34,9 +34,9 @@ export function parseBattleTacticCards(root: any): IBattleTacticCard[] {
   return battleTacticCards;
 }
 
-export function parseLores(root: any): Map<string, ILore> {
+export function parseLores(root: any): Map<string, Lore> {
   const loreNodes = root?.sharedSelectionEntryGroups?.selectionEntryGroup || [];
-  const loresMap = new Map<string, ILore>();
+  const loresMap = new Map<string, Lore>();
   loreNodes.forEach((loreNode: any) => {
     const name = loreNode['@_name'] || '';
     const points = parsePoints(loreNode);
@@ -46,7 +46,7 @@ export function parseLores(root: any): Map<string, ILore> {
         return parseAbility(entry?.profiles?.profile?.[0]);
       }) || [];
 
-    loresMap.set(name, { name, points, abilities });
+    loresMap.set(name, new Lore({ name, points, abilities }));
   });
 
   return loresMap;

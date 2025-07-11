@@ -1,13 +1,13 @@
-import { ListUnit, type IListUnit } from './unit';
+import { ListUnit } from './unit';
 
 export interface IListRegiment {
-  leader: IListUnit;
-  units: IListUnit[];
+  leader: ListUnit;
+  units: ListUnit[];
 }
 
 export class ListRegiment implements IListRegiment {
-  leader: IListUnit;
-  units: IListUnit[];
+  leader: ListUnit;
+  units: ListUnit[];
 
   constructor(data?: Partial<IListRegiment>) {
     this.leader = data?.leader ?? new ListUnit({ name: '' });

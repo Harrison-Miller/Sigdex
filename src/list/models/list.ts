@@ -1,20 +1,20 @@
-import type { IArmy } from '../../parser/models/army';
-import { ListRegiment, type IListRegiment } from './regiment';
-import type { IListUnit, ListUnit } from './unit';
+import type { Army } from '../../parser/models/army';
+import { ListRegiment } from './regiment';
+import type { ListUnit } from './unit';
 
 export interface IList {
   name: string;
   id: string;
   faction: string;
   formation: string;
-  regiments: IListRegiment[];
+  regiments: ListRegiment[];
 
   factionTerrain: string;
   spellLore: string;
   prayerLore: string;
   manifestationLore: string;
 
-  auxiliaryUnits: IListUnit[];
+  auxiliaryUnits: ListUnit[];
 
   battleTacticCard1: string;
   battleTacticCard2: string;
@@ -27,14 +27,14 @@ export class List implements IList {
   id: string;
   faction: string;
   formation: string;
-  regiments: IListRegiment[];
+  regiments: ListRegiment[];
 
   factionTerrain: string;
   spellLore: string;
   prayerLore: string;
   manifestationLore: string;
 
-  auxiliaryUnits: IListUnit[];
+  auxiliaryUnits: ListUnit[];
 
   battleTacticCard1: string;
   battleTacticCard2: string;
@@ -60,7 +60,7 @@ export class List implements IList {
   }
 
   allUnits(): ListUnit[] {
-    const units: IListUnit[] = [];
+    const units: ListUnit[] = [];
     for (const regiment of this.regiments) {
       units.push(regiment.leader);
       units.push(...regiment.units);
@@ -70,7 +70,7 @@ export class List implements IList {
   }
 }
 
-export function setDefaultArmyOptions(data: Partial<IList>, army: IArmy): Partial<IList> {
+export function setDefaultArmyOptions(data: Partial<IList>, army: Army): Partial<IList> {
   if (!data.formation && army.formations.size > 0) {
     data.formation = Array.from(army.formations.keys())[0];
   }

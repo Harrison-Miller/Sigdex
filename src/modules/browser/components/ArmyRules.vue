@@ -148,15 +148,15 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
-import type { IArmy } from '../../../parser/models/army';
+import type { Army } from '../../../parser/models/army';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import Section from '../../core/components/Section.vue';
 
-const props = defineProps<{ army: IArmy }>();
+const props = defineProps<{ army: Army }>();
 
-const selectedSpellLore = ref<string | undefined>(undefined);
-const selectedPrayerLore = ref<string | undefined>(undefined);
-const selectedManifestationLore = ref<string | undefined>(undefined);
+const selectedSpellLore = ref<string>('');
+const selectedPrayerLore = ref<string>('');
+const selectedManifestationLore = ref<string>('');
 
 // Set default selected lore when army changes
 watch(

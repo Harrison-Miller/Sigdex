@@ -59,13 +59,13 @@ import type { ListUnit } from '../../../list/models/unit';
 import ListButton from '../../shared/components/ListButton.vue';
 import Section from '../../core/components/Section.vue';
 import { useRouter } from 'vue-router';
-import type { IBattleProfile } from '../../../parser/models/battleProfile';
+import type { BattleProfile } from '../../../parser/models/battleProfile';
 
 const props = defineProps<{
   regimentIdx: number;
   regiment: ListRegiment;
   listId: string;
-  battleProfiles: Map<string, IBattleProfile>;
+  battleProfiles: Map<string, BattleProfile>;
   armyName: string;
 }>();
 const emit = defineEmits(['delete', 'delete-unit']);

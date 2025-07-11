@@ -21,21 +21,21 @@
 import { computed } from 'vue';
 
 const props = defineProps<{
-  modelValue: string | undefined;
+  modelValue: string;
   options: string[] | Map<string, any[]>;
   placeholder?: string;
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | undefined];
+  'update:modelValue': [value: string];
 }>();
 
 const isArray = computed(() => Array.isArray(props.options));
 const isMap = computed(() => props.options instanceof Map);
 
 const selectedValue = computed({
-  get: () => props.modelValue || '',
-  set: (value: string) => emit('update:modelValue', value || undefined),
+  get: () => props.modelValue,
+  set: (value: string) => emit('update:modelValue', value),
 });
 </script>
 <style scoped>

@@ -1,6 +1,6 @@
 import type { List } from '../../list/models/list';
-import type { IListRegiment } from '../../list/models/regiment';
-import type { IArmy } from '../../parser/models/army';
+import type { ListRegiment } from '../../list/models/regiment';
+import type { Army } from '../../parser/models/army';
 import type { BattleProfile } from '../../parser/models/battleProfile';
 import type { Game } from '../../parser/models/game';
 import type { ListValidator } from '../validator';
@@ -26,7 +26,7 @@ function checkRegimentsAreValid(list: List, game: Game): string[] {
   return errors;
 }
 
-function validateRegimentOptions(regiment: IListRegiment, army: IArmy): string[] {
+function validateRegimentOptions(regiment: ListRegiment, army: Army): string[] {
   if (!regiment.leader.name) return []; // hanlded elsewhere
 
   const leaderUnit = army.battleProfiles.get(regiment.leader.name);

@@ -51,10 +51,10 @@ import OptionSelect from '../../core/components/OptionSelect.vue';
 import { ListUnit } from '../../../list/models/unit';
 import { ref, computed, onMounted } from 'vue';
 import { Ability } from '../../../parser/models/ability';
-import type { IArmy } from '../../../parser/models/army';
+import type { Army } from '../../../parser/models/army';
 import { BattleProfile } from '../../../parser/models/battleProfile';
 
-const props = defineProps<{ modelValue: ListUnit; army: IArmy }>();
+const props = defineProps<{ modelValue: ListUnit; army: Army }>();
 const emit = defineEmits(['update:modelValue']);
 
 const unit = computed({

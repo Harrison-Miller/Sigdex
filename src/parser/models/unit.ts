@@ -1,7 +1,7 @@
-import type { IAbility } from './ability';
-import type { IModel } from './model';
-import { Stats, type IStats } from './stats';
-import type { IWeapon } from './weapon';
+import type { Ability } from './ability';
+import type { Model } from './model';
+import { Stats } from './stats';
+import type { Weapon } from './weapon';
 
 export const UnitCategories: UnitCategory[] = [
   'LEGENDS',
@@ -31,32 +31,32 @@ export type UnitCategory =
 // A unit describes a units warscroll.
 export interface IUnit {
   name: string;
-  stats: IStats;
-  meleeWeapons: IWeapon[];
-  rangedWeapons: IWeapon[];
-  abilities: IAbility[];
+  stats: Stats;
+  meleeWeapons: Weapon[];
+  rangedWeapons: Weapon[];
+  abilities: Ability[];
   keywords: string[];
   category: UnitCategory; // this is computed from the keywords
   // this is computed from the models in the unit
   unitSize: number;
   // a unit may have multiple model types with different weapon options
   // e.g) Squigherd has 2 model types: Cave squig and Squigherder each with different weapons.
-  models: Map<string, IModel>;
+  models: Map<string, Model>;
 
-  summoningSpell: IAbility | null; // duplicate so we don't have to look it up
+  summoningSpell: Ability | null; // duplicate so we don't have to look it up
 }
 
 export class Unit implements IUnit {
   name: string;
-  stats: IStats;
-  meleeWeapons: IWeapon[];
-  rangedWeapons: IWeapon[];
-  abilities: IAbility[];
+  stats: Stats;
+  meleeWeapons: Weapon[];
+  rangedWeapons: Weapon[];
+  abilities: Ability[];
   keywords: string[];
   category: UnitCategory;
   unitSize: number;
-  models: Map<string, IModel>;
-  summoningSpell: IAbility | null;
+  models: Map<string, Model>;
+  summoningSpell: Ability | null;
 
   constructor(unit?: Partial<IUnit>) {
     this.name = unit?.name ?? '';
@@ -66,7 +66,7 @@ export class Unit implements IUnit {
     this.abilities = unit?.abilities ?? [];
     this.keywords = unit?.keywords ?? [];
     this.unitSize = unit?.unitSize ?? 1; // default to 1 if not specified
-    this.models = unit?.models ?? new Map<string, IModel>();
+    this.models = unit?.models ?? new Map<string, Model>();
     this.summoningSpell = unit?.summoningSpell ?? null;
 
     // set stats.ward based on if keyword "Ward (value)" is present

@@ -1,4 +1,4 @@
-import type { IBattleProfile, IRegimentOption } from '../../parser/models/battleProfile';
+import type { BattleProfile, RegimentOption } from '../../parser/models/battleProfile';
 
 /**
  * Filters units by regiment options in stages:
@@ -7,10 +7,10 @@ import type { IBattleProfile, IRegimentOption } from '../../parser/models/battle
  * 3. For all other units, filter by includes name, category, or keywords.
  */
 export function filterBattleProfilesByRegimentOptions(
-  units: IBattleProfile[],
-  options: IRegimentOption[],
+  units: BattleProfile[],
+  options: RegimentOption[],
   companionUnits: string[]
-): IBattleProfile[] {
+): BattleProfile[] {
   if (!options || options.length === 0) return units;
   const optionNames = options.map((opt) => opt.name.toLowerCase());
 

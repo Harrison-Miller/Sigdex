@@ -2,10 +2,10 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import KeywordsBar from './KeywordsBar.vue';
 import { formatText } from '../../../utils/formatter';
-import type { IAbility } from '../../../parser/models/ability';
+import type { Ability } from '../../../parser/models/ability';
 
 const props = defineProps<{
-  ability: IAbility;
+  ability: Ability;
 }>();
 // Map ability types to Font Awesome icon names
 const iconMap: Record<string, string> = {
