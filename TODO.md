@@ -40,3 +40,10 @@
   - consider parsing the constraints on them, it might help us figure what armies can take more. Or when tables are mutually exclusive etc.
 
 - account for shared abilities like wall crawler in gloomspite gitz
+
+- use concrete types everywhere
+
+- parse weird AoR things
+  - must be selected
+  - must be general
+  - unique may take enhancements

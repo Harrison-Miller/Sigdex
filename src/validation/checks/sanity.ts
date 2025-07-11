@@ -17,7 +17,7 @@ function validArmySelections(list: List, game: Game): string[] {
   const errors: string[] = [];
 
   // formation
-  if (list.formation === '') {
+  if (list.formation && list.formation === '') {
     errors.push('Formation must be selected.');
   } else {
     const formation = army.formations.get(list.formation);
@@ -27,21 +27,21 @@ function validArmySelections(list: List, game: Game): string[] {
   }
 
   // lores
-  if (list.spellLore !== '') {
+  if (list.spellLore && list.spellLore !== '') {
     const lore = army.spellLores.get(list.spellLore);
     if (!lore) {
       errors.push(`${list.spellLore} is not a valid lore for army ${list.faction}.`);
     }
   }
 
-  if (list.prayerLore !== '') {
+  if (list.prayerLore && list.prayerLore !== '') {
     const lore = army.prayerLores.get(list.prayerLore);
     if (!lore) {
       errors.push(`${list.prayerLore} is not a valid prayer lore for army ${list.faction}.`);
     }
   }
 
-  if (list.manifestationLore !== '') {
+  if (list.manifestationLore && list.manifestationLore !== '') {
     const lore =
       army.manifestationLores.get(list.manifestationLore) ||
       game.universalManifestationLores.get(list.manifestationLore);
@@ -53,7 +53,7 @@ function validArmySelections(list: List, game: Game): string[] {
   }
 
   // faction terrain
-  if (list.factionTerrain !== '') {
+  if (list.factionTerrain && list.factionTerrain !== '') {
     const terrain = army.battleProfiles.get(list.factionTerrain);
     if (!terrain) {
       errors.push(

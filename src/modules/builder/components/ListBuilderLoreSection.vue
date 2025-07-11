@@ -5,13 +5,11 @@
       <span v-if="lore.points > 0" class="lore-points-badge"> {{ lore.points }} pts </span>
     </template>
     <div class="spell-lores-section">
-      <template v-if="computedArmyLore.size > 1">
-        <OptionSelect
-          v-model="selectedLoreName"
-          :options="Array.from(computedArmyLore.keys())"
-          placeholder="No Lore Selected"
-        />
-      </template>
+      <OptionSelect
+        v-model="selectedLoreName"
+        :options="Array.from(computedArmyLore.keys())"
+        placeholder="No Lore Selected"
+      />
       <div v-if="props.manifestationMode && !loading && !error && selectedLoreName">
         <ul>
           <li v-for="unitName in manifestationUnits" :key="unitName">
