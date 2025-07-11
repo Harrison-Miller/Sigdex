@@ -75,4 +75,24 @@ export class BattleProfile implements IBattleProfile {
     if (!keyword) return false;
     return this.keywords.some((k) => k.toLowerCase() === keyword.toLowerCase());
   }
+
+  matchesRegimentOption(optName: string): boolean {
+    const lOptName = optName.toLowerCase();
+    const name = this.name.toLowerCase();
+    const category = this.category.toLowerCase();
+    const keywords = (this.keywords || []).map((k) => k.toLowerCase());
+    const tags = (this.regimentTags || []).map((t) => t.toLowerCase());
+
+    // special case where optName is a multi keyword
+    if (lOptName.includes(' ')) {
+      const parts = lOptName.split(/\s+/);
+      if (parts.every((part: string) => keywords.includes(part))) return true;
+    }
+    return (
+      name === lOptName ||
+      category === lOptName ||
+      keywords.some((kw) => kw === lOptName) ||
+      tags.some((tag) => tag === lOptName)
+    );
+  }
 }

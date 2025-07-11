@@ -1,5 +1,5 @@
 <template>
-  <div class="points-validity-fab" v-if="list && army">
+  <div class="points-validity-fab">
     <button
       class="validity-indicator"
       :class="isListValid ? 'valid' : 'invalid'"
@@ -22,7 +22,7 @@
       <div class="violations-modal">
         <h3>List Issues</h3>
         <ul>
-          <li v-for="msg in violations" :key="msg">{{ msg }}</li>
+          <li v-for="msg in errors" :key="msg">{{ msg }}</li>
         </ul>
         <button @click="showViolationsModal = false" class="close-btn">Close</button>
       </div>
@@ -33,34 +33,22 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import Modal from '../../../components/Modal.vue';
-import { calculatePoints } from '../../../utils/points-manager';
-import { calculateViolations } from '../../../utils/violations-manager';
+import { calculatePoints } from '../../../validation/points';
 import type { List } from '../../../list/models/list';
 import type { IGame } from '../../../parser/models/game';
-import { Army } from '../../../parser/models/army';
+import { validateList } from '../../../validation/run';
 
 const props = defineProps<{
   list: List;
   game: IGame;
 }>();
 
-const army = computed(
-  () => props.game.armies.get(props.list.faction) || new Army({ name: props.list.faction })
-);
-
 const showViolationsModal = ref(false);
-const pointsTotal = computed(() => {
-  if (!props.list || !army.value) return 0;
-  return calculatePoints(props.list, army.value, props.game.universalManifestationLores);
-});
-const violations = computed(() => {
-  if (!props.list || !army.value) return [];
-  return calculateViolations(props.list, props.game);
-});
-const isListValid = computed(() => violations.value.length === 0);
+const pointsTotal = computed(() => calculatePoints(props.list, props.game));
+const errors = computed(() => validateList(props.list, props.game));
+const isListValid = computed(() => errors.value.length === 0);
 const pointsCap = computed(() => props.list.pointsCap);
 </script>
-
 <style scoped>
 .points-validity-fab {
   position: fixed;

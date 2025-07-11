@@ -46,8 +46,8 @@ export class ListUnit implements IListUnit {
 
   getEnhancementCount(): number {
     let count = 0;
-    if (this.heroicTrait) count += 1;
-    if (this.artifact) count += 1;
+    if (this.heroicTrait && this.heroicTrait !== '') count += 1;
+    if (this.artifact && this.artifact !== '') count += 1;
     count += this.enhancements.size;
     return count;
   }

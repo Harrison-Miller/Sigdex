@@ -3,7 +3,7 @@ import type { IListRegiment } from '../../list/models/regiment';
 import type { IListUnit } from '../../list/models/unit';
 import type { IArmy } from '../../parser/models/army';
 import type { IGame } from '../../parser/models/game';
-import { calculatePoints } from '../../utils/points-manager';
+import { calculatePoints } from '../../validation/points';
 import { SIGDEX_VERSION } from '../../version';
 
 function calculateDrops(list: IList): number {
@@ -173,7 +173,7 @@ export function exportList(list: IList, game: IGame): string {
     throw new Error(`Army not found for faction: ${list.faction}`);
   }
 
-  const points = calculatePoints(list, army, game.universalManifestationLores);
+  const points = calculatePoints(list, game);
 
   // name and points
   out += `${list.name} ${points}/2000 pts\n\n`;

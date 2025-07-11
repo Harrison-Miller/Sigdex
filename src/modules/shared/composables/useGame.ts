@@ -93,6 +93,7 @@ function setupSuperJSON() {
   SuperJSON.registerClass(Unit);
   SuperJSON.registerClass(Model);
   SuperJSON.registerClass(Army);
+  SuperJSON.registerClass(BattleProfile);
   SuperJSON.registerClass(Game);
 }
 

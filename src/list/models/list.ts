@@ -1,6 +1,6 @@
 import type { IArmy } from '../../parser/models/army';
 import { ListRegiment, type IListRegiment } from './regiment';
-import type { IListUnit } from './unit';
+import type { IListUnit, ListUnit } from './unit';
 
 export interface IList {
   name: string;
@@ -57,6 +57,16 @@ export class List implements IList {
     this.battleTacticCard1 = data?.battleTacticCard1 ?? '';
     this.battleTacticCard2 = data?.battleTacticCard2 ?? '';
     this.pointsCap = data?.pointsCap ?? 2000; // default to 2000
+  }
+
+  allUnits(): ListUnit[] {
+    const units: IListUnit[] = [];
+    for (const regiment of this.regiments) {
+      units.push(regiment.leader);
+      units.push(...regiment.units);
+    }
+    units.push(...this.auxiliaryUnits);
+    return units as ListUnit[];
   }
 }
 

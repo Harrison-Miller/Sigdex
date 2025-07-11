@@ -1,6 +1,6 @@
-import type { ILore } from '../parser/models/lore';
-import type { IArmy, IEnhancementTable } from '../parser/models/army';
+import type { IEnhancementTable } from '../parser/models/army';
 import type { IList } from '../list/models/list';
+import type { IGame } from '../parser/models/game';
 
 /**
  * Calculates the total points for a list by summing the points of all units in all regiments (including leaders),
@@ -10,12 +10,12 @@ import type { IList } from '../list/models/list';
  * @param lores The loaded lores data (from loadLores) [currently unused, but included for future lore-based points]
  * @returns The total points for the list
  */
-export function calculatePoints(
-  list: IList,
-  army: IArmy,
-  universalManifestationLores: Map<string, ILore>
-): number {
-  if (!list || !army) return 0;
+export function calculatePoints(list: IList, game: IGame): number {
+  const army = game.armies.get(list.faction);
+  if (!army) return 0;
+
+  const universalManifestationLores = game.universalManifestationLores;
+
   let total = 0;
 
   // Helper to get heroic trait, artifact, or enhancement points by name from Map<string, IEnhancementTable>
