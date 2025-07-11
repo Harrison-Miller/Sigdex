@@ -26,15 +26,19 @@ const props = defineProps<{
   modelValue: number;
   min?: number;
   max?: number;
+  step?: number;
 }>();
 const emit = defineEmits(['update:modelValue']);
 const min = computed(() => props.min ?? 0);
 const max = computed(() => props.max ?? 99);
+const step = computed(() => props.step ?? 1);
 function increment() {
-  if (props.modelValue < max.value) emit('update:modelValue', props.modelValue + 1);
+  if (props.modelValue < max.value)
+    emit('update:modelValue', Math.min(props.modelValue + step.value, max.value));
 }
 function decrement() {
-  if (props.modelValue > min.value) emit('update:modelValue', props.modelValue - 1);
+  if (props.modelValue > min.value)
+    emit('update:modelValue', Math.max(props.modelValue - step.value, min.value));
 }
 </script>
 

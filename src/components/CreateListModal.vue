@@ -6,10 +6,13 @@
   >
     <div class="modal-content">
       <h3>Create New List</h3>
-      <label>
-        Name
-        <input v-model="name" type="text" placeholder="List name" @keyup.enter="emitCreate" />
-      </label>
+      <TextInput
+        v-model="name"
+        type="text"
+        label="Name"
+        placeholder="List name"
+        @keyup.enter="emitCreate"
+      />
       <label>
         Army
         <OptionSelect v-model="faction" :options="flattenedArmyList" placeholder="Select an army" />
@@ -22,12 +25,14 @@
     </div>
   </Modal>
 </template>
+
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import Modal from './Modal.vue';
 import { useRouter } from 'vue-router';
 import type { GrandAlliance } from '../parser/models/army';
 import OptionSelect from '../modules/core/components/OptionSelect.vue';
+import TextInput from '../modules/core/components/TextInput.vue';
 import type { IArmyListItem } from '../parser/models/game';
 
 const props = defineProps<{
@@ -75,6 +80,7 @@ function goToImport() {
   router.push({ name: 'ListImport' });
 }
 </script>
+
 <style scoped>
 .modal-content {
   /* Matches modal content styling from ListListComponent */
@@ -91,19 +97,6 @@ function goToImport() {
 .modal-content h3 {
   margin: 0 0 0.5em 0;
   font-size: 1.3em;
-}
-.modal-content label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3em;
-  font-weight: 500;
-}
-.modal-content input,
-.modal-content select {
-  padding: 0.5em;
-  border-radius: 6px;
-  border: 1px solid #bbb;
-  font-size: 1em;
 }
 .modal-actions {
   display: flex;

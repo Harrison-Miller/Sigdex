@@ -2,6 +2,7 @@ import type { List } from '../list/models/list';
 import type { Game } from '../parser/models/game';
 import { aorChecks } from './checks/aor';
 import { basicChecks } from './checks/basic';
+import { highlanderChecks } from './checks/highlander';
 import { regimentOptionsChecks } from './checks/regimentOptions';
 import { sanityChecks } from './checks/sanity';
 import { sogChecks } from './checks/sog';
@@ -17,9 +18,9 @@ export const baseValidators: ListValidator[] = [
   ...aorChecks,
 ];
 
-function getValidatorsForList(_: List): ListValidator[] {
-  const validators = [...baseValidators];
-  // Add any list-specific validators here
+function getValidatorsForList(list: List): ListValidator[] {
+  let validators = [...baseValidators];
+  if (list.validator === 'highlander') validators.push(...highlanderChecks);
   return validators;
 }
 

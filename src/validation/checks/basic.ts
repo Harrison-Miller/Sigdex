@@ -60,7 +60,7 @@ function regimentUnitCount(list: List): string[] {
     const units = regiment.units.length;
     if (regiment.leader.general && units > 4) {
       errors.push(`No more than 4 units in the general's regiment`);
-    } else if (units > 3) {
+    } else if (!regiment.leader.general && units > 3) {
       errors.push(`No more than 3 units in a regiment`);
     }
   }

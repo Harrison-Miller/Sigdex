@@ -20,6 +20,9 @@ export interface IList {
   battleTacticCard2: string;
 
   pointsCap: number; // usually 2000
+
+  // the validation used
+  validator: string;
 }
 
 export class List implements IList {
@@ -40,6 +43,7 @@ export class List implements IList {
   battleTacticCard2: string;
 
   pointsCap: number; // usually 2000
+  validator: string;
 
   constructor(data?: Partial<IList>) {
     this.name = data?.name ?? '';
@@ -57,6 +61,7 @@ export class List implements IList {
     this.battleTacticCard1 = data?.battleTacticCard1 ?? '';
     this.battleTacticCard2 = data?.battleTacticCard2 ?? '';
     this.pointsCap = data?.pointsCap ?? 2000; // default to 2000
+    this.validator = data?.validator ?? 'standard';
   }
 
   allUnits(): ListUnit[] {
