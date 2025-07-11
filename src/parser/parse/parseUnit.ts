@@ -1,19 +1,22 @@
+import type { Ability } from '../models/ability';
 import type { Model } from '../models/model';
 import { Stats, type IStats } from '../models/stats';
 import { Unit, type IUnit } from '../models/unit';
 import { Weapon, type IWeapon } from '../models/weapon';
 import { findAllByTagAndAttrs, mapTextNodesByName } from '../util';
-import { parseAbilities } from './parseAbility';
+import { parseAbilities, parseAbility } from './parseAbility';
 import { parseModels } from './parseModels';
 
 export function parseUnits(rootNode: any): Unit[] {
+  const sharedAbilities = parseSharedAbilities(rootNode);
+
   const units: Unit[] = [];
   const unitNodes =
     rootNode?.sharedSelectionEntries?.selectionEntry.filter((node: any) => {
       return node['@_type'] === 'unit';
     }) || [];
   unitNodes.forEach((unitNode: any) => {
-    const unit = parseUnit(unitNode);
+    const unit = parseUnit(unitNode, sharedAbilities);
     if (unit.name) {
       units.push(unit);
     } else {
@@ -23,7 +26,19 @@ export function parseUnits(rootNode: any): Unit[] {
   return units;
 }
 
-export function parseUnit(unitNode: any): Unit {
+export function parseSharedAbilities(rootNode: any): Map<string, Ability> {
+  const abilityNodes = rootNode?.sharedProfiles?.profile || [];
+  const abilitiesMap = new Map<string, Ability>();
+  abilityNodes.forEach((abilityNode: any) => {
+    const ability = parseAbility(abilityNode);
+    if (ability.name) {
+      abilitiesMap.set(ability.name, ability);
+    }
+  });
+  return abilitiesMap;
+}
+
+export function parseUnit(unitNode: any, sharedAbilities: Map<string, Ability>): Unit {
   const unit: Partial<IUnit> = {
     name: unitNode['@_name'],
     stats: parseUnitStats(unitNode),
@@ -33,6 +48,18 @@ export function parseUnit(unitNode: any): Unit {
     abilities: parseAbilities(unitNode.profiles),
     models: parseModels(unitNode),
   };
+
+  // add shared abilities
+  const abilityLinks =
+    unitNode?.infoLinks?.infoLink?.filter((link: any) => link['@_type'] === 'profile') || [];
+  unit.abilities = (unit?.abilities || []).concat(
+    abilityLinks
+      .map((link: any) => {
+        const abilityName = link['@_name'];
+        return sharedAbilities.get(abilityName) || null;
+      })
+      .filter((ability: Ability | null) => ability !== null)
+  );
 
   // calculate unit size based on models
   if (unit.models && unit.models.size > 0) {

@@ -23,9 +23,7 @@
   - trugg says any dankhold instead of 0-1, this is a subhero though it's a specifically named one not like "moon clan agitator".
 
 - list builder todos:
-  - disbale/remove already selected 0-1 unit from the unit picker.
   - GameView - show rules and, non duplicate entries, etc.
-  - armies of renown - requires parsing armies of renow
   - regiments of renown
   - SoG enhancement table rule
   - notes option for the list and for each unit/renaming a unit: My cool hero name (actual unit name)
@@ -39,11 +37,9 @@
 - all enhancement tables should probably work the same way
   - consider parsing the constraints on them, it might help us figure what armies can take more. Or when tables are mutually exclusive etc.
 
-- account for shared abilities like wall crawler in gloomspite gitz
-
-- use concrete types everywhere
-
 - parse weird AoR things
   - must be selected
   - must be general
   - unique may take enhancements
+
+- repeated units like kragnos need to accumulate their keywords (each army has him repeated, but with their own keyword). Same with nagash.
