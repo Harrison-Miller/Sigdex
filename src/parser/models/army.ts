@@ -70,6 +70,7 @@ export interface IArmy {
 
   // aor restrictions
   requiredGeneral: string[]; // names of units, one of which must be the general
+  mustBeGeneralIfIncluded: string[]; // names of units that must be the general if included in the army
 }
 
 export class Army implements IArmy {
@@ -99,6 +100,7 @@ export class Army implements IArmy {
   unitList: Map<UnitCategory, IUnitListItem[]> = new Map();
 
   requiredGeneral: string[];
+  mustBeGeneralIfIncluded: string[];
 
   constructor(data?: Partial<IArmy>) {
     this.name = data?.name ?? '';
@@ -122,6 +124,7 @@ export class Army implements IArmy {
     this.armiesOfRenown = data?.armiesOfRenown ?? []; // this will be computed elsewhere
 
     this.requiredGeneral = data?.requiredGeneral ?? [];
+    this.mustBeGeneralIfIncluded = data?.mustBeGeneralIfIncluded ?? [];
 
     // determine if this is an army of renown
     const armyParts = this.name.split(' - ');

@@ -143,3 +143,8 @@ We want the validation to say you must include "this unit as your general".
 Not you can't have any of these units as general, So if we find restrict general we should gather them all and save it to the army for validation.
 
 There is also sometimes a constraint (but not always), that is more accurate for detecting this.
+
+### Must be general if included
+
+the condition is on the other units it adds Restrict General if that unit is taken
+restrict general=abcb-73d0-2b6c-4f17

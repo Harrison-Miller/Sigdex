@@ -1,19 +1,16 @@
 <template>
   <div>
-    <Section v-if="army.requiredGeneral.length">
+    <Section v-if="showAoRDetails">
       <template #title>Details</template>
       <ul class="details-list">
-        <li v-if="army.requiredGeneral.length === 1">
-          <span
-            ><strong>{{ army.requiredGeneral[0] }}</strong> must be your general.</span
-          >
-        </li>
-        <li v-else-if="army.requiredGeneral.length > 1">
-          <span
-            >One of the following units must be your general:
-            <strong>{{ army.requiredGeneral.join(', ') }}</strong></span
-          >
-        </li>
+        <li
+          v-if="army.requiredGeneral.length"
+          v-html="formatRequiredGeneral(army.requiredGeneral)"
+        />
+        <li
+          v-if="army.mustBeGeneralIfIncluded.length"
+          v-html="formatMustBeGeneralIfIncluded(army.mustBeGeneralIfIncluded)"
+        />
       </ul>
     </Section>
     <Section v-if="army.battleTraits && army.battleTraits.length">
@@ -162,13 +159,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import type { Army } from '../../../parser/models/army';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import Section from '../../core/components/Section.vue';
 
 const props = defineProps<{ army: Army }>();
+
+const showAoRDetails = computed(() => {
+  return props.army.requiredGeneral.length > 0 || props.army.mustBeGeneralIfIncluded.length > 0;
+});
+
+function formatRequiredGeneral(requiredGeneral: string[]): string {
+  if (requiredGeneral.length === 1) {
+    return `<strong>${requiredGeneral[0]}</strong> must be your general.`;
+  } else if (requiredGeneral.length > 1) {
+    return `One of the following units must be your general: <strong>${requiredGeneral.join(', ')}</strong>`;
+  }
+  return '';
+}
+
+function formatMustBeGeneralIfIncluded(units: string[]): string {
+  if (!units || units.length === 0) return '';
+  if (units.length === 1) {
+    return `<strong>${units[0]}</strong> must be general if included.`;
+  } else {
+    return `One of the following must be the general if included: <strong>${units.join(', ')}</strong>`;
+  }
+}
 
 const selectedSpellLore = ref<string>('');
 const selectedPrayerLore = ref<string>('');

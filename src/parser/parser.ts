@@ -84,9 +84,6 @@ export class Parser {
         army.name.toLowerCase().includes('legends') ||
         army.battleProfiles.size === 0
       ) {
-        console.warn(
-          `Skipping invalid army: ${xml.catalogue?.['@_name'] || xml.gameSystem?.['@_name']}`
-        );
         return;
       }
 

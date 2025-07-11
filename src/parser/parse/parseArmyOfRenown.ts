@@ -62,3 +62,47 @@ export function parseRequiredGenerals(root: any, units: Map<string, Unit>): stri
   }
   return [];
 }
+
+export function parseMustBeGeneralIfIncluded(
+  root: any,
+  units: Map<string, Unit>,
+  restrictGeneralId: string = 'abcb-73d0-2b6c-4f17' // default to the common restrict general id
+): string[] {
+  const bpNodes = root?.entryLinks?.entryLink || [];
+  const mustBeGeneralIfIncludedId: Set<string> = new Set<string>();
+  const idToName: Map<string, string> = new Map<string, string>();
+
+  bpNodes.forEach((node: any) => {
+    const name = node['@_name'];
+    const id = node['@_id'];
+    const unit = units.get(name);
+    if (!unit || unit.category !== 'HERO') return; // only heroes can be general
+
+    idToName.set(id, name);
+
+    const restrictGeneralMod = findFirstByTagAndAttrs(node, 'modifier', {
+      type: 'add',
+      value: restrictGeneralId,
+      field: 'category',
+    });
+
+    const mustBeGeneralCondition = findFirstByTagAndAttrs(restrictGeneralMod, 'condition', {
+      type: 'atLeast',
+      value: '1',
+      field: 'selections',
+      scope: 'roster',
+    });
+    if (mustBeGeneralCondition) {
+      const generalId = mustBeGeneralCondition['@_childId'];
+      if (generalId) {
+        mustBeGeneralIfIncludedId.add(generalId);
+      }
+    }
+  });
+
+  return Array.from(mustBeGeneralIfIncludedId)
+    .map((id) => {
+      return idToName.get(id) || '';
+    })
+    .filter((name) => name !== '');
+}
