@@ -15,12 +15,12 @@ import { Ability } from '../../../parser/models/ability';
 import { Stats } from '../../../parser/models/stats';
 import { Weapon } from '../../../parser/models/weapon';
 import { WeaponOption } from '../../../parser/models/weaponOption';
+import { SIGDEX_VERSION } from '../../../version';
 
 const GAME_STORAGE_KEY = 'game';
 const GAME_TIMESTAMP_KEY = 'gameTimestamp';
 const GAME_VERSION_KEY = 'SIGDEX_VERSION';
 const GAME_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 1 week
-const SIGDEX_VERSION = import.meta.env.VITE_APP_VERSION || '0.0.0';
 
 function isGameCacheOutOfDate(): boolean {
   const cachedTimestamp = localStorage.getItem(GAME_TIMESTAMP_KEY);

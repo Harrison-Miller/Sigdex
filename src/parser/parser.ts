@@ -9,6 +9,8 @@ import type { Army, GrandAlliance } from './models/army';
 import { parseArmy, parseLoresByGroup } from './parse/parseArmy';
 import { parseCategories, type ICategory } from './parse/parseCommon';
 import { BattleProfile, type IBattleProfile } from './models/battleProfile';
+import type { RegimentOfRenown } from './models/regimentOfRenown';
+import { parseRegimentsOfRenown } from './parse/parseRegimentOfRenown';
 
 export class Parser {
   // configuration
@@ -30,6 +32,7 @@ export class Parser {
   private libraryFiles: Map<string, any> = new Map();
   private armyFiles: Map<string, any> = new Map();
   private allFiles: any[] = [];
+  private armyIds: Map<string, string> = new Map(); // id to name
 
   private categories: Map<string, ICategory> = new Map();
   private units: Map<string, Unit> = new Map();
@@ -38,6 +41,7 @@ export class Parser {
   private allLores: Map<string, Lore> = new Map();
 
   private armies: Map<string, Army> = new Map();
+  private regimentsOfRenown: Map<string, RegimentOfRenown> = new Map();
 
   async parse(): Promise<Game> {
     await this.initFiles();
@@ -184,6 +188,21 @@ export class Parser {
       armyList.set(ga, armies);
     });
 
+    // regiments of renown
+    this.regimentsOfRenown = parseRegimentsOfRenown(
+      this.rorFile.catalogue,
+      this.gameFile.gameSystem,
+      this.armyIds
+    );
+
+    // update armies with a list of regiment of renowns that it is allowed to use
+    this.armies.forEach((army) => {
+      const allowedRors = Array.from(this.regimentsOfRenown.values())
+        .filter((ror) => ror.allowedArmies.includes(army.name))
+        .map((ror) => ror.name);
+      army.regimentsOfRenown = allowedRors;
+    });
+
     return {
       battleTacticCards: this.battleTacticCards,
       weaponAbilityDescriptions: new Map(), // TODO: later
@@ -192,7 +211,7 @@ export class Parser {
       universalManifestationLores: universalManifestationLores,
       armies: this.armies,
       armyList: armyList,
-      regimentsOfRenown: new Map(), // TODO: later
+      regimentsOfRenown: this.regimentsOfRenown,
     };
   }
 
@@ -224,6 +243,11 @@ export class Parser {
           this.libraryFiles.set(path, xml);
         } else {
           this.armyFiles.set(path, xml);
+          const name = xml?.catalogue['@_name'] || '';
+          const id = xml?.catalogue['@_id'] || '';
+          if (name && id) {
+            this.armyIds.set(id, name);
+          }
         }
         this.allFiles.push(xml);
       });

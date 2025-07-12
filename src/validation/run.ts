@@ -19,6 +19,10 @@ export const baseValidators: ListValidator[] = [
 ];
 
 function getValidatorsForList(list: List): ListValidator[] {
+  if (list.validator === 'disabled') {
+    return [];
+  }
+
   let validators = [...baseValidators];
   if (list.validator === 'highlander') validators.push(...highlanderChecks);
   return validators;

@@ -1,6 +1,3 @@
-- Parse and save AoRs.
-  - Do we have the restriction text? We can at least show the restricted unit text.
-  - We may need to relink together lores/artifacts/traits etc that are shared.
 - save state of all collapse, drop downs and tabs - be smart about it though.
 - fix desktop view
 - support dark mode
@@ -15,9 +12,6 @@
   - skitterstrand shouldn't be reinforceable
   - typo in scrapskuttle name
   - dracoth single model doesn't have constraints
-  - maleneth witch blade should be restricted general in DoK AoR
-  - heroes of the first-forged random shit can be the general
-  - same with ruination brotherhood
 
 - regiment options todos:
   - drekki flynt, should be 0-1 frigate but is any frigate. The 0-1 skyvessel covers this, but indirectly, so we don't parse it correctly.
@@ -32,8 +26,6 @@
   - notes option for the list and for each unit/renaming a unit: My cool hero name (actual unit name)
   - don't allow enhancements taken from different tables in the same category.
   - limit list name length to like 30 characters
-  - set points limit
-  - add certain rules validators (highlander)
 
 - set default weapon options on the unit detail page
 
@@ -51,3 +43,7 @@
   - murkvast regiments seem messed up
   - murkvast skumdrek, not marked as required general
     - I think this is just a data issue
+
+- fix bug with importing Lord-Celestant vs Lord-Celestant on Stardrake etc. (can be fixed by sorting names by length then alpah).
+- make ListButton not expand based on containing text.
+- work on fixing scroll resetting, start by identifying what it is actually doing exactly.

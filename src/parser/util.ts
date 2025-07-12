@@ -23,6 +23,7 @@ export function xmlParser(): XMLParser {
         'categoryEntry',
         'modifierGroup',
         'infoLink',
+        'forceEntry',
       ];
       if (arrayNames.includes(name)) {
         return true;
