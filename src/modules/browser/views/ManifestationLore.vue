@@ -39,7 +39,7 @@ const units = computed(() => {
             v-slot="{ navigate, href }"
             :to="{
               name: 'UnitDetail',
-              params: { armyName: 'UniversalManifestations', unitName: name },
+              params: { armyName: 'UniversalUnits', unitName: name },
             }"
             custom
           >

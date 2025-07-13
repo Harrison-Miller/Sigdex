@@ -75,8 +75,6 @@ export function parseUnit(unitNode: any, sharedAbilities: Map<string, Ability>):
     unit.models = new Map<string, Model>(); // return empty map if all models are default
   }
 
-  // TODO: handle parsing shared abilities like wall crawler
-
   return new Unit(unit);
 }
 

@@ -104,7 +104,7 @@ function goToUnit(unit: string) {
       break;
     }
   }
-  router.push({ name: 'UnitDetail', params: { unitName: unit, armyName: foundArmy } });
+  router.push({ name: 'UnitDetail', params: { unitName: unit, armyName: foundArmy ?? 'UniversalUnits' } });
 }
 </script>
 <style scoped>

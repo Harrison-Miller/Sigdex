@@ -44,6 +44,7 @@ export interface IGame {
 
   units: Map<string, Unit>;
   universalManifestationLores: Map<string, Lore>;
+
   armies: Map<string, Army>;
   armyList: Map<GrandAlliance, IArmyListItem[]>; // list of army names by grand alliance
 

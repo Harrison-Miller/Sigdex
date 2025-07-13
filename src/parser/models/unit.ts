@@ -70,10 +70,10 @@ export class Unit implements IUnit {
     this.summoningSpell = unit?.summoningSpell ?? null;
 
     // set stats.ward based on if keyword "Ward (value)" is present
-    const wardKeyword = this.keywords.find((keyword) => keyword.startsWith('Ward ('));
+    const wardKeyword = this.keywords.find((keyword) => keyword.toUpperCase().startsWith('WARD'));
     if (wardKeyword) {
-      const wardValue = wardKeyword.match(/Ward \((\d+\+)\)/);
-      this.stats.ward = wardValue ? wardValue[0] : '';
+      const wardValue = wardKeyword.match(/WARD \((\d+\+)\)/i);
+      this.stats.ward = wardValue ? wardValue[1] : '';
     }
 
     // ignore set category and calculate it

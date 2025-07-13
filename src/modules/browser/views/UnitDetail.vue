@@ -48,7 +48,7 @@ const favoriteToggleSize = 36;
   <div class="unit-detail">
     <div class="unit-detail-header">
       <div
-        v-if="armyName !== 'UniversalManifestations'"
+        v-if="armyName !== 'UniversalUnits'"
         class="unit-detail-fav"
       >
         <FavoriteToggle

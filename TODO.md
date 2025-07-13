@@ -23,7 +23,6 @@
   - SoG enhancement table rule
   - notes option for the list and for each unit/renaming a unit: My cool hero name (actual unit name)
   - don't allow enhancements taken from different tables in the same category.
-  - limit list name length to like 30 characters
 
 - set default weapon options on the unit detail page
 
@@ -44,9 +43,6 @@
 
 - fix list button sizing in list regiment
 
-- handle gotrek fake battleProfile (parse units from non-library separately, then specicial case for useUnit for universal units to return a fake bp).
 - big drogg fort-kicka is big drogg fort-kicker in the battle profiles with points.
 
 - variants deployment
-
-- vue template formating/css formatting
