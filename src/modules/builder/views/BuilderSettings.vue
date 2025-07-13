@@ -28,12 +28,18 @@
       placeholder="New list name"
     />
     <div
+      v-if="nameError"
+      class="input-error"
+    >
+      {{ nameError }}
+    </div>
+    <div
       class="modal-actions single-action"
       style="margin-top: 1.2em"
     >
       <button
         class="save-btn"
-        :disabled="!newName"
+        :disabled="!isNameValid"
         @click="renameCurrentList"
       >
         Rename
@@ -49,6 +55,7 @@
   </div>
 </template>
 <script setup lang="ts">
+
 import BackButton from '../../core/components/BackButton.vue';
 import CounterBox from '../../core/components/CounterBox.vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
@@ -56,12 +63,28 @@ import { ref, computed, watch } from 'vue';
 import TextInput from '../../core/components/TextInput.vue';
 import { useList } from '../../shared/composables/useList';
 import { useRoute, useRouter } from 'vue-router';
+import { LIST_NAME_MAX_LENGTH } from '../../../list/manage';
+
 
 const route = useRoute();
 const listId = route.params.id as string;
 const list = useList(listId);
 const listName = computed(() => list.value?.name || '');
 const newName = ref(listName.value);
+
+const isNameValid = computed(() => {
+  const trimmed = newName.value.trim();
+  return !!trimmed && trimmed.length <= LIST_NAME_MAX_LENGTH;
+});
+
+const nameError = computed(() => {
+  const trimmed = newName.value.trim();
+  if (!trimmed) return '';
+  if (trimmed.length > LIST_NAME_MAX_LENGTH) {
+    return `List name must be at most ${LIST_NAME_MAX_LENGTH} characters.`;
+  }
+  return '';
+});
 
 const pointsCap = ref(list.value?.pointsCap ?? 2000);
 watch(pointsCap, (val) => {
@@ -94,6 +117,14 @@ function renameCurrentList() {
 }
 </script>
 <style scoped>
+.delete-btn:hover {
+  background: #c00;
+}
+.input-error {
+  color: #c00;
+  font-size: 0.95em;
+  margin-top: 0.2em;
+}
 .validator-label {
   display: flex;
   flex-direction: column;

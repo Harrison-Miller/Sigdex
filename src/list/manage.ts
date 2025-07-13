@@ -3,6 +3,7 @@ import { List, type IList } from './models/list';
 import { ListRegiment } from './models/regiment';
 import { ListUnit } from './models/unit';
 
+export const LIST_NAME_MAX_LENGTH = 30;
 export const LIST_STORAGE_KEY = 'list:';
 
 export function setupListSuperJSON() {
@@ -14,6 +15,11 @@ export function setupListSuperJSON() {
 export function createList(data: Partial<IList>): string | null {
   data.name = data.name?.trim() || '';
   if (!data.name) return null;
+
+  if (data.name.length > LIST_NAME_MAX_LENGTH) {
+    console.warn(`List name exceeds maximum length of ${LIST_NAME_MAX_LENGTH} characters.`);
+    return null;
+  }
 
   data.id = Math.random().toString(36).slice(2, 10);
   const key = LIST_STORAGE_KEY + data.id;

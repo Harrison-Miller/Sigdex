@@ -18,7 +18,21 @@ const emit = defineEmits(['update:modelValue', 'create', 'close']);
 const name = ref('');
 const faction = ref(props.initialFaction);
 
-const isNameValid = computed(() => !!name.value.trim());
+import { LIST_NAME_MAX_LENGTH } from '../list/manage';
+
+const isNameValid = computed(() => {
+  const trimmed = name.value.trim();
+  return !!trimmed && trimmed.length <= LIST_NAME_MAX_LENGTH;
+});
+
+const nameError = computed(() => {
+  const trimmed = name.value.trim();
+  if (!trimmed) return '';
+  if (trimmed.length > LIST_NAME_MAX_LENGTH) {
+    return `List name must be at most ${LIST_NAME_MAX_LENGTH} characters.`;
+  }
+  return '';
+});
 
 const flattenedArmyList = computed(() => {
   const list: Map<string, string[]> = new Map();
@@ -68,6 +82,12 @@ function goToImport() {
         placeholder="List name"
         @keyup.enter="emitCreate"
       />
+      <div
+        v-if="nameError"
+        class="input-error"
+      >
+        {{ nameError }}
+      </div>
       <label>
         Army
         <OptionSelect
@@ -149,5 +169,12 @@ function goToImport() {
 }
 .import-btn:hover {
   background: #388e3c;
+}
+</style>
+<style scoped>
+.input-error {
+  color: #c00;
+  font-size: 0.95em;
+  margin-top: 0.2em;
 }
 </style>
