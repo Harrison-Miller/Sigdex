@@ -2,18 +2,28 @@
   <BackButton class="unit-settings-back-btn" />
   <div v-if="!loading && list && unit">
     <h2 class="unit-name">{{ unit.name }}</h2>
-    <div v-if="unitIdx === 'leader'" class="option-row">
+    <div
+      v-if="unitIdx === 'leader'"
+      class="option-row"
+    >
       <ToggleBox v-model="unit.general">General</ToggleBox>
     </div>
-    <div v-if="bp.reinforceable" class="option-row">
+    <div
+      v-if="bp.reinforceable"
+      class="option-row"
+    >
       <ToggleBox v-model="unit.reinforced">Reinforce</ToggleBox>
     </div>
-    <WeaponOptionsSelection v-model="unit" :unit-data="unitData" />
+    <WeaponOptionsSelection
+      v-model="unit"
+      :unit-data="unitData"
+    />
     <EnhancementsSelection
       v-if="!unitData.hasKeyword('unique')"
       v-model="unit"
       :unit-data="unitData"
-      :army="army" />
+      :army="army"
+    />
   </div>
 </template>
 <script setup lang="ts">

@@ -4,7 +4,11 @@ const emit = defineEmits(['click']);
 const iconSize = props.size ?? 36;
 </script>
 <template>
-  <button class="circle-btn" aria-label="Back" @click="$emit('click')">
+  <button
+    class="circle-btn"
+    aria-label="Back"
+    @click="emit('click')"
+  >
     <font-awesome-icon
       icon="fa-solid fa-ellipsis-vertical"
       :style="{
@@ -15,7 +19,8 @@ const iconSize = props.size ?? 36;
         height: iconSize + 'px',
         padding: iconSize * 0.22 + 'px',
         color: '#555',
-      }" />
+      }"
+    />
   </button>
 </template>
 <style scoped>

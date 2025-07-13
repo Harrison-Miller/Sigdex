@@ -37,27 +37,47 @@ const displayPoints = computed(() => {
 });
 </script>
 <template>
-  <button class="list-button" @click="$emit('click')">
-    <span class="list-label" :class="{ center: !showFavoriteToggle }">
+  <button
+    class="list-button"
+    @click="$emit('click')"
+  >
+    <span
+      class="list-label"
+      :class="{ center: !showFavoriteToggle }"
+    >
       {{ displayLabel }}
       <div
-        class="badges-row"
         v-if="
           (typeof props.points === 'number' && props.points > 0) ||
-          isSoG ||
-          props.showGeneral ||
-          props.showReinforced ||
-          (typeof props.enhancementCount === 'number' && props.enhancementCount > 0)
-        ">
-        <span v-if="typeof displayPoints === 'number' && displayPoints > 0" class="points-badge">
+            isSoG ||
+            props.showGeneral ||
+            props.showReinforced ||
+            (typeof props.enhancementCount === 'number' && props.enhancementCount > 0)
+        "
+        class="badges-row"
+      >
+        <span
+          v-if="typeof displayPoints === 'number' && displayPoints > 0"
+          class="points-badge"
+        >
           {{ displayPoints }} pts
         </span>
-        <span v-if="isSoG" class="sog-badge">SoG</span>
-        <span v-if="props.showGeneral" class="general-badge">General</span>
-        <span v-if="props.showReinforced" class="reinforced-badge">Reinforced</span>
+        <span
+          v-if="isSoG"
+          class="sog-badge"
+        >SoG</span>
+        <span
+          v-if="props.showGeneral"
+          class="general-badge"
+        >General</span>
+        <span
+          v-if="props.showReinforced"
+          class="reinforced-badge"
+        >Reinforced</span>
         <span
           v-if="typeof props.enhancementCount === 'number' && props.enhancementCount > 0"
-          class="enhancement-badge">
+          class="enhancement-badge"
+        >
           Enhancements
           <template v-if="props.enhancementCount > 1"> ×{{ props.enhancementCount }}</template>
         </span>
@@ -67,16 +87,19 @@ const displayPoints = computed(() => {
       v-if="showFavoriteToggle"
       class="favorite-icon"
       :class="{ active: isFavorite }"
-      @click="toggleFavorite">
+      @click="toggleFavorite"
+    >
       <svg
         v-if="isFavorite"
         xmlns="http://www.w3.org/2000/svg"
         width="22"
         height="22"
         viewBox="0 0 24 24"
-        fill="#eab308">
+        fill="#eab308"
+      >
         <path
-          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+        />
       </svg>
       <svg
         v-else
@@ -88,16 +111,19 @@ const displayPoints = computed(() => {
         stroke="#aaa"
         stroke-width="2"
         stroke-linecap="round"
-        stroke-linejoin="round">
+        stroke-linejoin="round"
+      >
         <path
-          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+        />
       </svg>
     </span>
     <span
       v-if="props.showEllipsis"
       class="ellipsis-icon"
+      title="More options"
       @click="onEllipsisClick"
-      title="More options">
+    >
       <FontAwesomeIcon icon="ellipsis-v" />
     </span>
   </button>

@@ -2,51 +2,80 @@
   <Section>
     <template #title>
       <span>{{ title }}</span>
-      <button class="delete-regiment-btn" @click="$emit('delete')" title="Delete Regiment">
+      <button
+        class="delete-regiment-btn"
+        title="Delete Regiment"
+        @click="$emit('delete')"
+      >
         <font-awesome-icon icon="trash" />
       </button>
     </template>
     <div class="regiment-leader">
-      <div v-if="leader.name" class="regiment-unit-row">
+      <div
+        v-if="leader.name"
+        class="regiment-unit-row"
+      >
         <ListButton
           :label="leader.name"
           :points="battleProfiles.get(leader.name)?.points"
-          :showEllipsis="true"
-          :showGeneral="leader.general"
-          :enhancementCount="leader.getEnhancementCount()"
+          :show-ellipsis="true"
+          :show-general="leader.general"
+          :enhancement-count="leader.getEnhancementCount()"
           @click="() => goToUnitDetail(leader.name)"
-          @ellipsis="() => goToUnitSettings('leader')" />
+          @ellipsis="() => goToUnitSettings('leader')"
+        />
         <button
           class="delete-unit-btn"
-          @click="$emit('delete-unit', 'leader')"
-          title="Remove leader">
+          title="Remove leader"
+          @click="emit('delete-unit', 'leader')"
+        >
           <font-awesome-icon icon="trash" />
         </button>
       </div>
-      <button v-else class="add-leader-btn" @click="goToAddLeader">+ Add Leader</button>
+      <button
+        v-else
+        class="add-leader-btn"
+        @click="goToAddLeader"
+      >
+        + Add Leader
+      </button>
     </div>
-    <div class="divider"></div>
+    <div class="divider" />
     <div class="regiment-units">
       <ul>
-        <li v-for="(unit, idx) in units" :key="unit.name" class="regiment-unit-row">
+        <li
+          v-for="(unit, idx) in units"
+          :key="unit.name"
+          class="regiment-unit-row"
+        >
           <div class="regiment-unit-btn">
             <ListButton
               :label="unit.name"
               :points="battleProfiles.get(unit.name)?.points"
-              :showEllipsis="true"
-              :showReinforced="unit.reinforced"
-              :enhancementCount="unit.getEnhancementCount()"
+              :show-ellipsis="true"
+              :show-reinforced="unit.reinforced"
+              :enhancement-count="unit.getEnhancementCount()"
+              class="regiment-unit-btn"
               @click="() => goToUnitDetail(unit.name)"
               @ellipsis="() => goToUnitSettings(idx)"
-              class="regiment-unit-btn" />
+            />
           </div>
-          <button class="delete-unit-btn" @click="$emit('delete-unit', idx)" title="Remove unit">
+          <button
+            class="delete-unit-btn"
+            title="Remove unit"
+            @click="emit('delete-unit', idx)"
+          >
             <font-awesome-icon icon="trash" />
           </button>
         </li>
       </ul>
     </div>
-    <button class="add-unit-btn" @click="goToAddUnit">+ Add Unit</button>
+    <button
+      class="add-unit-btn"
+      @click="goToAddUnit"
+    >
+      + Add Unit
+    </button>
   </Section>
 </template>
 <script setup lang="ts">
@@ -54,7 +83,7 @@ import { defineProps, defineEmits, computed } from 'vue';
 import type { ListRegiment } from '../../../list/models/regiment';
 import type { ListUnit } from '../../../list/models/unit';
 import ListButton from '../../shared/components/ListButton.vue';
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 import { useRouter } from 'vue-router';
 import type { BattleProfile } from '../../../parser/models/battleProfile';
 
@@ -99,7 +128,7 @@ function goToUnitDetail(unitName: string) {
   if (!unitName) return;
   router.push({
     name: 'UnitDetail',
-    params: { army: props.armyName, unit: unitName },
+    params: { armyName: props.armyName, unitName: unitName },
   });
 }
 

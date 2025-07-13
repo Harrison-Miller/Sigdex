@@ -1,28 +1,37 @@
 <template>
   <div class="settings-view">
-    <BackButton class="back-btn" :size="36" />
+    <BackButton
+      class="back-btn"
+      :size="36"
+    />
     <h1>Settings</h1>
     <div class="section">
       <ListButton
         label="Clear BSData"
+        :show-favorite-toggle="false"
+        style="margin-bottom: 0.7rem"
         @click="clearBSDataHandler"
-        :showFavoriteToggle="false"
-        style="margin-bottom: 0.7rem" />
+      />
       <ListButton
         label="Clear Favorites"
+        :show-favorite-toggle="false"
+        style="margin-bottom: 0.7rem"
         @click="clearFavorites"
-        :showFavoriteToggle="false"
-        style="margin-bottom: 0.7rem" />
-      <ListButton label="Clear Lists" @click="clearLists" :showFavoriteToggle="false" />
+      />
+      <ListButton
+        label="Clear Lists"
+        :show-favorite-toggle="false"
+        @click="clearLists"
+      />
     </div>
     <div class="section">
-      <label class="input-label"
-        >GITHUB_REPO
+      <label class="input-label">GITHUB_REPO
         <input
-          class="settings-input"
           v-model="githubRepo"
+          class="settings-input"
+          placeholder="BSData/age-of-sigmar-4th"
           @change="saveGithubRepoHandler"
-          placeholder="BSData/age-of-sigmar-4th" />
+        >
       </label>
     </div>
     <div class="section legal">
@@ -31,7 +40,10 @@
     </div>
     <div class="section about">
       <strong>About:</strong> Sigdex is an open-source Age of Sigmar list builder.
-      <a href="https://github.com/Harrison-Miller/sigdex" target="_blank">GitHub page</a>
+      <a
+        href="https://github.com/Harrison-Miller/sigdex"
+        target="_blank"
+      >GitHub page</a>
     </div>
     <div class="section version"><strong>Version:</strong> {{ SIGDEX_VERSION }}</div>
   </div>

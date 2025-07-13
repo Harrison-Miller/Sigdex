@@ -8,7 +8,7 @@ import { SIGDEX_VERSION } from '../../version';
 
 function calculateDrops(list: List): number {
   if (!list || !list.regiments) return 0;
-  let drops = list.regiments.length + (list.auxiliaryUnits?.length || 0);
+  const drops = list.regiments.length + (list.auxiliaryUnits?.length || 0);
   return drops;
 }
 
@@ -124,7 +124,7 @@ function displayUnit(unit: ListUnit, army: Army, game: Game): string {
         (optionData.max ? optionData.max : modelGroupCount || 1) * (unit.reinforced ? 2 : 1);
       const count = Math.min(option.count, maxCount);
 
-      out += `• `;
+      out += '• ';
       if (count > 1) {
         out += `${count}x `;
       }
@@ -178,7 +178,7 @@ export function exportList(list: List, game: Game): string {
   // name and points
   out += `${list.name} ${points}/2000 pts\n\n`;
   out += `${list.faction}\n${list.formation}\n`;
-  out += `General's Handbook 2025-26\n`; // TODO: actually have ghb version selection that leads to different rules
+  out += 'General\'s Handbook 2025-26\n'; // TODO: actually have ghb version selection that leads to different rules
   out += `Drops: ${calculateDrops(list)}\n`;
   out += `Wounds: ${calculateWounds(list, game)}\n`;
 
@@ -200,7 +200,7 @@ export function exportList(list: List, game: Game): string {
   }
 
   if (list.battleTacticCard1 || list.battleTacticCard2) {
-    out += `\nBattle Tactic Cards: `;
+    out += '\nBattle Tactic Cards: ';
     if (list.battleTacticCard1 && list.battleTacticCard2) {
       out += `${list.battleTacticCard1}, ${list.battleTacticCard2}\n`;
     } else if (list.battleTacticCard1) {
@@ -213,7 +213,7 @@ export function exportList(list: List, game: Game): string {
   // display the general
   // get general's regiment idx
   let generalRegimentIdx = -1;
-  let generalsRegiment = list.regiments.find((reg, idx) => {
+  const generalsRegiment = list.regiments.find((reg, idx) => {
     if (reg.leader && reg.leader.general) {
       generalRegimentIdx = idx;
       return true;
@@ -222,7 +222,7 @@ export function exportList(list: List, game: Game): string {
   });
 
   if (generalRegimentIdx >= 0 && generalsRegiment) {
-    out += `\nGeneral's Regiment\n`;
+    out += '\nGeneral\'s Regiment\n';
     out += `${displayRegiment(generalsRegiment, army, game)}\n`;
   }
 
@@ -236,22 +236,22 @@ export function exportList(list: List, game: Game): string {
 
   // auxiliary units
   if (list.auxiliaryUnits && list.auxiliaryUnits.length > 0) {
-    out += `Auxiliary Units\n`;
+    out += 'Auxiliary Units\n';
     for (const auxUnit of list.auxiliaryUnits) {
       out += `${displayUnit(auxUnit, army, game)}`;
     }
-    out += `\n`;
+    out += '\n';
   }
 
   // faction terrain
   if (list.factionTerrain) {
-    out += `Faction Terrain\n`;
+    out += 'Faction Terrain\n';
     const terrainPoints = army.battleProfiles.get(list.factionTerrain)?.points || 0;
     out += displayWithPoints(list.factionTerrain, terrainPoints);
   }
 
   // app info
-  out += `\n\nCreated with Sigdex: https://sigdex.io/\n`;
+  out += '\n\nCreated with Sigdex: https://sigdex.io/\n';
   out += `Version: ${SIGDEX_VERSION}\n`;
 
   return out;

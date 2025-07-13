@@ -1,18 +1,35 @@
 <template>
   <h2>Your Lists</h2>
-  <div v-if="lists.length === 0" class="empty-message">You have no saved lists yet.</div>
+  <div
+    v-if="lists.length === 0"
+    class="empty-message"
+  >
+    You have no saved lists yet.
+  </div>
   <ul v-else>
-    <li v-for="list in lists" :key="list.id">
-      <ListButton :label="`${list.name} | ${list.faction}`" @click="goToList(list)" />
+    <li
+      v-for="list in lists"
+      :key="list.id"
+    >
+      <ListButton
+        :label="`${list.name} | ${list.faction}`"
+        @click="goToList(list)"
+      />
     </li>
   </ul>
-  <button class="fab" @click="openModal">+</button>
+  <button
+    class="fab"
+    @click="openModal"
+  >
+    +
+  </button>
   <CreateListModal
     v-model="showModal"
-    initialFaction="Cities of Sigmar"
-    :armyList="game?.armyList || new Map()"
+    initial-faction="Cities of Sigmar"
+    :army-list="game?.armyList || new Map()"
     @create="handleCreate"
-    @close="closeModal" />
+    @close="closeModal"
+  />
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';

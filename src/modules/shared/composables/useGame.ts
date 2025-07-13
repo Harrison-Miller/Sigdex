@@ -74,8 +74,8 @@ async function loadGame() {
   _loading.value = true;
   setupSuperJSON();
   try {
-    let needsUpdate = isGameCacheOutOfDate() || isGameVersionOutOfDate();
-    let cached = localStorage.getItem(GAME_STORAGE_KEY);
+    const needsUpdate = isGameCacheOutOfDate() || isGameVersionOutOfDate();
+    const cached = localStorage.getItem(GAME_STORAGE_KEY);
     if (!needsUpdate && cached) {
       _game.value = SuperJSON.parse(cached);
       _loading.value = false;

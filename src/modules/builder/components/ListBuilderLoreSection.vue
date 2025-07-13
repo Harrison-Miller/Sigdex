@@ -1,32 +1,53 @@
 <template>
-  <Section v-if="computedArmyLore.size > 0" :defaultCollapsed="collapsed" :collapseKey="title">
+  <Section
+    v-if="computedArmyLore.size > 0"
+    :default-collapsed="collapsed"
+    :collapse-key="title"
+  >
     <template #title>
       <span>{{ selectedLoreName || title }}</span>
-      <span v-if="lore.points > 0" class="lore-points-badge"> {{ lore.points }} pts </span>
+      <span
+        v-if="lore.points > 0"
+        class="lore-points-badge"
+      >
+        {{ lore.points }} pts
+      </span>
     </template>
     <div class="spell-lores-section">
       <OptionSelect
         v-model="selectedLoreName"
         :options="Array.from(computedArmyLore.keys())"
-        placeholder="No Lore Selected" />
+        placeholder="No Lore Selected"
+      />
       <div v-if="props.manifestationMode && !loading && !error && selectedLoreName">
         <ul>
-          <li v-for="unitName in manifestationUnits" :key="unitName">
+          <li
+            v-for="unitName in manifestationUnits"
+            :key="unitName"
+          >
             <router-link
+              v-slot="{ navigate, href }"
               :to="{
                 name: 'UnitDetail',
                 params: {
-                  army: isUniversalLore ? 'UniversalManifestations' : armyName,
-                  unit: unitName,
+                  armyName: isUniversalLore ? 'UniversalManifestations' : armyName,
+                  unitName: unitName,
                 },
               }"
               custom
-              v-slot="{ navigate, href }">
-              <ListButton :label="unitName" @click="navigate" :href="href" />
+            >
+              <ListButton
+                :label="unitName"
+                :href="href"
+                @click="navigate"
+              />
             </router-link>
           </li>
         </ul>
-        <div v-if="manifestationUnits.length === 0" style="margin: 1em 0; color: #a00">
+        <div
+          v-if="manifestationUnits.length === 0"
+          style="margin: 1em 0; color: #a00"
+        >
           No summonable Manifestations found for this lore.
         </div>
       </div>
@@ -34,7 +55,8 @@
         <AbilityCard
           v-for="(ability, i) in lore.abilities"
           :key="ability.name + i"
-          :ability="ability" />
+          :ability="ability"
+        />
       </div>
     </div>
   </Section>
@@ -42,7 +64,7 @@
 <script setup lang="ts">
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import { ref, computed } from 'vue';
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { Lore } from '../../../parser/models/lore';

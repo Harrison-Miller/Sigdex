@@ -2,17 +2,19 @@
   <div class="counter-box">
     <button
       class="counter-btn"
-      @click="decrement"
       :disabled="modelValue <= min"
-      :class="{ disabled: modelValue <= min }">
+      :class="{ disabled: modelValue <= min }"
+      @click="decrement"
+    >
       -
     </button>
     <span class="counter-value">{{ modelValue }}</span>
     <button
       class="counter-btn"
-      @click="increment"
       :disabled="modelValue >= max"
-      :class="{ disabled: modelValue >= max }">
+      :class="{ disabled: modelValue >= max }"
+      @click="increment"
+    >
       +
     </button>
   </div>

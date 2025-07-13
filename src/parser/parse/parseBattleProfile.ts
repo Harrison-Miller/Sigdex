@@ -170,7 +170,7 @@ export function parseBattleProfile(
           })
         );
         for (const [_, w] of model.weapons) {
-          let wp = new WeaponOption({
+          const wp = new WeaponOption({
             ...w,
           });
           if (wp.max > newUnitSize) {

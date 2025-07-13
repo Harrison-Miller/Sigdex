@@ -2,11 +2,11 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { RouterView, useRouter } from 'vue-router';
 import NoticeModal from './components/NoticeModal.vue';
-import { findNextNoticeToShow, markNoticeSeen } from './utils/notices';
+import { findNextNoticeToShow, markNoticeSeen, type Notice } from './utils/notices';
 import { clearGameCache, useGame } from './modules/shared/composables/useGame';
 
 const showNotice = ref(false);
-const currentNotice = ref<any>(null);
+const currentNotice = ref<Notice | null>(null);
 const router = useRouter();
 
 onMounted(() => {
@@ -44,6 +44,7 @@ onUnmounted(() => {
     v-if="showNotice && currentNotice"
     :notice="currentNotice"
     :visible="showNotice"
-    @close="handleNoticeClose" />
+    @close="handleNoticeClose"
+  />
   <RouterView />
 </template>

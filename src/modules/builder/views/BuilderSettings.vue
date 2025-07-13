@@ -5,7 +5,11 @@
     <h2>{{ listName }}</h2>
     <label class="validator-label">
       Validation
-      <OptionSelect v-model="validator" :options="validatorOptions" class="validator-select" />
+      <OptionSelect
+        v-model="validator"
+        :options="validatorOptions"
+        class="validator-select"
+      />
     </label>
     <label class="points-cap-label">
       Points Cap
@@ -14,14 +18,34 @@
         :min="250"
         :max="5000"
         :step="250"
-        class="points-cap-counter" />
+        class="points-cap-counter"
+      />
     </label>
-    <TextInput v-model="newName" type="text" label="Rename List" placeholder="New list name" />
-    <div class="modal-actions single-action" style="margin-top: 1.2em">
-      <button class="save-btn" @click="renameCurrentList" :disabled="!newName">Rename</button>
+    <TextInput
+      v-model="newName"
+      type="text"
+      label="Rename List"
+      placeholder="New list name"
+    />
+    <div
+      class="modal-actions single-action"
+      style="margin-top: 1.2em"
+    >
+      <button
+        class="save-btn"
+        :disabled="!newName"
+        @click="renameCurrentList"
+      >
+        Rename
+      </button>
     </div>
-    <hr />
-    <button class="delete-btn" @click="deleteCurrentList">Delete List</button>
+    <hr>
+    <button
+      class="delete-btn"
+      @click="deleteCurrentList"
+    >
+      Delete List
+    </button>
   </div>
 </template>
 <script setup lang="ts">

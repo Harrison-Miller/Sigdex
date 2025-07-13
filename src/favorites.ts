@@ -22,7 +22,10 @@ export function saveFavorite(type: FavoriteType, name: string) {
   if (data) {
     try {
       parsed = JSON.parse(data);
-    } catch {}
+    } catch {
+      // If parsing fails, start with empty arrays
+      parsed = { army: [], unit: [] };
+    }
   }
   if (!parsed[type].includes(name)) {
     parsed[type].push(name);
@@ -36,7 +39,10 @@ export function removeFavorite(type: FavoriteType, name: string) {
   if (data) {
     try {
       parsed = JSON.parse(data);
-    } catch {}
+    } catch {
+      // If parsing fails, start with empty arrays
+      parsed = { army: [], unit: [] };
+    }
   }
   parsed[type] = parsed[type].filter((n) => n !== name);
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(parsed));

@@ -1,14 +1,24 @@
 <template>
   <div class="section-wrapper">
-    <div class="section-divider"></div>
-    <div class="section-header-row" @click="toggle()" style="cursor: pointer">
+    <div class="section-divider" />
+    <div
+      class="section-header-row"
+      style="cursor: pointer"
+      @click="toggle()"
+    >
       <h2 class="section-title"><slot name="title" /></h2>
-      <button class="collapse-btn" @click.stop="toggle()">
+      <button
+        class="collapse-btn"
+        @click.stop="toggle()"
+      >
         <span v-if="collapsed">&#9654;</span>
         <span v-else>&#9660;</span>
       </button>
     </div>
-    <div v-show="!collapsed" class="section-content">
+    <div
+      v-show="!collapsed"
+      class="section-content"
+    >
       <slot />
     </div>
   </div>

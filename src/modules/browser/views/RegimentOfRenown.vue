@@ -3,20 +3,34 @@
   <div class="unit-detail">
     <h1 style="margin: 0">{{ regiment?.name }}</h1>
     <h1 style="margin: 0">
-      <span v-if="regiment?.points ? regiment?.points > 0 : 0" class="points-badge"
-        >{{ regiment?.points }} pts</span
-      >
+      <span
+        v-if="regiment?.points ? regiment?.points > 0 : 0"
+        class="points-badge"
+      >{{ regiment?.points }} pts</span>
     </h1>
-    <Section v-if="regiment?.abilities.length" collapseKey="abilities">
+    <Section
+      v-if="regiment?.abilities.length"
+      collapse-key="abilities"
+    >
       <template #title>Abilities</template>
       <div class="abilities">
-        <AbilityCard v-for="(a, i) in regiment.abilities" :key="a.name + i" :ability="a" />
+        <AbilityCard
+          v-for="(a, i) in regiment.abilities"
+          :key="a.name + i"
+          :ability="a"
+        />
       </div>
     </Section>
-    <Section v-if="unitList.length" collapseKey="warscrolls">
+    <Section
+      v-if="unitList.length"
+      collapse-key="warscrolls"
+    >
       <template #title>Warscrolls</template>
       <ul class="unit-list">
-        <li v-for="[unit, count] in unitList" :key="unit">
+        <li
+          v-for="[unit, count] in unitList"
+          :key="unit"
+        >
           <span>{{ count }} × {{ unit }}</span>
         </li>
       </ul>
@@ -25,16 +39,25 @@
           v-for="[unit] in unitList"
           :key="unit"
           :label="unit"
-          @click="() => goToUnit(unit)" />
+          @click="() => goToUnit(unit)"
+        />
       </div>
     </Section>
-    <Section v-if="regiment?.allowedArmies.length" collapseKey="allowedArmies">
+    <Section
+      v-if="regiment?.allowedArmies.length"
+      collapse-key="allowedArmies"
+    >
       <template #title>Armies</template>
       <div class="allowed-armies-intro">
         This Regiment of Renown can be included in the following armies:
       </div>
       <ul class="allowed-armies-list">
-        <li v-for="army in regiment.allowedArmies" :key="army">{{ army }}</li>
+        <li
+          v-for="army in regiment.allowedArmies"
+          :key="army"
+        >
+          {{ army }}
+        </li>
       </ul>
     </Section>
   </div>
@@ -44,7 +67,7 @@ import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import ListButton from '../../shared/components/ListButton.vue';
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
 
@@ -52,7 +75,7 @@ const route = useRoute();
 const router = useRouter();
 const { game } = useGame();
 
-const regimentName = computed(() => route.params.regiment as string);
+const regimentName = computed(() => route.params.regimentName as string);
 const regiment = computed(() => game.value?.regimentsOfRenown.get(regimentName.value));
 
 const unitList = computed(() => {
@@ -63,7 +86,7 @@ const unitList = computed(() => {
 function goToUnit(unit: string) {
   // Find the first non-AoR army that has a battleProfile with the given unit name
   if (!game.value) {
-    router.push({ name: 'UnitDetail', params: { unit } });
+    console.warn(`Game data not loaded, cannot navigate to unit: ${unit}`);
     return;
   }
   // Build a set of all main army names (not AoR)
@@ -81,7 +104,7 @@ function goToUnit(unit: string) {
       break;
     }
   }
-  router.push({ name: 'UnitDetail', params: { unit, army: foundArmy } });
+  router.push({ name: 'UnitDetail', params: { unitName: unit, armyName: foundArmy } });
 }
 </script>
 <style scoped>

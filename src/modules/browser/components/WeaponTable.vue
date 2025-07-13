@@ -1,17 +1,3 @@
-<script setup lang="ts">
-import { formatText } from '../../../utils/formatter';
-import type { Weapon } from '../../../parser/models/weapon';
-const props = defineProps<{
-  weapons: Weapon[];
-  shortHeaders?: boolean;
-}>();
-
-function displayRend(rend: string | undefined | null): string {
-  return rend === '' || rend === undefined || rend === null || rend === '0' ? '-' : String(rend);
-}
-
-const hasRange = props.weapons.some((w) => w.range && w.range !== '');
-</script>
 <template>
   <div class="weapon-table-wrapper">
     <table class="weapon-table">
@@ -27,14 +13,21 @@ const hasRange = props.weapons.some((w) => w.range && w.range !== '');
         </tr>
       </thead>
       <tbody>
-        <tr v-for="w in props.weapons" :key="w.name">
+        <tr
+          v-for="w in props.weapons"
+          :key="w.name"
+        >
           <td>
             <div>{{ w.name }}</div>
             <div
               v-if="w.abilities && w.abilities.filter((a) => a && a !== '-').length"
-              class="weapon-abilities">
-              <span v-for="(a, i) in w.abilities.filter((a) => a && a !== '-')" :key="i">
-                <span v-html="formatText(a)"></span>
+              class="weapon-abilities"
+            >
+              <span
+                v-for="(a, i) in w.abilities.filter((a) => a && a !== '-')"
+                :key="i"
+              >
+                <span v-html="formatText(a)" />
                 <span v-if="i < w.abilities.filter((a) => a && a !== '-').length - 1">, </span>
               </span>
             </div>
@@ -50,6 +43,20 @@ const hasRange = props.weapons.some((w) => w.range && w.range !== '');
     </table>
   </div>
 </template>
+<script setup lang="ts">
+import { formatText } from '../../../utils/formatter';
+import type { Weapon } from '../../../parser/models/weapon';
+const props = defineProps<{
+  weapons: Weapon[];
+  shortHeaders?: boolean;
+}>();
+
+function displayRend(rend: string | undefined | null): string {
+  return rend === '' || rend === undefined || rend === null || rend === '0' ? '-' : String(rend);
+}
+
+const hasRange = props.weapons.some((w) => w.range && w.range !== '');
+</script>
 <style scoped>
 .weapon-table-wrapper {
   margin-bottom: 1.5rem;

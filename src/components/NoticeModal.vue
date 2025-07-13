@@ -1,9 +1,21 @@
 <template>
-  <div v-if="visible" class="notice-modal-overlay" @mousedown.self="close">
+  <div
+    v-if="visible"
+    class="notice-modal-overlay"
+    @mousedown.self="close"
+  >
     <div class="notice-modal">
-      <button class="notice-modal-close" @click="close">&times;</button>
+      <button
+        class="notice-modal-close"
+        @click="close"
+      >
+        &times;
+      </button>
       <h2>{{ notice.title }}</h2>
-      <div class="notice-modal-body" v-html="notice.body"></div>
+      <div
+        class="notice-modal-body"
+        v-html="notice.body"
+      />
       <div class="notice-modal-timestamp">{{ formattedTimestamp }}</div>
     </div>
   </div>

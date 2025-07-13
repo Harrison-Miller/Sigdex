@@ -3,50 +3,63 @@ import { computed } from 'vue';
 import { useUniversalManifestationLore } from '../../shared/composables/useGame';
 import ListButton from '../../shared/components/ListButton.vue';
 import BackButton from '../../core/components/BackButton.vue';
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 
-const props = defineProps<{ lore: string }>();
-const loreName = props.lore;
+const props = defineProps<{ loreName: string }>();
 
-const { lore } = useUniversalManifestationLore(loreName);
+const { lore } = useUniversalManifestationLore(props.loreName);
 const units = computed(() => {
   return lore.value.abilities.map((ability) => ability.summonedUnit);
 });
 </script>
 <template>
-  <BackButton :size="36" class="unit-list-back" />
+  <BackButton
+    :size="36"
+    class="unit-list-back"
+  />
   <div class="list-container">
     <h1 style="margin: 0">
       {{ loreName }}
     </h1>
     <h1 style="margin: 0">
-      <span v-if="lore?.points ? lore?.points > 0 : 0" class="points-badge"
-        >{{ lore?.points }} pts</span
-      >
+      <span
+        v-if="lore?.points ? lore?.points > 0 : 0"
+        class="points-badge"
+      >{{ lore?.points }} pts</span>
     </h1>
-    <Section collapseKey="warscrolls">
+    <Section collapse-key="warscrolls">
       <template #title>Warscrolls</template>
       <ul>
-        <li v-for="name in units" :key="name">
+        <li
+          v-for="name in units"
+          :key="name"
+        >
           <router-link
+            v-slot="{ navigate, href }"
             :to="{
               name: 'UnitDetail',
-              params: { army: 'UniversalManifestations', unit: name },
+              params: { armyName: 'UniversalManifestations', unitName: name },
             }"
             custom
-            v-slot="{ navigate, href }">
-            <ListButton :label="name" :points="0" @click="navigate" :href="href" />
+          >
+            <ListButton
+              :label="name"
+              :points="0"
+              :href="href"
+              @click="navigate"
+            />
           </router-link>
         </li>
       </ul>
     </Section>
-    <Section collapseKey="lore">
+    <Section collapse-key="lore">
       <template #title>Lore</template>
       <AbilityCard
         v-for="(ability, i) in lore.abilities"
         :key="ability.name + i"
-        :ability="ability" />
+        :ability="ability"
+      />
     </Section>
   </div>
 </template>

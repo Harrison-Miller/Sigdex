@@ -18,7 +18,7 @@ export async function importList(text: string, game: Game): Promise<List> {
     throw new Error(`No army data found for faction: ${faction}`);
   }
 
-  let list: Partial<List> = {
+  const list: Partial<List> = {
     name: findName(text),
     faction,
     formation: findFormationOrFirst(listText, army),

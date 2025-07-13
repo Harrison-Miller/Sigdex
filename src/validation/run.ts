@@ -23,7 +23,7 @@ function getValidatorsForList(list: List): ListValidator[] {
     return [];
   }
 
-  let validators = [...baseValidators];
+  const validators = [...baseValidators];
   if (list.validator === 'highlander') validators.push(...highlanderChecks);
   return validators;
 }

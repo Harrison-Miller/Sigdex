@@ -1,28 +1,42 @@
 <template>
-  <Section :defaultCollapsed="collapsed" v-if="hasFactionTerrain" collapseKey="factionTerrain">
+  <Section
+    v-if="hasFactionTerrain"
+    :default-collapsed="collapsed"
+    collapse-key="factionTerrain"
+  >
     <template #title> Faction Terrain </template>
     <div>
-      <div v-if="factionTerrain" class="faction-terrain-controls">
+      <div
+        v-if="factionTerrain"
+        class="faction-terrain-controls"
+      >
         <ListButton
           :label="factionTerrain"
           :points="battleProfiles.get(factionTerrain)?.points"
-          @click="goToUnitDetail" />
+          @click="goToUnitDetail"
+        />
         <button
           class="delete-terrain-btn"
+          title="Delete Faction Terrain"
           @click="handleDeleteFactionTerrain"
-          title="Delete Faction Terrain">
+        >
           <font-awesome-icon icon="trash" />
         </button>
       </div>
       <div v-else>
-        <button class="add-terrain-btn" @click="handleAddFactionTerrain">+ Faction Terrain</button>
+        <button
+          class="add-terrain-btn"
+          @click="handleAddFactionTerrain"
+        >
+          + Faction Terrain
+        </button>
       </div>
     </div>
   </Section>
 </template>
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
 import type { BattleProfile } from '../../../parser/models/battleProfile';
@@ -72,7 +86,7 @@ function goToUnitDetail() {
   if (!factionTerrain.value) return;
   router.push({
     name: 'UnitDetail',
-    params: { army: props.armyName, unit: factionTerrain.value },
+    params: { armyName: props.armyName, unitName: factionTerrain.value },
   });
 }
 </script>

@@ -1,1 +1,1 @@
-npx prettier --check . && npx vitest && npm run build
+npx eslint . && npx vitest && npm run build

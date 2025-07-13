@@ -6,27 +6,45 @@
     <div
       v-if="showRegimentOptions"
       class="regiment-options-bar"
-      v-html="formattedRegimentOptions"></div>
+      v-html="formattedRegimentOptions"
+    />
     <div class="filters-bar">
-      <input v-model="search" placeholder="Search units..." class="search-bar" />
+      <input
+        v-model="search"
+        placeholder="Search units..."
+        class="search-bar"
+      >
       <button
         class="sort-toggle"
+        :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'"
         @click="toggleSortMode"
-        :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'">
+      >
         Sort: {{ sortLabel }}
       </button>
     </div>
-    <template v-for="cat in UnitCategories" :key="cat">
+    <template
+      v-for="cat in UnitCategories"
+      :key="cat"
+    >
       <Section v-if="categorizedBattleProfiles.get(cat)?.length">
         <template #title>{{ cat }}</template>
         <ul class="unit-list">
-          <li v-for="bp in categorizedBattleProfiles.get(cat)" :key="bp.name" class="unit-row">
+          <li
+            v-for="bp in categorizedBattleProfiles.get(cat)"
+            :key="bp.name"
+            class="unit-row"
+          >
             <ListButton
               :label="bp.name"
               :points="bp.points"
+              class="unit-list-btn"
               @click="() => goToDetail(bp)"
-              class="unit-list-btn" />
-            <button class="add-btn" @click="() => addUnitToRegiment(bp)" title="Add to Regiment">
+            />
+            <button
+              class="add-btn"
+              title="Add to Regiment"
+              @click="() => addUnitToRegiment(bp)"
+            >
               +
             </button>
           </li>
@@ -42,7 +60,7 @@ import { getDefaultWeaponOptions } from '../../../list/models/unit';
 import { formatRegimentOptions } from '../../../utils/formatter';
 import ListButton from '../../shared/components/ListButton.vue';
 import BackButton from '../../core/components/BackButton.vue';
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 import { useGame } from '../../shared/composables/useGame';
 import { BattleProfile } from '../../../parser/models/battleProfile';
 import { UnitCategories, type UnitCategory } from '../../../parser/models/unit';
@@ -161,7 +179,7 @@ const categorizedBattleProfiles = computed(() => {
 function goToDetail(bp: BattleProfile) {
   router.push({
     name: 'UnitDetail',
-    params: { army: list.value?.faction || '', unit: bp.name },
+    params: { armyName: list.value?.faction || '', unitName: bp.name },
   });
 }
 

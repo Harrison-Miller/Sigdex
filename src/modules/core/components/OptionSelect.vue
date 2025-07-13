@@ -1,15 +1,31 @@
 <template>
   <select v-model="selectedValue">
-    <option v-if="placeholder" value="">{{ placeholder }}</option>
+    <option
+      v-if="placeholder"
+      value=""
+    >
+      {{ placeholder }}
+    </option>
     <template v-if="isArray">
-      <option v-for="option in options as string[]" :key="option" :value="option">
+      <option
+        v-for="option in options as string[]"
+        :key="option"
+        :value="option"
+      >
         {{ option }}
       </option>
     </template>
     <template v-else-if="isMap">
-      <template v-for="[section, items] in options as Map<string, string[]>" :key="section">
+      <template
+        v-for="[section, items] in options as Map<string, string[]>"
+        :key="section"
+      >
         <optgroup :label="section">
-          <option v-for="item in items" :key="item" :value="item">
+          <option
+            v-for="item in items"
+            :key="item"
+            :value="item"
+          >
             {{ item }}
           </option>
         </optgroup>

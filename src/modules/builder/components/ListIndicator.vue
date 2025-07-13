@@ -3,10 +3,19 @@
     <button
       class="validity-indicator"
       :class="isListValid ? 'valid' : 'invalid'"
+      :title="isListValid ? 'List is valid' : 'List has issues'"
       @click="!isListValid ? (showViolationsModal = true) : null"
-      :title="isListValid ? 'List is valid' : 'List has issues'">
-      <font-awesome-icon v-if="isListValid" icon="fa-solid fa-check" class="valid-check" />
-      <font-awesome-icon v-else icon="fa-solid fa-triangle-exclamation" class="valid-warning" />
+    >
+      <font-awesome-icon
+        v-if="isListValid"
+        icon="fa-solid fa-check"
+        class="valid-check"
+      />
+      <font-awesome-icon
+        v-else
+        icon="fa-solid fa-triangle-exclamation"
+        class="valid-warning"
+      />
     </button>
     <div class="points-fab">
       <span :class="{ 'over-cap': pointsTotal > pointsCap }">
@@ -16,13 +25,24 @@
     <Modal
       v-if="showViolationsModal"
       :model-value="showViolationsModal"
-      @close="showViolationsModal = false">
+      @close="showViolationsModal = false"
+    >
       <div class="violations-modal">
         <h3>List Issues</h3>
         <ul>
-          <li v-for="msg in errors" :key="msg">{{ msg }}</li>
+          <li
+            v-for="msg in errors"
+            :key="msg"
+          >
+            {{ msg }}
+          </li>
         </ul>
-        <button @click="showViolationsModal = false" class="close-btn">Close</button>
+        <button
+          class="close-btn"
+          @click="showViolationsModal = false"
+        >
+          Close
+        </button>
       </div>
     </Modal>
   </div>
@@ -30,7 +50,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import Modal from '../../../components/Modal.vue';
+import Modal from '../../../components/ModalBox.vue';
 import { calculatePoints } from '../../../validation/points';
 import type { List } from '../../../list/models/list';
 import type { Game } from '../../../parser/models/game';

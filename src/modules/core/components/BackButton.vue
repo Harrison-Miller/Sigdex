@@ -8,7 +8,11 @@ function goBack() {
 }
 </script>
 <template>
-  <button class="back-btn" @click="goBack" aria-label="Back">
+  <button
+    class="back-btn"
+    aria-label="Back"
+    @click="goBack"
+  >
     <font-awesome-icon
       icon="fa-solid fa-arrow-left"
       :style="{
@@ -19,7 +23,8 @@ function goBack() {
         height: iconSize + 'px',
         padding: iconSize * 0.22 + 'px',
         color: '#555',
-      }" />
+      }"
+    />
   </button>
 </template>
 <style scoped>

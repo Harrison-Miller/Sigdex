@@ -3,20 +3,38 @@
     <BackButton />
     <div class="list-export-view">
       <div class="export-header">
-        <button class="copy-button" @click="copyToClipboard" aria-label="Copy to clipboard">
+        <button
+          class="copy-button"
+          aria-label="Copy to clipboard"
+          @click="copyToClipboard"
+        >
           <font-awesome-icon icon="fa-solid fa-copy" />
           Copy to Clipboard
         </button>
-        <h1 class="export-title" v-if="list">{{ list.name }} - Export</h1>
+        <h1
+          v-if="list"
+          class="export-title"
+        >
+          {{ list.name }} - Export
+        </h1>
       </div>
-      <div v-if="list && !loading" class="export-container">
+      <div
+        v-if="list && !loading"
+        class="export-container"
+      >
         <textarea
           :value="exportedText"
           readonly
           class="export-textarea"
-          aria-label="Exported list content"></textarea>
+          aria-label="Exported list content"
+        />
       </div>
-      <div v-else class="not-found">List not found or army data not loaded.</div>
+      <div
+        v-else
+        class="not-found"
+      >
+        List not found or army data not loaded.
+      </div>
     </div>
   </div>
 </template>

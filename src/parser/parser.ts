@@ -51,7 +51,7 @@ export class Parser {
     // load all units
     [...this.libraryFiles.values(), this.gameFile, this.rorFile].forEach((xml) => {
       // [this.libraryFiles.get('Gloomspite Gitz - Library.cat')].forEach((xml) => {
-      let units = parseUnits(xml.catalogue || xml.gameSystem);
+      const units = parseUnits(xml.catalogue || xml.gameSystem);
       units.forEach((unit) => {
         if (this.units.has(unit.name)) {
           console.warn(`Duplicate unit found: ${unit.name}`);
@@ -81,7 +81,7 @@ export class Parser {
     // parse armies and assign their lores
     [...this.armyFiles.values()].forEach((xml) => {
       // [this.armyFiles.get('Gloomspite Gitz.cat')].forEach((xml) => {
-      let army = parseArmy(xml, this.units, this.categories);
+      const army = parseArmy(xml, this.units, this.categories);
       if (
         !army ||
         army.name === '' ||

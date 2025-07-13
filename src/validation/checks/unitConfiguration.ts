@@ -73,7 +73,7 @@ function checkEnhancementSelectionsAreValid(list: List, game: Game): string[] {
 
   let artifactCount = 0;
   let heroicTraitCount = 0;
-  let enhancementCount: Map<string, number> = new Map();
+  const enhancementCount: Map<string, number> = new Map();
 
   for (const unit of units) {
     const bp = army.battleProfiles.get(unit.name) as BattleProfile;

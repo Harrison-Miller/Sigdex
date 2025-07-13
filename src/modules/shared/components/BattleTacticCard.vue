@@ -7,18 +7,31 @@ defineProps<{ card: BattleTacticCard }>();
   <div class="battle-tactic-card">
     <div class="header-bar">{{ card.name }}</div>
     <div class="card-content">
-      <div v-if="card.text" class="main-text" v-html="formatText(card.text)"></div>
+      <div
+        v-if="card.text"
+        class="main-text"
+        v-html="formatText(card.text)"
+      />
       <div class="subsection">
         <div class="subheader">Affray</div>
-        <div class="subtext" v-html="formatText(card.affray)"></div>
+        <div
+          class="subtext"
+          v-html="formatText(card.affray)"
+        />
       </div>
       <div class="subsection">
         <div class="subheader">Strike</div>
-        <div class="subtext" v-html="formatText(card.strike)"></div>
+        <div
+          class="subtext"
+          v-html="formatText(card.strike)"
+        />
       </div>
       <div class="subsection">
         <div class="subheader">Domination</div>
-        <div class="subtext" v-html="formatText(card.domination)"></div>
+        <div
+          class="subtext"
+          v-html="formatText(card.domination)"
+        />
       </div>
     </div>
   </div>

@@ -14,7 +14,7 @@ export function parseArmy(
 ): Army {
   const catalogue = root?.catalogue;
   const name = catalogue?.['@_name'] || 'Unknown Catalogue';
-  let army: Partial<IArmy> = {
+  const army: Partial<IArmy> = {
     name,
     battleTraits: parseBattleTraits(catalogue),
     formations: parseFormations(catalogue),

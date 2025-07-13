@@ -1,10 +1,18 @@
 <template>
   <div>
     <div class="two-tab-bar">
-      <button :class="{ active: !rightTabActive }" @click="select(true)" type="button">
+      <button
+        :class="{ active: !rightTabActive }"
+        type="button"
+        @click="select(true)"
+      >
         {{ props.leftLabel }}
       </button>
-      <button :class="{ active: rightTabActive }" @click="select(false)" type="button">
+      <button
+        :class="{ active: rightTabActive }"
+        type="button"
+        @click="select(false)"
+      >
         {{ props.rightLabel }}
       </button>
     </div>

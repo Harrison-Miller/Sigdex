@@ -1,39 +1,64 @@
 <template>
-  <Section v-if="unitData && modelGroups.length > 0" class="weapon-options-section">
+  <Section
+    v-if="unitData && modelGroups.length > 0"
+    class="weapon-options-section"
+  >
     <template #title> Weapon Options </template>
-    <div v-for="group in modelGroups" :key="group.name">
+    <div
+      v-for="group in modelGroups"
+      :key="group.name"
+    >
       <template
         v-if="
           getOptionalWeapons(group).length > 0 || Object.keys(getGroupWeapons(group)).length > 0
-        ">
+        "
+      >
         <div class="model-group-block">
-          <div v-if="showModelGroupHeader" class="model-group-heading">{{ group.name }}</div>
+          <div
+            v-if="showModelGroupHeader"
+            class="model-group-heading"
+          >
+            {{ group.name }}
+          </div>
           <!-- Optional weapons -->
-          <div v-for="w in getOptionalWeapons(group)" :key="w.name" class="weapon-option-control">
+          <div
+            v-for="w in getOptionalWeapons(group)"
+            :key="w.name"
+            class="weapon-option-control"
+          >
             <span class="weapon-option-name">{{ w.name }}</span>
             <CounterBox
               :model-value="optionalWeaponState[group.name][w.name]"
               :min="0"
               :max="getEffectiveMax(w) || 99"
-              @update:modelValue="(val) => updateOptionalWeapon(group.name, w.name, val)" />
+              @update:model-value="(val) => updateOptionalWeapon(group.name, w.name, val)"
+            />
           </div>
           <!-- Group selection weapons as CounterBoxes -->
-          <div v-for="(weapons, groupKey) in getGroupWeapons(group)" :key="groupKey">
+          <div
+            v-for="(weapons, groupKey) in getGroupWeapons(group)"
+            :key="groupKey"
+          >
             <span class="weapon-option-name">{{ groupKey }}</span>
             <template v-if="unitData.unitSize === 1">
               <div class="weapon-option-control">
                 <OptionSelect
                   :model-value="groupWeaponSingleSelect[group.name]?.[groupKey]"
                   :options="weapons.map((w) => w.name)"
-                  @update:modelValue="
+                  @update:model-value="
                     (val) => {
                       handleSingleSelectChange(group.name, groupKey, val);
                     }
-                  " />
+                  "
+                />
               </div>
             </template>
             <template v-else>
-              <div v-for="w in weapons" :key="w.name" class="weapon-option-control">
+              <div
+                v-for="w in weapons"
+                :key="w.name"
+                class="weapon-option-control"
+              >
                 <span class="weapon-option-name">{{ w.name }}</span>
                 <CounterBox
                   :model-value="groupWeaponCounterState[group.name]?.[groupKey]?.[w.name] || 0"
@@ -41,9 +66,10 @@
                   :max="
                     getGroupWeaponMax(group) - getGroupWeaponUsedExcept(group, groupKey, w.name)
                   "
-                  @update:modelValue="
+                  @update:model-value="
                     (val) => updateGroupWeaponCounter(group.name, groupKey, w.name, val)
-                  " />
+                  "
+                />
               </div>
             </template>
           </div>
@@ -55,7 +81,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
 import CounterBox from '../../core/components/CounterBox.vue';
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import type { Unit } from '../../../parser/models/unit';
 import type { WeaponOption } from '../../../parser/models/weaponOption';

@@ -1,5 +1,8 @@
 <template>
-  <Section v-if="isHero || hasEnhancementTables" v-model="enhancementsCollapsed">
+  <Section
+    v-if="isHero || hasEnhancementTables"
+    v-model="enhancementsCollapsed"
+  >
     <template #title>
       Enhancements<span v-if="enhancementCount > 0"> ({{ enhancementCount }})</span>
     </template>
@@ -9,7 +12,8 @@
         id="heroic-trait-select"
         v-model="unit.heroicTrait"
         :options="heroicTraitsOptions"
-        placeholder="No Heroic Trait" />
+        placeholder="No Heroic Trait"
+      />
       <div v-if="selectedHeroicTraitAbility">
         <AbilityCard :ability="selectedHeroicTraitAbility?.ability || new Ability({ name: '' })" />
       </div>
@@ -20,31 +24,35 @@
         id="artifact-select"
         v-model="unit.artifact"
         :options="artifactsOptions"
-        placeholder="No Artifact" />
+        placeholder="No Artifact"
+      />
       <div v-if="selectedArtifactAbility">
         <AbilityCard :ability="selectedArtifactAbility?.ability || new Ability({ name: '' })" />
       </div>
     </div>
-    <div v-for="tableName in availableEnhancementTables" :key="tableName">
+    <div
+      v-for="tableName in availableEnhancementTables"
+      :key="tableName"
+    >
       <h3>{{ tableName }}</h3>
       <OptionSelect
         :id="`enhancement-${tableName}-select`"
         :model-value="unit.enhancements?.get(tableName) || ''"
         :options="new Map([['', getEnhancementTableOptions(tableName)]])"
         :placeholder="`No ${tableName}`"
-        @update:model-value="updateEnhancement(tableName, $event)" />
+        @update:model-value="updateEnhancement(tableName, $event)"
+      />
       <div v-if="getSelectedEnhancementAbility(tableName)">
         <AbilityCard
-          :ability="
-            getSelectedEnhancementAbility(tableName)?.ability || new Ability({ name: '' })
-          " />
+          :ability="getSelectedEnhancementAbility(tableName)?.ability || new Ability({ name: '' })"
+        />
       </div>
     </div>
   </Section>
 </template>
 <script setup lang="ts">
 import AbilityCard from '../../shared/components/AbilityCard.vue';
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import { ListUnit } from '../../../list/models/unit';
 import { ref, computed, onMounted } from 'vue';

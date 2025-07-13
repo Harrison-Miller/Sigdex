@@ -5,11 +5,13 @@
         v-bind="buttonProps"
         @click="$emit('click')"
         @toggle-favorite="$emit('toggle-favorite', $event)"
-        @ellipsis="$emit('ellipsis')" />
+        @ellipsis="$emit('ellipsis')"
+      />
       <button
         class="collapse-btn"
         :aria-label="collapsed ? 'Expand section' : 'Collapse section'"
-        @click="toggleCollapse">
+        @click="toggleCollapse"
+      >
         <svg
           :class="{ collapsed }"
           width="22"
@@ -19,13 +21,17 @@
           stroke="#888"
           stroke-width="2"
           stroke-linecap="round"
-          stroke-linejoin="round">
+          stroke-linejoin="round"
+        >
           <polyline points="6 9 12 15 18 9" />
         </svg>
       </button>
     </div>
     <transition name="section-fade">
-      <div v-show="!collapsed" class="section-content-row">
+      <div
+        v-show="!collapsed"
+        class="section-content-row"
+      >
         <div class="grey-bar" />
         <div class="section-content">
           <slot />
@@ -41,13 +47,13 @@ import { useCollapsableState } from '../../core/composables/useCollapsableState'
 
 const props = defineProps({
   label: { type: String, required: true },
-  favorite: Boolean,
+  favorite: { type: Boolean, default: false },
   showFavoriteToggle: { type: Boolean, default: true },
-  points: Number,
-  showEllipsis: Boolean,
-  showGeneral: Boolean,
-  showReinforced: Boolean,
-  enhancementCount: Number,
+  points: { type: Number, default: 0 },
+  showEllipsis: { type: Boolean, default: false },
+  showGeneral: { type: Boolean, default: false },
+  showReinforced: { type: Boolean, default: false },
+  enhancementCount: { type: Number, default: 0 },
 });
 
 const emit = defineEmits(['click', 'toggle-favorite', 'ellipsis', 'update:collapsed']);

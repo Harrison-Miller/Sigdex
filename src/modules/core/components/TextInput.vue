@@ -1,7 +1,13 @@
 <template>
   <label class="text-input-label">
     {{ label }}
-    <input v-bind="$attrs" :type="type" :value="modelValue" @input="onInput" class="text-input" />
+    <input
+      v-bind="$attrs"
+      :type="type"
+      :value="modelValue"
+      class="text-input"
+      @input="onInput"
+    >
   </label>
 </template>
 

@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from './views/Home.vue';
+import HomePage from './views/HomePage.vue';
 import UnitDetail from './modules/browser/views/UnitDetail.vue';
 import UnitList from './modules/browser/views/UnitList.vue';
 import ManifestationLore from './modules/browser/views/ManifestationLore.vue';
-import Settings from './views/Settings.vue';
+import SettingsPage from './views/SettingsPage.vue';
 import ListBuilder from './modules/builder/views/ListBuilder.vue';
 import ListExport from './modules/builder/views/ListExport.vue';
 import BuilderSettings from './modules/builder/views/BuilderSettings.vue';
@@ -18,16 +18,16 @@ const routes = [
     name: 'ListImport',
     component: ListImport,
   },
-  { path: '/', name: 'Armies', component: Home },
-  { path: '/army/:army', name: 'UnitList', component: UnitList, props: true },
-  { path: '/army/:army/unit/:unit', name: 'UnitDetail', component: UnitDetail, props: true },
+  { path: '/', name: 'Armies', component: HomePage },
+  { path: '/army/:armyName', name: 'UnitList', component: UnitList, props: true },
+  { path: '/army/:armyName/unit/:unitName', name: 'UnitDetail', component: UnitDetail, props: true },
   {
-    path: '/manifestation/:lore',
+    path: '/manifestation/:loreName',
     name: 'ManifestationLore',
     component: ManifestationLore,
     props: true,
   },
-  { path: '/settings', name: 'Settings', component: Settings },
+  { path: '/settings', name: 'Settings', component: SettingsPage },
   {
     path: '/list/:id',
     name: 'ListBuilder',
@@ -56,7 +56,7 @@ const routes = [
     component: UnitPicker,
   },
   {
-    path: '/regiment-of-renown/:regiment',
+    path: '/regiment-of-renown/:regimentName',
     name: 'RegimentOfRenown',
     component: RegimentOfRenown,
   },

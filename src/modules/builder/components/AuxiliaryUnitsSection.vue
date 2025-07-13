@@ -1,8 +1,15 @@
 <template>
-  <Section :defaultCollapsed="collapsed" collapseKey="auxiliaryUnits">
+  <Section
+    :default-collapsed="collapsed"
+    collapse-key="auxiliaryUnits"
+  >
     <template #title>Auxillary Units</template>
     <div v-if="props.modelValue.length > 0">
-      <div v-for="(unit, i) in props.modelValue" :key="unit?.name + i" class="aux-unit-row">
+      <div
+        v-for="(unit, i) in props.modelValue"
+        :key="unit?.name + i"
+        class="aux-unit-row"
+      >
         <ListButton
           :label="unit.name"
           :points="battleProfiles.get(unit.name)?.points"
@@ -14,25 +21,31 @@
               router &&
               router.push({
                 name: 'UnitDetail',
-                params: { army: armyName, unit: unit.name },
+                params: { armyName: armyName, unitName: unit.name },
               })
           "
-          @ellipsis="() => goToAuxUnitSettings(i)" />
+          @ellipsis="() => goToAuxUnitSettings(i)"
+        />
         <button
           class="delete-terrain-btn"
+          title="Delete Auxillary Unit"
           @click="() => handleDeleteAuxUnit(i)"
-          title="Delete Auxillary Unit">
+        >
           <font-awesome-icon icon="trash" />
         </button>
       </div>
     </div>
-    <button class="add-terrain-btn" style="margin-top: 0.7em" @click="handleAddAuxUnit">
+    <button
+      class="add-terrain-btn"
+      style="margin-top: 0.7em"
+      @click="handleAddAuxUnit"
+    >
       + Auxillary Unit
     </button>
   </Section>
 </template>
 <script lang="ts" setup>
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 import { ref } from 'vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';

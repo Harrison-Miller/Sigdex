@@ -18,7 +18,7 @@ export function parseRegimentsOfRenown(
     const name = rorNode['@_name']?.substring('Regiment of Renown: '.length)?.trim() || '';
     if (!name) continue;
 
-    let ror: Partial<IRegimentOfRenown> = {
+    const ror: Partial<IRegimentOfRenown> = {
       name,
       abilities: parseAbilities(rorNode.profiles),
       points: rorProfiles.get(name)?.points,

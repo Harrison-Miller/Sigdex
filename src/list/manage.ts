@@ -44,8 +44,9 @@ export function getAllLists(): IListItem[] {
           name: list.name,
           faction: list.faction,
         });
-      } catch (e) {
+      } catch {
         // skip corrupted
+        console.warn(`Failed to parse list from key: ${key}`);
       }
     }
   }

@@ -1,5 +1,8 @@
 <template>
-  <div v-if="!loading" class="list-builder-view">
+  <div
+    v-if="!loading"
+    class="list-builder-view"
+  >
     <div class="header-bar">
       <div style="flex: 1; min-width: 0; display: flex; align-items: center">
         <BackButton />
@@ -9,102 +12,158 @@
           class="export-btn"
           :size="36"
           icon="fa-solid fa-file-arrow-down"
-          @click="openExport" />
-        <SettingsButton class="settings-btn" :size="36" @click="openSettings" />
+          @click="openExport"
+        />
+        <SettingsButton
+          class="settings-btn"
+          :size="36"
+          @click="openSettings"
+        />
       </div>
     </div>
-    <h1 class="list-title" v-if="list">{{ list.name }}</h1>
-    <div v-if="list" class="subheader">{{ list.faction }}</div>
-    <div v-else class="not-found">List not found.</div>
+    <h1
+      v-if="list"
+      class="list-title"
+    >
+      {{ list.name }}
+    </h1>
+    <div
+      v-if="list"
+      class="subheader"
+    >
+      {{ list.faction }}
+    </div>
+    <div
+      v-else
+      class="not-found"
+    >
+      List not found.
+    </div>
     <Section
       v-if="army.battleTraits.length > 0"
       :default-collapsed="battleTraitsCollapsed"
-      collapseKey="battleTraits">
+      collapse-key="battleTraits"
+    >
       <template #title>Battle Traits</template>
-      <AbilityCard v-for="(trait, i) in army.battleTraits" :key="trait.name + i" :ability="trait" />
+      <AbilityCard
+        v-for="(trait, i) in army.battleTraits"
+        :key="trait.name + i"
+        :ability="trait"
+      />
     </Section>
     <Section
       v-if="army.formations.size > 0"
       :default-collapsed="formationCollapsed"
-      collapseKey="formations">
+      collapse-key="formations"
+    >
       <template #title>{{ list.formation || 'Formations' }}</template>
       <div class="formation-section">
-        <OptionSelect v-model="list.formation" :options="Array.from(army.formations.keys())" />
+        <OptionSelect
+          v-model="list.formation"
+          :options="Array.from(army.formations.keys())"
+        />
         <div>
           <AbilityCard
             v-for="(ability, i) in selectedFormation"
             :key="ability.name + i"
-            :ability="ability" />
+            :ability="ability"
+          />
         </div>
       </div>
     </Section>
-    <Section :defaultCollapsed="battleTacticCardsCollapsed" collapseKey="battleTacticCards">
+    <Section
+      :default-collapsed="battleTacticCardsCollapsed"
+      collapse-key="battleTacticCards"
+    >
       <template #title>Battle Tactic Cards</template>
       <div class="battle-tactic-selectors">
         <div class="battle-tactic-selector">
           <OptionSelect
             v-model="list.battleTacticCard1"
             :options="battleTacticCards.map((card) => card.name)"
-            placeholder="Select Battle Tactic Card 1" />
+            placeholder="Select Battle Tactic Card 1"
+          />
           <BattleTacticCard
             v-if="selectedBattleTacticCard1.name.length > 0"
-            :card="selectedBattleTacticCard1" />
+            :card="selectedBattleTacticCard1"
+          />
         </div>
         <div class="battle-tactic-selector">
           <OptionSelect
             v-model="list.battleTacticCard2"
             :options="battleTacticCards.map((card) => card.name)"
-            placeholder="Select Battle Tactic Card 2" />
+            placeholder="Select Battle Tactic Card 2"
+          />
           <BattleTacticCard
             v-if="selectedBattleTacticCard2.name.length > 0"
-            :card="selectedBattleTacticCard2" />
+            :card="selectedBattleTacticCard2"
+          />
         </div>
       </div>
     </Section>
     <div v-if="list && army.battleProfiles.size > 0">
-      <div v-for="(regiment, idx) in list.regiments" :key="idx" class="regiment-block">
+      <div
+        v-for="(regiment, idx) in list.regiments"
+        :key="idx"
+        class="regiment-block"
+      >
         <ListRegiment
-          :regimentIdx="idx"
+          :regiment-idx="idx"
           :regiment="regiment"
-          :listId="list.id"
-          :battleProfiles="army.battleProfiles"
-          :armyName="list.faction"
+          :list-id="list.id"
+          :battle-profiles="army.battleProfiles"
+          :army-name="list.faction"
           @delete="() => deleteRegiment(idx)"
-          @delete-unit="(unitIdx) => handleDeleteUnit(idx, unitIdx)" />
+          @delete-unit="(unitIdx) => handleDeleteUnit(idx, unitIdx)"
+        />
       </div>
-      <button class="add-regiment-btn" @click="addRegiment">Add regiment</button>
+      <button
+        class="add-regiment-btn"
+        @click="addRegiment"
+      >
+        Add regiment
+      </button>
 
       <AuxiliaryUnitsSection
         v-model="list.auxiliaryUnits"
-        :battleProfiles="army.battleProfiles"
-        :armyName="list.faction"
-        :listId="list.id" />
+        :battle-profiles="army.battleProfiles"
+        :army-name="list.faction"
+        :list-id="list.id"
+      />
       <FactionTerrainSection
         v-model="list.factionTerrain"
-        :battleProfiles="army.battleProfiles"
-        :armyName="list.faction"
-        :listId="list.id" />
+        :battle-profiles="army.battleProfiles"
+        :army-name="list.faction"
+        :list-id="list.id"
+      />
       <!-- Lore Sections -->
       <ListBuilderLoreSection
-        :armyLore="army.spellLores"
-        :armyName="list.faction"
+        v-model="list.spellLore"
+        :army-lore="army.spellLores"
+        :army-name="list.faction"
         title="Spell Lore"
-        v-model="list.spellLore" />
+      />
       <ListBuilderLoreSection
-        :armyLore="army.prayerLores"
-        :armyName="list.faction"
+        v-model="list.prayerLore"
+        :army-lore="army.prayerLores"
+        :army-name="list.faction"
         title="Prayer Lore"
-        v-model="list.prayerLore" />
+      />
       <ListBuilderLoreSection
-        :armyLore="army.manifestationLores"
-        :armyName="list.faction"
-        title="Manifestation Lore"
         v-model="list.manifestationLore"
-        manifestationMode />
+        :army-lore="army.manifestationLores"
+        :army-name="list.faction"
+        title="Manifestation Lore"
+        manifestation-mode
+      />
     </div>
-    <div class="scroll-buffer"></div>
+    <div class="scroll-buffer" />
   </div>
-  <ListIndicator v-if="list && game" :list="list" :game="game" />
+  <ListIndicator
+    v-if="list && game"
+    :list="list"
+    :game="game"
+  />
 </template>
 
 <script setup lang="ts">
@@ -116,7 +175,7 @@ import BackButton from '../../core/components/BackButton.vue';
 import SettingsButton from '../../core/components/SettingsButton.vue';
 import CircleIconButton from '../../core/components/CircleIconButton.vue';
 import { useGame } from '../../shared/composables/useGame';
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import ListBuilderLoreSection from '../components/ListBuilderLoreSection.vue';
 import ListIndicator from '../components/ListIndicator.vue';

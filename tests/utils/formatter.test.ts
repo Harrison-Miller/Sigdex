@@ -48,7 +48,8 @@ describe('formatText', () => {
   });
 
   it('formats complex mixed bold, italics, and bold-italics', () => {
-    const input = `**Effect**: Set up that unit in reserve in ambush. It has now been deployed.\n*Designer’s Note: Any number of friendly* **^^Beasts of Chaos^^** *units can start the battle in reserve – even your entire Beasts of Chaos army!*`;
+    const input =
+      '**Effect**: Set up that unit in reserve in ambush. It has now been deployed.\n*Designer’s Note: Any number of friendly* **^^Beasts of Chaos^^** *units can start the battle in reserve – even your entire Beasts of Chaos army!*';
     const output = formatText(input);
     expect(output).toContain(
       '<b>Effect</b>: Set up that unit in reserve in ambush. It has now been deployed.'
@@ -89,7 +90,7 @@ describe('formatText', () => {
   });
 
   it('formats messed up bold italic **^^text^^', () => {
-    const input = `**^^Ward (4+)^^** friendly **^^Deathrattle^^ or **^^Deadwalkers^^** unit`;
+    const input = '**^^Ward (4+)^^** friendly **^^Deathrattle^^ or **^^Deadwalkers^^** unit';
     const output = formatText(input);
     expect(output).toBe(
       '<b><i>Ward (4+)</i></b> friendly <b><i>Deathrattle</i></b> or <b><i>Deadwalkers</i></b> unit'

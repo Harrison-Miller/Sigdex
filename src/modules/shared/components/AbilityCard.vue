@@ -25,32 +25,55 @@ function getAbilityIcon(type: string) {
 </script>
 <template>
   <div class="card ability-card">
-    <div v-if="props.ability.castingValue" class="casting-value-circle">
+    <div
+      v-if="props.ability.castingValue"
+      class="casting-value-circle"
+    >
       {{ props.ability.castingValue }}
     </div>
-    <div v-else-if="props.ability.chantingValue" class="chanting-value-diamond">
-      <font-awesome-icon :icon="['fas', 'diamond']" class="diamond-bg" />
+    <div
+      v-else-if="props.ability.chantingValue"
+      class="chanting-value-diamond"
+    >
+      <font-awesome-icon
+        :icon="['fas', 'diamond']"
+        class="diamond-bg"
+      />
       <span class="diamond-chanting-text">{{ props.ability.chantingValue }}</span>
     </div>
-    <div v-else-if="props.ability.commandPoints" class="cost-hexagon-icon">
-      <font-awesome-icon :icon="['fas', 'stop']" class="hexagon-bg" />
+    <div
+      v-else-if="props.ability.commandPoints"
+      class="cost-hexagon-icon"
+    >
+      <font-awesome-icon
+        :icon="['fas', 'stop']"
+        class="hexagon-bg"
+      />
       <span class="hexagon-cost-text">{{ props.ability.commandPoints }}</span>
     </div>
-    <div class="card-header ability-header" :class="(props.ability.color || 'black').toLowerCase()">
+    <div
+      class="card-header ability-header"
+      :class="(props.ability.color || 'black').toLowerCase()"
+    >
       <span class="icon">
         <font-awesome-icon :icon="getAbilityIcon(props.ability.type)" />
       </span>
-      <span class="timing" v-html="formatText(props.ability.timing)"></span>
+      <span
+        class="timing"
+        v-html="formatText(props.ability.timing)"
+      />
     </div>
     <div class="card-title ability-title">{{ props.ability.name }}</div>
     <div class="card-body">
       <div
         v-if="props.ability.declare"
         class="card-text ability-text"
-        v-html="formatText(`**Declare**: ${props.ability.declare}`)"></div>
+        v-html="formatText(`**Declare**: ${props.ability.declare}`)"
+      />
       <div
         class="card-text ability-text"
-        v-html="formatText(`**Effect**: ${props.ability.effect}`)"></div>
+        v-html="formatText(`**Effect**: ${props.ability.effect}`)"
+      />
       <KeywordsBar :keywords="props.ability.keywords" />
     </div>
   </div>

@@ -41,9 +41,9 @@ export function formatModelGroups(modelGroups: Model[], unit: Unit): string {
 
   const isOneGroup = modelGroups.length == 1;
 
-  let text = ``;
+  let text = '';
   if (!isOneGroup) {
-    text += `<ul>`;
+    text += '<ul>';
   }
 
   for (const group of modelGroups) {
@@ -56,7 +56,7 @@ export function formatModelGroups(modelGroups: Model[], unit: Unit): string {
   }
 
   if (!isOneGroup) {
-    text += `</ul>`;
+    text += '</ul>';
   }
 
   return text;
@@ -65,7 +65,7 @@ export function formatModelGroups(modelGroups: Model[], unit: Unit): string {
 function formatModelGroup(unitSize: number, group: Model, hasChampion: boolean): string {
   const isOneModel = group.count === 1;
   const isGroupSize = unitSize === group.count;
-  let text = `<i>`;
+  let text = '<i>';
 
   if (isOneModel) {
     if (!isGroupSize) {
@@ -83,13 +83,13 @@ function formatModelGroup(unitSize: number, group: Model, hasChampion: boolean):
   const defaultWeapons = weaponArray.filter((w) => w.type === 'default').map((w) => w.name);
   if (defaultWeapons.length > 0) {
     if (!isOneModel && !isGroupSize) {
-      text += ` each`;
+      text += ' each';
     }
     if ((isOneModel && isGroupSize) || !isOneModel) {
-      text += ` is`;
+      text += ' is';
     }
 
-    text += ` armed with`;
+    text += ' armed with';
     // weapon1,weapon2...and weaponN`;
     if (defaultWeapons.length == 1) {
       text += ` ${formatWeaponName(defaultWeapons[0])}`;
@@ -100,7 +100,7 @@ function formatModelGroup(unitSize: number, group: Model, hasChampion: boolean):
         .replace(/, ([^,]*)$/, ' and $1')}`;
     }
   }
-  text += `</i>`;
+  text += '</i>';
 
   // now in a bullet list write out optional weapons
   const optionalWeapons = weaponArray.filter((w) => w.type === 'optional');
@@ -108,7 +108,7 @@ function formatModelGroup(unitSize: number, group: Model, hasChampion: boolean):
     text += '<ul>';
     for (const weapon of optionalWeapons) {
       const isOptionGroupSize = weapon.max === group.count;
-      text += `<li>`;
+      text += '<li>';
       if (isOneModel) {
         text += `<i>it may be armed with ${formatWeaponName(weapon.name)}`;
       } else if (isOptionGroupSize) {
@@ -123,17 +123,17 @@ function formatModelGroup(unitSize: number, group: Model, hasChampion: boolean):
           (w) => weapon.replaces && weapon.replaces.includes(w)
         );
         if (replacesAll) {
-          text += ` instead`;
+          text += ' instead';
         } else {
           text += ` instead of ${weapon.replaces.map((w) => formatWeaponName(w)).join(' and ')}`;
         }
       }
 
-      text += `</i></li>`;
+      text += '</i></li>';
     }
 
     if (hasChampion) {
-      text += `<li><i>The champion cannot replace their weapon</i></li>`;
+      text += '<li><i>The champion cannot replace their weapon</i></li>';
     }
 
     text += '</ul>';
@@ -151,13 +151,13 @@ function formatModelGroup(unitSize: number, group: Model, hasChampion: boolean):
   }
 
   for (const [_, weapons] of groupedWeapons.entries()) {
-    text += `<br>`;
-    text += `<i>It may be armed with 1 of the following options:</i>`;
-    text += `<ul>`;
+    text += '<br>';
+    text += '<i>It may be armed with 1 of the following options:</i>';
+    text += '<ul>';
     for (const weapon of weapons) {
       text += `<li><i> ${formatWeaponName(weapon.name)} </i></li>`;
     }
-    text += `</ul>`;
+    text += '</ul>';
   }
 
   return text;
@@ -196,7 +196,7 @@ export function formatRegimentOptions(options: RegimentOption[]): string {
 
   let html = '';
   if (options.length > 0) {
-    html += `<div style='font-weight:600;margin-bottom:0.2em;'>Regiment Options:</div>`;
+    html += '<div style=\'font-weight:600;margin-bottom:0.2em;\'>Regiment Options:</div>';
     html += `<ul style='margin:0 0 0 1.2em;padding:0;font-size:0.97em;'>${formatItems(options)}</ul>`;
   }
 

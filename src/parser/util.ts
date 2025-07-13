@@ -140,7 +140,7 @@ export function findFirstByTagAndAttrs(
 export function nodeMatchesAttrs(node: any, attrs: Record<string, string>): boolean {
   for (const [key, value] of Object.entries(attrs)) {
     const attrName = `@_${key}`;
-    if (!node.hasOwnProperty(attrName) || node[attrName] !== value) {
+    if (!node || !node[attrName] || node[attrName] !== value) {
       return false;
     }
   }

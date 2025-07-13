@@ -21,7 +21,7 @@ describe('parseAbility', () => {
 
     const rootNode = xmlParser().parse(xml);
     const ability = parseAbility(rootNode.profile[0]);
-    expect(ability.name).toBe("Let's Get Stabbin'!");
+    expect(ability.name).toBe('Let\'s Get Stabbin\'!');
     expect(ability.timing).toBe('Reaction: You declared a **^^Fight^^** ability for this unit');
     expect(ability.color).toBe('Red');
     expect(ability.type).toBe('Offensive');

@@ -7,7 +7,7 @@ import KeywordsBar from '../../shared/components/KeywordsBar.vue';
 import WeaponTable from '../components/WeaponTable.vue';
 import FavoriteToggle from '../../core/components/FavoriteToggle.vue';
 import BackButton from '../../core/components/BackButton.vue';
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 import { isFavorite, saveFavorite, removeFavorite } from '../../../favorites';
 import {
   formatModelGroups,
@@ -24,11 +24,11 @@ function formatCompanionUnits(unitName: string, companionLeader: string): string
   return '';
 }
 
-const props = defineProps<{ unit: string; army?: string }>();
+const props = defineProps<{ unitName: string; armyName: string }>();
 const route = useRoute();
 
-const unitName = props.unit ?? (route?.params?.unit as string | undefined);
-const armyName = props.army ?? (route?.params?.army as string | undefined);
+const unitName = props.unitName ?? (route?.params?.unit as string | undefined);
+const armyName = props.armyName ?? (route?.params?.army as string | undefined);
 
 const { unit, battleProfile } = useUnit(armyName ?? '', unitName ?? '');
 
@@ -47,99 +47,161 @@ const favoriteToggleSize = 36;
   <BackButton :size="36" />
   <div class="unit-detail">
     <div class="unit-detail-header">
-      <div v-if="armyName !== 'UniversalManifestations'" class="unit-detail-fav">
+      <div
+        v-if="armyName !== 'UniversalManifestations'"
+        class="unit-detail-fav"
+      >
         <FavoriteToggle
           :model-value="unitFavorite"
-          @update:modelValue="toggleUnitFavoriteDetail"
           :size="favoriteToggleSize"
-          no-text />
+          no-text
+          @update:model-value="toggleUnitFavoriteDetail"
+        />
       </div>
       <h1>{{ unit.name }}</h1>
     </div>
     <div class="stats-row">
-      <StatCircle v-if="unit.stats.move" :value="unit.stats.move" label="Move" />
-      <StatCircle v-if="unit.stats.health" :value="unit.stats.health" label="Health" />
-      <StatCircle v-if="unit.stats.control" :value="unit.stats.control" label="Control" />
-      <StatCircle v-if="unit.stats.banishment" :value="unit.stats.banishment" label="Banishment" />
-      <StatCircle v-if="unit.stats.save" :value="unit.stats.save" label="Save" />
-      <StatCircle v-if="unit.stats.ward" :value="unit.stats.ward" label="Ward" />
+      <StatCircle
+        v-if="unit.stats.move"
+        :value="unit.stats.move"
+        label="Move"
+      />
+      <StatCircle
+        v-if="unit.stats.health"
+        :value="unit.stats.health"
+        label="Health"
+      />
+      <StatCircle
+        v-if="unit.stats.control"
+        :value="unit.stats.control"
+        label="Control"
+      />
+      <StatCircle
+        v-if="unit.stats.banishment"
+        :value="unit.stats.banishment"
+        label="Banishment"
+      />
+      <StatCircle
+        v-if="unit.stats.save"
+        :value="unit.stats.save"
+        label="Save"
+      />
+      <StatCircle
+        v-if="unit.stats.ward"
+        :value="unit.stats.ward"
+        label="Ward"
+      />
     </div>
-    <Section v-if="unit.meleeWeapons.length" collapseKey="meleeWeapons">
+    <Section
+      v-if="unit.meleeWeapons.length"
+      collapse-key="meleeWeapons"
+    >
       <template #title>Melee Weapons</template>
-      <WeaponTable :weapons="unit.meleeWeapons" short-headers />
+      <WeaponTable
+        :weapons="unit.meleeWeapons"
+        short-headers
+      />
     </Section>
-    <Section v-if="unit.rangedWeapons.length" collapseKey="rangedWeapons">
+    <Section
+      v-if="unit.rangedWeapons.length"
+      collapse-key="rangedWeapons"
+    >
       <template #title>Ranged Weapons</template>
-      <WeaponTable :weapons="unit.rangedWeapons" short-headers />
+      <WeaponTable
+        :weapons="unit.rangedWeapons"
+        short-headers
+      />
     </Section>
-    <Section v-if="unit.abilities.length" collapseKey="abilities">
+    <Section
+      v-if="unit.abilities.length"
+      collapse-key="abilities"
+    >
       <template #title>Abilities</template>
       <div class="abilities">
         <AbilityCard
           v-for="(a, i) in [...unit.abilities].sort((a, b) => a.name.localeCompare(b.name))"
           :key="a.name + i"
-          :ability="a" />
+          :ability="a"
+        />
       </div>
     </Section>
-    <Section v-if="unit.summoningSpell" collapseKey="summoningSpell">
+    <Section
+      v-if="unit.summoningSpell"
+      collapse-key="summoningSpell"
+    >
       <template #title>Summoning</template>
       <div class="abilities">
         <AbilityCard :ability="unit.summoningSpell" />
       </div>
     </Section>
-    <Section collapseKey="unitDetails">
+    <Section collapse-key="unitDetails">
       <template #title>Unit Details</template>
-      <div class="unit-detail-points" style="font-size: 0.95em; color: #666; text-align: left">
+      <div
+        class="unit-detail-points"
+        style="font-size: 0.95em; color: #666; text-align: left"
+      >
         <div
           v-if="!battleProfile.reinforceable && !battleProfile.defaultNotReinforceable()"
           class="unit-not-reinforceable"
-          style="margin-top: 0.5em">
-          <span v-html="`<i>This unit can not be reinforced.</i>`"></span>
+          style="margin-top: 0.5em"
+        >
+          <span v-html="`<i>This unit can not be reinforced.</i>`" />
         </div>
         <div
           v-if="battleProfile.reinforceable && battleProfile.defaultNotReinforceable()"
-          class="unit-reinforceable">
-          <span v-html="`<i>This unit can be reinforced.</i>`"></span>
+          class="unit-reinforceable"
+        >
+          <span v-html="`<i>This unit can be reinforced.</i>`" />
         </div>
         <div
           v-if="battleProfile.undersizeCondition"
           class="unit-not-reinforceable"
-          style="margin-top: 0.5em">
+          style="margin-top: 0.5em"
+        >
           <span
             v-html="
               `<i>You can include 1 unit of this type for each <b>${battleProfile.undersizeCondition}</b> in your army.</i>`
-            "></span>
+            "
+          />
         </div>
         <div
           v-if="battleProfile.companionUnits.length > 0 || battleProfile.companionLeader"
           class="unit-companion-units"
-          style="margin-top: 0.5em">
-          <span v-html="formatCompanionUnits(unit.name, battleProfile.companionLeader)"></span>
+          style="margin-top: 0.5em"
+        >
+          <span v-html="formatCompanionUnits(unit.name, battleProfile.companionLeader)" />
         </div>
         <div
           class="unit-model-groups"
           style="margin-top: 0.5em"
-          v-html="formatModelGroups(Array.from(unit.models.values()), unit)"></div>
+          v-html="formatModelGroups(Array.from(unit.models.values()), unit)"
+        />
         <span v-if="battleProfile.points > 0">{{ battleProfile.points }} Points</span>
-        <span v-if="unit.unitSize > 0" style="margin-left: 1.5em"
-          >Unit Size: {{ unit.unitSize }}</span
-        >
+        <span
+          v-if="unit.unitSize > 0"
+          style="margin-left: 1.5em"
+        >Unit Size: {{ unit.unitSize }}</span>
 
         <div
           v-if="battleProfile.regimentTags.length > 0"
           class="unit-sub-hero-tags"
-          style="margin-top: 0.5em">
-          <span v-html="formatSubHeroTags(battleProfile.regimentTags)"></span>
+          style="margin-top: 0.5em"
+        >
+          <span v-html="formatSubHeroTags(battleProfile.regimentTags)" />
         </div>
         <div
           v-if="battleProfile.regimentOptions.length > 0"
           class="unit-regiment-options"
-          style="margin-top: 0.5em">
-          <span v-html="formatRegimentOptions(battleProfile.regimentOptions)"></span>
+          style="margin-top: 0.5em"
+        >
+          <span v-html="formatRegimentOptions(battleProfile.regimentOptions)" />
         </div>
       </div>
     </Section>
-    <Section v-if="unit.keywords.length" collapseKey="keywords">
+    <Section
+      v-if="unit.keywords.length"
+      collapse-key="keywords"
+    >
       <template #title>Keywords</template>
       <KeywordsBar :keywords="unit.keywords" />
     </Section>

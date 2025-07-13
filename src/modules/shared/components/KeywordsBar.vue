@@ -3,8 +3,16 @@ import { formatText } from '../../../utils/formatter';
 const props = defineProps<{ keywords?: string[] | null }>();
 </script>
 <template>
-  <div class="keywords-bar" v-if="props.keywords && props.keywords.length">
-    <span v-for="kw in props.keywords" :key="kw" class="keyword" v-html="formatText(kw)"></span>
+  <div
+    v-if="props.keywords && props.keywords.length"
+    class="keywords-bar"
+  >
+    <span
+      v-for="kw in props.keywords"
+      :key="kw"
+      class="keyword"
+      v-html="formatText(kw)"
+    />
   </div>
 </template>
 <style scoped>

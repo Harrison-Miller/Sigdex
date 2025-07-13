@@ -1,38 +1,58 @@
 <template>
   <BackButton :size="36" />
-  <div class="list-container" v-if="!loading && !error">
+  <div
+    v-if="!loading && !error"
+    class="list-container"
+  >
     <h1>{{ armyName }}</h1>
-    <TwoTab :left-label="'Warscrolls'" :right-label="'Rules'" v-model:leftActive="leftActive">
+    <TwoTab
+      v-model:left-active="leftActive"
+      :left-label="'Warscrolls'"
+      :right-label="'Rules'"
+    >
       <template #left>
         <div class="filters-bar">
           <FavoriteToggle
             :model-value="showOnlyFavorites"
-            @update:modelValue="updateShowOnlyFavoritesState"
-            :disabled="!hasAnyFavoriteInArmy" />
+            :disabled="!hasAnyFavoriteInArmy"
+            @update:model-value="updateShowOnlyFavoritesState"
+          />
           <button
             class="sort-toggle"
+            :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'"
             @click="toggleSortMode"
-            :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'">
+          >
             Sort: {{ sortLabel }}
           </button>
         </div>
-        <template v-for="[cat, units] in Array.from(army.unitList.entries())" :key="cat">
-          <Section v-if="filteredUnits(units).length" :collapseKey="cat">
+        <template
+          v-for="[cat, units] in Array.from(army.unitList.entries())"
+          :key="cat"
+        >
+          <Section
+            v-if="filteredUnits(units).length"
+            :collapse-key="cat"
+          >
             <template #title>{{ cat }}</template>
             <ul>
-              <li v-for="u in filteredUnits(units)" :key="u.name">
+              <li
+                v-for="u in filteredUnits(units)"
+                :key="u.name"
+              >
                 <router-link
-                  :to="{ name: 'UnitDetail', params: { army: armyName, unit: u.name } }"
+                  v-slot="{ navigate, href }"
+                  :to="{ name: 'UnitDetail', params: { armyName: armyName, unitName: u.name } }"
                   custom
-                  v-slot="{ navigate, href }">
+                >
                   <ListButton
                     :label="u.name"
                     :favorite="unitFavorites.includes(u.name)"
-                    :showFavoriteToggle="true"
+                    :show-favorite-toggle="true"
                     :points="u.points"
+                    :href="href"
                     @click="navigate"
                     @toggle-favorite="(fav: boolean) => toggleUnitFavorite(u.name, fav)"
-                    :href="href" />
+                  />
                 </router-link>
               </li>
             </ul>
@@ -61,14 +81,14 @@ import {
   getArmyUnitFavoriteToggleState,
   setArmyUnitFavoriteToggleState,
 } from '../../../favorites';
-import Section from '../../core/components/Section.vue';
+import Section from '../../core/components/ContentSection.vue';
 
 // Accept army as a prop for this view
-const props = defineProps<{ army?: string }>();
+const props = defineProps<{ armyName?: string }>();
 
 // Use prop if provided, otherwise fallback to route param
 const route = useRoute();
-const armyName = props.army ?? (route.params.army as string);
+const armyName = props.armyName ?? (route.params.armyName as string);
 
 const unitFavorites = ref<string[]>([]);
 const showOnlyFavorites = ref(getArmyUnitFavoriteToggleState(armyName));

@@ -11,14 +11,31 @@
           id="import-textarea"
           v-model="importText"
           class="import-textarea"
-          aria-label="Import list content"></textarea>
+          aria-label="Import list content"
+        />
         <label for="list-name">List Name:</label>
-        <input id="list-name" v-model="listName" type="text" placeholder="List name" />
+        <input
+          id="list-name"
+          v-model="listName"
+          type="text"
+          placeholder="List name"
+        >
         <div class="import-actions">
           <button @click="handleBack">Cancel</button>
-          <button class="import-btn" @click="handleImport" :disabled="!canImport">Import</button>
+          <button
+            class="import-btn"
+            :disabled="!canImport"
+            @click="handleImport"
+          >
+            Import
+          </button>
         </div>
-        <div v-if="error" class="import-error">{{ error }}</div>
+        <div
+          v-if="error"
+          class="import-error"
+        >
+          {{ error }}
+        </div>
       </div>
     </div>
   </div>

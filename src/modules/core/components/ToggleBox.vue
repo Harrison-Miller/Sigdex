@@ -1,11 +1,15 @@
 <template>
-  <label class="toggle-box" :class="{ checked: modelValue }">
+  <label
+    class="toggle-box"
+    :class="{ checked: modelValue }"
+  >
     <span class="toggle-label"><slot /></span>
-    <span class="toggle-slider"></span>
+    <span class="toggle-slider" />
     <input
       type="checkbox"
       :checked="modelValue"
-      @change="$emit('update:modelValue', ($event.target as HTMLInputElement)?.checked ?? false)" />
+      @change="$emit('update:modelValue', ($event.target as HTMLInputElement)?.checked ?? false)"
+    >
   </label>
 </template>
 

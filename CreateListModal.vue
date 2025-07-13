@@ -1,7 +1,48 @@
-
+<template>
+  <Modal
+    :model-value="modelValue"
+    @update:model-value="emit('update:modelValue', $event)"
+    @close="handleClose"
+  >
+    <div class="modal-content">
+      <h3>Create New List</h3>
+      <TextInput
+        v-model="name"
+        type="text"
+        label="Name"
+        placeholder="List name"
+        @keyup.enter="emitCreate"
+      />
+      <label>
+        Army
+        <OptionSelect
+          v-model="faction"
+          :options="flattenedArmyList"
+          placeholder="Select an army"
+        />
+      </label>
+      <div class="modal-actions">
+        <button @click="handleClose">Cancel</button>
+        <button
+          class="create-btn"
+          :disabled="!isNameValid"
+          @click="emitCreate"
+        >
+          Create
+        </button>
+        <button
+          class="import-btn"
+          @click="goToImport"
+        >
+          Import
+        </button>
+      </div>
+    </div>
+  </Modal>
+</template>
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import Modal from './ModalBox.vue';
+import Modal from './Modal.vue';
 import { useRouter } from 'vue-router';
 import type { GrandAlliance } from '../parser/models/army';
 import OptionSelect from '../modules/core/components/OptionSelect.vue';
@@ -53,48 +94,6 @@ function goToImport() {
   router.push({ name: 'ListImport' });
 }
 </script>
-<template>
-  <Modal
-    :model-value="modelValue"
-    @update:model-value="emit('update:modelValue', $event)"
-    @close="handleClose"
-  >
-    <div class="modal-content">
-      <h3>Create New List</h3>
-      <TextInput
-        v-model="name"
-        type="text"
-        label="Name"
-        placeholder="List name"
-        @keyup.enter="emitCreate"
-      />
-      <label>
-        Army
-        <OptionSelect
-          v-model="faction"
-          :options="flattenedArmyList"
-          placeholder="Select an army"
-        />
-      </label>
-      <div class="modal-actions">
-        <button @click="handleClose">Cancel</button>
-        <button
-          class="create-btn"
-          :disabled="!isNameValid"
-          @click="emitCreate"
-        >
-          Create
-        </button>
-        <button
-          class="import-btn"
-          @click="goToImport"
-        >
-          Import
-        </button>
-      </div>
-    </div>
-  </Modal>
-</template>
 <style scoped>
 .modal-content {
   /* Matches modal content styling from ListListComponent */
