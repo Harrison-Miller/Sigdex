@@ -107,4 +107,16 @@ export class BattleProfile implements IBattleProfile {
       tags.some((tag) => tag === lOptName)
     );
   }
+
+  // Many things by default aren't reinforceable, we want to differentiate those from things that are explicitly not reinforceable.
+  // technically unit size 1 should be part of the condition, but we don't have that info in the battle profile.
+  // these keywords usually mean unit size 1 or not reinforceable.
+  defaultNotReinforceable(): boolean {
+    return (
+      this.keywords.includes('HERO') ||
+      this.keywords.includes('MONSTER') ||
+      this.keywords.includes('UNIQUE') ||
+      this.keywords.includes('WAR MACHINE')
+    );
+  }
 }

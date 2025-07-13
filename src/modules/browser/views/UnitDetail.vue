@@ -93,11 +93,17 @@ const favoriteToggleSize = 36;
       <template #title>Unit Details</template>
       <div class="unit-detail-points" style="font-size: 0.95em; color: #666; text-align: left">
         <div
-          v-if="battleProfile.reinforceable === false"
+          v-if="!battleProfile.reinforceable && !battleProfile.defaultNotReinforceable()"
           class="unit-not-reinforceable"
           style="margin-top: 0.5em"
         >
           <span v-html="`<i>This unit can not be reinforced.</i>`"></span>
+        </div>
+        <div
+          v-if="battleProfile.reinforceable && battleProfile.defaultNotReinforceable()"
+          class="unit-reinforceable"
+        >
+          <span v-html="`<i>This unit can be reinforced.</i>`"></span>
         </div>
         <div
           v-if="battleProfile.undersizeCondition"
