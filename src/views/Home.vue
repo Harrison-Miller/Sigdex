@@ -15,17 +15,39 @@
         </div>
         <Section
           v-if="filteredManifestationLores && filteredManifestationLores.length > 0"
+          :defaultCollapsed="true"
           :collapseKey="'universal-manifestations'"
         >
           <template #title>Universal Manifestations</template>
           <ul>
-            <li v-for="lore in filteredManifestationLores" :key="lore">
+            <li v-for="[name, lore] in filteredManifestationLores" :key="name">
               <ListButton
-                :label="lore"
-                :favorite="armyFavorites.includes(lore)"
+                :label="name"
+                :points="lore.points"
+                :favorite="armyFavorites.includes(name)"
                 :showFavoriteToggle="true"
-                @click="() => $router.push({ name: 'ManifestationLore', params: { lore } })"
-                @toggle-favorite="(fav) => toggleArmyFavorite(lore, fav)"
+                @click="() => $router.push({ name: 'ManifestationLore', params: { lore: name } })"
+                @toggle-favorite="(fav) => toggleArmyFavorite(name, fav)"
+              />
+            </li>
+          </ul>
+        </Section>
+        <!-- Regiments of Renown Section -->
+        <Section
+          v-if="filteredRegimentsOfRenownList.length > 0"
+          :defaultCollapsed="true"
+          collapseKey="regiments-of-renown"
+        >
+          <template #title>Regiments of Renown</template>
+          <ul>
+            <li v-for="[name, regiment] in filteredRegimentsOfRenownList" :key="name">
+              <ListButton
+                :label="name"
+                :points="regiment.points"
+                :favorite="armyFavorites.includes(name)"
+                :showFavoriteToggle="true"
+                @click="() => goToRegimentOfRenown(name)"
+                @toggle-favorite="(fav) => toggleArmyFavorite(name, fav)"
               />
             </li>
           </ul>
@@ -148,12 +170,26 @@ const filteredArmiesByAlliance = computed(() => {
 const filteredManifestationLores = computed(() => {
   if (!game.value) return [];
   // Use the keys (lore names) from the map
-  const allLoreNames = Array.from(game.value.universalManifestationLores.keys());
+  const allLoreNames = Array.from(game.value.universalManifestationLores.entries());
   if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
-    return allLoreNames.filter((loreName) => armyFavorites.value.includes(loreName));
+    return allLoreNames.filter(([loreName]) => armyFavorites.value.includes(loreName));
   }
   return allLoreNames;
 });
+
+const filteredRegimentsOfRenownList = computed(() => {
+  if (!game.value) return [];
+  let allRegiments = Array.from(game.value.regimentsOfRenown.entries());
+  if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
+    allRegiments = allRegiments.filter(([name]) => armyFavorites.value.includes(name));
+  }
+  // Sort alphabetically by regiment name
+  return allRegiments.sort((a, b) => a[0].localeCompare(b[0]));
+});
+
+function goToRegimentOfRenown(regiment: string) {
+  router.push({ name: 'RegimentOfRenown', params: { regiment } });
+}
 
 watch(armyFavorites, (favs) => {
   if (showOnlyFavorites.value && favs.length === 0) {

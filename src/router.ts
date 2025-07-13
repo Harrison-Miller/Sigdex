@@ -10,6 +10,7 @@ import BuilderSettings from './modules/builder/views/BuilderSettings.vue';
 import BuilderUnitSettings from './modules/builder/views/BuilderUnitSettings.vue';
 import UnitPicker from './modules/builder/views/UnitPicker.vue';
 import ListImport from './modules/builder/views/ListImport.vue';
+import RegimentOfRenown from './modules/browser/views/RegimentOfRenown.vue';
 
 const routes = [
   {
@@ -53,6 +54,11 @@ const routes = [
     path: '/list/:id/regiment/:regimentIdx/pick/:filter',
     name: 'UnitPicker',
     component: UnitPicker,
+  },
+  {
+    path: '/regiment-of-renown/:regiment',
+    name: 'RegimentOfRenown',
+    component: RegimentOfRenown,
   },
 ];
 

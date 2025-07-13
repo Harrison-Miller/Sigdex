@@ -45,3 +45,6 @@
 - fix default not reinforced message
 
 - fix list button sizing in list regiment
+
+- handle gotrek fake battleProfile (parse units from non-library separately, then specicial case for useUnit for universal units to return a fake bp).
+- big drogg fort-kicka is big drogg fort-kicker in the battle profiles with points.

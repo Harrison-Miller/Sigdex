@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { useUniversalManifestationLore } from '../../shared/composables/useGame';
 import ListButton from '../../shared/components/ListButton.vue';
 import BackButton from '../../core/components/BackButton.vue';
-import ArmyRules from '../components/ArmyRules.vue';
-import TwoTab from '../../core/components/TwoTab.vue';
-import { Army } from '../../../parser/models/army';
+import Section from '../../core/components/Section.vue';
+import AbilityCard from '../../shared/components/AbilityCard.vue';
 
 const props = defineProps<{ lore: string }>();
 const loreName = props.lore;
-const leftActive = ref(true);
 
 const { lore } = useUniversalManifestationLore(loreName);
 const units = computed(() => {
@@ -19,37 +17,39 @@ const units = computed(() => {
 <template>
   <BackButton :size="36" class="unit-list-back" />
   <div class="list-container">
-    <h1>
+    <h1 style="margin: 0">
       {{ loreName }}
-      <span v-if="lore.points > 0" class="points-badge"> {{ lore.points }} pts </span>
     </h1>
-    <TwoTab :left-label="'Manifestations'" :right-label="'Lore'" v-model:leftActive="leftActive">
-      <template #left>
-        <ul>
-          <li v-for="name in units" :key="name">
-            <router-link
-              :to="{
-                name: 'UnitDetail',
-                params: { army: 'UniversalManifestations', unit: name },
-              }"
-              custom
-              v-slot="{ navigate, href }"
-            >
-              <ListButton :label="name" :points="0" @click="navigate" :href="href" />
-            </router-link>
-          </li>
-        </ul>
-      </template>
-      <template #right>
-        <ArmyRules
-          :army="
-            new Army({
-              manifestationLores: new Map([[loreName, lore]]),
-            })
-          "
-        />
-      </template>
-    </TwoTab>
+    <h1 style="margin: 0">
+      <span v-if="lore?.points ? lore?.points > 0 : 0" class="points-badge"
+        >{{ lore?.points }} pts</span
+      >
+    </h1>
+    <Section collapseKey="warscrolls">
+      <template #title>Warscrolls</template>
+      <ul>
+        <li v-for="name in units" :key="name">
+          <router-link
+            :to="{
+              name: 'UnitDetail',
+              params: { army: 'UniversalManifestations', unit: name },
+            }"
+            custom
+            v-slot="{ navigate, href }"
+          >
+            <ListButton :label="name" :points="0" @click="navigate" :href="href" />
+          </router-link>
+        </li>
+      </ul>
+    </Section>
+    <Section collapseKey="lore">
+      <template #title>Lore</template>
+      <AbilityCard
+        v-for="(ability, i) in lore.abilities"
+        :key="ability.name + i"
+        :ability="ability"
+      />
+    </Section>
   </div>
 </template>
 <style src="../../../views/list-shared.css" scoped></style>
