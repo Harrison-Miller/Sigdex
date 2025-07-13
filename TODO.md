@@ -1,11 +1,9 @@
-- save state of all collapse, drop downs and tabs - be smart about it though.
 - fix desktop view
 - support dark mode
 - spinner for page load
 - math hammer on warscrolls
 - report error in warscroll
 - back to top button
-- track scroll height
 
 - data issues
   - KO regiment options are incorrect/to permissive
@@ -44,6 +42,6 @@
   - murkvast skumdrek, not marked as required general
     - I think this is just a data issue
 
-- fix bug with importing Lord-Celestant vs Lord-Celestant on Stardrake etc. (can be fixed by sorting names by length then alpah).
-- make ListButton not expand based on containing text.
-- work on fixing scroll resetting, start by identifying what it is actually doing exactly.
+- fix default not reinforced message
+
+- fix list button sizing in list regiment

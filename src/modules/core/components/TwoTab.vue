@@ -1,26 +1,14 @@
-<script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
-const props = defineProps<{
-  leftLabel: string;
-  rightLabel: string;
-  leftActive: boolean;
-}>();
-const emit = defineEmits(['update:leftActive']);
-function select(left: boolean) {
-  emit('update:leftActive', left);
-}
-</script>
 <template>
   <div>
     <div class="two-tab-bar">
-      <button :class="{ active: props.leftActive }" @click="select(true)" type="button">
+      <button :class="{ active: !rightTabActive }" @click="select(true)" type="button">
         {{ props.leftLabel }}
       </button>
-      <button :class="{ active: !props.leftActive }" @click="select(false)" type="button">
+      <button :class="{ active: rightTabActive }" @click="select(false)" type="button">
         {{ props.rightLabel }}
       </button>
     </div>
-    <div v-if="props.leftActive">
+    <div v-if="!rightTabActive">
       <slot name="left" />
     </div>
     <div v-else>
@@ -28,6 +16,27 @@ function select(left: boolean) {
     </div>
   </div>
 </template>
+<script setup lang="ts">
+import { defineProps } from 'vue';
+import { useCollapsableState } from '../composables/useCollapsableState';
+
+const props = defineProps<{
+  leftLabel: string;
+  rightLabel: string;
+}>();
+
+// Use a unique key for this tab set
+const { collapsed: rightTabActive, toggle } = useCollapsableState(
+  `twoTab:${props.rightLabel}-${props.leftLabel}`,
+  false // default to left tab active (rightTabActive = false)
+);
+
+function select(left: boolean) {
+  if (left !== !rightTabActive.value) {
+    toggle();
+  }
+}
+</script>
 <style scoped>
 .two-tab-bar {
   display: flex;

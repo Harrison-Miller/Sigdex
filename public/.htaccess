@@ -12,3 +12,12 @@
 		Header set Cache-Control "public, max-age=31536000, immutable"
 	</IfModule>
 </FilesMatch>
+
+# SPA history mode support: rewrite all non-file, non-dir requests to index.html
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Only rewrite if the requested file or directory does not exist
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>

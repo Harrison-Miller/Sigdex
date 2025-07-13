@@ -1,5 +1,5 @@
 <template>
-  <Section :model-value="internalCollapsed" @update:modelValue="internalCollapsed = $event">
+  <Section :defaultCollapsed="collapsed" collapseKey="auxiliaryUnits">
     <template #title>Auxillary Units</template>
     <div v-if="props.modelValue.length > 0">
       <div v-for="(unit, i) in props.modelValue" :key="unit?.name + i" class="aux-unit-row">
@@ -35,7 +35,7 @@
 </template>
 <script lang="ts" setup>
 import Section from '../../core/components/Section.vue';
-import { ref, watch, onMounted } from 'vue';
+import { ref } from 'vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
 import { ListUnit } from '../../../list/models/unit';
@@ -51,27 +51,7 @@ const emit = defineEmits(['update:modelValue', 'update']);
 
 const router = useRouter();
 
-const internalCollapsed = ref(true);
-
-onMounted(() => {
-  if (props.modelValue.length > 0) {
-    internalCollapsed.value = false;
-  } else {
-    internalCollapsed.value = true;
-  }
-});
-
-watch(
-  () => props.modelValue,
-  (val) => {
-    if (val.length > 0) {
-      internalCollapsed.value = false;
-    } else {
-      internalCollapsed.value = true;
-    }
-  },
-  { immediate: false }
-);
+const collapsed = ref(props.modelValue.length === 0);
 
 function handleAddAuxUnit() {
   router.push({

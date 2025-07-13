@@ -65,15 +65,15 @@ const favoriteToggleSize = 36;
       <StatCircle v-if="unit.stats.save" :value="unit.stats.save" label="Save" />
       <StatCircle v-if="unit.stats.ward" :value="unit.stats.ward" label="Ward" />
     </div>
-    <Section v-if="unit.meleeWeapons.length">
+    <Section v-if="unit.meleeWeapons.length" collapseKey="meleeWeapons">
       <template #title>Melee Weapons</template>
       <WeaponTable :weapons="unit.meleeWeapons" short-headers />
     </Section>
-    <Section v-if="unit.rangedWeapons.length">
+    <Section v-if="unit.rangedWeapons.length" collapseKey="rangedWeapons">
       <template #title>Ranged Weapons</template>
       <WeaponTable :weapons="unit.rangedWeapons" short-headers />
     </Section>
-    <Section v-if="unit.abilities.length">
+    <Section v-if="unit.abilities.length" collapseKey="abilities">
       <template #title>Abilities</template>
       <div class="abilities">
         <AbilityCard
@@ -83,13 +83,13 @@ const favoriteToggleSize = 36;
         />
       </div>
     </Section>
-    <Section v-if="unit.summoningSpell">
+    <Section v-if="unit.summoningSpell" collapseKey="summoningSpell">
       <template #title>Summoning</template>
       <div class="abilities">
         <AbilityCard :ability="unit.summoningSpell" />
       </div>
     </Section>
-    <Section>
+    <Section collapseKey="unitDetails">
       <template #title>Unit Details</template>
       <div class="unit-detail-points" style="font-size: 0.95em; color: #666; text-align: left">
         <div
@@ -143,7 +143,7 @@ const favoriteToggleSize = 36;
         </div>
       </div>
     </Section>
-    <Section v-if="unit.keywords.length">
+    <Section v-if="unit.keywords.length" collapseKey="keywords">
       <template #title>Keywords</template>
       <KeywordsBar :keywords="unit.keywords" />
     </Section>

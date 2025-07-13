@@ -38,8 +38,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import ListButton from './ListButton.vue';
+import { useCollapsableState } from '../../core/composables/useCollapsableState';
 
 const props = defineProps({
   label: { type: String, required: true },
@@ -54,11 +55,11 @@ const props = defineProps({
 
 const emit = defineEmits(['click', 'toggle-favorite', 'ellipsis', 'update:collapsed']);
 
-const collapsed = ref(true);
+const { collapsed, toggle } = useCollapsableState(props.label, true);
 
 function toggleCollapse(e: Event) {
   e.stopPropagation();
-  collapsed.value = !collapsed.value;
+  toggle();
   emit('update:collapsed', collapsed.value);
 }
 

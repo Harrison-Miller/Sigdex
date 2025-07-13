@@ -1,5 +1,5 @@
 <template>
-  <Section v-if="computedArmyLore.size > 0" v-model="collapsed">
+  <Section v-if="computedArmyLore.size > 0" :defaultCollapsed="collapsed" :collapseKey="title">
     <template #title>
       <span>{{ selectedLoreName || title }}</span>
       <span v-if="lore.points > 0" class="lore-points-badge"> {{ lore.points }} pts </span>

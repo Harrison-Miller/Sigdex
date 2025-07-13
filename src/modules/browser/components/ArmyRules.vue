@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Section v-if="showAoRDetails">
+    <Section v-if="showAoRDetails" collapseKey="details">
       <template #title>Details</template>
       <ul class="details-list">
         <li
@@ -13,11 +13,11 @@
         />
       </ul>
     </Section>
-    <Section v-if="army.battleTraits && army.battleTraits.length">
+    <Section v-if="army.battleTraits && army.battleTraits.length" collapseKey="battleTraits">
       <template #title>Battle Traits</template>
       <AbilityCard v-for="(trait, i) in army.battleTraits" :key="trait.name + i" :ability="trait" />
     </Section>
-    <Section v-if="army.formations && army.formations.size">
+    <Section v-if="army.formations && army.formations.size" collapseKey="formations">
       <template #title>Formations</template>
       <div
         v-for="[formationName, abilities] in Array.from(army.formations.entries())"
@@ -27,7 +27,7 @@
         <AbilityCard v-for="(ability, i) in abilities" :key="ability.name + i" :ability="ability" />
       </div>
     </Section>
-    <Section v-if="army.artifacts && army.artifacts.size">
+    <Section v-if="army.artifacts && army.artifacts.size" collapseKey="artifacts">
       <template #title>Artifacts</template>
       <div v-for="[group, table] in Array.from(army.artifacts.entries())" :key="group">
         <h3 class="section-subheader">{{ table.name }}</h3>
@@ -38,7 +38,7 @@
         />
       </div>
     </Section>
-    <Section v-if="army.heroicTraits && army.heroicTraits.size">
+    <Section v-if="army.heroicTraits && army.heroicTraits.size" collapseKey="heroicTraits">
       <template #title>Heroic Traits</template>
       <div v-for="[group, table] in Array.from(army.heroicTraits.entries())" :key="group">
         <h3 class="section-subheader">{{ table.name }}</h3>
@@ -49,7 +49,7 @@
         />
       </div>
     </Section>
-    <Section v-if="army.enhancements && army.enhancements.size">
+    <Section v-if="army.enhancements && army.enhancements.size" collapseKey="enhancements">
       <template #title>Enhancements</template>
       <div v-for="[table, enhTable] in Array.from(army.enhancements.entries())" :key="table">
         <h3 class="section-subheader">{{ enhTable.name }}</h3>
@@ -61,7 +61,7 @@
       </div>
     </Section>
     <!-- Spell Lores Dropdown -->
-    <Section v-if="Array.from(army.spellLores.values()).length">
+    <Section v-if="Array.from(army.spellLores.values()).length" collapseKey="spellLores">
       <template #title>Spell Lores</template>
       <div v-if="Array.from(army.spellLores.values()).length === 1">
         <h3 class="section-subheader">
@@ -91,7 +91,7 @@
       </div>
     </Section>
     <!-- Prayer Lores Dropdown -->
-    <Section v-if="Array.from(army.prayerLores.values()).length">
+    <Section v-if="Array.from(army.prayerLores.values()).length" collapseKey="prayerLores">
       <template #title>Prayer Lores</template>
       <div v-if="Array.from(army.prayerLores.values()).length === 1">
         <h3 class="section-subheader">
@@ -123,7 +123,10 @@
       </div>
     </Section>
     <!-- Manifestation Lores Dropdown -->
-    <Section v-if="Array.from(army.manifestationLores.values()).length">
+    <Section
+      v-if="Array.from(army.manifestationLores.values()).length"
+      collapseKey="manifestationLores"
+    >
       <template #title>Manifestation Lores</template>
       <div v-if="Array.from(army.manifestationLores.values()).length === 1">
         <h3 class="section-subheader">

@@ -1,9 +1,9 @@
 <template>
   <div class="section-wrapper">
     <div class="section-divider"></div>
-    <div class="section-header-row" @click="collapsed = !collapsed" style="cursor: pointer">
+    <div class="section-header-row" @click="toggle()" style="cursor: pointer">
       <h2 class="section-title"><slot name="title" /></h2>
-      <button class="collapse-btn" @click.stop="collapsed = !collapsed">
+      <button class="collapse-btn" @click.stop="toggle()">
         <span v-if="collapsed">&#9654;</span>
         <span v-else>&#9660;</span>
       </button>
@@ -15,18 +15,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps } from 'vue';
-const props = defineProps<{ modelValue?: boolean }>();
-const collapsed = ref(props.modelValue ?? false);
-watch(
-  () => props.modelValue,
-  (val) => {
-    if (typeof val === 'boolean') collapsed.value = val;
-  }
+import { defineProps } from 'vue';
+import { useCollapsableState } from '../composables/useCollapsableState';
+const props = defineProps<{ defaultCollapsed?: boolean; collapseKey?: string }>();
+const { collapsed, toggle } = useCollapsableState(
+  props.collapseKey ?? '',
+  props.defaultCollapsed ?? false
 );
-import { defineEmits } from 'vue';
-const emit = defineEmits(['update:modelValue']);
-watch(collapsed, (val) => emit('update:modelValue', val));
 </script>
 
 <style scoped>

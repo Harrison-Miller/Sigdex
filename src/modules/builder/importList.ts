@@ -172,10 +172,18 @@ function parseUnits(text: string, army: Army, game: Game): ListUnit[] {
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
   const units: ListUnit[] = [];
-  const filteredArmyBPs = Array.from(army.battleProfiles.values()).filter((bp: any) => {
-    // filter manifestation and faction terrain units
-    return bp.category !== 'Manifestation' && bp.category !== 'Faction Terrain';
-  });
+  const filteredArmyBPs = Array.from(army.battleProfiles.values())
+    .filter((bp: any) => {
+      // filter manifestation and faction terrain units
+      return bp.category !== 'MANIFESTATION' && bp.category !== 'FACTION TERRAIN';
+    })
+    .sort((a, b) => {
+      // sort by length (longer first) then alpha
+      if (a.name.length !== b.name.length) {
+        return b.name.length - a.name.length;
+      }
+      return a.name.localeCompare(b.name);
+    });
 
   let currentUnit: Partial<ListUnit> | null = null;
   for (const line of lines) {

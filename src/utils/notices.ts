@@ -15,7 +15,7 @@ export const NOTICES: Notice[] = [
     title: 'Welcome to Sigdex!',
     body: `
 		<p>Thank you for using Sigdex! 🎉</p>
-		<p>Sigdex is an open-source army browser, meant to be familiar and user-friendly.</p>
+		<p>Sigdex is an open-source Age of Sigmar list builder, meant to be familiar and user-friendly.</p>
 		<p>Check out the <a href="https://github.com/Harrison-Miller/Sigdex" target="_blank">GitHub repo</a> for updates, bug reports, and more.</p>
 		<br>
 		<p style="color:#a00;"><b>Disclaimer:</b> Sigdex is an unofficial fan project and is not affiliated with Games Workshop. It only downloads

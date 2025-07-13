@@ -17,11 +17,19 @@
     <h1 class="list-title" v-if="list">{{ list.name }}</h1>
     <div v-if="list" class="subheader">{{ list.faction }}</div>
     <div v-else class="not-found">List not found.</div>
-    <Section v-if="army.battleTraits.length > 0" v-model="battleTraitsCollapsed">
+    <Section
+      v-if="army.battleTraits.length > 0"
+      :default-collapsed="battleTraitsCollapsed"
+      collapseKey="battleTraits"
+    >
       <template #title>Battle Traits</template>
       <AbilityCard v-for="(trait, i) in army.battleTraits" :key="trait.name + i" :ability="trait" />
     </Section>
-    <Section v-if="army.formations.size > 0" v-model="formationCollapsed">
+    <Section
+      v-if="army.formations.size > 0"
+      :default-collapsed="formationCollapsed"
+      collapseKey="formations"
+    >
       <template #title>{{ list.formation || 'Formations' }}</template>
       <div class="formation-section">
         <OptionSelect v-model="list.formation" :options="Array.from(army.formations.keys())" />
@@ -34,7 +42,7 @@
         </div>
       </div>
     </Section>
-    <Section v-model="battleTacticCardsCollapsed">
+    <Section :defaultCollapsed="battleTacticCardsCollapsed" collapseKey="battleTacticCards">
       <template #title>Battle Tactic Cards</template>
       <div class="battle-tactic-selectors">
         <div class="battle-tactic-selector">

@@ -56,9 +56,36 @@ const routes = [
   },
 ];
 
+// --- Scroll position management ---
+const scrollPositions = new Map<string, number>();
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+  scrollBehavior(to, _, savedPosition) {
+    // If using browser back/forward, restore saved position
+    if (savedPosition) {
+      return savedPosition;
+    }
+    // If we have a stored scroll position for this route, restore it
+    const key = to.fullPath;
+    if (scrollPositions.has(key)) {
+      return { left: 0, top: scrollPositions.get(key) || 0 };
+    }
+    // Otherwise, scroll to top
+    return { left: 0, top: 0 };
+  },
+});
+
+// Save scroll position before navigating away, except for UnitPicker
+router.beforeEach((to, from, next) => {
+  // Don't save scroll position if leaving or entering UnitPicker
+  if (to.name === 'UnitPicker' || from.name === 'UnitPicker') {
+    next();
+    return;
+  }
+  scrollPositions.set(from.fullPath, window.scrollY);
+  next();
 });
 
 export default router;

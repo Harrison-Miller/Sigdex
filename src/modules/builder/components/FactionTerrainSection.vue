@@ -1,5 +1,5 @@
 <template>
-  <Section v-model="collapsed" v-if="hasFactionTerrain">
+  <Section :defaultCollapsed="collapsed" v-if="hasFactionTerrain" collapseKey="factionTerrain">
     <template #title> Faction Terrain </template>
     <div>
       <div v-if="factionTerrain" class="faction-terrain-controls">
@@ -23,7 +23,7 @@
   </Section>
 </template>
 <script lang="ts" setup>
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref } from 'vue';
 import Section from '../../core/components/Section.vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
@@ -46,11 +46,7 @@ const terrainUnits = computed(() => {
 });
 const hasFactionTerrain = computed(() => terrainUnits.value.length > 0);
 
-const collapsed = ref(true);
-onMounted(() => {
-  // Only start collapsed if there is no faction terrain assigned
-  collapsed.value = !props.modelValue;
-});
+const collapsed = ref(props.modelValue === '');
 
 const factionTerrain = computed({
   get: () => props.modelValue,

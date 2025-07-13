@@ -13,7 +13,10 @@
             :disabled="armyFavorites.length === 0"
           />
         </div>
-        <Section v-if="filteredManifestationLores && filteredManifestationLores.length > 0">
+        <Section
+          v-if="filteredManifestationLores && filteredManifestationLores.length > 0"
+          :collapseKey="'universal-manifestations'"
+        >
           <template #title>Universal Manifestations</template>
           <ul>
             <li v-for="lore in filteredManifestationLores" :key="lore">
@@ -28,7 +31,10 @@
           </ul>
         </Section>
         <div v-for="alliance in filteredArmiesByAlliance" :key="alliance.name">
-          <Section v-if="alliance && alliance.armies.length > 0">
+          <Section
+            v-if="alliance && alliance.armies.length > 0"
+            :collapseKey="'alliance-' + alliance.name"
+          >
             <template #title>{{ alliance.name }}</template>
             <ul>
               <li v-for="army in alliance.armies" :key="army.name">

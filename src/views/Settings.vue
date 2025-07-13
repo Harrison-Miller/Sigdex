@@ -33,7 +33,7 @@
       data from BSData.
     </div>
     <div class="section about">
-      <strong>About:</strong> Sigdex is an open-source Age of Sigmar army browser.
+      <strong>About:</strong> Sigdex is an open-source Age of Sigmar list builder.
       <a href="https://github.com/Harrison-Miller/sigdex" target="_blank">GitHub page</a>
     </div>
     <div class="section version"><strong>Version:</strong> {{ SIGDEX_VERSION }}</div>
