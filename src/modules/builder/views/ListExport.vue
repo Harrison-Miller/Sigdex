@@ -14,8 +14,7 @@
           :value="exportedText"
           readonly
           class="export-textarea"
-          aria-label="Exported list content"
-        ></textarea>
+          aria-label="Exported list content"></textarea>
       </div>
       <div v-else class="not-found">List not found or army data not loaded.</div>
     </div>

@@ -35,8 +35,7 @@ const units = computed(() => {
               params: { army: 'UniversalManifestations', unit: name },
             }"
             custom
-            v-slot="{ navigate, href }"
-          >
+            v-slot="{ navigate, href }">
             <ListButton :label="name" :points="0" @click="navigate" :href="href" />
           </router-link>
         </li>
@@ -47,8 +46,7 @@ const units = computed(() => {
       <AbilityCard
         v-for="(ability, i) in lore.abilities"
         :key="ability.name + i"
-        :ability="ability"
-      />
+        :ability="ability" />
     </Section>
   </div>
 </template>

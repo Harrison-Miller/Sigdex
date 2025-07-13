@@ -25,8 +25,7 @@
           v-for="[unit] in unitList"
           :key="unit"
           :label="unit"
-          @click="() => goToUnit(unit)"
-        />
+          @click="() => goToUnit(unit)" />
       </div>
     </Section>
     <Section v-if="regiment?.allowedArmies.length" collapseKey="allowedArmies">

@@ -4,8 +4,7 @@
       class="validity-indicator"
       :class="isListValid ? 'valid' : 'invalid'"
       @click="!isListValid ? (showViolationsModal = true) : null"
-      :title="isListValid ? 'List is valid' : 'List has issues'"
-    >
+      :title="isListValid ? 'List is valid' : 'List has issues'">
       <font-awesome-icon v-if="isListValid" icon="fa-solid fa-check" class="valid-check" />
       <font-awesome-icon v-else icon="fa-solid fa-triangle-exclamation" class="valid-warning" />
     </button>
@@ -17,8 +16,7 @@
     <Modal
       v-if="showViolationsModal"
       :model-value="showViolationsModal"
-      @close="showViolationsModal = false"
-    >
+      @close="showViolationsModal = false">
       <div class="violations-modal">
         <h3>List Issues</h3>
         <ul>

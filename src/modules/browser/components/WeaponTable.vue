@@ -32,8 +32,7 @@ const hasRange = props.weapons.some((w) => w.range && w.range !== '');
             <div>{{ w.name }}</div>
             <div
               v-if="w.abilities && w.abilities.filter((a) => a && a !== '-').length"
-              class="weapon-abilities"
-            >
+              class="weapon-abilities">
               <span v-for="(a, i) in w.abilities.filter((a) => a && a !== '-')" :key="i">
                 <span v-html="formatText(a)"></span>
                 <span v-if="i < w.abilities.filter((a) => a && a !== '-').length - 1">, </span>

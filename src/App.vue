@@ -44,7 +44,6 @@ onUnmounted(() => {
     v-if="showNotice && currentNotice"
     :notice="currentNotice"
     :visible="showNotice"
-    @close="handleNoticeClose"
-  />
+    @close="handleNoticeClose" />
   <RouterView />
 </template>

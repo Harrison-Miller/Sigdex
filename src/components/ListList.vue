@@ -12,8 +12,7 @@
     initialFaction="Cities of Sigmar"
     :armyList="game?.armyList || new Map()"
     @create="handleCreate"
-    @close="closeModal"
-  />
+    @close="closeModal" />
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';

@@ -6,13 +6,11 @@
         <ListButton
           :label="factionTerrain"
           :points="battleProfiles.get(factionTerrain)?.points"
-          @click="goToUnitDetail"
-        />
+          @click="goToUnitDetail" />
         <button
           class="delete-terrain-btn"
           @click="handleDeleteFactionTerrain"
-          title="Delete Faction Terrain"
-        >
+          title="Delete Faction Terrain">
           <font-awesome-icon icon="trash" />
         </button>
       </div>

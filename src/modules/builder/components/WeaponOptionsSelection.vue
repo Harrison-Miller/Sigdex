@@ -5,8 +5,7 @@
       <template
         v-if="
           getOptionalWeapons(group).length > 0 || Object.keys(getGroupWeapons(group)).length > 0
-        "
-      >
+        ">
         <div class="model-group-block">
           <div v-if="showModelGroupHeader" class="model-group-heading">{{ group.name }}</div>
           <!-- Optional weapons -->
@@ -16,8 +15,7 @@
               :model-value="optionalWeaponState[group.name][w.name]"
               :min="0"
               :max="getEffectiveMax(w) || 99"
-              @update:modelValue="(val) => updateOptionalWeapon(group.name, w.name, val)"
-            />
+              @update:modelValue="(val) => updateOptionalWeapon(group.name, w.name, val)" />
           </div>
           <!-- Group selection weapons as CounterBoxes -->
           <div v-for="(weapons, groupKey) in getGroupWeapons(group)" :key="groupKey">
@@ -31,8 +29,7 @@
                     (val) => {
                       handleSingleSelectChange(group.name, groupKey, val);
                     }
-                  "
-                />
+                  " />
               </div>
             </template>
             <template v-else>
@@ -46,8 +43,7 @@
                   "
                   @update:modelValue="
                     (val) => updateGroupWeaponCounter(group.name, groupKey, w.name, val)
-                  "
-                />
+                  " />
               </div>
             </template>
           </div>

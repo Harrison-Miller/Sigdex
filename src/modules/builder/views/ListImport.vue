@@ -11,8 +11,7 @@
           id="import-textarea"
           v-model="importText"
           class="import-textarea"
-          aria-label="Import list content"
-        ></textarea>
+          aria-label="Import list content"></textarea>
         <label for="list-name">List Name:</label>
         <input id="list-name" v-model="listName" type="text" placeholder="List name" />
         <div class="import-actions">

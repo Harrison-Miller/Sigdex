@@ -14,8 +14,7 @@
         :min="250"
         :max="5000"
         :step="250"
-        class="points-cap-counter"
-      />
+        class="points-cap-counter" />
     </label>
     <TextInput v-model="newName" type="text" label="Rename List" placeholder="New list name" />
     <div class="modal-actions single-action" style="margin-top: 1.2em">

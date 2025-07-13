@@ -4,8 +4,7 @@
       class="counter-btn"
       @click="decrement"
       :disabled="modelValue <= min"
-      :class="{ disabled: modelValue <= min }"
-    >
+      :class="{ disabled: modelValue <= min }">
       -
     </button>
     <span class="counter-value">{{ modelValue }}</span>
@@ -13,8 +12,7 @@
       class="counter-btn"
       @click="increment"
       :disabled="modelValue >= max"
-      :class="{ disabled: modelValue >= max }"
-    >
+      :class="{ disabled: modelValue >= max }">
       +
     </button>
   </div>

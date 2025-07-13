@@ -7,14 +7,12 @@
         label="Clear BSData"
         @click="clearBSDataHandler"
         :showFavoriteToggle="false"
-        style="margin-bottom: 0.7rem"
-      />
+        style="margin-bottom: 0.7rem" />
       <ListButton
         label="Clear Favorites"
         @click="clearFavorites"
         :showFavoriteToggle="false"
-        style="margin-bottom: 0.7rem"
-      />
+        style="margin-bottom: 0.7rem" />
       <ListButton label="Clear Lists" @click="clearLists" :showFavoriteToggle="false" />
     </div>
     <div class="section">
@@ -24,8 +22,7 @@
           class="settings-input"
           v-model="githubRepo"
           @change="saveGithubRepoHandler"
-          placeholder="BSData/age-of-sigmar-4th"
-        />
+          placeholder="BSData/age-of-sigmar-4th" />
       </label>
     </div>
     <div class="section legal">

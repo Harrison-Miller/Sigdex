@@ -8,13 +8,11 @@
           <FavoriteToggle
             :model-value="showOnlyFavorites"
             @update:modelValue="updateShowOnlyFavoritesState"
-            :disabled="!hasAnyFavoriteInArmy"
-          />
+            :disabled="!hasAnyFavoriteInArmy" />
           <button
             class="sort-toggle"
             @click="toggleSortMode"
-            :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'"
-          >
+            :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'">
             Sort: {{ sortLabel }}
           </button>
         </div>
@@ -26,8 +24,7 @@
                 <router-link
                   :to="{ name: 'UnitDetail', params: { army: armyName, unit: u.name } }"
                   custom
-                  v-slot="{ navigate, href }"
-                >
+                  v-slot="{ navigate, href }">
                   <ListButton
                     :label="u.name"
                     :favorite="unitFavorites.includes(u.name)"
@@ -35,8 +32,7 @@
                     :points="u.points"
                     @click="navigate"
                     @toggle-favorite="(fav: boolean) => toggleUnitFavorite(u.name, fav)"
-                    :href="href"
-                  />
+                    :href="href" />
                 </router-link>
               </li>
             </ul>

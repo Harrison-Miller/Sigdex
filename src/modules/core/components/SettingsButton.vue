@@ -15,8 +15,7 @@ const iconSize = props.size ?? 36;
         height: iconSize + 'px',
         padding: iconSize * 0.22 + 'px',
         color: '#555',
-      }"
-    />
+      }" />
   </button>
 </template>
 <style scoped>

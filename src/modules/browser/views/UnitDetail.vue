@@ -52,8 +52,7 @@ const favoriteToggleSize = 36;
           :model-value="unitFavorite"
           @update:modelValue="toggleUnitFavoriteDetail"
           :size="favoriteToggleSize"
-          no-text
-        />
+          no-text />
       </div>
       <h1>{{ unit.name }}</h1>
     </div>
@@ -79,8 +78,7 @@ const favoriteToggleSize = 36;
         <AbilityCard
           v-for="(a, i) in [...unit.abilities].sort((a, b) => a.name.localeCompare(b.name))"
           :key="a.name + i"
-          :ability="a"
-        />
+          :ability="a" />
       </div>
     </Section>
     <Section v-if="unit.summoningSpell" collapseKey="summoningSpell">
@@ -95,39 +93,33 @@ const favoriteToggleSize = 36;
         <div
           v-if="!battleProfile.reinforceable && !battleProfile.defaultNotReinforceable()"
           class="unit-not-reinforceable"
-          style="margin-top: 0.5em"
-        >
+          style="margin-top: 0.5em">
           <span v-html="`<i>This unit can not be reinforced.</i>`"></span>
         </div>
         <div
           v-if="battleProfile.reinforceable && battleProfile.defaultNotReinforceable()"
-          class="unit-reinforceable"
-        >
+          class="unit-reinforceable">
           <span v-html="`<i>This unit can be reinforced.</i>`"></span>
         </div>
         <div
           v-if="battleProfile.undersizeCondition"
           class="unit-not-reinforceable"
-          style="margin-top: 0.5em"
-        >
+          style="margin-top: 0.5em">
           <span
             v-html="
               `<i>You can include 1 unit of this type for each <b>${battleProfile.undersizeCondition}</b> in your army.</i>`
-            "
-          ></span>
+            "></span>
         </div>
         <div
           v-if="battleProfile.companionUnits.length > 0 || battleProfile.companionLeader"
           class="unit-companion-units"
-          style="margin-top: 0.5em"
-        >
+          style="margin-top: 0.5em">
           <span v-html="formatCompanionUnits(unit.name, battleProfile.companionLeader)"></span>
         </div>
         <div
           class="unit-model-groups"
           style="margin-top: 0.5em"
-          v-html="formatModelGroups(Array.from(unit.models.values()), unit)"
-        ></div>
+          v-html="formatModelGroups(Array.from(unit.models.values()), unit)"></div>
         <span v-if="battleProfile.points > 0">{{ battleProfile.points }} Points</span>
         <span v-if="unit.unitSize > 0" style="margin-left: 1.5em"
           >Unit Size: {{ unit.unitSize }}</span
@@ -136,15 +128,13 @@ const favoriteToggleSize = 36;
         <div
           v-if="battleProfile.regimentTags.length > 0"
           class="unit-sub-hero-tags"
-          style="margin-top: 0.5em"
-        >
+          style="margin-top: 0.5em">
           <span v-html="formatSubHeroTags(battleProfile.regimentTags)"></span>
         </div>
         <div
           v-if="battleProfile.regimentOptions.length > 0"
           class="unit-regiment-options"
-          style="margin-top: 0.5em"
-        >
+          style="margin-top: 0.5em">
           <span v-html="formatRegimentOptions(battleProfile.regimentOptions)"></span>
         </div>
       </div>

@@ -6,15 +6,13 @@
     <div
       v-if="showRegimentOptions"
       class="regiment-options-bar"
-      v-html="formattedRegimentOptions"
-    ></div>
+      v-html="formattedRegimentOptions"></div>
     <div class="filters-bar">
       <input v-model="search" placeholder="Search units..." class="search-bar" />
       <button
         class="sort-toggle"
         @click="toggleSortMode"
-        :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'"
-      >
+        :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'">
         Sort: {{ sortLabel }}
       </button>
     </div>
@@ -27,8 +25,7 @@
               :label="bp.name"
               :points="bp.points"
               @click="() => goToDetail(bp)"
-              class="unit-list-btn"
-            />
+              class="unit-list-btn" />
             <button class="add-btn" @click="() => addUnitToRegiment(bp)" title="Add to Regiment">
               +
             </button>

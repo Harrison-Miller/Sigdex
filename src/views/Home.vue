@@ -10,14 +10,12 @@
           <FavoriteToggle
             :model-value="showOnlyFavorites"
             @update:modelValue="updateShowOnlyFavoritesState"
-            :disabled="armyFavorites.length === 0"
-          />
+            :disabled="armyFavorites.length === 0" />
         </div>
         <Section
           v-if="filteredManifestationLores && filteredManifestationLores.length > 0"
           :defaultCollapsed="true"
-          :collapseKey="'universal-manifestations'"
-        >
+          :collapseKey="'universal-manifestations'">
           <template #title>Universal Manifestations</template>
           <ul>
             <li v-for="[name, lore] in filteredManifestationLores" :key="name">
@@ -27,8 +25,7 @@
                 :favorite="armyFavorites.includes(name)"
                 :showFavoriteToggle="true"
                 @click="() => $router.push({ name: 'ManifestationLore', params: { lore: name } })"
-                @toggle-favorite="(fav) => toggleArmyFavorite(name, fav)"
-              />
+                @toggle-favorite="(fav) => toggleArmyFavorite(name, fav)" />
             </li>
           </ul>
         </Section>
@@ -36,8 +33,7 @@
         <Section
           v-if="filteredRegimentsOfRenownList.length > 0"
           :defaultCollapsed="true"
-          collapseKey="regiments-of-renown"
-        >
+          collapseKey="regiments-of-renown">
           <template #title>Regiments of Renown</template>
           <ul>
             <li v-for="[name, regiment] in filteredRegimentsOfRenownList" :key="name">
@@ -47,16 +43,14 @@
                 :favorite="armyFavorites.includes(name)"
                 :showFavoriteToggle="true"
                 @click="() => goToRegimentOfRenown(name)"
-                @toggle-favorite="(fav) => toggleArmyFavorite(name, fav)"
-              />
+                @toggle-favorite="(fav) => toggleArmyFavorite(name, fav)" />
             </li>
           </ul>
         </Section>
         <div v-for="alliance in filteredArmiesByAlliance" :key="alliance.name">
           <Section
             v-if="alliance && alliance.armies.length > 0"
-            :collapseKey="'alliance-' + alliance.name"
-          >
+            :collapseKey="'alliance-' + alliance.name">
             <template #title>{{ alliance.name }}</template>
             <ul>
               <li v-for="army in alliance.armies" :key="army.name">
@@ -66,15 +60,13 @@
                     :favorite="armyFavorites.includes(army.name)"
                     :showFavoriteToggle="true"
                     @click="selectArmy(army.name)"
-                    @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
-                  >
+                    @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)">
                     <ul>
                       <li v-for="aor in army.armiesOfRenown" :key="aor">
                         <ListButton
                           :label="aor"
                           :showFavoriteToggle="false"
-                          @click="selectArmy(army.name + ' - ' + aor)"
-                        />
+                          @click="selectArmy(army.name + ' - ' + aor)" />
                       </li>
                     </ul>
                   </ListButtonSection>
@@ -85,8 +77,7 @@
                     :favorite="armyFavorites.includes(army.name)"
                     :showFavoriteToggle="true"
                     @click="selectArmy(army.name)"
-                    @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
-                  />
+                    @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)" />
                 </template>
               </li>
             </ul>

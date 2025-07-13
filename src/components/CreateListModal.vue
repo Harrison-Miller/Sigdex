@@ -2,8 +2,7 @@
   <Modal
     :model-value="modelValue"
     @update:modelValue="emit('update:modelValue', $event)"
-    @close="handleClose"
-  >
+    @close="handleClose">
     <div class="modal-content">
       <h3>Create New List</h3>
       <TextInput
@@ -11,8 +10,7 @@
         type="text"
         label="Name"
         placeholder="List name"
-        @keyup.enter="emitCreate"
-      />
+        @keyup.enter="emitCreate" />
       <label>
         Army
         <OptionSelect v-model="faction" :options="flattenedArmyList" placeholder="Select an army" />

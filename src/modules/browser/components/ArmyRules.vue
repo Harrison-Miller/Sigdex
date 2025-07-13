@@ -5,12 +5,10 @@
       <ul class="details-list">
         <li
           v-if="army.requiredGeneral.length"
-          v-html="formatRequiredGeneral(army.requiredGeneral)"
-        />
+          v-html="formatRequiredGeneral(army.requiredGeneral)" />
         <li
           v-if="army.mustBeGeneralIfIncluded.length"
-          v-html="formatMustBeGeneralIfIncluded(army.mustBeGeneralIfIncluded)"
-        />
+          v-html="formatMustBeGeneralIfIncluded(army.mustBeGeneralIfIncluded)" />
       </ul>
     </Section>
     <Section v-if="army.battleTraits && army.battleTraits.length" collapseKey="battleTraits">
@@ -21,8 +19,7 @@
       <template #title>Formations</template>
       <div
         v-for="[formationName, abilities] in Array.from(army.formations.entries())"
-        :key="formationName"
-      >
+        :key="formationName">
         <h3 class="section-subheader">{{ formationName }}</h3>
         <AbilityCard v-for="(ability, i) in abilities" :key="ability.name + i" :ability="ability" />
       </div>
@@ -34,8 +31,7 @@
         <AbilityCard
           v-for="(enh, j) in table.enhancements"
           :key="enh.ability.name + j"
-          :ability="enh.ability"
-        />
+          :ability="enh.ability" />
       </div>
     </Section>
     <Section v-if="army.heroicTraits && army.heroicTraits.size" collapseKey="heroicTraits">
@@ -45,8 +41,7 @@
         <AbilityCard
           v-for="(enh, j) in table.enhancements"
           :key="enh.ability.name + j"
-          :ability="enh.ability"
-        />
+          :ability="enh.ability" />
       </div>
     </Section>
     <Section v-if="army.enhancements && army.enhancements.size" collapseKey="enhancements">
@@ -56,8 +51,7 @@
         <AbilityCard
           v-for="(enh, i) in enhTable.enhancements"
           :key="enh.ability.name + i"
-          :ability="enh.ability"
-        />
+          :ability="enh.ability" />
       </div>
     </Section>
     <!-- Spell Lores Dropdown -->
@@ -73,20 +67,17 @@
         <AbilityCard
           v-for="(ability, i) in Array.from(army.spellLores.values())[0].abilities"
           :key="ability.name + i"
-          :ability="ability"
-        />
+          :ability="ability" />
       </div>
       <div v-else>
         <OptionSelect
           v-model="selectedSpellLore"
-          :options="Array.from(army.spellLores.values()).map((lore) => lore.name)"
-        />
+          :options="Array.from(army.spellLores.values()).map((lore) => lore.name)" />
         <div v-if="selectedSpellLore">
           <AbilityCard
             v-for="(ability, i) in army.spellLores.get(selectedSpellLore)?.abilities || []"
             :key="ability.name + i"
-            :ability="ability"
-          />
+            :ability="ability" />
         </div>
       </div>
     </Section>
@@ -103,30 +94,26 @@
         <AbilityCard
           v-for="(ability, i) in Array.from(army.prayerLores.values())[0].abilities"
           :key="ability.name + i"
-          :ability="ability"
-        />
+          :ability="ability" />
       </div>
       <div v-else>
         <OptionSelect
           v-model="selectedPrayerLore"
           :options="Array.from(army.prayerLores.values()).map((lore) => lore.name)"
           class="lore-dropdown"
-          placeholder="Select Prayer Lore"
-        />
+          placeholder="Select Prayer Lore" />
         <div v-if="selectedPrayerLore">
           <AbilityCard
             v-for="(ability, i) in army.prayerLores.get(selectedPrayerLore)?.abilities || []"
             :key="ability.name + i"
-            :ability="ability"
-          />
+            :ability="ability" />
         </div>
       </div>
     </Section>
     <!-- Manifestation Lores Dropdown -->
     <Section
       v-if="Array.from(army.manifestationLores.values()).length"
-      collapseKey="manifestationLores"
-    >
+      collapseKey="manifestationLores">
       <template #title>Manifestation Lores</template>
       <div v-if="Array.from(army.manifestationLores.values()).length === 1">
         <h3 class="section-subheader">
@@ -138,23 +125,20 @@
         <AbilityCard
           v-for="(ability, i) in Array.from(army.manifestationLores.values())[0].abilities"
           :key="ability.name + i"
-          :ability="ability"
-        />
+          :ability="ability" />
       </div>
       <div v-else>
         <OptionSelect
           v-model="selectedManifestationLore"
           :options="Array.from(army.manifestationLores.values()).map((lore) => lore.name)"
           class="lore-dropdown"
-          placeholder="Select Manifestation Lore"
-        />
+          placeholder="Select Manifestation Lore" />
         <div v-if="selectedManifestationLore">
           <AbilityCard
             v-for="(ability, i) in army.manifestationLores.get(selectedManifestationLore)
               ?.abilities || []"
             :key="ability.name + i"
-            :ability="ability"
-          />
+            :ability="ability" />
         </div>
       </div>
     </Section>

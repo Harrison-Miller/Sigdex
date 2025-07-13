@@ -9,8 +9,7 @@
         id="heroic-trait-select"
         v-model="unit.heroicTrait"
         :options="heroicTraitsOptions"
-        placeholder="No Heroic Trait"
-      />
+        placeholder="No Heroic Trait" />
       <div v-if="selectedHeroicTraitAbility">
         <AbilityCard :ability="selectedHeroicTraitAbility?.ability || new Ability({ name: '' })" />
       </div>
@@ -21,8 +20,7 @@
         id="artifact-select"
         v-model="unit.artifact"
         :options="artifactsOptions"
-        placeholder="No Artifact"
-      />
+        placeholder="No Artifact" />
       <div v-if="selectedArtifactAbility">
         <AbilityCard :ability="selectedArtifactAbility?.ability || new Ability({ name: '' })" />
       </div>
@@ -34,12 +32,12 @@
         :model-value="unit.enhancements?.get(tableName) || ''"
         :options="new Map([['', getEnhancementTableOptions(tableName)]])"
         :placeholder="`No ${tableName}`"
-        @update:model-value="updateEnhancement(tableName, $event)"
-      />
+        @update:model-value="updateEnhancement(tableName, $event)" />
       <div v-if="getSelectedEnhancementAbility(tableName)">
         <AbilityCard
-          :ability="getSelectedEnhancementAbility(tableName)?.ability || new Ability({ name: '' })"
-        />
+          :ability="
+            getSelectedEnhancementAbility(tableName)?.ability || new Ability({ name: '' })
+          " />
       </div>
     </div>
   </Section>

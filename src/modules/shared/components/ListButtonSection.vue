@@ -5,13 +5,11 @@
         v-bind="buttonProps"
         @click="$emit('click')"
         @toggle-favorite="$emit('toggle-favorite', $event)"
-        @ellipsis="$emit('ellipsis')"
-      />
+        @ellipsis="$emit('ellipsis')" />
       <button
         class="collapse-btn"
         :aria-label="collapsed ? 'Expand section' : 'Collapse section'"
-        @click="toggleCollapse"
-      >
+        @click="toggleCollapse">
         <svg
           :class="{ collapsed }"
           width="22"
@@ -21,8 +19,7 @@
           stroke="#888"
           stroke-width="2"
           stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+          stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9" />
         </svg>
       </button>

@@ -9,8 +9,7 @@
           class="export-btn"
           :size="36"
           icon="fa-solid fa-file-arrow-down"
-          @click="openExport"
-        />
+          @click="openExport" />
         <SettingsButton class="settings-btn" :size="36" @click="openSettings" />
       </div>
     </div>
@@ -20,16 +19,14 @@
     <Section
       v-if="army.battleTraits.length > 0"
       :default-collapsed="battleTraitsCollapsed"
-      collapseKey="battleTraits"
-    >
+      collapseKey="battleTraits">
       <template #title>Battle Traits</template>
       <AbilityCard v-for="(trait, i) in army.battleTraits" :key="trait.name + i" :ability="trait" />
     </Section>
     <Section
       v-if="army.formations.size > 0"
       :default-collapsed="formationCollapsed"
-      collapseKey="formations"
-    >
+      collapseKey="formations">
       <template #title>{{ list.formation || 'Formations' }}</template>
       <div class="formation-section">
         <OptionSelect v-model="list.formation" :options="Array.from(army.formations.keys())" />
@@ -37,8 +34,7 @@
           <AbilityCard
             v-for="(ability, i) in selectedFormation"
             :key="ability.name + i"
-            :ability="ability"
-          />
+            :ability="ability" />
         </div>
       </div>
     </Section>
@@ -49,23 +45,19 @@
           <OptionSelect
             v-model="list.battleTacticCard1"
             :options="battleTacticCards.map((card) => card.name)"
-            placeholder="Select Battle Tactic Card 1"
-          />
+            placeholder="Select Battle Tactic Card 1" />
           <BattleTacticCard
             v-if="selectedBattleTacticCard1.name.length > 0"
-            :card="selectedBattleTacticCard1"
-          />
+            :card="selectedBattleTacticCard1" />
         </div>
         <div class="battle-tactic-selector">
           <OptionSelect
             v-model="list.battleTacticCard2"
             :options="battleTacticCards.map((card) => card.name)"
-            placeholder="Select Battle Tactic Card 2"
-          />
+            placeholder="Select Battle Tactic Card 2" />
           <BattleTacticCard
             v-if="selectedBattleTacticCard2.name.length > 0"
-            :card="selectedBattleTacticCard2"
-          />
+            :card="selectedBattleTacticCard2" />
         </div>
       </div>
     </Section>
@@ -78,8 +70,7 @@
           :battleProfiles="army.battleProfiles"
           :armyName="list.faction"
           @delete="() => deleteRegiment(idx)"
-          @delete-unit="(unitIdx) => handleDeleteUnit(idx, unitIdx)"
-        />
+          @delete-unit="(unitIdx) => handleDeleteUnit(idx, unitIdx)" />
       </div>
       <button class="add-regiment-btn" @click="addRegiment">Add regiment</button>
 
@@ -87,34 +78,29 @@
         v-model="list.auxiliaryUnits"
         :battleProfiles="army.battleProfiles"
         :armyName="list.faction"
-        :listId="list.id"
-      />
+        :listId="list.id" />
       <FactionTerrainSection
         v-model="list.factionTerrain"
         :battleProfiles="army.battleProfiles"
         :armyName="list.faction"
-        :listId="list.id"
-      />
+        :listId="list.id" />
       <!-- Lore Sections -->
       <ListBuilderLoreSection
         :armyLore="army.spellLores"
         :armyName="list.faction"
         title="Spell Lore"
-        v-model="list.spellLore"
-      />
+        v-model="list.spellLore" />
       <ListBuilderLoreSection
         :armyLore="army.prayerLores"
         :armyName="list.faction"
         title="Prayer Lore"
-        v-model="list.prayerLore"
-      />
+        v-model="list.prayerLore" />
       <ListBuilderLoreSection
         :armyLore="army.manifestationLores"
         :armyName="list.faction"
         title="Manifestation Lore"
         v-model="list.manifestationLore"
-        manifestationMode
-      />
+        manifestationMode />
     </div>
     <div class="scroll-buffer"></div>
   </div>

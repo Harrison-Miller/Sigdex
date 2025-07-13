@@ -47,12 +47,10 @@ function getAbilityIcon(type: string) {
       <div
         v-if="props.ability.declare"
         class="card-text ability-text"
-        v-html="formatText(`**Declare**: ${props.ability.declare}`)"
-      ></div>
+        v-html="formatText(`**Declare**: ${props.ability.declare}`)"></div>
       <div
         class="card-text ability-text"
-        v-html="formatText(`**Effect**: ${props.ability.effect}`)"
-      ></div>
+        v-html="formatText(`**Effect**: ${props.ability.effect}`)"></div>
       <KeywordsBar :keywords="props.ability.keywords" />
     </div>
   </div>

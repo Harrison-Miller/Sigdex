@@ -17,13 +17,11 @@
                 params: { army: armyName, unit: unit.name },
               })
           "
-          @ellipsis="() => goToAuxUnitSettings(i)"
-        />
+          @ellipsis="() => goToAuxUnitSettings(i)" />
         <button
           class="delete-terrain-btn"
           @click="() => handleDeleteAuxUnit(i)"
-          title="Delete Auxillary Unit"
-        >
+          title="Delete Auxillary Unit">
           <font-awesome-icon icon="trash" />
         </button>
       </div>

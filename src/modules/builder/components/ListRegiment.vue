@@ -15,13 +15,11 @@
           :showGeneral="leader.general"
           :enhancementCount="leader.getEnhancementCount()"
           @click="() => goToUnitDetail(leader.name)"
-          @ellipsis="() => goToUnitSettings('leader')"
-        />
+          @ellipsis="() => goToUnitSettings('leader')" />
         <button
           class="delete-unit-btn"
           @click="$emit('delete-unit', 'leader')"
-          title="Remove leader"
-        >
+          title="Remove leader">
           <font-awesome-icon icon="trash" />
         </button>
       </div>
@@ -40,8 +38,7 @@
               :enhancementCount="unit.getEnhancementCount()"
               @click="() => goToUnitDetail(unit.name)"
               @ellipsis="() => goToUnitSettings(idx)"
-              class="regiment-unit-btn"
-            />
+              class="regiment-unit-btn" />
           </div>
           <button class="delete-unit-btn" @click="$emit('delete-unit', idx)" title="Remove unit">
             <font-awesome-icon icon="trash" />

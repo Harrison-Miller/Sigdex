@@ -13,8 +13,7 @@
       v-if="!unitData.hasKeyword('unique')"
       v-model="unit"
       :unit-data="unitData"
-      :army="army"
-    />
+      :army="army" />
   </div>
 </template>
 <script setup lang="ts">

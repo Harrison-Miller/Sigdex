@@ -8,8 +8,7 @@
       <OptionSelect
         v-model="selectedLoreName"
         :options="Array.from(computedArmyLore.keys())"
-        placeholder="No Lore Selected"
-      />
+        placeholder="No Lore Selected" />
       <div v-if="props.manifestationMode && !loading && !error && selectedLoreName">
         <ul>
           <li v-for="unitName in manifestationUnits" :key="unitName">
@@ -22,8 +21,7 @@
                 },
               }"
               custom
-              v-slot="{ navigate, href }"
-            >
+              v-slot="{ navigate, href }">
               <ListButton :label="unitName" @click="navigate" :href="href" />
             </router-link>
           </li>
@@ -36,8 +34,7 @@
         <AbilityCard
           v-for="(ability, i) in lore.abilities"
           :key="ability.name + i"
-          :ability="ability"
-        />
+          :ability="ability" />
       </div>
     </div>
   </Section>
