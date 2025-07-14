@@ -52,8 +52,3 @@ It'd be nice to add it as a weapon ability. But that would be confusing with com
 
 * mark big waagh as AoR and trim its name
 * make sure AoR export matches and AoR import works
-
-* RoR todos:
-  * fix big drogg fort-kicka
-
-* in general lets just link together by id the RoR and manifestations (can we do the manifestations??)

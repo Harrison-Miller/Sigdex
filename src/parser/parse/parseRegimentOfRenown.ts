@@ -18,12 +18,19 @@ export function parseRegimentsOfRenown(
     const name = rorNode['@_name']?.substring('Regiment of Renown: '.length)?.trim() || '';
     if (!name) continue;
 
+    const rorCondition = findFirstByTagAndAttrs(rorNode, 'condition', {
+      type: 'atLeast',
+      field: 'selections',
+      scope: 'roster',
+    });
+    const rorProfile = rorProfiles.get(name) || rorProfiles.get(rorCondition?.['@_childId'] || '');
+
     const ror: Partial<IRegimentOfRenown> = {
       name,
       abilities: parseAbilities(rorNode.profiles),
-      points: rorProfiles.get(name)?.points,
+      points: rorProfile?.points,
       units: parseRoRUnits(rorNode, rorUnitDefinitions),
-      allowedArmies: rorProfiles.get(name)?.armies,
+      allowedArmies: rorProfile?.armies,
     };
 
     if (!ror.units || !ror.points || !ror.allowedArmies) {
@@ -43,6 +50,7 @@ export function parseRegimentsOfRenown(
 
 interface IRoRProfile {
   name: string;
+  id: string;
   points: number;
   armies: string[];
 }
@@ -58,6 +66,9 @@ function parseRoRProfiles(gameRoot: any, armyIds: Map<string, string>): Map<stri
   for (const profileNode of rorNode) {
     const name = profileNode['@_name']?.trim();
     if (!name) continue;
+
+    const id = profileNode['@_id'] || '';
+    if (!id) continue; // skip if no id
 
     const points = parsePoints(profileNode);
     if (!points || points <= 0) continue;
@@ -81,9 +92,16 @@ function parseRoRProfiles(gameRoot: any, armyIds: Map<string, string>): Map<stri
 
     profiles.set(name, {
       name,
+      id,
       points,
       armies,
     });
+    profiles.set(id, {
+      name,
+      id,
+      points,
+      armies,
+    }); // also store by id for easier lookup
   }
   return profiles;
 }
