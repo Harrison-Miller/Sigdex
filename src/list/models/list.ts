@@ -14,6 +14,9 @@ export interface IList {
   prayerLore: string;
   manifestationLore: string;
 
+  regimentOfRenown: string;
+  regimentOfRenownUnits: ListUnit[];
+
   auxiliaryUnits: ListUnit[];
 
   battleTacticCard1: string;
@@ -37,6 +40,9 @@ export class List implements IList {
   prayerLore: string;
   manifestationLore: string;
 
+  regimentOfRenown: string;
+  regimentOfRenownUnits: ListUnit[];
+
   auxiliaryUnits: ListUnit[];
 
   battleTacticCard1: string;
@@ -56,6 +62,8 @@ export class List implements IList {
     this.spellLore = data?.spellLore ?? '';
     this.prayerLore = data?.prayerLore ?? '';
     this.manifestationLore = data?.manifestationLore ?? '';
+    this.regimentOfRenown = data?.regimentOfRenown ?? '';
+    this.regimentOfRenownUnits = data?.regimentOfRenownUnits ?? [];
     this.auxiliaryUnits = data?.auxiliaryUnits ?? [];
     // you can
     this.battleTacticCard1 = data?.battleTacticCard1 ?? '';

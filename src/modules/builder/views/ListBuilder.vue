@@ -124,6 +124,15 @@
         Add regiment
       </button>
 
+      <RegimentOfRenownSection
+        v-if="list && game"
+        :model-value-name="list.regimentOfRenown"
+        :model-value-units="list.regimentOfRenownUnits"
+        :list-id="list.id"
+        :game="game"
+        @update:model-value-name="val => list.regimentOfRenown = val"
+        @update:model-value-units="val => list.regimentOfRenownUnits = val"
+      />
       <AuxiliaryUnitsSection
         v-model="list.auxiliaryUnits"
         :battle-profiles="army.battleProfiles"
@@ -183,6 +192,7 @@ import ListRegiment from '../components/ListRegiment.vue';
 import BattleTacticCard from '../../shared/components/BattleTacticCard.vue';
 import FactionTerrainSection from '../components/FactionTerrainSection.vue';
 import AuxiliaryUnitsSection from '../components/AuxiliaryUnitsSection.vue';
+import RegimentOfRenownSection from '../components/RegimentOfRenownSection.vue';
 import { Army } from '../../../parser/models/army';
 import { BattleTacticCard as BattleTacticCardModel } from '../../../parser/models/game';
 import { ListUnit } from '../../../list/models/unit';

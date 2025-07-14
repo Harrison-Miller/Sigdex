@@ -23,6 +23,7 @@ import {
   faTriangleExclamation,
   faFileArrowDown,
   faCopy,
+  faEye,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Add icons to the library
@@ -43,7 +44,8 @@ library.add(
   faCheck,
   faTriangleExclamation,
   faFileArrowDown,
-  faCopy
+  faCopy,
+  faEye
 );
 
 const app = createApp(App);

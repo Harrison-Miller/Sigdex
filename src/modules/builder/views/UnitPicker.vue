@@ -23,27 +23,27 @@
       </button>
     </div>
     <template
-      v-for="cat in UnitCategories"
+      v-for="cat in unitPickerCategories"
       :key="cat"
     >
-      <Section v-if="categorizedBattleProfiles.get(cat)?.length">
+      <Section v-if="categorizeListItems.get(cat)?.length">
         <template #title>{{ cat }}</template>
         <ul class="unit-list">
           <li
-            v-for="bp in categorizedBattleProfiles.get(cat)"
-            :key="bp.name"
+            v-for="item in categorizeListItems.get(cat)"
+            :key="item.name"
             class="unit-row"
           >
             <ListButton
-              :label="bp.name"
-              :points="bp.points"
+              :label="item.name"
+              :points="item.points"
               class="unit-list-btn"
-              @click="() => goToDetail(bp)"
+              @click="() => goToDetail(item)"
             />
             <button
               class="add-btn"
               title="Add to Regiment"
-              @click="() => addUnitToRegiment(bp)"
+              @click="() => addUnitToRegiment(item)"
             >
               +
             </button>
@@ -68,6 +68,7 @@ import { Army } from '../../../parser/models/army';
 import { filterBattleProfilesByRegimentOptions } from '../filter';
 import { useList } from '../../shared/composables/useList';
 import { ListUnit } from '../../../list/models/unit';
+import { assignRoR } from '../ror';
 
 const route = useRoute();
 const router = useRouter();
@@ -83,6 +84,25 @@ const army = computed(
     new Army({ name: list.value?.faction || '' })
 );
 const search = ref('');
+
+const unitPickerCategories = [...UnitCategories, 'Regiments of Renown'];
+
+const isRoR = filter.toLowerCase() === 'ror';
+
+const availableRoRs = computed(() => {
+  if (!isRoR || !army.value || !game.value) return [];
+  // army.value.regimentsOfRenown is a Set or array of RoR names
+  const rorNames = Array.from(army.value.regimentsOfRenown || []);
+  // Map to { name, points } objects (points can be looked up from game.regimentsOfRenown)
+  return rorNames.map(name => {
+    const ror = game.value?.regimentsOfRenown.get(name);
+    if (!ror) return { name, points: 0 };
+    return {
+      name,
+      points: ror?.points ?? 0
+    };
+  }).filter(r => r.points > 0);
+});
 
 const filteredBPs = computed(() => {
   let us: BattleProfile[] = [];
@@ -155,12 +175,25 @@ const showRegimentOptions = computed(
 );
 const formattedRegimentOptions = computed(() => formatRegimentOptions(leaderRegimentOptions.value));
 
-const categorizedBattleProfiles = computed(() => {
-  const cats: Map<string, BattleProfile[]> = new Map();
+interface UnitPickerListItem {
+  name: string;
+  points: number;
+};
+
+const categorizeListItems = computed(() => {
+  if (isRoR) {
+    // For RoR, show all available RoRs in a single category
+    return new Map<string, UnitPickerListItem[]>([['Regiments of Renown', availableRoRs.value]]);
+  }
+
+  const cats: Map<string, UnitPickerListItem[]> = new Map();
   for (const bp of filteredBPs.value) {
     const cat = bp.category;
     if (!cats.has(cat)) cats.set(cat, []);
-    cats.get(cat)?.push(bp);
+    cats.get(cat)?.push({
+      name: bp.name,
+      points: bp.points,
+    });
   }
   // Sort bps within each category by selected mode
   for (const cat of Array.from(cats.keys())) {
@@ -176,24 +209,36 @@ const categorizedBattleProfiles = computed(() => {
   return cats;
 });
 
-function goToDetail(bp: BattleProfile) {
-  router.push({
-    name: 'UnitDetail',
-    params: { armyName: list.value?.faction || '', unitName: bp.name },
-  });
+function goToDetail(item: UnitPickerListItem) {
+  if (isRoR) {
+    // For RoR, navigate to RegimentOfRenown view
+    router.push({ name: 'RegimentOfRenown', params: { regimentName: item.name } });
+  } else {
+    router.push({
+      name: 'UnitDetail',
+      params: { armyName: list.value?.faction || '', unitName: item.name },
+    });
+  }
 }
 
-function addUnitToRegiment(bp: BattleProfile) {
+function addUnitToRegiment(item: UnitPickerListItem) {
   if (!list.value) return;
-  const unit = game.value?.units.get(bp.name) || undefined;
+
+  if (isRoR && game.value) {
+    assignRoR(item.name, list.value, game.value);
+    router.back();
+    return;
+  }
+
+  const unit = game.value?.units.get(item.name) || undefined;
   if (!unit) {
-    console.error(`Unit ${bp.name} not found in game data.`);
+    console.error(`Unit ${item.name} not found in game data.`);
     return;
   }
 
   if (filter.toLowerCase() === 'terrain') {
     // Set as faction terrain
-    list.value.factionTerrain = bp.name;
+    list.value.factionTerrain = item.name;
     router.back();
     return;
   }

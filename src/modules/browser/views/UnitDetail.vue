@@ -134,7 +134,10 @@ const favoriteToggleSize = 36;
         <AbilityCard :ability="unit.summoningSpell" />
       </div>
     </Section>
-    <Section collapse-key="unitDetails">
+    <Section
+      v-if="armyName !== 'UniversalUnits'"
+      collapse-key="unitDetails"
+    >
       <template #title>Unit Details</template>
       <div
         class="unit-detail-points"
