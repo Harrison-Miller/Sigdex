@@ -29,6 +29,13 @@
           >
             Import
           </button>
+                    <button
+            class="import-btn"
+            :disabled="!canImport"
+            @click="handleImportTest"
+          >
+            Test Import
+          </button>
         </div>
         <div
           v-if="error"
@@ -73,6 +80,15 @@ function handleImport() {
   imported.name = listName.value;
   const id = createList(imported);
   router.push({ name: 'ListBuilder', params: { id: id} });
+}
+
+function handleImportTest() {
+  if (!game.value) {
+    error.value = 'Game data not loaded.';
+    return;
+  }
+
+  importList(importText.value, game.value);
 }
 </script>
 

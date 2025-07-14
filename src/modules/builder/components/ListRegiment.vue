@@ -21,8 +21,8 @@
           :show-ellipsis="true"
           :show-general="leader.general"
           :enhancement-count="leader.getEnhancementCount()"
-          @click.stop="() => goToUnitDetail(leader.name)"
-          @ellipsis.stop="() => goToUnitSettings('leader')"
+          @click="() => goToUnitDetail(leader.name)"
+          @ellipsis="() => goToUnitSettings('leader')"
         />
         <button
           class="delete-unit-btn"
@@ -56,14 +56,14 @@
               :show-reinforced="unit.reinforced"
               :enhancement-count="unit.getEnhancementCount()"
               class="regiment-unit-btn"
-              @click.stop="() => goToUnitDetail(unit.name)"
-              @ellipsis.stop="() => goToUnitSettings(idx)"
+              @click="() => goToUnitDetail(unit.name)"
+              @ellipsis="() => goToUnitSettings(idx)"
             />
           </div>
           <button
             class="delete-unit-btn"
             title="Remove unit"
-            @click.stop="emit('delete-unit', idx)"
+            @click="emit('delete-unit', idx)"
           >
             <font-awesome-icon icon="trash" />
           </button>

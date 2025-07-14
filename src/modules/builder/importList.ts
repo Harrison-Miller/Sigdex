@@ -6,21 +6,14 @@ import type { Game } from '../../parser/models/game';
 export function importList(text: string, game: Game): List {
   const listText = text.toLowerCase().trim();
   // search the text for the name of a faction
-  const faction = findFaction(listText, Array.from(game.armies.keys()));
-  if (!faction) {
-    console.error('No faction found in the list.');
-    throw new Error('No faction found in the list.');
-  }
-
-  const army = game.armies.get(faction);
+  const army = findArmy(listText, game);
   if (!army) {
-    console.error(`No army data found for faction: ${faction}`);
-    throw new Error(`No army data found for faction: ${faction}`);
+    throw new Error('No valid army found in the list text.');
   }
 
   const list: Partial<List> = {
     name: findName(text),
-    faction,
+    faction: army.name,
     formation: findFormationOrFirst(listText, army),
     regiments: [],
     factionTerrain: findFactionTerrain(listText, army),
@@ -38,6 +31,10 @@ export function importList(text: string, game: Game): List {
   if (!list.regiments) {
     list.regiments = [];
   }
+
+  const foundCards = findBattleTacticCards(listText, game);
+  list.battleTacticCard1 = foundCards.card1;
+  list.battleTacticCard2 = foundCards.card2;
 
   // split the text into regiment chunks
   const { regiments, auxiliary, regimentOfRenown } = splitIntoRegimentChunks(listText);
@@ -59,7 +56,7 @@ export function importList(text: string, game: Game): List {
     }
   }
 
-  if (regimentOfRenown) {
+  if (!army.isArmyOfRenown && regimentOfRenown) {
     const { rorName, units: rorUnits } = parseRoRUnits(regimentOfRenown, game);
     if (rorName) {
       list.regimentOfRenown = rorName;
@@ -70,10 +67,19 @@ export function importList(text: string, game: Game): List {
   return new List(list);
 }
 
-function findFaction(text: string, armyNames: string[]): string | null {
-  for (const faction of armyNames) {
-    if (text.includes(faction.toLowerCase())) {
-      return faction;
+function findArmy(text: string, game: Game): Army | null {
+  for (const [armyName, army] of game.armies) {
+    if (text.includes(armyName.toLowerCase())) {
+      // check if this is an AoR
+      for (const aor of army.armiesOfRenown) {
+        if (text.includes(aor.toLowerCase())) {
+          const aorArmy = game.armies.get(`${armyName} - ${aor}`);
+          if (aorArmy) {
+            return aorArmy;
+          }
+        }
+      }
+      return army;
     }
   }
   return null;
@@ -102,6 +108,16 @@ function findName(text: string): string {
     return firstLine.replace(ptsMatch[0], '').trim();
   }
   return firstLine;
+}
+
+function findBattleTacticCards(text: string, game: Game): { card1: string, card2: string } {
+  const cards: string[] = [];
+  for (const card of game.battleTacticCards) {
+    if (text.toLowerCase().includes(card.name.toLowerCase())) {
+      cards.push(card.name);
+    }
+  }
+  return { card1: cards[0] || '', card2: cards[1] || '' };
 }
 
 function findFactionTerrain(text: string, army: Army): string | undefined {

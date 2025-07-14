@@ -165,7 +165,14 @@ export function exportList(list: List, game: Game): string {
 
   // name and points
   out += `${list.name} ${points}/2000 pts\n\n`;
-  out += `${list.faction}\n${list.formation}\n`;
+
+  if (army.isArmyOfRenown) {
+    const aorName = army.name.split(' - ')[1]; // Get the name before the " - "
+    out += `${army.baseArmyName} | ${aorName}\n`;
+    out += `Army of Renown\n`;
+  } else {
+    out += `${list.faction}\n${list.formation}\n`;
+  }
   out += 'General\'s Handbook 2025-26\n'; // TODO: actually have ghb version selection that leads to different rules
   out += `Drops: ${calculateDrops(list)}\n`;
   out += `Wounds: ${calculateWounds(list, game)}\n`;
@@ -187,15 +194,10 @@ export function exportList(list: List, game: Game): string {
     out += displayWithPoints(`Manifestation Lore - ${list.manifestationLore}`, manifestationPoints);
   }
 
-  if (list.battleTacticCard1 || list.battleTacticCard2) {
+  const cards: string[] = [list.battleTacticCard1, list.battleTacticCard2].filter(Boolean);
+  if (cards.length > 0) {
     out += '\nBattle Tactic Cards: ';
-    if (list.battleTacticCard1 && list.battleTacticCard2) {
-      out += `${list.battleTacticCard1}, ${list.battleTacticCard2}\n`;
-    } else if (list.battleTacticCard1) {
-      out += `${list.battleTacticCard1}\n`;
-    } else if (list.battleTacticCard2) {
-      out += `${list.battleTacticCard2}\n`;
-    }
+    out += `${cards.join(', ')}\n`;
   }
 
   // display the general
