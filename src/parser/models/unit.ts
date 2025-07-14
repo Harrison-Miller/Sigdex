@@ -91,4 +91,12 @@ export class Unit implements IUnit {
     if (!keyword) return false;
     return this.keywords.some((k) => k.toLowerCase() === keyword.toLowerCase());
   }
+
+  totalWounds(reinforced: boolean = false): number {
+    let total = Number(this.stats.health) * this.unitSize;
+    if (reinforced) {
+      total *= 2;
+    }
+    return total;
+  }
 }

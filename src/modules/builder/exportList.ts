@@ -8,38 +8,25 @@ import { SIGDEX_VERSION } from '../../version';
 
 function calculateDrops(list: List): number {
   if (!list || !list.regiments) return 0;
-  const drops = list.regiments.length + (list.auxiliaryUnits?.length || 0);
+  let drops = list.regiments.length;
+  drops += list.auxiliaryUnits.length;
+  drops += list.regimentOfRenown ? 1 : 0; // count RoR as a drop
   return drops;
 }
 
 function calculateWounds(list: List, game: Game): number {
   if (!list || !list.regiments) return 0;
-  let totalWounds = 0;
-  for (const regiment of list.regiments) {
-    if (regiment.leader) {
-      const leaderUnit = game.units.get(regiment.leader.name);
-      if (leaderUnit) {
-        totalWounds +=
-          Number(leaderUnit.stats.health) *
-          (leaderUnit.unitSize || 1) *
-          (regiment.leader.reinforced ? 2 : 1);
-      }
-    }
-    for (const unit of regiment.units) {
-      const unitData = game.units.get(unit.name);
-      if (unitData) {
-        totalWounds +=
-          Number(unitData.stats.health) * (unitData.unitSize || 1) * (unit.reinforced ? 2 : 1);
-      }
-    }
-  }
-
-  // aux
-  for (const unit of list.auxiliaryUnits || []) {
+  let totalWounds = list.allUnits().reduce((sum, unit) => {
     const unitData = game.units.get(unit.name);
-    if (unitData) {
-      totalWounds +=
-        Number(unitData.stats.health) * (unitData.unitSize || 1) * (unit.reinforced ? 2 : 1);
+    if (!unitData) return sum; // skip if unit data not found
+    return sum + unitData.totalWounds(unit.reinforced);
+  }, 0);
+
+  if (list.regimentOfRenown) {
+    for (const unit of list.regimentOfRenownUnits) {
+      const unitData = game.units.get(unit.name);
+      if (!unitData) continue; // skip if unit data not found
+      totalWounds += unitData.totalWounds();
     }
   }
 
@@ -90,13 +77,14 @@ function displayWithPoints(text: string, points: number | undefined): string {
   return `${text}\n`; // No points, just the name
 }
 
-function displayUnit(unit: ListUnit, army: Army, game: Game): string {
+function displayUnit(unit: ListUnit, army: Army, game: Game, noPoints: boolean = false): string {
   if (!unit) return '';
   const unitData = game.units.get(unit.name);
   const bp = army.battleProfiles.get(unit.name);
-  if (!unitData || !bp) return `${unit.name} (not found in army)`; // Fallback if unit not found
+  if (!unitData) return `${unit.name} (not found in army)`; // Fallback if unit not found
 
-  let out = displayWithPoints(unitData.name, (bp.points || 0) * (unit.reinforced ? 2 : 1));
+  const points = noPoints ? 0 : (bp?.points || 0) * (unit.reinforced ? 2 : 1);
+  let out = displayWithPoints(unitData.name, points);
 
   // bullet point (use special bullet point character) list of things
   // general > reinforced > weapon options > heroic trait > artifact > enhancements
@@ -248,10 +236,21 @@ export function exportList(list: List, game: Game): string {
     out += 'Faction Terrain\n';
     const terrainPoints = army.battleProfiles.get(list.factionTerrain)?.points || 0;
     out += displayWithPoints(list.factionTerrain, terrainPoints);
+    out += '\n';
+  }
+
+  if (list.regimentOfRenown) {
+    const ror = game.regimentsOfRenown.get(list.regimentOfRenown);
+    out += 'Regiments of Renown\n';
+    out += displayWithPoints(list.regimentOfRenown, ror?.points || 0);
+    for (const unit of list.regimentOfRenownUnits) {
+      out += `${displayUnit(unit, army, game, true)}`;
+    }
+    out += '\n';
   }
 
   // app info
-  out += '\n\nCreated with Sigdex: https://sigdex.io/\n';
+  out += '\nCreated with Sigdex: https://sigdex.io/\n';
   out += `Version: ${SIGDEX_VERSION}\n`;
 
   return out;

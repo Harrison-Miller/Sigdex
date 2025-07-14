@@ -18,6 +18,10 @@ export function calculatePoints(list: List, game: Game): number {
 
   let total = 0;
 
+  if (list.regimentOfRenown) {
+    total += game.regimentsOfRenown.get(list.regimentOfRenown)?.points || 0;
+  }
+
   // Helper to get heroic trait, artifact, or enhancement points by name from Map<string, EnhancementTable>
   const getEnhancementPoints = (name: string, tables: Map<string, EnhancementTable>) => {
     for (const [_, table] of tables.entries()) {

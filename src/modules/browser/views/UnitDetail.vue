@@ -135,7 +135,6 @@ const favoriteToggleSize = 36;
       </div>
     </Section>
     <Section
-      v-if="armyName !== 'UniversalUnits'"
       collapse-key="unitDetails"
     >
       <template #title>Unit Details</template>
@@ -144,7 +143,7 @@ const favoriteToggleSize = 36;
         style="font-size: 0.95em; color: #666; text-align: left"
       >
         <div
-          v-if="!battleProfile.reinforceable && !battleProfile.defaultNotReinforceable()"
+          v-if="armyName !== 'UniversalUnits' && !battleProfile.reinforceable && !battleProfile.defaultNotReinforceable()"
           class="unit-not-reinforceable"
           style="margin-top: 0.5em"
         >

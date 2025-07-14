@@ -63,21 +63,16 @@ function handleBack() {
   router.back();
 }
 
-async function handleImport() {
+function handleImport() {
   if (!game.value) {
     error.value = 'Game data not loaded.';
     return;
   }
 
-  error.value = null;
-  try {
-    const imported = await importList(importText.value, game.value);
-    imported.name = listName.value;
-    createList(imported);
-    router.push({ name: 'ListBuilder', params: { id: imported.id } });
-  } catch (e: any) {
-    error.value = e?.message || 'Failed to import list.';
-  }
+  const imported = importList(importText.value, game.value);
+  imported.name = listName.value;
+  const id = createList(imported);
+  router.push({ name: 'ListBuilder', params: { id: id} });
 }
 </script>
 

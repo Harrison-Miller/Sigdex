@@ -5,7 +5,7 @@
       <button
         class="delete-regiment-btn"
         title="Delete Regiment"
-        @click="$emit('delete')"
+        @click.stop="$emit('delete')"
       >
         <font-awesome-icon icon="trash" />
       </button>
@@ -21,8 +21,8 @@
           :show-ellipsis="true"
           :show-general="leader.general"
           :enhancement-count="leader.getEnhancementCount()"
-          @click="() => goToUnitDetail(leader.name)"
-          @ellipsis="() => goToUnitSettings('leader')"
+          @click.stop="() => goToUnitDetail(leader.name)"
+          @ellipsis.stop="() => goToUnitSettings('leader')"
         />
         <button
           class="delete-unit-btn"
@@ -56,14 +56,14 @@
               :show-reinforced="unit.reinforced"
               :enhancement-count="unit.getEnhancementCount()"
               class="regiment-unit-btn"
-              @click="() => goToUnitDetail(unit.name)"
-              @ellipsis="() => goToUnitSettings(idx)"
+              @click.stop="() => goToUnitDetail(unit.name)"
+              @ellipsis.stop="() => goToUnitSettings(idx)"
             />
           </div>
           <button
             class="delete-unit-btn"
             title="Remove unit"
-            @click="emit('delete-unit', idx)"
+            @click.stop="emit('delete-unit', idx)"
           >
             <font-awesome-icon icon="trash" />
           </button>
@@ -72,7 +72,7 @@
     </div>
     <button
       class="add-unit-btn"
-      @click="goToAddUnit"
+      @click.stop="goToAddUnit"
     >
       + Add Unit
     </button>

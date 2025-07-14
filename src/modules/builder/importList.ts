@@ -3,18 +3,18 @@ import { ListUnit } from '../../list/models/unit';
 import type { Army } from '../../parser/models/army';
 import type { Game } from '../../parser/models/game';
 
-export async function importList(text: string, game: Game): Promise<List> {
+export function importList(text: string, game: Game): List {
   const listText = text.toLowerCase().trim();
   // search the text for the name of a faction
   const faction = findFaction(listText, Array.from(game.armies.keys()));
   if (!faction) {
-    console.log('No faction found in the list.');
+    console.error('No faction found in the list.');
     throw new Error('No faction found in the list.');
   }
 
   const army = game.armies.get(faction);
   if (!army) {
-    console.log(`No army data found for faction: ${faction}`);
+    console.error(`No army data found for faction: ${faction}`);
     throw new Error(`No army data found for faction: ${faction}`);
   }
 
@@ -40,7 +40,7 @@ export async function importList(text: string, game: Game): Promise<List> {
   }
 
   // split the text into regiment chunks
-  const { regiments, auxiliary } = splitIntoRegimentChunks(listText);
+  const { regiments, auxiliary, regimentOfRenown } = splitIntoRegimentChunks(listText);
   for (const regimentText of regiments) {
     const units = parseUnits(regimentText, army, game);
     if (units.length > 0) {
@@ -56,6 +56,14 @@ export async function importList(text: string, game: Game): Promise<List> {
     const auxUnits = parseUnits(auxiliary, army, game);
     if (auxUnits.length > 0) {
       list.auxiliaryUnits = auxUnits;
+    }
+  }
+
+  if (regimentOfRenown) {
+    const { rorName, units: rorUnits } = parseRoRUnits(regimentOfRenown, game);
+    if (rorName) {
+      list.regimentOfRenown = rorName;
+      list.regimentOfRenownUnits = rorUnits;
     }
   }
 
@@ -146,12 +154,14 @@ function findManifestationLore(
 function splitIntoRegimentChunks(text: string): {
   regiments: string[];
   auxiliary: string | undefined;
+  regimentOfRenown: string | undefined;
 } {
   const regiments: string[] = [];
   let auxiliary: string | undefined = undefined;
+  let regimentOfRenown: string | undefined = undefined;
 
   // Regex to match "regiment" or "auxiliary" and capture the block until the next keyword or end of text
-  const regex = /(regiment|auxiliary)\s*([\s\S]*?)(?=(?:regiment|auxiliary)\s|$)/gi;
+  const regex = /(renown|regiment|auxiliary)\s*([\s\S]*?)(?=(?:renown|regiment|auxiliary)\s|$)/gi;
   let match;
   while ((match = regex.exec(text)) !== null) {
     const type = match[1].toLowerCase();
@@ -160,9 +170,11 @@ function splitIntoRegimentChunks(text: string): {
       regiments.push(block);
     } else if (type === 'auxiliary') {
       auxiliary = block;
+    } else if (type === 'renown') {
+      regimentOfRenown = block;
     }
   }
-  return { regiments, auxiliary };
+  return { regiments, auxiliary, regimentOfRenown };
 }
 
 function parseUnits(text: string, army: Army, game: Game): ListUnit[] {
@@ -306,4 +318,84 @@ function parseUnits(text: string, army: Army, game: Game): ListUnit[] {
   }
 
   return units;
+}
+
+function parseRoRUnits(text: string, game: Game): { rorName: string, units: ListUnit[] } {
+  const rorName = Array.from(game.regimentsOfRenown.keys()).find((name) =>
+    text.toLowerCase().includes(name.toLowerCase())
+  );
+
+  if (!rorName) {
+    console.warn('No Regiment of Renown found in the text.');
+    return { rorName: '', units: [] };
+  }
+
+  // go line by line until we find a unit name that we recognize
+  const lines = text
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+  const units: ListUnit[] = [];
+
+  const ror = game.regimentsOfRenown.get(rorName);
+  if (!ror) return { rorName: '', units: [] };
+
+  const unitNames = Array.from(ror.units.keys());
+
+
+  let currentUnit: Partial<ListUnit> | null = null;
+  for (const line of lines) {
+    const foundUnit = unitNames.find((name) => line.includes(name.toLowerCase()));
+
+    if (foundUnit) {
+
+      if (currentUnit) {
+        units.push(new ListUnit(currentUnit));
+      }
+      currentUnit = {
+        name: foundUnit,
+      };
+    }
+
+    // check for anything that looks like anything
+    if (currentUnit) {
+      // Weapon options
+      const currentUnitData = game.units.get(currentUnit?.name || '');
+      if (currentUnitData && currentUnitData.models && currentUnitData.models.size > 0) {
+        // Try to find weapon option names in the line
+        for (const [_, model] of currentUnitData.models) {
+          for (const [_, weapon] of model.weapons) {
+            if (weapon.type === 'default') continue; // skip default weapons
+
+            if (line.includes(weapon.name.toLowerCase())) {
+              if (!currentUnit.weaponOptions) currentUnit.weaponOptions = new Map();
+              if (!currentUnit.weaponOptions.has(model.name)) {
+                currentUnit.weaponOptions.set(model.name, []);
+              }
+
+              // search the line for a number anywhere
+              const countMatch = line.match(/(\d+)/);
+              let count: number | undefined;
+              if (countMatch) {
+                count = parseInt(countMatch[1], 10);
+              }
+
+              const maxCount =
+                (weapon.max ? weapon.max : model.count || 1) * (currentUnit.reinforced ? 2 : 1);
+              const actualCount = count ? Math.min(count, maxCount) : 1;
+
+              const arr = currentUnit.weaponOptions.get(model.name)!;
+              arr.push({ name: weapon.name, count: actualCount });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (currentUnit) {
+    units.push(new ListUnit(currentUnit));
+  }
+
+  return { rorName, units };
 }

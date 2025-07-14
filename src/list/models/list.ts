@@ -72,13 +72,16 @@ export class List implements IList {
     this.validator = data?.validator ?? 'standard';
   }
 
-  allUnits(): ListUnit[] {
+  allUnits(includeRoRUnits: boolean = false): ListUnit[] {
     const units: ListUnit[] = [];
     for (const regiment of this.regiments) {
       units.push(regiment.leader);
       units.push(...regiment.units);
     }
     units.push(...this.auxiliaryUnits);
+    if (includeRoRUnits) {
+      units.push(...this.regimentOfRenownUnits);
+    }
     return units as ListUnit[];
   }
 }

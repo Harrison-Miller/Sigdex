@@ -1,4 +1,5 @@
 import eslint from '@eslint/js';
+import eslintConfigPrettier from 'eslint-config-prettier'
 import eslintPluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
 import typescriptEslint from 'typescript-eslint';
@@ -37,5 +38,6 @@ export default typescriptEslint.config(
 		rules: {
 			'no-irregular-whitespace': 'off',
 		},
-	}
+	},
+	eslintConfigPrettier
 );

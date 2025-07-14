@@ -129,7 +129,7 @@ function checkWeaponOptionsAreValid(list: List, game: Game): string[] {
   if (!army) return []; // error handled elsewhere
 
   const errors: string[] = [];
-  const units = list.allUnits();
+  const units = list.allUnits(true); // include RoR units
 
   for (const unit of units) {
     const unitData = game.units.get(unit.name);

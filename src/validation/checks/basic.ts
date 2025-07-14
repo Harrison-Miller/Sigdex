@@ -46,9 +46,15 @@ function hasGeneral(list: List): string[] {
 }
 
 function regimentCount(list: List): string[] {
-  const regiments = list.regiments.length;
+  let regiments = list.regiments.length;
+  if (list.regimentOfRenown) {
+    regiments++;
+  }
   if (regiments > 5) {
-    return ['No more than 5 regiments in list'];
+    if (list.regimentOfRenown) {
+      return ['No more than 5 regiments allowed in a list (including Regiments of Renown)'];
+    }
+    return ['No more than 5 regiments allowed in a list'];
   }
 
   return [];

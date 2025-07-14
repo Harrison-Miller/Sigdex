@@ -50,9 +50,8 @@
 * add a little champion tag to weapon tables. I'm not sure how I want to do this.
 It'd be nice to add it as a weapon ability. But that would be confusing with companion.
 
+* mark big waagh as AoR and trim its name
+* make sure AoR export matches and AoR import works
+
 * RoR todos:
-  * points calculation
-  * ror unit settings
-  * validation
-  * import/export
   * fix big drogg fort-kicka

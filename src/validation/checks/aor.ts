@@ -5,10 +5,10 @@ import type { ListValidator } from '../validator';
 export const aorChecks: ListValidator[] = [
   requiredGeneralIsSelected,
   mustBeGeneralIfIncluded,
-  // aorMayNotIncludeRoR
+  aorMayNotIncludeRoR,
 ];
 
-export function requiredGeneralIsSelected(list: List, game: Game): string[] {
+function requiredGeneralIsSelected(list: List, game: Game): string[] {
   const army = game.armies.get(list.faction);
   if (!army || army.requiredGeneral.length === 0) return [];
 
@@ -24,7 +24,7 @@ export function requiredGeneralIsSelected(list: List, game: Game): string[] {
   ];
 }
 
-export function mustBeGeneralIfIncluded(list: List, game: Game): string[] {
+function mustBeGeneralIfIncluded(list: List, game: Game): string[] {
   const army = game.armies.get(list.faction);
   if (!army || army.mustBeGeneralIfIncluded.length === 0) return [];
 
@@ -38,7 +38,11 @@ export function mustBeGeneralIfIncluded(list: List, game: Game): string[] {
   return [];
 }
 
-// export function aorMayNotIncludeRoR(list: List, game: Game): string[] {
-// 	// TODO: RoRs haven't been implemented yet, so this is a placeholder
-// 	return [];
-// }
+function aorMayNotIncludeRoR(list: List, game: Game): string[] {
+  const army = game.armies.get(list.faction);
+  if (!army) return [];
+  if (army.isArmyOfRenown && list.regimentOfRenown) {
+    return ['Regiments of Renown may not be included in an Army of Renown.'];
+  }
+  return [];
+}

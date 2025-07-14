@@ -9,7 +9,7 @@
       <ToggleBox v-model="unit.general">General</ToggleBox>
     </div>
     <div
-      v-if="bp.reinforceable"
+      v-if="!isRoRUnit && bp.reinforceable"
       class="option-row"
     >
       <ToggleBox v-model="unit.reinforced">Reinforce</ToggleBox>
@@ -19,7 +19,7 @@
       :unit-data="unitData"
     />
     <EnhancementsSelection
-      v-if="!unitData.hasKeyword('unique')"
+      v-if="!isRoRUnit && !unitData.hasKeyword('unique')"
       v-model="unit"
       :unit-data="unitData"
       :army="army"
@@ -48,12 +48,18 @@ const list = useList(listId);
 
 const { game, loading } = useGame();
 
+const isRoRUnit = regimentIdx === 500;
+const isAuxiliaryUnit = regimentIdx === 999;
+
 const army = computed(() => game.value?.armies.get(list.value?.faction || '') || new Army());
 
 // getter and setter for the unit
 const unit = computed({
   get: () => {
-    if (regimentIdx === 999) {
+    if (isRoRUnit) {
+      return list.value.regimentOfRenownUnits[unitIdx as number];
+    }
+    if (isAuxiliaryUnit) {
       return list.value.auxiliaryUnits[unitIdx as number];
     }
     if (unitIdx === 'leader') {
@@ -62,7 +68,9 @@ const unit = computed({
     return list.value.regiments[regimentIdx].units[unitIdx];
   },
   set: (value) => {
-    if (regimentIdx === 999) {
+    if (isRoRUnit) {
+      list.value.regimentOfRenownUnits[unitIdx as number] = value;
+    } else if (isAuxiliaryUnit) {
       list.value.auxiliaryUnits[unitIdx as number] = value;
     } else if (unitIdx === 'leader') {
       list.value.regiments[regimentIdx].leader = value;
