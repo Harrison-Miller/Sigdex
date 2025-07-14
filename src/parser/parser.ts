@@ -67,7 +67,7 @@ export class Parser {
         this.allLores.forEach((lore) => {
           lore.abilities.forEach((ability: Ability) => {
             if (ability.keywords.includes('**^^Summon^^**')) {
-              if (ability.name.includes(unit.name)) {
+              if ((ability.summonedUnit && unit.summoningSpell?.name && ability.summonedUnit === unit.summoningSpell?.name) || ability.name.includes(unit.name)) {
                 unit.summoningSpell = ability;
                 ability.summonedUnit = unit.name;
                 return;
@@ -76,6 +76,15 @@ export class Parser {
           });
         });
       }
+    });
+
+    // look at all lores and check if any are missing a summoning spell
+    this.allLores.forEach((lore) => {
+      lore.abilities.forEach((ability: Ability) => {
+        if (ability.keywords.includes('**^^Summon^^**') && !ability.summonedUnit) {
+          console.warn(`No unit found for summoning spell: ${ability.name}`);
+        }
+      });
     });
 
     // parse armies and assign their lores

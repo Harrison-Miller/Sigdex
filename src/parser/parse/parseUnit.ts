@@ -1,4 +1,4 @@
-import type { Ability } from '../models/ability';
+import { Ability } from '../models/ability';
 import type { Model } from '../models/model';
 import { Stats, type IStats } from '../models/stats';
 import { Unit, type IUnit } from '../models/unit';
@@ -39,6 +39,7 @@ export function parseSharedAbilities(rootNode: any): Map<string, Ability> {
 }
 
 export function parseUnit(unitNode: any, sharedAbilities: Map<string, Ability>): Unit {
+  const id = unitNode['@_id'] || '';
   const unit: Partial<IUnit> = {
     name: unitNode['@_name'],
     stats: parseUnitStats(unitNode),
@@ -73,6 +74,13 @@ export function parseUnit(unitNode: any, sharedAbilities: Map<string, Ability>):
   // remove models if it's only default models
   if (unit.models && isDefaultModels(Array.from(unit.models.values()))) {
     unit.models = new Map<string, Model>(); // return empty map if all models are default
+  }
+
+  // if manifestation create a placeholder summoning spell
+  if (unit.keywords?.includes('MANIFESTATION')) {
+    unit.summoningSpell = new Ability({
+      name: id
+    });
   }
 
   return new Unit(unit);

@@ -55,3 +55,5 @@ It'd be nice to add it as a weapon ability. But that would be confusing with com
 
 * RoR todos:
   * fix big drogg fort-kicka
+
+* in general lets just link together by id the RoR and manifestations (can we do the manifestations??)
