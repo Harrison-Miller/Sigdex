@@ -23,7 +23,25 @@ export function useList(id: MaybeRefOrGetter<string>) {
       read: (v) => {
         try {
           if (!v) return new List();
-          return SuperJSON.parse(v) as List;
+          const list = SuperJSON.parse(v) as List;
+          // handle migrations
+          if (!list.createdAt) {
+            list.createdAt = new Date(0); // default to epoch if not set
+          }
+          if (!list.modifiedAt) {
+            list.modifiedAt = new Date(0); // default to epoch if not set
+          }
+          if (!list.validator) {
+            list.validator = 'standard'; // set default validator if not present
+          }
+          if (!list.pointsCap) {
+            list.pointsCap = 2000; // set default points cap if not present
+          }
+          if (!list.regimentOfRenown) {
+            list.regimentOfRenown = ''; // default to empty string if not set
+            list.regimentOfRenownUnits = []; // ensure units are empty
+          }
+          return list;
         } catch {
           return new List();
         }

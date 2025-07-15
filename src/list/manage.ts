@@ -3,7 +3,7 @@ import { List, type IList } from './models/list';
 import { ListRegiment } from './models/regiment';
 import { ListUnit } from './models/unit';
 
-export const LIST_NAME_MAX_LENGTH = 30;
+export const LIST_NAME_MAX_LENGTH = 1000; // make this really high until we have better handling in the UI
 export const LIST_STORAGE_KEY = 'list:';
 
 export function setupListSuperJSON() {
@@ -47,12 +47,6 @@ export function getAllLists(): IListItem[] {
       if (!raw) continue;
       try {
         const list = SuperJSON.parse(raw) as List;
-        if (list.name === '' || list.id === '' || !(list instanceof List)) {
-          console.warn(`Item with key ${key} is not a valid List instance.`);
-          localStorage.removeItem(key);
-          continue;
-        }
-
         lists.push({
           id: list.id,
           name: list.name,
@@ -66,8 +60,8 @@ export function getAllLists(): IListItem[] {
     }
   }
   // Sort by createdAt (desc), then alpha by name
-  return lists.sort((a, b) => {
-    if (b.createdAt.getTime() !== a.createdAt.getTime()) return b.createdAt.getTime() - a.createdAt.getTime();
+  return lists.filter((list) => list.name !== '').sort((a, b) => {
+    if (b.createdAt?.getTime() !== a.createdAt?.getTime()) return b.createdAt?.getTime() - a.createdAt?.getTime();
     return a.name.localeCompare(b.name);
   });
 }
