@@ -264,11 +264,12 @@ watch([selectedFormation, selectedBattleTacticCard1, selectedBattleTacticCard2, 
     list.value.modifiedAt = new Date();
   }
 });
-watch(list.value.modifiedAt, () => {
-  if (list.value) {
-    console.log('List modified at:', list.value.modifiedAt);
-  }
-});
+// const modifiedRef = computed(() => list.value.modifiedAt || new Date());
+// watch(modifiedRef, () => {
+//   if (list.value) {
+//     console.log('List modified at:', list.value.modifiedAt);
+//   }
+// });
 </script>
 <style scoped>
 @import './listbuilder.css';

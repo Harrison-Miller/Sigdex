@@ -43,7 +43,6 @@ It'd be nice to add it as a weapon ability. But that would be confusing with com
 * make back button work in an explicit fashion based on the page not just calling router.back()
 
 * Release checklist
-  * validate grouped weapon options have exactly max selections
   * fix list button sizing in list regiment
   * home page title update
   * discord server

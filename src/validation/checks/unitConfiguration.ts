@@ -166,12 +166,13 @@ function checkWeaponOptionsAreValid(list: List, game: Game): string[] {
         }
 
         if (weaponData.type === 'grouped') {
-          if (!groupedWeaponCounts.has(weaponData.name)) {
-            groupedWeaponCounts.set(weaponData.name, 0);
+          const group = weaponData.group;
+          if (!groupedWeaponCounts.has(group)) {
+            groupedWeaponCounts.set(group, 0);
           }
           groupedWeaponCounts.set(
-            weaponData.name,
-            groupedWeaponCounts.get(weaponData.name)! + option.count
+            group,
+            groupedWeaponCounts.get(group)! + option.count
           );
         }
       }
@@ -179,10 +180,10 @@ function checkWeaponOptionsAreValid(list: List, game: Game): string[] {
       for (const [groupName, count] of groupedWeaponCounts.entries()) {
         const groupedWeaponsData = weaponsData.filter((w) => w.group === groupName) || [];
         if (groupedWeaponsData.length === 0) continue;
-        const effectiveMax = unitData.unitSize * reinforceMod;
-        if (count > effectiveMax) {
+        const expected = modelData.count * reinforceMod;
+        if (count != expected) {
           errors.push(
-            `${unit.name} cannot take more than ${effectiveMax} of ${groupedWeaponsData.map((w) => w.name).join(', ')}".`
+            `${modelName} must take exactly ${expected} selections from (${groupedWeaponsData.map((w) => w.name).join(', ')}).`
           );
         }
       }
