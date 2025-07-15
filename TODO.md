@@ -30,10 +30,8 @@
   * consider parsing the constraints on them, it might help us figure what armies can take more. Or when tables are mutually exclusive etc.
 
 * parse weird AoR things
-  * unique may take enhancements (I'm not sure if this is a thing still)
+  * certain unique in aor may take enhancements (I'm not sure if this is a thing still)
   * gainging a keyword? This isn't super important
-
-* repeated units like kragnos need to accumulate their keywords (each army has him repeated, but with their own keyword). Same with nagash.
 
 * AoR todo
   * lofnir regiment option seems messed up, might be a data issue
@@ -43,12 +41,15 @@
 
 * fix list button sizing in list regiment
 
-* big drogg fort-kicka is big drogg fort-kicker in the battle profiles with points.
-
 * variants deployment
 
 * add a little champion tag to weapon tables. I'm not sure how I want to do this.
 It'd be nice to add it as a weapon ability. But that would be confusing with companion.
 
-* mark big waagh as AoR and trim its name
-* make sure AoR export matches and AoR import works
+* improve import UI - so it auto names list if possible and have a confirm with list of units or something, center buttons etc.
+
+* override button to unit picker
+
+* fix multi keyword category parsing
+
+* add timestamps to lists and list item and sort by that, instead of it being random

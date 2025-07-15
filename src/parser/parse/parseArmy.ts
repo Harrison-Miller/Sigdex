@@ -13,7 +13,10 @@ export function parseArmy(
   categories: Map<string, ICategory>
 ): Army {
   const catalogue = root?.catalogue;
-  const name = catalogue?.['@_name'] || 'Unknown Catalogue';
+  let name = catalogue?.['@_name'] || 'Unknown Catalogue';
+  //trim non-basic characters from the name a-zA-Z0-9 punctuation and spaces
+  name = name.replace(/[^a-zA-Z0-9\s.,'!-]/g, '').trim();
+
   const army: Partial<IArmy> = {
     name,
     battleTraits: parseBattleTraits(catalogue),

@@ -50,11 +50,14 @@ export class Parser {
 
     // load all units
     [...this.libraryFiles.values(), this.gameFile, this.rorFile].forEach((xml) => {
-      // [this.libraryFiles.get('Gloomspite Gitz - Library.cat')].forEach((xml) => {
       const units = parseUnits(xml.catalogue || xml.gameSystem);
       units.forEach((unit) => {
         if (this.units.has(unit.name)) {
-          console.warn(`Duplicate unit found: ${unit.name}`);
+          console.warn(`Duplicate unit found: ${unit.name} combining keywords`);
+          const existingUnit = this.units.get(unit.name);
+          if (existingUnit) {
+            existingUnit.keywords = Array.from(new Set([...existingUnit.keywords, ...unit.keywords]));
+          }
         } else {
           this.units.set(unit.name, unit);
         }
@@ -177,6 +180,16 @@ export class Parser {
       }
     });
 
+    // deal with big waaagh manually it's an AoR but not parsed as one
+    const bigWaaagh = this.armies.get('Big Waaagh!');
+    // this.armies.delete('Big Waaagh!');
+    if (bigWaaagh) {
+      bigWaaagh.isArmyOfRenown = true;
+      // bigWaaagh.baseArmyName = 'Orruck Warclans';
+      // bigWaaagh.name = 'Orruck Warclans - Big Waaagh!';
+      // this.armies.set(bigWaaagh.name, bigWaaagh);
+    }
+
     // sorted list of armies by grand alliance
     const armyList: Map<GrandAlliance, IArmyListItem[]> = new Map();
     armyList.set('Order', []);
@@ -184,7 +197,7 @@ export class Parser {
     armyList.set('Death', []);
     armyList.set('Destruction', []);
     this.armies.forEach((army) => {
-      if (!army.isArmyOfRenown) {
+      if (!army.isArmyOfRenown || army.name === 'Big Waaagh!') {
         armyList.get(army.grandAlliance)?.push({
           name: army.name,
           armiesOfRenown: army.armiesOfRenown,

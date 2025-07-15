@@ -167,8 +167,12 @@ export function exportList(list: List, game: Game): string {
   out += `${list.name} ${points}/2000 pts\n\n`;
 
   if (army.isArmyOfRenown) {
-    const aorName = army.name.split(' - ')[1]; // Get the name before the " - "
-    out += `${army.baseArmyName} | ${aorName}\n`;
+    const aorNameParts = army.name.split(' - ');
+    if (aorNameParts.length === 2) {
+      out += `${army.baseArmyName} | ${aorNameParts[1]}\n`;
+    } else {
+      out += `${army.name}\n`;
+    }
     out += `Army of Renown\n`;
   } else {
     out += `${list.faction}\n${list.formation}\n`;
@@ -197,8 +201,10 @@ export function exportList(list: List, game: Game): string {
   const cards: string[] = [list.battleTacticCard1, list.battleTacticCard2].filter(Boolean);
   if (cards.length > 0) {
     out += '\nBattle Tactic Cards: ';
-    out += `${cards.join(', ')}\n`;
+    out += `${cards.join(', ')}`;
   }
+
+  out += '\n';
 
   // display the general
   // get general's regiment idx
