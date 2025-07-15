@@ -29,17 +29,10 @@
   * certain unique in aor may take enhancements (I'm not sure if this is a thing still)
   * gainging a keyword? This isn't super important
 
-* fix list button sizing in list regiment
-
 * variants deployment
 
 * add a little champion tag to weapon tables. I'm not sure how I want to do this.
 It'd be nice to add it as a weapon ability. But that would be confusing with companion.
-
-* improve import UI - so it auto names list if possible and have a confirm with list of units or something, center buttons etc.
-
-* override button to unit picker - I don't really want this at the top or bottom, not sure where to put it.
-* validate grouped weapon options have exactly max selections
 
 * under consideration not sure these are needed or good ideas
   * "make a list" button on army page
@@ -48,3 +41,13 @@ It'd be nice to add it as a weapon ability. But that would be confusing with com
 
 * duplicate list button - doing this from list settings is tricky because of router history
 * make back button work in an explicit fashion based on the page not just calling router.back()
+
+* Release checklist
+  * override button to unit picker - I don't really want this at the top or bottom, not sure where to put it.
+  * validate grouped weapon options have exactly max selections
+  * fix list button sizing in list regiment
+  * discord server
+  * reddit post
+  * update welcome message
+  * call to action my friends
+  * donate button
