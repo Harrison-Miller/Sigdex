@@ -90,6 +90,7 @@ const unit = computed({
     } else {
       list.value.regiments[regimentIdx].units[unitIdx] = value;
     }
+    list.value.modifiedAt = new Date();
   },
 });
 
@@ -102,6 +103,7 @@ const bp = computed(
 );
 
 function duplicateUnit() {
+  list.value.modifiedAt = new Date();
   if (isAuxiliaryUnit) {
     list.value.auxiliaryUnits.push(new ListUnit({ ...unit.value }));
     router.back();

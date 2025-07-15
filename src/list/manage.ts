@@ -22,6 +22,7 @@ export function createList(data: Partial<IList>): string | null {
   }
 
   data.id = Math.random().toString(36).slice(2, 10);
+  data.createdAt = new Date();
   const key = LIST_STORAGE_KEY + data.id;
   const list = new List(data);
   setupListSuperJSON();
@@ -33,6 +34,7 @@ export interface IListItem {
   id: string;
   name: string;
   faction: string;
+  createdAt: Date;
 }
 
 export function getAllLists(): IListItem[] {
@@ -45,10 +47,17 @@ export function getAllLists(): IListItem[] {
       if (!raw) continue;
       try {
         const list = SuperJSON.parse(raw) as List;
+        if (list.name === '' || list.id === '' || !(list instanceof List)) {
+          console.warn(`Item with key ${key} is not a valid List instance.`);
+          localStorage.removeItem(key);
+          continue;
+        }
+
         lists.push({
           id: list.id,
           name: list.name,
           faction: list.faction,
+          createdAt: list.createdAt ? new Date(list.createdAt) : new Date(0),
         });
       } catch {
         // skip corrupted
@@ -56,7 +65,11 @@ export function getAllLists(): IListItem[] {
       }
     }
   }
-  return lists;
+  // Sort by createdAt (desc), then alpha by name
+  return lists.sort((a, b) => {
+    if (b.createdAt.getTime() !== a.createdAt.getTime()) return b.createdAt.getTime() - a.createdAt.getTime();
+    return a.name.localeCompare(b.name);
+  });
 }
 
 const OLD_LIST_STORAGE_KEY = 'sigdex_list:';

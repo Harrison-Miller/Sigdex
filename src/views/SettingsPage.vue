@@ -21,6 +21,7 @@
       <ListButton
         label="Clear Unit Default Settings"
         :show-favorite-toggle="false"
+        style="margin-bottom: 0.7rem"
         @click="clearUnitDefaultSettings"
       />
       <ListButton

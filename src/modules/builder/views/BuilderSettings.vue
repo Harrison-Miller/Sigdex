@@ -1,5 +1,11 @@
 <template>
   <BackButton class="settings-back-btn" />
+  <!-- <CircleIconButton
+    class="settings-duplicate-btn"
+    icon="fa-solid fa-copy"
+    :size="32"
+    @click="duplicateList"
+  /> -->
   <div class="modal settings-modal">
     <h1>List Settings</h1>
     <h2>{{ listName }}</h2>
@@ -64,6 +70,8 @@ import TextInput from '../../core/components/TextInput.vue';
 import { useList } from '../../shared/composables/useList';
 import { useRoute, useRouter } from 'vue-router';
 import { LIST_NAME_MAX_LENGTH } from '../../../list/manage';
+// import CircleIconButton from '../../core/components/CircleIconButton.vue';
+// import { List } from '../../../list/models/list';
 
 
 const route = useRoute();
@@ -88,20 +96,32 @@ const nameError = computed(() => {
 
 const pointsCap = ref(list.value?.pointsCap ?? 2000);
 watch(pointsCap, (val) => {
-  if (list.value) list.value.pointsCap = val;
+  if (list.value) {
+    list.value.pointsCap = val;
+    list.value.modifiedAt = new Date();
+  }
 });
 watch(list, (val) => {
-  if (val) pointsCap.value = val.pointsCap;
+  if (val) {
+    pointsCap.value = val.pointsCap;
+    list.value.modifiedAt = new Date();
+  }
 });
 
 // Validator logic
 const validatorOptions = ['standard', 'highlander', 'disabled'];
 const validator = ref(list.value?.validator ?? 'standard');
 watch(validator, (val) => {
-  if (list.value) list.value.validator = val;
+  if (list.value) {
+    list.value.validator = val;
+    list.value.modifiedAt = new Date();
+  }
 });
 watch(list, (val) => {
-  if (val) validator.value = val.validator ?? 'standard';
+  if (val) {
+    validator.value = val.validator ?? 'standard';
+    list.value.modifiedAt = new Date();
+  }
 });
 const router = useRouter();
 
@@ -113,10 +133,26 @@ function deleteCurrentList() {
 function renameCurrentList() {
   if (list.value) {
     list.value.name = newName.value;
+    list.value.modifiedAt = new Date();
   }
 }
+
+// function duplicateList() {
+//   let newList = new List({...list.value });
+//   const nameCount = getAllLists().filter(l => l.name.startsWith(list.value.name)).length;
+//   newList.name = `${list.value.name} (Copy${nameCount > 0 ? ` ${nameCount}` : ''})`;
+//   const id = createList(newList);
+//   if (!id) return;
+//   router.replace({ name: 'BuilderSettings', params: { id } });
+// }
 </script>
 <style scoped>
+.settings-duplicate-btn {
+  position: absolute;
+  top: 1.2em;
+  right: 1.2em;
+  z-index: 20;
+}
 .delete-btn:hover {
   background: #c00;
 }

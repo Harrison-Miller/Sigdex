@@ -223,6 +223,7 @@ function goToDetail(item: UnitPickerListItem) {
 
 function addUnitToRegiment(item: UnitPickerListItem) {
   if (!list.value) return;
+  list.value.modifiedAt = new Date();
 
   if (isRoR && game.value) {
     assignRoR(item.name, list.value, game.value);

@@ -177,7 +177,7 @@
 
 <script setup lang="ts">
 import OptionSelect from '../../core/components/OptionSelect.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useList } from '../../shared/composables/useList';
 import BackButton from '../../core/components/BackButton.vue';
@@ -232,6 +232,7 @@ const battleTacticCards = computed(() => {
 
 function addRegiment() {
   list.value.regiments.push(new ListRegimentModel());
+  list.value.modifiedAt = new Date();
 }
 function openSettings() {
   router.push({ name: 'BuilderSettings', params: { id: listId } });
@@ -241,6 +242,7 @@ function openExport() {
 }
 function deleteRegiment(idx: number) {
   list.value.regiments.splice(idx, 1);
+  list.value.modifiedAt = new Date();
 }
 function handleDeleteUnit(regimentIdx: number, unitIdx: number | string) {
   if (!list.value.regiments[regimentIdx]) return;
@@ -249,7 +251,24 @@ function handleDeleteUnit(regimentIdx: number, unitIdx: number | string) {
   } else if (typeof unitIdx === 'number') {
     list.value.regiments[regimentIdx].units.splice(unitIdx, 1);
   }
+  list.value.modifiedAt = new Date();
 }
+
+const spellLoreRef = computed(() => list.value.spellLore || '');
+const prayerLoreRef = computed(() => list.value.prayerLore || '');
+const manifestationLoreRef = computed(() => list.value.manifestationLore || '');
+const factionTerrainRef = computed(() => list.value.factionTerrain || '');
+watch([selectedFormation, selectedBattleTacticCard1, selectedBattleTacticCard2, spellLoreRef, prayerLoreRef, manifestationLoreRef, factionTerrainRef], () => {
+  if (list.value) {
+    console.log('List modified due to changes in formation, battle tactics, or lore');
+    list.value.modifiedAt = new Date();
+  }
+});
+watch(list.value.modifiedAt, () => {
+  if (list.value) {
+    console.log('List modified at:', list.value.modifiedAt);
+  }
+});
 </script>
 <style scoped>
 @import './listbuilder.css';

@@ -26,6 +26,9 @@ export interface IList {
 
   // the validation used
   validator: string;
+
+  createdAt: Date;
+  modifiedAt: Date;
 }
 
 export class List implements IList {
@@ -50,6 +53,8 @@ export class List implements IList {
 
   pointsCap: number; // usually 2000
   validator: string;
+  createdAt: Date;
+  modifiedAt: Date;
 
   constructor(data?: Partial<IList>) {
     this.name = data?.name ?? '';
@@ -70,6 +75,8 @@ export class List implements IList {
     this.battleTacticCard2 = data?.battleTacticCard2 ?? '';
     this.pointsCap = data?.pointsCap ?? 2000; // default to 2000
     this.validator = data?.validator ?? 'standard';
+    this.createdAt = data?.createdAt ? new Date(data.createdAt) : new Date();
+    this.modifiedAt = data?.modifiedAt ? new Date(data.modifiedAt) : new Date();
   }
 
   allUnits(includeRoRUnits: boolean = false): ListUnit[] {
@@ -79,7 +86,7 @@ export class List implements IList {
       units.push(...regiment.units);
     }
     units.push(...this.auxiliaryUnits);
-    if (includeRoRUnits) {
+    if (includeRoRUnits && this.regimentOfRenownUnits) {
       units.push(...this.regimentOfRenownUnits);
     }
     return units as ListUnit[];
