@@ -19,6 +19,11 @@
         @click="clearFavorites"
       />
       <ListButton
+        label="Clear Unit Default Settings"
+        :show-favorite-toggle="false"
+        @click="clearUnitDefaultSettings"
+      />
+      <ListButton
         label="Clear Lists"
         :show-favorite-toggle="false"
         @click="clearLists"
@@ -57,6 +62,7 @@ import { clearAllFavorites } from '../favorites';
 import { clearGameCache } from '../modules/shared/composables/useGame';
 import { saveGithubRepo } from '../github/config';
 import { clearAllLists } from '../list/manage';
+import { UNIT_SETTINGS_KEY } from '../modules/shared/composables/useUnitSettings';
 
 const githubRepoKey = 'GITHUB_REPO';
 const githubRepo = ref('');
@@ -75,6 +81,11 @@ function saveGithubRepoHandler() {
 function clearFavorites() {
   clearAllFavorites();
 }
+
+function clearUnitDefaultSettings() {
+  localStorage.removeItem(UNIT_SETTINGS_KEY);
+}
+
 function clearLists() {
   clearAllLists();
 }

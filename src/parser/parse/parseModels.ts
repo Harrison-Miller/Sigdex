@@ -12,8 +12,6 @@ export function parseModels(unitNode: any): Map<string, Model> {
   const nameCounts: Record<string, number> = {};
 
   for (const modelNode of modelNodes) {
-    const weapons = parseWeaponOptions(modelNode);
-
     const baseName = modelNode['@_name'];
     nameCounts[baseName] = (nameCounts[baseName] || 0) + 1;
     let modelName = baseName;
@@ -33,16 +31,11 @@ export function parseModels(unitNode: any): Map<string, Model> {
       name: modelName,
       count: parseInt(
         findFirstByTagAndAttrs(modelNode, 'constraint', { type: 'min', scope: 'parent' })?.[
-          '@_value'
+        '@_value'
         ] || '1',
         10
       ),
-      weapons: weapons.reduce((map: Map<string, WeaponOption>, option: WeaponOption) => {
-        if (option.name) {
-          map.set(option.name, option);
-        }
-        return map;
-      }, new Map<string, WeaponOption>()),
+      weapons: parseWeaponOptions(modelNode),
     };
 
     models.set(modelName, new Model(model));
@@ -51,7 +44,7 @@ export function parseModels(unitNode: any): Map<string, Model> {
   return models;
 }
 
-export function parseWeaponOptions(modelNode: any): WeaponOption[] {
+export function parseWeaponOptions(modelNode: any): Map<string, WeaponOption> {
   const weaponOptions: WeaponOption[] = [];
   weaponOptions.push(...parseWeaponOptionsFromSelectionEntries(modelNode.selectionEntries));
   weaponOptions.push(
@@ -59,7 +52,16 @@ export function parseWeaponOptions(modelNode: any): WeaponOption[] {
       return parseWeaponOptionsFromSelectionEntryGroup(group);
     }) || [])
   );
-  return weaponOptions;
+
+  // Remove duplicates by name
+  const uniqueOptions: Map<string, WeaponOption> = new Map();
+  for (const option of weaponOptions) {
+    if (!uniqueOptions.has(option.name.trim())) {
+      uniqueOptions.set(option.name.trim(), option);
+    }
+  }
+
+  return uniqueOptions;
 }
 
 export function parseWeaponOptionsFromSelectionEntries(selectionEntriesNode: any): WeaponOption[] {

@@ -99,4 +99,15 @@ export class Unit implements IUnit {
     }
     return total;
   }
+
+  hasWeaponOptions(): boolean {
+    for (const model of this.models.values()) {
+      for (const weapon of model.weapons.values()) {
+        if (weapon.type === 'optional' || weapon.type === 'grouped') {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }

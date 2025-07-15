@@ -24,6 +24,7 @@ import {
   faFileArrowDown,
   faCopy,
   faEye,
+  faClone,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Add icons to the library
@@ -45,7 +46,8 @@ library.add(
   faTriangleExclamation,
   faFileArrowDown,
   faCopy,
-  faEye
+  faEye,
+  faClone,
 );
 
 const app = createApp(App);

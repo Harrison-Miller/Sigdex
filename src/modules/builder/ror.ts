@@ -1,6 +1,7 @@
 import type { Game } from '../../parser/models/game';
 import type { List } from '../../list/models/list';
-import { getDefaultWeaponOptions, ListUnit } from '../../list/models/unit';
+import { useUnitSettings } from '../shared/composables/useUnitSettings';
+import { ListUnit } from '../../list/models/unit';
 
 export function assignRoR(ror: string, list: List, game: Game): void {
 	list.regimentOfRenown = '';
@@ -22,9 +23,11 @@ export function assignRoR(ror: string, list: List, game: Game): void {
 			console.warn(`Unit "${name}" not found in game data.`);
 			return;
 		}
+		const unitSettings = useUnitSettings(unitData);
 		const listUnit: Partial<ListUnit> = {
 			name: name,
-			weaponOptions: getDefaultWeaponOptions(unitData),
+			reinforced: false,
+			weaponOptions: unitSettings.value.weaponOptions, // TODO: if this came from reinforced settings, we need to half/handle it
 		};
 		for (let i = 0; i < count; i++) {
 			units.push(new ListUnit(listUnit));

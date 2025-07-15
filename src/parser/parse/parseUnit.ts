@@ -99,7 +99,16 @@ export function parseWeapons(unitNode: any, weaponType: string): Weapon[] {
     typeName: weaponType,
   }); // this is causing issues
 
-  return weaponNodes.map((node: any) => parseUnitWeapon(node));
+  const weapons = weaponNodes.map((node: any) => parseUnitWeapon(node));
+
+  // remove duplicates by name
+  const uniqueWeapons: Map<string, Weapon> = new Map();
+  for (const weapon of weapons) {
+    if (!uniqueWeapons.has(weapon.name.trim())) {
+      uniqueWeapons.set(weapon.name.trim(), weapon);
+    }
+  }
+  return Array.from(uniqueWeapons.values());
 }
 
 export function parseUnitWeapon(weaponNode: any): Weapon {

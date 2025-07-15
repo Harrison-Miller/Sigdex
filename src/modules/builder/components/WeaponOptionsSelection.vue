@@ -1,18 +1,14 @@
 <template>
   <Section
-    v-if="unitData && modelGroups.length > 0"
+    v-if="unitData.hasWeaponOptions()"
+    :default-collapsed="defaultCollapsed || false"
     class="weapon-options-section"
   >
-    <template #title> Weapon Options </template>
+    <template #title>{{ title || 'Weapon Options' }}</template>
     <div
       v-for="group in modelGroups"
       :key="group.name"
     >
-      <template
-        v-if="
-          getOptionalWeapons(group).length > 0 || Object.keys(getGroupWeapons(group)).length > 0
-        "
-      >
         <div class="model-group-block">
           <div
             v-if="showModelGroupHeader"
@@ -74,7 +70,6 @@
             </template>
           </div>
         </div>
-      </template>
     </div>
   </Section>
 </template>
@@ -89,7 +84,7 @@ import type { Model } from '../../../parser/models/model';
 import { ListUnit } from '../../../list/models/unit';
 
 // v-model:unit
-const props = defineProps<{ modelValue: ListUnit; unitData: Unit }>();
+const props = defineProps<{ modelValue: ListUnit; unitData: Unit; title?: string; defaultCollapsed?: boolean }>();
 const emit = defineEmits(['update:modelValue']);
 
 const modelGroups = computed(() => Array.from(props.unitData?.models?.values?.() ?? []));

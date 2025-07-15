@@ -15,6 +15,8 @@ import {
   formatRegimentOptions,
 } from '../../../utils/formatter';
 import { useUnit } from '../../shared/composables/useGame';
+import { useUnitSettings } from '../../shared/composables/useUnitSettings';
+import WeaponOptionsSelection from '../../builder/components/WeaponOptionsSelection.vue';
 
 function formatCompanionUnits(unitName: string, companionLeader: string): string {
   const bold = (name: string) => `<b>${name}</b>`;
@@ -31,6 +33,7 @@ const unitName = props.unitName ?? (route?.params?.unit as string | undefined);
 const armyName = props.armyName ?? (route?.params?.army as string | undefined);
 
 const { unit, battleProfile } = useUnit(armyName ?? '', unitName ?? '');
+const unitSettings = useUnitSettings(unit);
 
 const unitFavorite = ref(isFavorite('unit', unitName));
 function toggleUnitFavoriteDetail(fav: boolean) {
@@ -207,6 +210,13 @@ const favoriteToggleSize = 36;
       <template #title>Keywords</template>
       <KeywordsBar :keywords="unit.keywords" />
     </Section>
+            <WeaponOptionsSelection
+          v-if="unit.hasWeaponOptions()"
+          v-model="unitSettings"
+          :unit-data="unit"
+          title="Default Weapon Options"
+          :default-collapsed="true"
+        />
   </div>
 </template>
 <style src="./unit-detail.css" scoped></style>
@@ -224,5 +234,23 @@ const favoriteToggleSize = 36;
   right: 0;
   top: 0;
   z-index: 1;
+}
+
+.unit-default-settings-label {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-bottom: 0.7em;
+  color: #a00;
+}
+.unit-default-settings-block {
+  margin-bottom: 2em;
+  padding: 1em 0 0 0;
+}
+.option-row {
+  margin-bottom: 0.7em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  align-items: center;
 }
 </style>

@@ -56,7 +56,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getDefaultWeaponOptions } from '../../../list/models/unit';
 import { formatRegimentOptions } from '../../../utils/formatter';
 import ListButton from '../../shared/components/ListButton.vue';
 import BackButton from '../../core/components/BackButton.vue';
@@ -69,6 +68,7 @@ import { filterBattleProfilesByRegimentOptions } from '../filter';
 import { useList } from '../../shared/composables/useList';
 import { ListUnit } from '../../../list/models/unit';
 import { assignRoR } from '../ror';
+import { useUnitSettings } from '../../shared/composables/useUnitSettings';
 
 const route = useRoute();
 const router = useRouter();
@@ -235,6 +235,7 @@ function addUnitToRegiment(item: UnitPickerListItem) {
     console.error(`Unit ${item.name} not found in game data.`);
     return;
   }
+   const unitSettings = useUnitSettings(unit);
 
   if (filter.toLowerCase() === 'terrain') {
     // Set as faction terrain
@@ -245,10 +246,11 @@ function addUnitToRegiment(item: UnitPickerListItem) {
 
   if (filter.toLowerCase() === 'aux') {
     if (!list.value.auxiliaryUnits) list.value.auxiliaryUnits = [];
+   
     list.value.auxiliaryUnits.push(
       new ListUnit({
         name: unit.name,
-        weaponOptions: getDefaultWeaponOptions(unit),
+        weaponOptions: unitSettings.value.weaponOptions,
       })
     );
     router.back();
@@ -259,13 +261,13 @@ function addUnitToRegiment(item: UnitPickerListItem) {
   if (filter.toLowerCase() === 'leader') {
     list.value.regiments[regimentIdx].leader = new ListUnit({
       name: unit.name,
-      weaponOptions: getDefaultWeaponOptions(unit),
+      weaponOptions: unitSettings.value.weaponOptions,
     });
   } else {
     list.value.regiments[regimentIdx].units.push(
       new ListUnit({
         name: unit.name,
-        weaponOptions: getDefaultWeaponOptions(unit),
+        weaponOptions: unitSettings.value.weaponOptions,
       })
     );
   }
@@ -282,10 +284,11 @@ function addUnitToRegiment(item: UnitPickerListItem) {
           // Find the companion unit in the game
           const companionUnit = game.value?.units.get(companionName) || undefined;
           if (companionUnit) {
+            const companionUnitSettings = useUnitSettings(companionUnit);
             list.value.regiments[regimentIdx].units.push(
               new ListUnit({
                 name: companionUnit.name,
-                weaponOptions: getDefaultWeaponOptions(companionUnit),
+                weaponOptions: companionUnitSettings.value.weaponOptions,
               })
             );
           }

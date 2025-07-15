@@ -4,7 +4,12 @@ const props = defineProps<{ size?: number }>();
 const router = useRouter();
 const iconSize = props.size ?? 36;
 function goBack() {
-  router.back();
+  // If there is no history or going back would leave the app, go to HomePage
+  if (window.history.length > 2) {
+    router.back();
+  } else {
+    router.replace({ path: '/' });
+  }
 }
 </script>
 <template>

@@ -1,5 +1,14 @@
 <template>
-  <BackButton class="unit-settings-back-btn" />
+  <div class="unit-settings-header-bar">
+    <BackButton class="unit-settings-back-btn" />
+    <CircleIconButton
+v-if="!isRoRUnit && !isLeader"
+      class="duplicate-btn"
+      :size="36"
+      icon="fa-clone"
+      @click="duplicateUnit"
+    />
+  </div>
   <div v-if="!loading && list && unit">
     <h2 class="unit-name">{{ unit.name }}</h2>
     <div
@@ -28,7 +37,8 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import CircleIconButton from '../../core/components/CircleIconButton.vue';
+import { useRoute, useRouter } from 'vue-router';
 import ToggleBox from '../../core/components/ToggleBox.vue';
 import WeaponOptionsSelection from '../components/WeaponOptionsSelection.vue';
 import EnhancementsSelection from '../components/EnhancementsSelection.vue';
@@ -38,8 +48,10 @@ import { useList } from '../../shared/composables/useList';
 import { Army } from '../../../parser/models/army';
 import { Unit } from '../../../parser/models/unit';
 import { BattleProfile } from '../../../parser/models/battleProfile';
+import { ListUnit } from '../../../list/models/unit';
 
 const route = useRoute();
+const router = useRouter();
 const listId = route.params.id as string;
 const regimentIdx = Number(route.params.regimentIdx);
 const unitIdx = route.params.unitIdx as number | 'leader';
@@ -48,6 +60,7 @@ const list = useList(listId);
 
 const { game, loading } = useGame();
 
+const isLeader = unitIdx === 'leader';
 const isRoRUnit = regimentIdx === 500;
 const isAuxiliaryUnit = regimentIdx === 999;
 
@@ -87,8 +100,28 @@ const bp = computed(
   () =>
     (army.value?.battleProfiles.get(unit.value?.name || '') as BattleProfile) || new BattleProfile()
 );
+
+function duplicateUnit() {
+  if (isAuxiliaryUnit) {
+    list.value.auxiliaryUnits.push(new ListUnit({ ...unit.value }));
+    router.back();
+  } else {
+    list.value.regiments[regimentIdx].units.push(new ListUnit({ ...unit.value }));
+    router.back();
+  }
+}
 </script>
 <style scoped>
+.unit-settings-header-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1em;
+}
+.duplicate-btn {
+  margin-left: auto;
+}
 .unit-name {
   font-size: 1.3em;
   font-weight: 600;
