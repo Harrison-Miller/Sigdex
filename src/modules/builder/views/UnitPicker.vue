@@ -51,6 +51,10 @@
         </ul>
       </Section>
     </template>
+    <ToggleBox v-if="!isRoR" v-model="overrideRegimentOptions">Override</ToggleBox>
+    <div v-if="!isRoR && !overrideRegimentOptions" style="color: #888; font-size: 0.95em; margin-top: 0.2em;">
+      Only use the override if you think the regiment options are wrong. You may need to disable validation in the list settings.
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -69,12 +73,14 @@ import { useList } from '../../shared/composables/useList';
 import { ListUnit } from '../../../list/models/unit';
 import { assignRoR } from '../ror';
 import { useUnitSettings } from '../../shared/composables/useUnitSettings';
+import ToggleBox from '../../core/components/ToggleBox.vue';
 
 const route = useRoute();
 const router = useRouter();
 const listId = route.params.id as string;
 const regimentIdx = Number(route.params.regimentIdx);
 const filter = (route.params.filter as string) || '';
+const overrideRegimentOptions = ref(false);
 
 const list = useList(listId);
 const { game, loading } = useGame();
@@ -105,6 +111,13 @@ const availableRoRs = computed(() => {
 });
 
 const filteredBPs = computed(() => {
+  if (!game.value) return [];
+  if (overrideRegimentOptions.value) { 
+        return Array.from(army.value?.battleProfiles.values()).filter(
+          (u) => u.category !== 'MANIFESTATION' && u.category !== 'FACTION TERRAIN'
+        ) || [];
+  }
+
   let us: BattleProfile[] = [];
   switch (filter.toLowerCase()) {
     case 'leader':
