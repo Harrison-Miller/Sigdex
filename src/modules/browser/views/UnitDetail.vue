@@ -185,7 +185,7 @@ const favoriteToggleSize = 36;
         >Unit Size: {{ unit.unitSize }}</span>
 
         <div
-          v-if="battleProfile.regimentTags.length > 0"
+          v-if="battleProfile.category === 'HERO' && battleProfile.regimentTags.length > 0"
           class="unit-sub-hero-tags"
           style="margin-top: 0.5em"
         >

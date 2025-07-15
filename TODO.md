@@ -50,6 +50,7 @@ It'd be nice to add it as a weapon ability. But that would be confusing with com
 
 * override button to unit picker
 
-* fix multi keyword category parsing
 
 * add timestamps to lists and list item and sort by that, instead of it being random
+
+* make a list button on army page

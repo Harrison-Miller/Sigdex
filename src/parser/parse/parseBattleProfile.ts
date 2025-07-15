@@ -209,6 +209,14 @@ export function parseRegimentTags(bpNode: any, armyCategories: Map<string, ICate
     if (modifier) {
       tags.push(category.name);
     }
+
+    // if the bpNode has a categoryLink with the name of the category, add it as a tag
+    const categoryLink = bpNode?.categoryLinks?.categoryLink?.find(
+      (link: any) => link['@_name'] === category.name
+    );
+    if (categoryLink) {
+      tags.push(category.name);
+    }
   }
   return tags;
 }
@@ -233,6 +241,17 @@ export function parseRegimentOptions(
         min: 0,
       };
       options.push(new RegimentOption(option));
+      continue; // skip if the category is already added
+    }
+
+    // if the category id is present as an add regimental option mod, add it as an option
+    const modifier = findFirstByTagAndAttrs(bpNode, 'modifier', {
+      type: 'add',
+      field: 'category',
+      affects: `self.entries.recursive.${category.id}`,
+    });
+    if (modifier) {
+      options.push(new RegimentOption({ name: category.name }));
     }
   }
 
