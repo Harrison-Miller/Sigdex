@@ -1,11 +1,8 @@
 import { computed, toValue } from 'vue';
 import { useStorage, type MaybeRefOrGetter } from '@vueuse/core';
 import { getDefaultWeaponOptions, ListUnit } from '../../../list/models/unit';
-import SuperJSON from 'superjson';
 import type { Unit } from '../../../parser/models/unit';
-
-// Register ListUnit class for SuperJSON
-SuperJSON.registerClass(ListUnit);
+import SuperJSON from 'superjson';
 
 export const UNIT_SETTINGS_KEY = 'unitSettings';
 

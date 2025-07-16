@@ -27,6 +27,9 @@ import {
   faClone,
 } from '@fortawesome/free-solid-svg-icons';
 
+import { registerSuperJSONClasses } from './superjson'; // Adjust the import path as necessary
+registerSuperJSONClasses();
+
 // Add icons to the library
 library.add(
   faShieldAlt,

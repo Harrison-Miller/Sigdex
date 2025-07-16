@@ -1,16 +1,8 @@
 import SuperJSON from 'superjson';
 import { List, type IList } from './models/list';
-import { ListRegiment } from './models/regiment';
-import { ListUnit } from './models/unit';
 
 export const LIST_NAME_MAX_LENGTH = 1000; // make this really high until we have better handling in the UI
 export const LIST_STORAGE_KEY = 'list:';
-
-export function setupListSuperJSON() {
-  SuperJSON.registerClass(List);
-  SuperJSON.registerClass(ListRegiment);
-  SuperJSON.registerClass(ListUnit);
-}
 
 export function createList(data: Partial<IList>): string | null {
   data.name = data.name?.trim() || '';
@@ -25,7 +17,6 @@ export function createList(data: Partial<IList>): string | null {
   data.createdAt = new Date();
   const key = LIST_STORAGE_KEY + data.id;
   const list = new List(data);
-  setupListSuperJSON();
   localStorage.setItem(key, SuperJSON.stringify(list));
   return list.id;
 }
@@ -38,7 +29,6 @@ export interface IListItem {
 }
 
 export function getAllLists(): IListItem[] {
-  setupListSuperJSON();
   const lists: IListItem[] = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);

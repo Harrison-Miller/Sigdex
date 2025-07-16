@@ -2,20 +2,13 @@ import { ref, computed, toValue } from 'vue';
 import { Parser } from '../../../parser/parser';
 import { Game } from '../../../parser/models/game';
 import { Unit } from '../../../parser/models/unit';
-import { Model } from '../../../parser/models/model';
-import { Army, Enhancement, EnhancementTable } from '../../../parser/models/army';
-import SuperJSON from 'superjson';
+import { Army } from '../../../parser/models/army';
 import { type MaybeRefOrGetter } from '@vueuse/core';
-import { BattleProfile, RegimentOption } from '../../../parser/models/battleProfile';
+import { BattleProfile } from '../../../parser/models/battleProfile';
 import { Lore } from '../../../parser/models/lore';
 import { GITHUB_REPO } from '../../../github/config';
-import BattleTacticCard from '../components/BattleTacticCard.vue';
-import { RegimentOfRenown } from '../../../parser/models/regimentOfRenown';
-import { Ability } from '../../../parser/models/ability';
-import { Stats } from '../../../parser/models/stats';
-import { Weapon } from '../../../parser/models/weapon';
-import { WeaponOption } from '../../../parser/models/weaponOption';
 import { SIGDEX_VERSION } from '../../../version';
+import SuperJSON from 'superjson';
 
 const GAME_STORAGE_KEY = 'game';
 const GAME_TIMESTAMP_KEY = 'gameTimestamp';
@@ -72,7 +65,6 @@ export function useGame() {
 
 async function loadGame() {
   _loading.value = true;
-  setupSuperJSON();
   try {
     const needsUpdate = isGameCacheOutOfDate() || isGameVersionOutOfDate();
     const cached = localStorage.getItem(GAME_STORAGE_KEY);
@@ -93,24 +85,6 @@ async function loadGame() {
     _error.value = e?.message || 'Failed to load game data';
     _loading.value = false;
   }
-}
-
-function setupSuperJSON() {
-  SuperJSON.registerClass(Game);
-  SuperJSON.registerClass(BattleTacticCard);
-  SuperJSON.registerClass(Ability);
-  SuperJSON.registerClass(Unit);
-  SuperJSON.registerClass(Stats);
-  SuperJSON.registerClass(Weapon);
-  SuperJSON.registerClass(Model);
-  SuperJSON.registerClass(WeaponOption);
-  SuperJSON.registerClass(Lore);
-  SuperJSON.registerClass(Army);
-  SuperJSON.registerClass(EnhancementTable);
-  SuperJSON.registerClass(Enhancement);
-  SuperJSON.registerClass(BattleProfile);
-  SuperJSON.registerClass(RegimentOption);
-  SuperJSON.registerClass(RegimentOfRenown);
 }
 
 /**

@@ -1,7 +1,6 @@
 import { computed, toValue } from 'vue';
 import { useStorage, type MaybeRefOrGetter } from '@vueuse/core';
 import { List } from '../../../list/models/list';
-import { setupListSuperJSON } from '../../../list/manage';
 import SuperJSON from 'superjson';
 
 /**
@@ -12,7 +11,6 @@ import SuperJSON from 'superjson';
  *   const list = useList(listId);
  */
 export function useList(id: MaybeRefOrGetter<string>) {
-  setupListSuperJSON();
   const key = computed(() => {
     const val = toValue(id);
     return val ? `list:${val}` : '';
@@ -46,7 +44,14 @@ export function useList(id: MaybeRefOrGetter<string>) {
           return new List();
         }
       },
-      write: (v) => SuperJSON.stringify(v),
+      write: (v) => {
+        if (v.name === '' || v.id === '' || v instanceof List === false) {
+          // fail safe so we don't save incomplete lists
+          throw new Error(`List must have a name and id before saving ${v.id}, ${v.name}`);
+        }
+
+        return SuperJSON.stringify(v);
+      },
     },
   });
   return list;
