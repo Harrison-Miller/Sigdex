@@ -58,6 +58,7 @@
           v-for="(enh, j) in table.enhancements"
           :key="enh.ability.name + j"
           :ability="enh.ability"
+          :points="enh.points"
         />
       </div>
     </Section>
@@ -75,6 +76,7 @@
           v-for="(enh, j) in table.enhancements"
           :key="enh.ability.name + j"
           :ability="enh.ability"
+          :points="enh.points"
         />
       </div>
     </Section>
@@ -92,6 +94,7 @@
           v-for="(enh, i) in enhTable.enhancements"
           :key="enh.ability.name + i"
           :ability="enh.ability"
+          :points="enh.points"
         />
       </div>
     </Section>

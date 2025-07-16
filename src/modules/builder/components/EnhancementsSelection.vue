@@ -15,7 +15,7 @@
         placeholder="No Heroic Trait"
       />
       <div v-if="selectedHeroicTraitAbility">
-        <AbilityCard :ability="selectedHeroicTraitAbility?.ability || new Ability({ name: '' })" />
+        <AbilityCard :ability="selectedHeroicTraitAbility?.ability || new Ability({ name: '' })" :points="selectedHeroicTraitAbility?.points" />
       </div>
     </div>
     <div v-if="isHero">
@@ -27,7 +27,7 @@
         placeholder="No Artifact"
       />
       <div v-if="selectedArtifactAbility">
-        <AbilityCard :ability="selectedArtifactAbility?.ability || new Ability({ name: '' })" />
+        <AbilityCard :ability="selectedArtifactAbility?.ability || new Ability({ name: '' })" :points="selectedArtifactAbility?.points" />
       </div>
     </div>
     <div
@@ -45,6 +45,7 @@
       <div v-if="getSelectedEnhancementAbility(tableName)">
         <AbilityCard
           :ability="getSelectedEnhancementAbility(tableName)?.ability || new Ability({ name: '' })"
+          :points="getSelectedEnhancementAbility(tableName)?.points"
         />
       </div>
     </div>

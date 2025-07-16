@@ -260,7 +260,7 @@ const manifestationLoreRef = computed(() => list.value.manifestationLore || '');
 const factionTerrainRef = computed(() => list.value.factionTerrain || '');
 watch([selectedFormation, selectedBattleTacticCard1, selectedBattleTacticCard2, spellLoreRef, prayerLoreRef, manifestationLoreRef, factionTerrainRef], () => {
   if (list.value) {
-    console.log('List modified due to changes in formation, battle tactics, or lore');
+    // console.log('List modified due to changes in formation, battle tactics, or lore');
     list.value.modifiedAt = new Date();
   }
 });
