@@ -51,3 +51,4 @@ It'd be nice to add it as a weapon ability. But that would be confusing with com
   * reddit post
   * call to action my friends
   * donate button
+  * add enhancement points back

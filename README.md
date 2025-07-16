@@ -2,20 +2,11 @@
 
 Sigmar + Pokedex. Sigdex is an Age of Sigmar list builder designed for speed, ease of use, and quick reference. Data is sourced from [BSData](https://github.com/BSData/age-of-sigmar-4th).
 
-<div style="display: flex; gap: 1.5em; justify-content: center; flex-wrap: wrap;">
-  <div style="text-align: center;">
-    <img src="docs/listbuilder.png" alt="List Builder" style="max-width: 200px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
-    <div><strong>List Builder</strong></div>
-  </div>
-  <div style="text-align: center;">
-    <img src="docs/browser.png" alt="Army Browser" style="max-width: 200px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
-    <div><strong>Army Browser</strong></div>
-  </div>
-  <div style="text-align: center;">
-    <img src="docs/warscroll.png" alt="Warscroll Viewer" style="max-width: 200px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
-    <div><strong>Warscroll Viewer</strong></div>
-  </div>
-</div>
+<p float="middle">
+  <img src="docs/listbuilder.png" width="200" />
+  <img src="docs/browser.png" width="200" /> 
+  <img src="docs/warscroll.png" width="200" />
+</p>
 
 ## Why Sigdex?
 Sigdex aims to make it fast and simple to build lists and reference rules for both you and your opponents. Many existing tools are either locked behind paywalls, cluttered with ads, or not optimized for Age of Sigmar gameplay. Sigdex is free, mobile-friendly, and focused on providing a smooth experience for list building and rules lookup.
