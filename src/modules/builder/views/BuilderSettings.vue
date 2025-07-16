@@ -67,7 +67,7 @@ import CounterBox from '../../core/components/CounterBox.vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import { ref, computed, watch } from 'vue';
 import TextInput from '../../core/components/TextInput.vue';
-import { useList } from '../../shared/composables/useList';
+import { deleteList, useList } from '../../shared/composables/useList';
 import { useRoute, useRouter } from 'vue-router';
 import { LIST_NAME_MAX_LENGTH } from '../../../list/manage';
 // import CircleIconButton from '../../core/components/CircleIconButton.vue';
@@ -126,7 +126,7 @@ watch(list, (val) => {
 const router = useRouter();
 
 function deleteCurrentList() {
-  list.value = null;
+  deleteList(listId);
   router.push({ path: '/' });
 }
 
@@ -145,6 +145,7 @@ function renameCurrentList() {
 //   if (!id) return;
 //   router.replace({ name: 'BuilderSettings', params: { id } });
 // }
+
 </script>
 <style scoped>
 .settings-duplicate-btn {

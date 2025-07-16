@@ -14,13 +14,34 @@ export const NOTICES: Notice[] = [
   {
     title: 'Welcome to Sigdex!',
     body: `
-		<p>Thank you for using Sigdex! 🎉</p>
-		<p>Sigdex is an open-source Age of Sigmar list builder, meant to be familiar and user-friendly.</p>
-		<p>Check out the <a href="https://github.com/Harrison-Miller/Sigdex" target="_blank">GitHub repo</a> for updates, bug reports, and more.</p>
-		<br>
-		<p style="color:#a00;"><b>Disclaimer:</b> Sigdex is an unofficial fan project and is not affiliated with Games Workshop. It only downloads
-	  data from <a href="https://github.com/BSData/age-of-sigmar-4th" target="_blank">BSData</a>.</p>
-	  `,
+      <p>Sigdex is an open-source Age of Sigmar list builder, meant to be familiar and user-friendly.</p>
+      <ul style="list-style-type: disc inside; text-align: left;">
+        <li>Import and export lists</li>
+        <li>Default weapon configurations and favorites</li>
+        <li>Customize validation for gamemodes like highlander</li>
+        <li>Offline caching of data</li>
+      </ul>
+      <b>Join our community or view the project:</b>
+      <div style="margin: 1.2em 0; text-align: center;">
+        <a
+          href="https://discord.gg/Fn6ZUFb9vZ" target="_blank"
+          style="display:inline-flex;align-items:center;gap:0.5em;font-weight:600;padding:0.5em 1.1em;border-radius:6px;text-decoration:none;font-size:1.08em;background:#5865F2;color:#fff;margin-right:0.7em;"
+          aria-label="Discord"
+        >
+          <img src="/assets/brands/discord-brands.svg" alt="Discord" style="height:1.2em;width:1.2em;vertical-align:middle;" /> Discord
+        </a>
+        <a
+          href="https://github.com/Harrison-Miller/sigdex" target="_blank"
+          style="display:inline-flex;align-items:center;gap:0.5em;font-weight:600;padding:0.5em 1.1em;border-radius:6px;text-decoration:none;font-size:1.08em;background:#24292F;color:#fff;"
+          aria-label="GitHub"
+        >
+          <img src="/assets/brands/github-brands.svg" alt="GitHub" style="height:1.2em;width:1.2em;vertical-align:middle;" /> GitHub
+        </a>
+      </div>
+      <br>
+      <p style="color:#a00;"><b>Disclaimer:</b> Sigdex is an unofficial fan project and is not affiliated with Games Workshop. It only downloads
+      data from <a href="https://github.com/BSData/age-of-sigmar-4th" target="_blank">BSData</a>.</p>
+    `,
     timestamp: '2025-06-20T00:00:00Z',
     category: 'special',
     alwaysShow: true, // Always show this notice
@@ -28,7 +49,7 @@ export const NOTICES: Notice[] = [
 ];
 
 export function getNoticeKey(notice: Notice): string {
-  return `notice-seen:${notice.title}`;
+  return `notice:${notice.title}`;
 }
 
 export function markNoticeSeen(notice: Notice) {

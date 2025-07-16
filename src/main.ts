@@ -27,6 +27,8 @@ import {
   faClone,
 } from '@fortawesome/free-solid-svg-icons';
 
+import { faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons';
+
 import { registerSuperJSONClasses } from './superjson'; // Adjust the import path as necessary
 registerSuperJSONClasses();
 
@@ -51,6 +53,8 @@ library.add(
   faCopy,
   faEye,
   faClone,
+  faDiscord,
+  faGithub
 );
 
 const app = createApp(App);

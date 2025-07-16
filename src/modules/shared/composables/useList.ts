@@ -1,7 +1,10 @@
-import { computed, toValue } from 'vue';
-import { useStorage, type MaybeRefOrGetter } from '@vueuse/core';
+import { computed, ref, toValue, watch } from 'vue';
 import { List } from '../../../list/models/list';
 import SuperJSON from 'superjson';
+
+export function deleteList(id: string) {
+  localStorage.removeItem(`list:${id}`);
+}
 
 /**
  * useList composable
@@ -10,49 +13,54 @@ import SuperJSON from 'superjson';
  * Usage:
  *   const list = useList(listId);
  */
-export function useList(id: MaybeRefOrGetter<string>) {
+export function useList(id: string) {
   const key = computed(() => {
     const val = toValue(id);
     return val ? `list:${val}` : '';
   });
-  // Always return a List instance, even if not found
-  const list = useStorage(key, new List(), undefined, {
-    serializer: {
-      read: (v) => {
-        try {
-          if (!v) return new List();
-          const list = SuperJSON.parse(v) as List;
-          // handle migrations
-          if (!list.createdAt) {
-            list.createdAt = new Date(0); // default to epoch if not set
-          }
-          if (!list.modifiedAt) {
-            list.modifiedAt = new Date(0); // default to epoch if not set
-          }
-          if (!list.validator) {
-            list.validator = 'standard'; // set default validator if not present
-          }
-          if (!list.pointsCap) {
-            list.pointsCap = 2000; // set default points cap if not present
-          }
-          if (!list.regimentOfRenown) {
-            list.regimentOfRenown = ''; // default to empty string if not set
-            list.regimentOfRenownUnits = []; // ensure units are empty
-          }
-          return list;
-        } catch {
-          return new List();
-        }
-      },
-      write: (v) => {
-        if (v.name === '' || v.id === '' || v instanceof List === false) {
-          // fail safe so we don't save incomplete lists
-          throw new Error(`List must have a name and id before saving ${v.id}, ${v.name}`);
-        }
 
-        return SuperJSON.stringify(v);
-      },
+  // Manual localStorage read to avoid overwriting
+  let initialList: List;
+  const keyVal = key.value;
+  const initialRaw = keyVal ? localStorage.getItem(keyVal) : null;
+  if (initialRaw) {
+    try {
+      initialList = SuperJSON.parse(initialRaw) as List;
+      // handle migrations
+      if (!initialList.createdAt) initialList.createdAt = new Date(0);
+      if (!initialList.modifiedAt) initialList.modifiedAt = new Date(0);
+      if (!initialList.validator) initialList.validator = 'standard';
+      if (!initialList.pointsCap) initialList.pointsCap = 2000;
+      if (!initialList.regimentOfRenown) {
+        initialList.regimentOfRenown = '';
+        initialList.regimentOfRenownUnits = [];
+      }
+    } catch {
+      initialList = new List();
+    }
+  } else {
+    initialList = new List();
+  }
+
+  const listRef = ref<List>(initialList);
+
+  // Watch for changes and write to localStorage only after valid load
+  watch(
+    [listRef, key],
+    ([val, k]) => {
+      if (!k || !val || val.name === '' || val.id === '' || !(val instanceof List)) {
+        // fail safe so we don't save incomplete lists
+        return;
+      }
+      try {
+        localStorage.setItem(k, SuperJSON.stringify(val));
+      } catch {
+        console.warn('useList failed to write list to localStorage', k, val);
+      }
     },
-  });
-  return list;
+    { deep: true }
+  );
+
+
+  return listRef;
 }
