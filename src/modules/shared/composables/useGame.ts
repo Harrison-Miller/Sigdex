@@ -9,6 +9,7 @@ import { Lore } from '../../../parser/models/lore';
 import { GITHUB_REPO } from '../../../github/config';
 import { SIGDEX_VERSION } from '../../../version';
 import SuperJSON from 'superjson';
+import LZString from 'lz-string';
 
 const GAME_STORAGE_KEY = 'game';
 const GAME_TIMESTAMP_KEY = 'gameTimestamp';
@@ -69,7 +70,15 @@ async function loadGame() {
     const needsUpdate = isGameCacheOutOfDate() || isGameVersionOutOfDate();
     const cached = localStorage.getItem(GAME_STORAGE_KEY);
     if (!needsUpdate && cached) {
-      _game.value = SuperJSON.parse(cached);
+      try {
+        // try decompressing
+        const decompressed = LZString.decompressFromUTF16(cached);
+        if (!decompressed) throw new Error('Failed to decompress game data');
+        _game.value = SuperJSON.parse(decompressed);
+      } catch {
+        // If decompression fails, assume it's a regular SuperJSON string
+        _game.value = SuperJSON.parse(cached);
+      }
       _loading.value = false;
       return;
     }
@@ -77,7 +86,17 @@ async function loadGame() {
     const parser = new Parser(GITHUB_REPO);
     const game = await parser.parse();
     _game.value = game;
-    localStorage.setItem(GAME_STORAGE_KEY, SuperJSON.stringify(game));
+
+    const data = SuperJSON.stringify(game);
+    const bytes = new TextEncoder().encode(data);
+    console.log('Game data size:', bytes.length, 'bytes and ', data.length, 'characters');
+    // Compression test
+    const compressed = LZString.compressToUTF16(data);
+    const compressedBytes = new TextEncoder().encode(compressed);
+    console.log('Compressed game data size:', compressedBytes.length, 'bytes and ', compressed.length, 'characters');
+    // 5242880 bytes = 5MB
+
+    localStorage.setItem(GAME_STORAGE_KEY, compressed);
     localStorage.setItem(GAME_TIMESTAMP_KEY, Date.now().toString());
     localStorage.setItem(GAME_VERSION_KEY, SIGDEX_VERSION);
     _loading.value = false;
