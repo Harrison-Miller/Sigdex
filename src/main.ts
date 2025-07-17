@@ -30,6 +30,7 @@ import {
 import { faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons';
 
 import { registerSuperJSONClasses } from './superjson'; // Adjust the import path as necessary
+import { useDark } from '@vueuse/core';
 registerSuperJSONClasses();
 
 // Add icons to the library
@@ -56,6 +57,8 @@ library.add(
   faDiscord,
   faGithub
 );
+
+useDark();
 
 const app = createApp(App);
 app.component('FontAwesomeIcon', FontAwesomeIcon);

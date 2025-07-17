@@ -1,0 +1,18 @@
+:root {
+	--color-primary: #1976d2;
+	--color-success: #4caf50;
+	--color-danger: #a00;
+	--color-warning: #ffa726;
+	--color-bg: #fff;
+	--color-text: #222;
+	/* Add more as needed */
+}
+
+.dark {
+	--color-primary: #90caf9;
+	--color-success: #81c784;
+	--color-danger: #ef5350;
+	--color-warning: #ffb74d;
+	--color-bg: #181818;
+	--color-text: #eee;
+}

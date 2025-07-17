@@ -4,7 +4,11 @@
       class="back-btn"
       :size="36"
     />
+
     <h1>Settings</h1>
+        <div class="section">
+      <ToggleBox v-model="isDark">Dark Mode</ToggleBox>
+    </div>
     <div class="section">
       <ListButton
         label="Clear BSData"
@@ -82,12 +86,16 @@ import { ref, onMounted } from 'vue';
 import { SIGDEX_VERSION } from '../../../version';
 import BackButton from '../../core/components/BackButton.vue';
 import ListButton from '../../shared/components/ListButton.vue';
+import ToggleBox from '../../core/components/ToggleBox.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { clearAllFavorites } from '../../../favorites';
 import { clearGameCache } from '../../shared/composables/useGame';
 import { saveGithubRepo } from '../../../github/config';
 import { clearAllLists } from '../../../list/manage';
 import { UNIT_SETTINGS_KEY } from '../../shared/composables/useUnitSettings';
+import { useDark } from '@vueuse/core';
+
+const isDark = useDark();
 
 const githubRepoKey = 'GITHUB_REPO';
 const githubRepo = ref('');
@@ -189,6 +197,11 @@ function clearLists() {
 .version {
   color: #888;
   font-size: 0.9em;
+}
+.dark-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
 }
 @media (max-width: 600px) {
   .settings-view {
