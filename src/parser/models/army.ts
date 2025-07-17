@@ -41,6 +41,7 @@ export interface IUnitListItem {
 }
 
 export interface IArmy {
+  revision: string;
   name: string;
   grandAlliance: GrandAlliance; // probably computed by looking up the keywords of the first unit in battleProfiles
 
@@ -74,6 +75,7 @@ export interface IArmy {
 }
 
 export class Army implements IArmy {
+  revision: string;
   name: string;
   grandAlliance: GrandAlliance;
 
@@ -103,6 +105,7 @@ export class Army implements IArmy {
   mustBeGeneralIfIncluded: string[];
 
   constructor(data?: Partial<IArmy>) {
+    this.revision = data?.revision ?? '';
     this.name = data?.name ?? '';
     this.battleProfiles = data?.battleProfiles ?? new Map();
     this.grandAlliance = data?.grandAlliance ?? 'Order'; // default to order if not specified

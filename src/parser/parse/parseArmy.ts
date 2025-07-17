@@ -19,6 +19,7 @@ export function parseArmy(
 
   const army: Partial<IArmy> = {
     name,
+    revision: catalogue?.['@_revision'],
     battleTraits: parseBattleTraits(catalogue),
     formations: parseFormations(catalogue),
     artifacts: parseEnhancementTables(catalogue, 'Artefacts of Power'),

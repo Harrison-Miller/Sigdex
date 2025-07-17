@@ -259,7 +259,10 @@ export function exportList(list: List, game: Game): string {
 
   // app info
   out += '\nCreated with Sigdex: https://sigdex.io/\n';
-  out += `Version: ${SIGDEX_VERSION}\n`;
+  out += `App Version: ${SIGDEX_VERSION}\n`;
+  if (army.revision) {
+    out += `Data Version: v${army.revision}\n`;
+  }
 
   return out;
 }
