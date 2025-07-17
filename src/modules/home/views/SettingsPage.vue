@@ -79,15 +79,15 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { SIGDEX_VERSION } from '../version';
-import BackButton from '../modules/core/components/BackButton.vue';
-import ListButton from '../modules/shared/components/ListButton.vue';
+import { SIGDEX_VERSION } from '../../../version';
+import BackButton from '../../core/components/BackButton.vue';
+import ListButton from '../../shared/components/ListButton.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { clearAllFavorites } from '../favorites';
-import { clearGameCache } from '../modules/shared/composables/useGame';
-import { saveGithubRepo } from '../github/config';
-import { clearAllLists } from '../list/manage';
-import { UNIT_SETTINGS_KEY } from '../modules/shared/composables/useUnitSettings';
+import { clearAllFavorites } from '../../../favorites';
+import { clearGameCache } from '../../shared/composables/useGame';
+import { saveGithubRepo } from '../../../github/config';
+import { clearAllLists } from '../../../list/manage';
+import { UNIT_SETTINGS_KEY } from '../../shared/composables/useUnitSettings';
 
 const githubRepoKey = 'GITHUB_REPO';
 const githubRepo = ref('');

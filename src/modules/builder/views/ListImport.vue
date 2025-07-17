@@ -70,7 +70,7 @@ import { importList } from '../importList';
 import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
 import { createList } from '../../../list/manage';
-import ModalBox from '../../../components/ModalBox.vue';
+import ModalBox from '../../core/components/ModalBox.vue';
 import TextInput from '../../core/components/TextInput.vue';
 
 const router = useRouter();

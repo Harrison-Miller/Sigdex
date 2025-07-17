@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomePage from './views/HomePage.vue';
+import HomePage from './modules/home/views/HomePage.vue';
 import UnitDetail from './modules/browser/views/UnitDetail.vue';
 import UnitList from './modules/browser/views/UnitList.vue';
 import ManifestationLore from './modules/browser/views/ManifestationLore.vue';
-import SettingsPage from './views/SettingsPage.vue';
+import SettingsPage from './modules/home/views/SettingsPage.vue';
 import ListBuilder from './modules/builder/views/ListBuilder.vue';
 import ListExport from './modules/builder/views/ListExport.vue';
 import BuilderSettings from './modules/builder/views/BuilderSettings.vue';
@@ -11,8 +11,14 @@ import BuilderUnitSettings from './modules/builder/views/BuilderUnitSettings.vue
 import UnitPicker from './modules/builder/views/UnitPicker.vue';
 import ListImport from './modules/builder/views/ListImport.vue';
 import RegimentOfRenown from './modules/browser/views/RegimentOfRenown.vue';
+import CreateList from './modules/home/views/CreateList.vue';
 
 const routes = [
+  {
+    path: '/create',
+    name: 'CreateList',
+    component: CreateList,
+  },
   {
     path: '/import',
     name: 'ListImport',

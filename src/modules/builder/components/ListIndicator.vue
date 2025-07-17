@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import Modal from '../../../components/ModalBox.vue';
+import Modal from '../../core/components/ModalBox.vue';
 import { calculatePoints } from '../../../validation/points';
 import type { List } from '../../../list/models/list';
 import type { Game } from '../../../parser/models/game';

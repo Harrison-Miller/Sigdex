@@ -137,22 +137,22 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { useGame } from '../modules/shared/composables/useGame';
-import ListButton from '../modules/shared/components/ListButton.vue';
-import FavoriteToggle from '../modules/core/components/FavoriteToggle.vue';
-import SettingsButton from '../modules/core/components/SettingsButton.vue';
-import { SIGDEX_VERSION } from '../version';
-import Section from '../modules/core/components/ContentSection.vue';
+import { useGame } from '../../shared/composables/useGame';
+import ListButton from '../../shared/components/ListButton.vue';
+import FavoriteToggle from '../../core/components/FavoriteToggle.vue';
+import SettingsButton from '../../core/components/SettingsButton.vue';
+import { SIGDEX_VERSION } from '../../../version';
+import Section from '../../core/components/ContentSection.vue';
 import ListList from '../components/ListList.vue';
-import TwoTab from '../modules/core/components/TwoTab.vue';
-import ListButtonSection from '../modules/shared/components/ListButtonSection.vue';
+import TwoTab from '../../core/components/TwoTab.vue';
+import ListButtonSection from '../../shared/components/ListButtonSection.vue';
 import {
   saveFavorite,
   removeFavorite,
   getFavorites,
   getFavoriteToggleState,
   setFavoriteToggleState,
-} from '../favorites';
+} from '../../../favorites';
 
 const router = useRouter();
 const armyFavorites = ref<string[]>([]);

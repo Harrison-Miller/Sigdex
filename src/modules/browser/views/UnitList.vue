@@ -159,7 +159,7 @@ watch(unitFavorites, (favs) => {
   }
 });
 </script>
-<style src="../../../views/list-shared.css" scoped></style>
+<style src="../../home/views/list-shared.css" scoped></style>
 <style scoped>
 .filters-bar {
   display: flex;

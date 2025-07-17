@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { RouterView, useRouter } from 'vue-router';
-import NoticeModal from './components/NoticeModal.vue';
+import NoticeModal from './modules/home/components/NoticeModal.vue';
 import { findNextNoticeToShow, markNoticeSeen, type Notice } from './utils/notices';
 import { clearGameCache, useGame } from './modules/shared/composables/useGame';
 

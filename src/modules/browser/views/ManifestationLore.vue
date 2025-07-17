@@ -63,7 +63,7 @@ const units = computed(() => {
     </Section>
   </div>
 </template>
-<style src="../../../views/list-shared.css" scoped></style>
+<style src="../../home/views/list-shared.css" scoped></style>
 <style scoped>
 .unit-list-back {
   margin-bottom: 0.5rem;
