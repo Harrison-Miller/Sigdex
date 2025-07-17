@@ -6,30 +6,25 @@ import type { RegimentOption } from '../parser/models/battleProfile';
 
 export function formatText(text: string): string {
   if (!text) return '';
-  // Add newline before every bullet (•)
-  text = text.replace(/\s*•/g, '<br>•');
-  // ***text*** => bullet bold with newline
-  text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<br>• <b>$1</b>');
-  // **number *text*** => bolded number - text, newline before
-  text = text.replace(/\*\*(\d+) \*(.+?)\*\*\*/g, '<br><b>$1 - $2</b>');
-  // **^^text1^^ (not followed by **) - do not capture ^ or *
-  text = text.replace(/\*\*\^\^([^*^]+?)\^\^(?!\*\*)/g, '<b><i>$1</i></b>');
-  // **^^text^^** => bold italics - do not capture ^ or *
-  text = text.replace(/\*\*\^\^([^*^]+?)\^\^\*\*/g, '<b><i>$1</i></b>');
-  // ^^text** => bold italics - do not capture ^ or *
-  text = text.replace(/\^\^([^*^]+?)\*\*/g, '<b><i>$1</i></b>');
+  // bullet point
+  text = text.replace(/•\s*/g, '<br>•');
+
+  // add a bullet point if we've got \n**{sometext}**: basically the start of a rule subsection
+  text = text.replace(/\n\s*\*\*([^\n]+):\*\*/g, '<br>• <b>$1</b>:'); // Add bullet point for new lines
+
   // **text** => bold
-  text = text.replace(/\*\*([^*^]+?)\*\*/g, '<b>$1</b>');
-  // ^^text^^ => italics
-  text = text.replace(/\^\^([^*^]+?)\^\^/g, '<i>$1</i>');
-  // *text* => italics (must be after bold rules)
-  text = text.replace(/\*(?!\*)([^*]+?)\*(?!\*)/g, '<i>$1</i>');
-  // malformed **^^text => bold italics
-  text = text.replace(/\*\*\^\^([^*^ ]+?)(\s|$)/g, '<b><i>$1</i></b>$2');
-  // Replace all newlines with <br>
+  text = text.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  // *text* => italics
+  text = text.replace(/\*(?!\*)(.+?)\*(?!\*)/g, '<i>$1</i>');
+  // ^^text^^ => small caps
+  text = text.replace(/\^\^(.+?)\^\^/g, '<span style="font-variant: small-caps;">$1</s>');
+
+
+  // // Replace all newlines with <br>
   text = text.replace(/\n/g, '<br>');
-  // Replace any number of sequential <br>'s (with optional whitespace between) with a single <br>
+  // // Replace any number of sequential <br>'s (with optional whitespace between) with a single <br>
   text = text.replace(/(<br>\s*)+/g, '<br>');
+
   return text;
 }
 
