@@ -33,6 +33,9 @@ v-if="!isRoRUnit && !isLeader"
       :unit-data="unitData"
       :army="army"
     />
+    <div v-if="!isRoRUnit" class="delete-row">
+      <button class="delete-btn" @click="onDeleteUnit">Delete</button>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -112,6 +115,23 @@ function duplicateUnit() {
     router.back();
   }
 }
+
+function handleDeleteUnit(regimentIdx: number, unitIdx: number | string) {
+  if (!isAuxiliaryUnit && !list.value.regiments[regimentIdx]) return;
+  if (unitIdx === 'leader') {
+    list.value.regiments[regimentIdx].leader = new ListUnit();
+  } else if (isAuxiliaryUnit) {
+    list.value.auxiliaryUnits.splice(Number(unitIdx), 1);
+  } else {
+    list.value.regiments[regimentIdx].units.splice(Number(unitIdx), 1);
+  }
+  list.value.modifiedAt = new Date();
+}
+
+function onDeleteUnit() {
+  handleDeleteUnit(regimentIdx, unitIdx);
+  router.back();
+}
 </script>
 <style scoped>
 .unit-settings-header-bar {
@@ -123,6 +143,42 @@ function duplicateUnit() {
 }
 .duplicate-btn {
   margin-left: auto;
+}
+.delete-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 2em;
+}
+.delete-btn {
+  min-width: 90px;
+  min-height: 38px;
+  height: auto;
+  font-size: 1.08em;
+  background: #e53935;
+  color: #fff;
+  border: 1.5px solid #c62828;
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.1em;
+  margin-right: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0 1em;
+  box-sizing: border-box;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    border 0.18s;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.delete-btn:hover {
+  background: #b71c1c;
+  color: #fff;
+  border-color: #b71c1c;
 }
 .unit-name {
   font-size: 1.3em;

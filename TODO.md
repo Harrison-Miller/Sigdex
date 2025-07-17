@@ -43,8 +43,3 @@ It'd be nice to add it as a weapon ability. But that would be confusing with com
 * make back button work in an explicit fashion based on the page not just calling router.back()
 
 * parse used by in the ability - didn't even realize this is a thing.
-
-### data issues with formatting tags
-* gitz
-  * sunbiter pack
-  * loonboss

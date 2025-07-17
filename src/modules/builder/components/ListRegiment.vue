@@ -5,7 +5,7 @@
       <button
         class="delete-regiment-btn"
         title="Delete Regiment"
-        @click.stop="$emit('delete')"
+        @click.stop="() => emit('delete')"
       >
         <font-awesome-icon icon="trash" />
       </button>
@@ -18,18 +18,16 @@
         <ListButton
           :label="leader.name"
           :points="battleProfiles.get(leader.name)?.points"
-          :show-ellipsis="true"
           :show-general="leader.general"
           :enhancement-count="leader.getEnhancementCount()"
           @click="() => goToUnitDetail(leader.name)"
-          @ellipsis="() => goToUnitSettings('leader')"
         />
         <button
-          class="delete-unit-btn"
-          title="Remove leader"
-          @click="emit('delete-unit', 'leader')"
+          class="unit-settings-btn"
+          title="Leader Settings"
+          @click="goToUnitSettings('leader')"
         >
-          <font-awesome-icon icon="trash" />
+          <font-awesome-icon icon="ellipsis-v" />
         </button>
       </div>
       <button
@@ -50,18 +48,16 @@
             <ListButton
               :label="unit.name"
               :points="battleProfiles.get(unit.name)?.points"
-              :show-ellipsis="true"
               :show-reinforced="unit.reinforced"
               :enhancement-count="unit.getEnhancementCount()"
               @click="() => goToUnitDetail(unit.name)"
-              @ellipsis="() => goToUnitSettings(idx)"
             />
           <button
-            class="delete-unit-btn"
-            title="Remove unit"
-            @click="emit('delete-unit', idx)"
+            class="unit-settings-btn"
+            title="Unit Settings"
+            @click="goToUnitSettings(idx)"
           >
-            <font-awesome-icon icon="trash" />
+            <font-awesome-icon icon="ellipsis-v" />
           </button>
         </div>
     </div>
@@ -178,14 +174,13 @@ function goToUnitSettings(unitIdx: number | 'leader') {
   margin-bottom: 0.5em;
 }
 
-.delete-unit-btn {
-  min-width: 44px;
+.unit-settings-btn {
+  width: 67px;
   min-height: 44px;
   height: auto;
   font-size: 1.3em;
   background: #f5f5f5;
-  color: #a00;
-  border: 1.5px solid #a00;
+  border: 1.5px solid;
   border-radius: 7px;
   cursor: pointer;
   display: flex;
@@ -203,10 +198,10 @@ function goToUnitSettings(unitIdx: number | 'leader') {
     border 0.18s;
 }
 
-.delete-unit-btn:hover {
-  background: #a00;
+.unit-settings-btn:hover {
+  background: #1976d2;
   color: #fff;
-  border-color: #a00;
+  border-color: #1976d2;
 }
 .add-unit-btn {
   margin-top: 0.3em;

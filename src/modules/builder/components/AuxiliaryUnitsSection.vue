@@ -14,7 +14,6 @@
           :label="unit.name"
           :points="battleProfiles.get(unit.name)?.points"
           :show-reinforced="unit.reinforced"
-          :show-ellipsis="true"
           :enhancement-count="unit.getEnhancementCount()"
           @click="
             () =>
@@ -24,14 +23,13 @@
                 params: { armyName: armyName, unitName: unit.name },
               })
           "
-          @ellipsis="() => goToAuxUnitSettings(i)"
         />
         <button
-          class="delete-unit-btn"
-          title="Delete Auxillary Unit"
-          @click="() => handleDeleteAuxUnit(i)"
+          class="unit-settings-btn"
+          title="Unit Settings"
+          @click="() => goToAuxUnitSettings(i)"
         >
-          <font-awesome-icon icon="trash" />
+          <font-awesome-icon icon="ellipsis-v" />
         </button>
       </div>
     </div>
@@ -58,7 +56,7 @@ const props = defineProps<{
   armyName: string;
   listId: string;
 }>();
-const emit = defineEmits(['update:modelValue', 'update']);
+// const emit = defineEmits(['update:modelValue', 'update']);
 
 const router = useRouter();
 
@@ -69,12 +67,6 @@ function handleAddAuxUnit() {
     name: 'UnitPicker',
     params: { id: props.listId, regimentIdx: '0', filter: 'aux' },
   });
-}
-
-function handleDeleteAuxUnit(idx: number) {
-  const newUnits = [...props.modelValue];
-  newUnits.splice(idx, 1);
-  emit('update:modelValue', newUnits);
 }
 
 function goToAuxUnitSettings(unitIdx: number) {
@@ -120,14 +112,13 @@ function goToAuxUnitSettings(unitIdx: number) {
   color: #fff;
 }
 
-.delete-unit-btn {
+.unit-settings-btn {
   min-width: 44px;
   min-height: 44px;
   height: auto;
   font-size: 1.3em;
   background: #f5f5f5;
-  color: #a00;
-  border: 1.5px solid #a00;
+  border: 1.5px solid;
   border-radius: 7px;
   cursor: pointer;
   display: flex;
@@ -144,9 +135,9 @@ function goToAuxUnitSettings(unitIdx: number) {
     border 0.18s;
 }
 
-.delete-unit-btn:hover {
-  background: #a00;
+.unit-settings-btn:hover {
+  background: #1976d2;
   color: #fff;
-  border-color: #a00;
+  border-color: #1976d2;
 }
 </style>

@@ -38,14 +38,14 @@
               :label="item.name"
               :points="item.points"
               class="unit-list-btn"
-              @click="() => goToDetail(item)"
+              @click="() => addUnitToRegiment(item)"
             />
             <button
               class="add-btn"
               title="Add to Regiment"
-              @click="() => addUnitToRegiment(item)"
+              @click="() => goToDetail(item)"
             >
-              +
+              <FontAwesomeIcon icon="eye" />
             </button>
           </li>
         </ul>
@@ -74,6 +74,7 @@ import { ListUnit } from '../../../list/models/unit';
 import { assignRoR } from '../ror';
 import { useUnitSettings } from '../../shared/composables/useUnitSettings';
 import ToggleBox from '../../core/components/ToggleBox.vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const route = useRoute();
 const router = useRouter();
