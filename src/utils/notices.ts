@@ -32,13 +32,20 @@ export const NOTICES: Notice[] = [
         </a>
         <a
           href="https://github.com/Harrison-Miller/sigdex" target="_blank"
-          style="display:inline-flex;align-items:center;gap:0.5em;font-weight:600;padding:0.5em 1.1em;border-radius:6px;text-decoration:none;font-size:1.08em;background:#24292F;color:#fff;"
+          style="display:inline-flex;align-items:center;gap:0.5em;font-weight:600;padding:0.5em 1.1em;border-radius:6px;text-decoration:none;font-size:1.08em;background:#24292F;color:#fff;margin-right:0.7em;"
           aria-label="GitHub"
         >
           <img src="/assets/brands/github-brands.svg" alt="GitHub" style="height:1.2em;width:1.2em;vertical-align:middle;" /> GitHub
         </a>
+        <a
+          href="https://ko-fi.com/F1F11I630O"
+          target="_blank"
+          style="margin-top:0.5em;display:inline-flex;align-items:center;gap:0.5em;font-weight:600;padding:0.5em 1.1em;border-radius:6px;text-decoration:none;font-size:1.08em;background:#FF5E5B;color:#fff;"
+          aria-label="Ko-fi"
+        >
+          <img src="/assets/brands/kofi_symbol.png" alt="Ko-fi" style="height:1.2em;vertical-align:middle;" /> Support on Ko-fi
+        </a>
       </div>
-      <br>
       <p style="color:#a00;"><b>Disclaimer:</b> Sigdex is an unofficial fan project and is not affiliated with Games Workshop. It only downloads
       data from <a href="https://github.com/BSData/age-of-sigmar-4th" target="_blank">BSData</a>.</p>
     `,

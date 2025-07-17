@@ -58,6 +58,17 @@
           <FontAwesomeIcon icon="fa-brands fa-github" /> GitHub
         </a>
       </div>
+      <div class="social-links" style="margin-top: 0.7em; justify-content: center;">
+        <a
+          href="https://ko-fi.com/F1F11I630O"
+          target="_blank"
+          class="social-btn kofi"
+          aria-label="Ko-fi"
+        >
+          <img src="/assets/brands/kofi_symbol.png" alt="Ko-fi" style="height:1.2em;vertical-align:middle;" />
+          Support on Ko-fi
+        </a>
+      </div>
     </div>
     <div class="section legal">
       <strong>Disclaimer:</strong> This app is not affiliated with Games Workshop. It only downloads
@@ -167,6 +178,13 @@ function clearLists() {
 }
 .social-btn.github:hover {
   background: #1b1f23;
+}
+.social-btn.kofi {
+  background: #FF5E5B;
+  color: #fff;
+}
+.social-btn.kofi:hover {
+  background: #e04e4b;
 }
 .version {
   color: #888;

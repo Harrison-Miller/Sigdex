@@ -8,7 +8,7 @@
       <div
         v-for="(unit, i) in props.modelValue"
         :key="unit?.name + i"
-        class="aux-unit-row"
+        class="unit-row"
       >
         <ListButton
           :label="unit.name"
@@ -27,7 +27,7 @@
           @ellipsis="() => goToAuxUnitSettings(i)"
         />
         <button
-          class="delete-terrain-btn"
+          class="delete-unit-btn"
           title="Delete Auxillary Unit"
           @click="() => handleDeleteAuxUnit(i)"
         >
@@ -36,7 +36,7 @@
       </div>
     </div>
     <button
-      class="add-terrain-btn"
+      class="add-unit-btn"
       style="margin-top: 0.7em"
       @click="handleAddAuxUnit"
     >
@@ -91,13 +91,13 @@ function goToAuxUnitSettings(unitIdx: number) {
 <style scoped>
 @import '../views/listbuilder.css';
 
-.aux-unit-row {
+.unit-row {
   display: flex;
   align-items: stretch;
-  /* margin-bottom: 0.5em; */
+  margin-bottom: 0.5em;
 }
 
-.add-terrain-btn {
+.add-unit-btn {
   width: 100%;
   background: #f5f5f5;
   color: #1976d2;
@@ -115,12 +115,12 @@ function goToAuxUnitSettings(unitIdx: number) {
   justify-content: center;
 }
 
-.add-terrain-btn:hover {
+.add-unit-btn:hover {
   background: #1976d2;
   color: #fff;
 }
 
-.delete-terrain-btn {
+.delete-unit-btn {
   min-width: 44px;
   min-height: 44px;
   height: auto;
@@ -144,7 +144,7 @@ function goToAuxUnitSettings(unitIdx: number) {
     border 0.18s;
 }
 
-.delete-terrain-btn:hover {
+.delete-unit-btn:hover {
   background: #a00;
   color: #fff;
   border-color: #a00;

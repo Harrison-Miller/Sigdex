@@ -1,13 +1,15 @@
 <template>
-  <div class="list-container">
+  <div>
     <div class="header-bar">
-      <SettingsButton
-        class="settings-btn"
-        :size="36"
-        @click="goToSettings"
-      />
-      <h1>Select an Army</h1>
+      <div class="floating-header-buttons">
+        <SettingsButton
+          class="settings-btn"
+          :size="36"
+          @click="goToSettings"
+        />
+      </div>
     </div>
+    <h1 style="margin:0;margin-bottom:0.75em;">Sigdex</h1>
     <TwoTab
       v-model:left-active="leftActive"
       :left-label="'Browse'"
@@ -233,15 +235,23 @@ watch(armyFavorites, (favs) => {
 .header-bar {
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 1.2rem;
+  min-height: 48px;
+  margin-bottom: 0.5em;
 }
+
+.floating-header-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  padding: 0.3em 0.3em 0 0;
+}
+
 .settings-btn {
-  align-self: flex-end;
-  margin-bottom: 0.5rem;
-  position: static;
   background: none;
   border: none;
   border-radius: 50%;
@@ -250,6 +260,7 @@ watch(armyFavorites, (favs) => {
   cursor: pointer;
   z-index: 2;
 }
+
 .settings-btn:hover {
   background: #e5e5e5;
 }

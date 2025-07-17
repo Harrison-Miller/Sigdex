@@ -4,10 +4,12 @@
   /* Remove fixed padding to allow content-fit */
   padding: 0;
   margin-bottom: 10px;
-  display: inline-block; /* Fit to content */
+  display: inline-block;
+  /* Fit to content */
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
+
 .card-header,
 .ability-header {
   width: 100%;
@@ -21,12 +23,14 @@
   border-radius: 6px 6px 0 0;
   margin: 0;
 }
+
 .card-header .timing,
 .ability-header .timing {
   font-size: 1.1em;
   font-weight: bold;
   margin-left: 0.5em;
 }
+
 .icon {
   width: 22px;
   height: 22px;
@@ -35,6 +39,7 @@
   justify-content: center;
   font-size: 1.2em;
 }
+
 .card-title,
 .ability-title {
   text-align: left;
@@ -42,40 +47,52 @@
   font-size: 1.1em;
   margin: 8px 12px 4px 12px;
 }
+
 .card-text,
 .ability-text {
   text-align: left;
 }
+
 .card-body {
   margin: 0 12px 10px 12px;
 }
+
 .card-body div {
   margin-bottom: 8px;
 }
+
 .red {
-  background-color: #8b0000;
+  background-color: #a10000;
 }
+
 .yellow {
-  background-color: #b59f3b;
+  background-color: #d7b21d;
 }
+
 .black {
-  background-color: #444;
+  background-color: #171717;
 }
+
 .gray {
-  background-color: #888;
+  background-color: #5a5e5a;
 }
+
 .orange {
-  background-color: #a65f00;
+  background-color: #db571a;
 }
+
 .green {
-  background-color: #3a7740;
+  background-color: #2a7e10;
 }
+
 .blue {
-  background-color: #3f5fa3;
+  background-color: #055c72;
 }
+
 .purple {
-  background-color: #5e3d89;
+  background-color: #642a8d;
 }
+
 .ability-keywords {
   background: #eee;
   border-radius: 6px;

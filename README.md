@@ -1,5 +1,7 @@
 # Sigdex
 
+[**Live Site**](https://sigdex.io)
+
 Sigmar + Pokedex. Sigdex is an Age of Sigmar list builder designed for speed, ease of use, and quick reference. Data is sourced from [BSData](https://github.com/BSData/age-of-sigmar-4th).
 
 <p float="middle">
@@ -21,15 +23,16 @@ Sigdex aims to make it fast and simple to build lists and reference rules for bo
 * Sort by points
 * Offline data caching
 
-[**Live Site**](https://sigdex.io)
-
 # Roadmap
 * Damage calculator
 * PDF parsing for FAQ and core rules abilities
 * Full text search on all abilities and warscrolls
 * List syncing (cloud or device)
 
-[**Join our Discord Community**](https://discord.gg/Fn6ZUFb9vZ)
+Suggest a feature or report a bug by joining our [**Discord Community**](https://discord.gg/Fn6ZUFb9vZ)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F11I630O)
+
 
 ## Development
 

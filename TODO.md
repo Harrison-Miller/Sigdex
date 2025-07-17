@@ -42,12 +42,4 @@ It'd be nice to add it as a weapon ability. But that would be confusing with com
 * duplicate list button - doing this from list settings is tricky because of router history
 * make back button work in an explicit fashion based on the page not just calling router.back()
 
-* add testing around list serialization/deserilization so we make sure nothing breaks when adding new variables
-
-* Release checklist
-  * fix list button sizing in list regiment
-  * home page title update
-  * discord server
-  * reddit post
-  * call to action my friends
-  * donate button
+* parse used by in the ability - didn't even realize this is a thing.

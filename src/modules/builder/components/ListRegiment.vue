@@ -10,10 +10,10 @@
         <font-awesome-icon icon="trash" />
       </button>
     </template>
-    <div class="regiment-leader">
+    <div>
       <div
         v-if="leader.name"
-        class="regiment-unit-row"
+        class="unit-row"
       >
         <ListButton
           :label="leader.name"
@@ -41,25 +41,21 @@
       </button>
     </div>
     <div class="divider" />
-    <div class="regiment-units">
-      <ul>
-        <li
+    <div v-if="units.length > 0">
+        <div
           v-for="(unit, idx) in units"
           :key="unit.name"
-          class="regiment-unit-row"
+          class="unit-row"
         >
-          <div class="regiment-unit-btn">
             <ListButton
               :label="unit.name"
               :points="battleProfiles.get(unit.name)?.points"
               :show-ellipsis="true"
               :show-reinforced="unit.reinforced"
               :enhancement-count="unit.getEnhancementCount()"
-              class="regiment-unit-btn"
               @click="() => goToUnitDetail(unit.name)"
               @ellipsis="() => goToUnitSettings(idx)"
             />
-          </div>
           <button
             class="delete-unit-btn"
             title="Remove unit"
@@ -67,8 +63,7 @@
           >
             <font-awesome-icon icon="trash" />
           </button>
-        </li>
-      </ul>
+        </div>
     </div>
     <button
       class="add-unit-btn"
@@ -150,22 +145,6 @@ function goToUnitSettings(unitIdx: number | 'leader') {
   justify-content: space-between;
   margin-bottom: 1em;
 }
-.regiment-leader {
-  display: flex;
-  justify-content: center;
-  flex: 1;
-}
-.add-btn {
-  font-size: 1.5em;
-  background: #f5f5f5;
-  color: #a00;
-  border: 2px dashed #a00;
-  min-width: 120px;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 .delete-regiment-btn {
   background: none;
   color: #a00;
@@ -193,34 +172,10 @@ function goToUnitSettings(unitIdx: number | 'leader') {
   border-bottom: 1px solid #ddd;
   margin: 0.5em 0;
 }
-.regiment-units {
-  margin: 0;
-  padding: 0;
-}
-.regiment-units ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-.regiment-units li.regiment-unit-row {
+.unit-row {
   display: flex;
   align-items: stretch;
-  gap: 0;
-  margin-bottom: 0.7em;
-  width: 100%;
-}
-.regiment-unit-btn {
-  flex: 1 1 0;
-  display: flex;
-  align-items: stretch;
-}
-.regiment-unit-row {
-  display: flex;
-  align-items: stretch;
-  justify-content: space-between;
-  width: 100%;
+  margin-bottom: 0.5em;
 }
 
 .delete-unit-btn {
