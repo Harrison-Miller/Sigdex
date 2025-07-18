@@ -48,11 +48,9 @@ const favoriteToggleSize = 36;
 </script>
 <template>
   <BackButton :size="36" />
-  <div class="unit-detail">
-    <div class="unit-detail-header">
-      <div
+        <div
         v-if="armyName !== 'UniversalUnits'"
-        class="unit-detail-fav"
+        class="floating-header-buttons"
       >
         <FavoriteToggle
           :model-value="unitFavorite"
@@ -61,8 +59,8 @@ const favoriteToggleSize = 36;
           @update:model-value="toggleUnitFavoriteDetail"
         />
       </div>
-      <h1>{{ unit.name }}</h1>
-    </div>
+  <div>
+          <h1>{{ unit.name }}</h1>
     <div class="stats-row">
       <StatCircle
         v-if="unit.stats.move"
@@ -142,26 +140,22 @@ const favoriteToggleSize = 36;
     >
       <template #title>Unit Details</template>
       <div
-        class="unit-detail-points"
-        style="font-size: 0.95em; color: #666; text-align: left"
+        class="unit-detail"
       >
         <div
           v-if="armyName !== 'UniversalUnits' && !battleProfile.reinforceable && !battleProfile.defaultNotReinforceable()"
-          class="unit-not-reinforceable"
-          style="margin-top: 0.5em"
+          class="unit-detail-section"
         >
           <span v-html="`<i>This unit can not be reinforced.</i>`" />
         </div>
         <div
           v-if="battleProfile.reinforceable && battleProfile.defaultNotReinforceable()"
-          class="unit-reinforceable"
         >
           <span v-html="`<i>This unit can be reinforced.</i>`" />
         </div>
         <div
           v-if="battleProfile.undersizeCondition"
-          class="unit-not-reinforceable"
-          style="margin-top: 0.5em"
+          class="unit-detail-section"
         >
           <span
             v-html="
@@ -171,14 +165,12 @@ const favoriteToggleSize = 36;
         </div>
         <div
           v-if="battleProfile.companionUnits.length > 0 || battleProfile.companionLeader"
-          class="unit-companion-units"
-          style="margin-top: 0.5em"
+          class="unit-detail-section"
         >
           <span v-html="formatCompanionUnits(unit.name, battleProfile.companionLeader)" />
         </div>
         <div
-          class="unit-model-groups"
-          style="margin-top: 0.5em"
+          class="unit-detail-section"
           v-html="formatModelGroups(Array.from(unit.models.values()), unit)"
         />
         <span v-if="battleProfile.points > 0">{{ battleProfile.points }} Points</span>
@@ -189,15 +181,13 @@ const favoriteToggleSize = 36;
 
         <div
           v-if="battleProfile.category === 'HERO' && battleProfile.regimentTags.length > 0"
-          class="unit-sub-hero-tags"
-          style="margin-top: 0.5em"
+          class="unit-detail-section"
         >
           <span v-html="formatSubHeroTags(battleProfile.regimentTags)" />
         </div>
         <div
           v-if="battleProfile.regimentOptions.length > 0"
-          class="unit-regiment-options"
-          style="margin-top: 0.5em"
+          class="unit-detail-section"
         >
           <span v-html="formatRegimentOptions(battleProfile.regimentOptions)" />
         </div>
@@ -221,19 +211,25 @@ const favoriteToggleSize = 36;
 </template>
 <style src="./unit-detail.css" scoped></style>
 <style scoped>
-.unit-detail-header {
+.floating-header-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
-  position: relative;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  padding: 1.2em 0.3em 0 0;
 }
 
-.unit-detail-fav {
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 1;
+.unit-detail {
+  font-size: 0.95em;
+  color: var(--text-head);
+  text-align: left;
+}
+
+.unit-detail-section {
+  margin-top: 0.5em;
 }
 
 .unit-default-settings-label {

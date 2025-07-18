@@ -129,6 +129,7 @@ const displayPoints = computed(() => {
   </button>
 </template>
 <style scoped>
+
 .list-button {
   width: 100%;
   min-width: 0;
@@ -136,9 +137,9 @@ const displayPoints = computed(() => {
   padding: 0.71rem 1.1rem 0.71rem 1.1rem;
   font-size: 1.1rem;
   border-radius: 4px;
-  border: 1.5px solid #222;
-  background: #fffefb;
-  color: #222;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-head);
+  color: var(--text-main);
   cursor: pointer;
   transition:
     background 0.2s,
@@ -189,9 +190,9 @@ const displayPoints = computed(() => {
 }
 
 .list-button:hover {
-  background: #f3f3ef;
-  color: #111;
-  border: 1.5px solid #111;
+  background: var(--bg-sub);
+  color: var(--text-main);
+  border: 1.5px solid var(--border-hover);
 }
 
 .badges-row {
@@ -203,7 +204,7 @@ const displayPoints = computed(() => {
 }
 
 .points-badge {
-  background: #8b0000;
+  background: var(--color-red);
   color: #fff;
   font-size: 0.78em;
   font-weight: 600;
@@ -218,7 +219,7 @@ const displayPoints = computed(() => {
 }
 
 .sog-badge {
-  background: #185c2b;
+  background: var(--color-green);
   color: #fff;
   font-size: 0.78em;
   font-weight: 700;
@@ -234,7 +235,7 @@ const displayPoints = computed(() => {
 
 .general-badge,
 .reinforced-badge {
-  background: #ffe066;
+  background: var(--color-yellow);
   color: #111; /* Changed from #a08000 to black */
   font-size: 0.78em;
   font-weight: 700;
@@ -249,8 +250,8 @@ const displayPoints = computed(() => {
 }
 
 .enhancement-badge {
-  background: #e3f0ff;
-  color: #1976d2;
+  background: var(--color-blue);;
+  color: #fff;
   font-size: 0.78em;
   font-weight: 700;
   border-radius: 1em;

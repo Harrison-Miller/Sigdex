@@ -2,7 +2,6 @@
   <BackButton :size="36" />
   <div
     v-if="!loading && !error"
-    class="list-container"
   >
     <h1>{{ armyName }}</h1>
     <TwoTab
@@ -19,6 +18,7 @@
           />
           <button
             class="sort-toggle"
+            :class="sortMode === 'points' ? 'points' : 'alpha'"
             :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'"
             @click="toggleSortMode"
           >
@@ -198,9 +198,9 @@ watch(unitFavorites, (favs) => {
 }
 
 .sort-toggle {
-  background: #fff;
-  border: 1.5px solid #8b0000;
-  color: #8b0000;
+  background: var(--bg-sub);
+  border: 1.5px solid var(--border-color);
+  color: var(--text-main);
   font-size: 1em;
   font-weight: 500;
   border-radius: 4px;
@@ -212,10 +212,18 @@ watch(unitFavorites, (favs) => {
     color 0.2s,
     border 0.2s;
 }
-
-.sort-toggle:hover {
-  background: #8b0000;
+.sort-toggle.points {
+  background: var(--color-red);
   color: #fff;
+  border: 1.5px solid var(--color-red);
+}
+.sort-toggle.alpha {
+  background: var(--bg-sub);
+  color: var(--text-main);
+  border: 1.5px solid var(--border-color);
+}
+.sort-toggle:hover {
+  filter: brightness(0.95);
 }
 
 .army-rules-section {

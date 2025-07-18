@@ -91,9 +91,9 @@ function goToAuxUnitSettings(unitIdx: number) {
 
 .add-unit-btn {
   width: 100%;
-  background: #f5f5f5;
-  color: #1976d2;
-  border: 2px dashed #1976d2;
+  background: var(--primary);
+  color: #fff;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   font-size: 1.1em;
   font-weight: 600;
@@ -108,23 +108,23 @@ function goToAuxUnitSettings(unitIdx: number) {
 }
 
 .add-unit-btn:hover {
-  background: #1976d2;
-  color: #fff;
+  filter: brightness(1.1);
 }
 
 .unit-settings-btn {
-  min-width: 44px;
+  min-width: 67px;
   min-height: 44px;
   height: auto;
   font-size: 1.3em;
-  background: #f5f5f5;
-  border: 1.5px solid;
+  background: var(--bg-head);
+  color: var(--text-main);
+  border: 1.5px solid var(--border-color);
   border-radius: 7px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 0.1em;
+  margin-left: 0.25em;
   margin-right: 0;
   margin-top: 0;
   margin-bottom: 0;
@@ -136,8 +136,6 @@ function goToAuxUnitSettings(unitIdx: number) {
 }
 
 .unit-settings-btn:hover {
-  background: #1976d2;
-  color: #fff;
-  border-color: #1976d2;
+  background: var(--bg-sub);
 }
 </style>

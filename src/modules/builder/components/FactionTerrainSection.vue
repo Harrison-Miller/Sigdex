@@ -98,9 +98,9 @@ function goToUnitDetail() {
 }
 .add-terrain-btn {
   width: 100%;
-  background: #f5f5f5;
-  color: #1976d2;
-  border: 2px dashed #1976d2;
+  background: var(--primary);
+  color: #fff;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   font-size: 1.1em;
   font-weight: 600;
@@ -115,24 +115,23 @@ function goToUnitDetail() {
 }
 
 .add-terrain-btn:hover {
-  background: #1976d2;
-  color: #fff;
+  filter: brightness(1.1);
 }
 
 .delete-terrain-btn {
-  min-width: 44px;
+  min-width: 67px;
   min-height: 44px;
   height: auto;
   font-size: 1.3em;
-  background: #f5f5f5;
-  color: #a00;
-  border: 1.5px solid #a00;
+  background: var(--danger);
+  color: #fff;
+  border: 1.5px solid var(--border-color);
   border-radius: 7px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 0.1em;
+  margin-left: 0.25em;
   margin-right: 0;
   margin-top: 0;
   margin-bottom: 0;
@@ -144,8 +143,6 @@ function goToUnitDetail() {
 }
 
 .delete-terrain-btn:hover {
-  background: #a00;
-  color: #fff;
-  border-color: #a00;
+  background: var(--bg-head);
 }
 </style>

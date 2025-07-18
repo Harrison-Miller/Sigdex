@@ -27,8 +27,8 @@ defineEmits(['close', 'update:modelValue']);
   z-index: 1100;
 }
 .modal {
-  background: #fff;
-  color: #222;
+  background: var(--bg-head);
+  color: var(--text-main);
   border-radius: 12px;
   padding: 2em 1.5em 1.5em 1.5em;
   min-width: 320px;

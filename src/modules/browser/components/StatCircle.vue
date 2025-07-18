@@ -34,7 +34,7 @@ const displayValue = computed(() => {
 .stat-label {
   font-size: 0.8rem;
   font-weight: normal;
-  color: #444;
+  color: var(--text-head);
   margin-bottom: 0.2rem;
   text-align: center;
   width: 100%;
@@ -43,18 +43,18 @@ const displayValue = computed(() => {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: #eee;
+  background: var(--bg-sub);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  border: 2px solid #ccc;
+  border: 2px solid var(--border-color);
   aspect-ratio: 1 / 1;
 }
 .stat-value {
   font-size: 1.6rem;
   font-weight: bold;
-  color: #222;
+  color: var(--text-main);
   line-height: 1;
   text-align: center;
   word-break: break-all;

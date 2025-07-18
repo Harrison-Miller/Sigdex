@@ -150,13 +150,13 @@ function onDeleteUnit() {
   margin-top: 2em;
 }
 .delete-btn {
-  min-width: 90px;
+  min-width: 240px;
   min-height: 38px;
   height: auto;
   font-size: 1.08em;
-  background: #e53935;
+  background: var(--danger);
   color: #fff;
-  border: 1.5px solid #c62828;
+  border: 1.5px solid var(--danger);
   border-radius: 7px;
   cursor: pointer;
   display: flex;
@@ -176,9 +176,7 @@ function onDeleteUnit() {
   letter-spacing: 0.02em;
 }
 .delete-btn:hover {
-  background: #b71c1c;
-  color: #fff;
-  border-color: #b71c1c;
+  filter: brightness(1.1);
 }
 .unit-name {
   font-size: 1.3em;

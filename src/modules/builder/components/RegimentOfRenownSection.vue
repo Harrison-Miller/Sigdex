@@ -118,7 +118,7 @@ function goToRegimentOfRenown() {
 <style scoped>
 .lore-points-badge {
   display: inline-block;
-  background: #a00;
+  background: var(--color-red);
   color: #fff;
   border-radius: 10px;
   font-size: 0.75em;
@@ -134,9 +134,9 @@ function goToRegimentOfRenown() {
 }
 .add-ror-btn {
   width: 100%;
-  background: #f5f5f5;
-  color: #1976d2;
-  border: 2px dashed #1976d2;
+  background: var(--primary);
+  color: #fff;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   font-size: 1.1em;
   font-weight: 600;
@@ -150,12 +150,11 @@ function goToRegimentOfRenown() {
   justify-content: center;
 }
 .add-ror-btn:hover {
-  background: #1976d2;
-  color: #fff;
+  filter: brightness(1.1);
 }
 .delete-ror-btn {
   background: none;
-  color: #a00;
+  color: var(--danger);
   border: none;
   border-radius: 4px;
   width: 28px;
@@ -173,12 +172,11 @@ function goToRegimentOfRenown() {
   box-shadow: none;
 }
 .delete-ror-btn:hover {
-  color: #fff;
-  background: #a00;
+  filter: brightness(1.1);
 }
 .eye-btn {
   background: none;
-  color: #1976d2;
+  color: var(--primary);
   border: none;
   border-radius: 4px;
   width: 28px;
@@ -196,7 +194,6 @@ function goToRegimentOfRenown() {
   box-shadow: none;
 }
 .eye-btn:hover {
-  color: #fff;
-  background: #1976d2;
+  filter: brightness(1.1);
 }
 </style>

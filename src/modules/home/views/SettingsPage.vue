@@ -35,14 +35,14 @@
       />
     </div>
     <div class="section">
-      <label class="input-label">GITHUB_REPO
-        <input
-          v-model="githubRepo"
-          class="settings-input"
-          placeholder="BSData/age-of-sigmar-4th"
-          @change="saveGithubRepoHandler"
-        >
-      </label>
+      <TextInput
+        v-model="githubRepo"
+        type="text"
+        label="GITHUB_REPO"
+        class="settings-input"
+        placeholder="BSData/age-of-sigmar-4th"
+        @change="saveGithubRepoHandler"
+      />
     </div>
     <div class="section socials">
       <span>Join our community or view the project:</span>
@@ -87,6 +87,7 @@ import { SIGDEX_VERSION } from '../../../version';
 import BackButton from '../../core/components/BackButton.vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import ToggleBox from '../../core/components/ToggleBox.vue';
+import TextInput from '../../core/components/TextInput.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { clearAllFavorites } from '../../../favorites';
 import { clearGameCache } from '../../shared/composables/useGame';
@@ -138,7 +139,7 @@ function clearLists() {
   margin-bottom: 1rem;
   font-weight: 500;
 }
-.settings-input {
+/* .settings-input {
   width: 100%;
   font-size: 1.1rem;
   padding: 0.7em 1em;
@@ -147,9 +148,9 @@ function clearLists() {
   margin-top: 0.3em;
   box-sizing: border-box;
   background: #f9f9f9;
-}
+} */
 .legal {
-  color: #a00;
+  color: var(--danger);
   font-size: 0.95em;
 }
 .socials {

@@ -17,18 +17,18 @@ const props = defineProps<{ keywords?: string[] | null }>();
 </template>
 <style scoped>
 .keywords-bar {
-  background: #fff;
+  background: var(--bg-head);
   border-radius: 4px;
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  color: #222;
+  /* color: var(--color-white); */
   margin-top: 0.5rem;
   display: inline-block;
-  border: 1.5px solid #222;
+  border: 1.5px solid var(--border-color);
 }
 
 .keyword {
-  background: #d6d6d6;
+  background: var(--bg-selected);
   border-radius: 4px;
   padding: 0.1em 0.5em;
   font-weight: 500;

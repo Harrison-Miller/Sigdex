@@ -32,7 +32,7 @@ export const NOTICES: Notice[] = [
         </a>
         <a
           href="https://github.com/Harrison-Miller/sigdex" target="_blank"
-          style="display:inline-flex;align-items:center;gap:0.5em;font-weight:600;padding:0.5em 1.1em;border-radius:6px;text-decoration:none;font-size:1.08em;background:#24292F;color:#fff;margin-right:0.7em;"
+          style="display:inline-flex;align-items:center;gap:0.5em;font-weight:600;padding:0.5em 1.1em;border-radius:6px;text-decoration:none;font-size:1.08em;background:#111;color:#fff;margin-right:0.7em;"
           aria-label="GitHub"
         >
           <img src="/assets/brands/github-brands.svg" alt="GitHub" style="height:1.2em;width:1.2em;vertical-align:middle;" /> GitHub

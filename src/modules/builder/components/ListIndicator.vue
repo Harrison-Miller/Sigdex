@@ -17,8 +17,8 @@
         class="valid-warning"
       />
     </button>
-    <div class="points-fab">
-      <span :class="{ 'over-cap': pointsTotal > pointsCap }">
+    <div class="points-fab" :class="{ 'over-cap': pointsTotal > pointsCap }">
+      <span>
         {{ pointsTotal }} / {{ pointsCap }} pts
       </span>
     </div>
@@ -92,33 +92,34 @@ const pointsCap = computed(() => props.list.pointsCap);
     border 0.18s;
 }
 .validity-indicator.valid {
-  background: #22c55e;
-  border-color: #22c55e;
+  background: var(--success);
+  border-color: var(--success);
 }
 .validity-indicator.invalid {
-  background: #fde047;
-  border-color: #fde047;
+  background: var(--warning);
+  border-color: var(--warning);
 }
 .validity-indicator:focus,
 .validity-indicator:hover {
-  filter: brightness(0.95);
+  filter: brightness(1.1);
 }
 .points-fab {
-  background: #fff;
-  color: #222;
+  background: var(--bg-sub);
+  color: var(--text-main);
   border-radius: 10px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.13);
   padding: 0.5em 0.9em;
   font-size: 0.95em;
   font-weight: 600;
-  border: 2px solid #a00;
+  border: 2px solid var(--danger);
   min-width: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.points-fab .over-cap {
-  color: #a00;
+.over-cap {
+  background: var(--danger);
+  color: #fff;
 }
 .points-fab span {
   font-size: 1em;
@@ -127,7 +128,8 @@ const pointsCap = computed(() => props.list.pointsCap);
   color: #fff;
 }
 .valid-warning {
-  color: #a16207;
+  color: var(--color-yellow);
+  filter: brightness(0.8);
 }
 .violations-modal {
   display: flex;
@@ -146,12 +148,12 @@ const pointsCap = computed(() => props.list.pointsCap);
   padding-left: 1.2em;
 }
 .violations-modal li {
-  color: #a00;
+  color: var(--text-main);
   font-size: 1em;
   margin-bottom: 0.3em;
 }
 .close-btn {
-  background: #1976d2;
+  background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -162,6 +164,6 @@ const pointsCap = computed(() => props.list.pointsCap);
   transition: background 0.2s;
 }
 .close-btn:hover {
-  background: #1251a2;
+  filter: brightness(1.1);
 }
 </style>

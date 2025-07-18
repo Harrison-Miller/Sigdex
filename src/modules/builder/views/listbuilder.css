@@ -38,7 +38,7 @@
 }
 
 .not-found {
-  color: #a00;
+  color: var(--danger);
   font-size: 1.2em;
   margin-top: 2em;
 }
@@ -46,12 +46,13 @@
 .add-regiment-btn {
   display: block;
   width: 100%;
-  margin: 2em auto 0 auto;
-  background: #a00;
+  /* margin: 0em auto 0 auto; */
+  margin: auto;
+  background: var(--success);
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 0.9em 0;
+  padding: 0.7em 0;
   font-size: 1.15em;
   font-weight: 600;
   cursor: pointer;
@@ -61,11 +62,11 @@
 }
 
 .add-regiment-btn:hover {
-  background: #c00;
+  filter: brightness(1.1);
 }
 
 .divider {
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border-color);
   margin: 0.5em 0;
 }
 

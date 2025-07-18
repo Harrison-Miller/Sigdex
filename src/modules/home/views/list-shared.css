@@ -2,19 +2,23 @@
 body {
   background: #f9f9f6;
 }
+
 .list-container {
   max-width: 400px;
   margin: 2rem auto;
   text-align: center;
-  color: #222;
+  /* color: #222; */
 }
+
 ul {
   list-style: none;
   padding: 0;
 }
+
 li {
   margin: 0.9rem 0;
 }
+
 .filters-bar {
   display: flex;
   align-items: center;

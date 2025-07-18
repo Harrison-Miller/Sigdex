@@ -16,6 +16,7 @@
       >
       <button
         class="sort-toggle"
+        :class="sortMode === 'points' ? 'points' : 'alpha'"
         :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'"
         @click="toggleSortMode"
       >
@@ -41,7 +42,7 @@
               @click="() => addUnitToRegiment(item)"
             />
             <button
-              class="add-btn"
+              class="detail-btn"
               title="Add to Regiment"
               @click="() => goToDetail(item)"
             >
@@ -52,7 +53,7 @@
       </Section>
     </template>
     <ToggleBox v-if="!isRoR" v-model="overrideRegimentOptions">Override</ToggleBox>
-    <div v-if="!isRoR && !overrideRegimentOptions" style="color: #888; font-size: 0.95em; margin-top: 0.2em;">
+    <div v-if="!isRoR" style="color: #888; font-size: 0.95em; margin-top: 0.2em;">
       Only use the override if you think the regiment options are wrong. You may need to disable validation in the list settings.
     </div>
   </div>
@@ -332,14 +333,15 @@ function addUnitToRegiment(item: UnitPickerListItem) {
   font-size: 1.1em;
   padding: 0.6em 1em;
   border-radius: 6px;
-  border: 1.5px solid #bbb;
-  background: #fafafa;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-head);
   box-sizing: border-box;
   margin: 0 auto;
   transition: border 0.18s;
 }
 .search-bar:focus {
-  border: 1.5px solid #1976d2;
+  background: var(--bg-sub);
+  border: 1.5px solid var(--primary);
   outline: none;
 }
 .unit-list {
@@ -357,20 +359,20 @@ function addUnitToRegiment(item: UnitPickerListItem) {
 .unit-list-btn {
   flex: 1 1 0;
 }
-.add-btn {
+.detail-btn {
   min-width: 44px;
   min-height: 44px;
   height: auto;
   font-size: 1.3em;
-  background: #f5f5f5;
-  color: #1976d2;
-  border: 1.5px solid #1976d2;
+  background: var(--primary);
+  color: #fff;
+  border: 1.5px solid var(--border-color);
   border-radius: 7px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 0.1em;
+  margin-left: 0.25em;
   margin-right: 0;
   margin-top: 0;
   margin-bottom: 0;
@@ -381,47 +383,52 @@ function addUnitToRegiment(item: UnitPickerListItem) {
     color 0.18s,
     border 0.18s;
 }
-.add-btn:hover {
-  background: #1976d2;
-  color: #fff;
-  border-color: #1976d2;
+.detail-btn:hover {
+  filter: brightness(1.1);
 }
 .regiment-options-bar {
-  background: #f3f7ff;
-  border: 1.5px solid #b3c6e6;
+  background: var(--bg-sub);
+  border: 1.5px solid var(--border-color);
   border-radius: 7px;
   padding: 0.7em 1.1em 0.7em 1.1em;
   margin-bottom: 1.1em;
   font-size: 1.04em;
-  color: #1a237e;
+  color: var(--text-main);
 }
 .regiment-options-bar ul {
   margin: 0;
   padding-left: 1.1em;
-  list-style-type: disc;
-  list-style-position: inside;
+  list-style-type: disc inside;
 }
 .regiment-options-bar li {
   margin: 0.05em 0 0.05em 0;
   padding: 0;
-  text-indent: 0;
+  /* text-indent: 0; */
   display: list-item;
 }
 .sort-toggle {
   font-size: 1em;
   padding: 0.5em 1.1em;
   border-radius: 6px;
-  border: 1.5px solid #1976d2;
-  background: #f5f5f5;
-  color: #1976d2;
+  border: 1.5px solid var(--color-red);
+  background: var(--bg-sub);
   cursor: pointer;
   margin-left: 0.5em;
   transition:
     background 0.18s,
     color 0.18s;
 }
-.sort-toggle:hover {
-  background: #1976d2;
+.sort-toggle.points {
+  background: var(--color-red);
   color: #fff;
+  border: 1.5px solid var(--colo-red);
+}
+.sort-toggle.alpha {
+  background: var(--bg-sub);
+  color: var(--text-main);
+  border: 1.5px solid var(--bored-color);
+}
+.sort-toggle:hover {
+  filter: brightness(0.95);
 }
 </style>

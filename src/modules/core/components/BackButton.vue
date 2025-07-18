@@ -19,15 +19,14 @@ function goBack() {
     @click="goBack"
   >
     <font-awesome-icon
+class="bg-sub text-muted"
       icon="fa-solid fa-arrow-left"
       :style="{
         fontSize: iconSize + 'px',
-        background: '#f3f3f3',
         borderRadius: '50%',
         width: iconSize + 'px',
         height: iconSize + 'px',
         padding: iconSize * 0.22 + 'px',
-        color: '#555',
       }"
     />
   </button>
@@ -48,6 +47,6 @@ function goBack() {
   z-index: 10;
 }
 .back-btn:hover {
-  background: #e5e5e5;
+  background: var(--bg-selected);
 }
 </style>

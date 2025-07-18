@@ -60,11 +60,11 @@ select {
   max-width: 420px;
   min-width: 220px;
   padding: 0.7em 1.2em 0.7em 0.9em;
-  border: 1.7px solid #bbb;
+  border: 1.7px solid var(--border-color);
   border-radius: 8px;
-  background: #f7fafd;
+  background: var(--bg-head);;
   font-size: 1.08em;
-  color: #222;
+  color: var(--text-main);
   margin-bottom: 0.7em;
   margin-top: 0.2em;
   transition: border 0.18s;
@@ -76,8 +76,8 @@ select {
 }
 
 select:focus {
-  border-color: #1976d2;
+  border-color: var(--color-primary);
   outline: none;
-  background: #f0f6ff;
+  background: var(--bg-sub);
 }
 </style>

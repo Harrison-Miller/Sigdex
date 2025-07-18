@@ -109,9 +109,9 @@ const copyToClipboard = async () => {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: transparent;
-  color: black;
-  border: 1px solid black;
+  background: var(--bg-sub);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
@@ -122,8 +122,8 @@ const copyToClipboard = async () => {
 }
 
 .copy-button:hover {
-  background: black;
-  color: white;
+  background: var(--bg-head);
+  color: var(--text-main);
 }
 
 .copy-button:active {
@@ -141,12 +141,13 @@ const copyToClipboard = async () => {
   flex: 1;
   width: 100%;
   padding: 16px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   font-family: 'Courier New', Consolas, monospace;
   font-size: 14px;
   line-height: 1.4;
-  background: #fafafa;
+  background: var(--bg-head);
+  color: var(--text-main);
   resize: none;
   outline: none;
   overflow: auto;
@@ -154,14 +155,14 @@ const copyToClipboard = async () => {
 }
 
 .export-textarea:focus {
-  border-color: #007bff;
-  background: white;
+  border-color: var(--primary);
+  background: var(--bg-sub);
 }
 
 .not-found {
   padding: 32px;
   text-align: center;
-  color: #666;
+  color: var(--text-muted);
   font-size: 1.1rem;
 }
 </style>

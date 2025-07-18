@@ -32,16 +32,17 @@ defineEmits(['update:modelValue']);
 }
 .toggle-label {
   font-size: 1.5em;
-  color: #222;
+  color: var(--text-main);
   margin-right: 0.2em;
 }
 .toggle-slider {
   width: 76px;
   height: 44px;
-  background: #ddd;
+  background: var(--bg-sub);
   border-radius: 24px;
   position: relative;
   transition: background 0.18s;
+  border: 2px solid var(--border-color);
 }
 .toggle-slider::before {
   content: '';
@@ -50,16 +51,16 @@ defineEmits(['update:modelValue']);
   top: 6px;
   width: 32px;
   height: 32px;
-  background: #fff;
+  background: var(--bg-main);
   border-radius: 50%;
   transition: transform 0.18s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 .toggle-box.checked .toggle-slider {
-  background: #1976d2;
+  background: var(--success);
 }
 .toggle-box.checked .toggle-slider::before {
   transform: translateX(32px);
-  background: #fff;
+  background: var(--bg-main);
 }
 </style>

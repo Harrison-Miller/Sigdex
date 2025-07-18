@@ -51,9 +51,9 @@ function decrement() {
 .counter-btn {
   width: 2em;
   height: 2em;
-  border: 1.5px solid #bbb;
-  background: #f5f6fa;
-  color: #333;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-head);
+  color: var(--text-main);
   font-size: 1.3em;
   font-weight: bold;
   display: flex;
@@ -69,13 +69,13 @@ function decrement() {
 }
 .counter-btn.disabled,
 .counter-btn:disabled {
-  background: #e0e1e6;
-  color: #aaa;
+  background: var(--bg-sub);
+  color: var(--text-muted);
   cursor: not-allowed;
-  border-color: #ccc;
+  border-color: var(--border-color);
 }
 .counter-btn:active {
-  background: #e0e1e6;
+  background: var(--bg-sub);
 }
 .counter-btn:first-child {
   border-top-left-radius: 7px;
@@ -93,9 +93,9 @@ function decrement() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
-  border-top: 1.5px solid #bbb;
-  border-bottom: 1.5px solid #bbb;
+  background: var(--bg-sub);
+  border-top: 1.5px solid var(--border-color);
+  border-bottom: 1.5px solid var(--border-color);
   border-left: none;
   border-right: none;
   font-size: 1.1em;

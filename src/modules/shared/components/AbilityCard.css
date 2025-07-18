@@ -1,6 +1,6 @@
 .card {
-  border: 1px solid #ccc;
-  background-color: #f0f0f0;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-head);
   /* Remove fixed padding to allow content-fit */
   padding: 0;
   margin-bottom: 10px;
@@ -59,46 +59,4 @@
 
 .card-body div {
   margin-bottom: 8px;
-}
-
-.red {
-  background-color: #a10000;
-}
-
-.yellow {
-  background-color: #d7b21d;
-}
-
-.black {
-  background-color: #171717;
-}
-
-.gray {
-  background-color: #5a5e5a;
-}
-
-.orange {
-  background-color: #db571a;
-}
-
-.green {
-  background-color: #2a7e10;
-}
-
-.blue {
-  background-color: #055c72;
-}
-
-.purple {
-  background-color: #642a8d;
-}
-
-.ability-keywords {
-  background: #eee;
-  border-radius: 6px;
-  padding: 0.2rem 0.6rem;
-  font-size: 0.9rem;
-  color: #444;
-  margin-top: 0.5rem;
-  display: inline-block;
 }

@@ -28,6 +28,8 @@ function onInput(event: Event) {
 
 <style scoped>
 .text-input-label {
+  background: none;
+  border: none;
   display: flex;
   flex-direction: column;
   gap: 0.3em;
@@ -36,7 +38,15 @@ function onInput(event: Event) {
 .text-input {
   padding: 0.5em;
   border-radius: 6px;
-  border: 1px solid #bbb;
+  background: var(--bg-head);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
   font-size: 1em;
+}
+.text-input:focus {
+  outline: none;
+  background: var(--bg-sub);
+  border-color: var(--border-primary);
+  box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.2);
 }
 </style>

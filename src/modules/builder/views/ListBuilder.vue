@@ -76,8 +76,8 @@
       collapse-key="battleTacticCards"
     >
       <template #title>Battle Tactic Cards</template>
-      <div class="battle-tactic-selectors">
-        <div class="battle-tactic-selector">
+      <div>
+        <div>
           <OptionSelect
             v-model="list.battleTacticCard1"
             :options="battleTacticCards.map((card) => card.name)"
@@ -88,7 +88,7 @@
             :card="selectedBattleTacticCard1"
           />
         </div>
-        <div class="battle-tactic-selector">
+        <div>
           <OptionSelect
             v-model="list.battleTacticCard2"
             :options="battleTacticCards.map((card) => card.name)"

@@ -51,7 +51,7 @@
         Rename
       </button>
     </div>
-    <hr>
+    <div class="divider"></div>
     <button
       class="delete-btn"
       @click="deleteCurrentList"
@@ -148,6 +148,12 @@ function renameCurrentList() {
 
 </script>
 <style scoped>
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border-color);
+  margin: 0.5em 0;
+}
 .settings-duplicate-btn {
   position: absolute;
   top: 1.2em;
@@ -155,10 +161,10 @@ function renameCurrentList() {
   z-index: 20;
 }
 .delete-btn:hover {
-  background: #c00;
+  filter: brightness(1.1);
 }
 .input-error {
-  color: #c00;
+  color: var(--danger);
   font-size: 0.95em;
   margin-top: 0.2em;
 }
@@ -183,36 +189,38 @@ function renameCurrentList() {
 }
 
 .save-btn {
-  background: #1976d2;
+  background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 0.5em 1.2em;
+  padding: 0.7em 4.2em;
+  font-size: 1.1em;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
 }
 .save-btn:disabled {
-  background: #ccc;
-  color: #888;
+  background: var(--bg-sub);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 .save-btn:not(:disabled):hover {
-  background: #1565c0;
+  filter: brightness(1.1);
 }
 .delete-btn {
-  background: #a00;
+  background: var(--danger);
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 0.5em 1.2em;
+  padding: 0.7em 1.2em;
+  font-size: 1.1em;
   font-weight: 600;
   cursor: pointer;
   margin-top: 1.2em;
-  width: 100%;
+  width: 80%;
   transition: background 0.2s;
 }
 .delete-btn:hover {
-  background: #c00;
+  filter: brightness(1.1);
 }
 </style>

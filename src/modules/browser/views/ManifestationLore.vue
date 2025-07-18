@@ -70,7 +70,7 @@ const units = computed(() => {
 }
 .points-badge {
   display: inline-block;
-  background: #8b0000;
+  background: var(--color-red);
   color: #f3f4f6;
   font-weight: 600;
   font-size: 0.65em;
@@ -81,7 +81,7 @@ const units = computed(() => {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 .error {
-  color: #b91c1c;
+  color: var(--color-red);
   margin-top: 1em;
   font-weight: 500;
 }

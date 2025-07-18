@@ -13,15 +13,14 @@ const iconSize = props.size ?? 36;
     @click="emit('click')"
   >
     <font-awesome-icon
+class="bg-sub text-muted"
       :icon="icon"
       :style="{
         fontSize: iconSize + 'px',
-        background: '#f3f3f3',
         borderRadius: '50%',
         width: iconSize + 'px',
         height: iconSize + 'px',
         padding: iconSize * 0.22 + 'px',
-        color: '#555',
       }"
     />
   </button>
@@ -39,6 +38,6 @@ const iconSize = props.size ?? 36;
   transition: background 0.2s;
 }
 .circle-btn:hover {
-  background: #e5e5e5;
+  background: var(--bg-selected);
 }
 </style>

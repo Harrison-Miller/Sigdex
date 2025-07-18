@@ -5,8 +5,8 @@
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light;
-  color: var(--color-text);
-  background-color: var(--color-bg);
+  color: var(--text-main);
+  background-color: var(--bg-main);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -15,37 +15,35 @@
 
 a {
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--primary);
   text-decoration: inherit;
 }
 
 a:hover {
-  color: var(--color-warning);
+  filter: brightness(1.1);
 }
 
-body {
+/* body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: var(--color-bg);
-  color: var(--color-text);
   display: block;
-}
-
+} */
+/* 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
   color: var(--color-text);
-}
+} */
 
-button {
+/* button {
   border-radius: 4px;
   border: 1.5px solid var(--color-text);
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: var(--color-bg);
+  background-color: var(--bg-secondary);
   color: var(--color-text);
   cursor: pointer;
   transition:
@@ -59,70 +57,20 @@ button:hover {
   background: #f3f3ef;
   color: #111;
   border: 1.5px solid #111;
-}
+} */
 
-/* Helper classes for colors */
-.text-primary {
-  color: var(--color-primary);
-}
-
-.text-success {
-  color: var(--color-success);
-}
-
-.text-danger {
-  color: var(--color-danger);
-}
-
-.text-warning {
-  color: var(--color-warning);
-}
-
-.text-bg {
-  color: var(--color-bg);
-}
-
-.text-default {
-  color: var(--color-text);
-}
-
-.bg-primary {
-  background: var(--color-primary);
-  color: #fff;
-}
-
-.bg-success {
-  background: var(--color-success);
-  color: #fff;
-}
-
-.bg-danger {
-  background: var(--color-danger);
-  color: #fff;
-}
-
-.bg-warning {
-  background: var(--color-warning);
-  color: #222;
-}
-
-.bg-default {
-  background: var(--color-bg);
-  color: var(--color-text);
-}
-
-.card {
+/* .card {
   padding: 2em;
-}
+} */
 
 #app {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0.5rem;
   text-align: center;
 }
 
-.section-title {
+/* .section-title {
   text-align: left;
   margin: 1.5rem 0 0.5rem 0;
   font-size: 1.2em;
@@ -141,4 +89,4 @@ button:hover {
   color: var(--color-warning);
   margin-top: 0.5em;
   margin-bottom: 0.3em;
-}
+} */

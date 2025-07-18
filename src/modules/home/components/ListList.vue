@@ -81,20 +81,22 @@ function goToList(list: IListItem) {
   justify-content: center;
 }
 .create-btn {
-  background: #4caf50;
+  background: var(--success);
   color: #fff;
   border: none;
 }
 .create-btn:hover {
-  background: #388e3c;
+  background: var(--success);
+  filter: brightness(1.1);
 }
 .import-btn {
-  background: #1976d2;
+  background: var(--primary);
   color: #fff;
   border: none;
 }
 .import-btn:hover {
-  background: #0d47a1;
+  background: var(--primary);
+  filter: brightness(1.1);
 }
 .import-icon {
   margin-right: 0.3em;
@@ -103,10 +105,6 @@ function goToList(list: IListItem) {
 .list-summary {
   font-size: 1.1em;
   margin-bottom: 0.5em;
-}
-.faction {
-  color: #666;
-  margin-left: 0.5em;
 }
 .empty-message {
   color: #888;

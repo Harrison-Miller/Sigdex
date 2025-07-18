@@ -10,7 +10,7 @@ const emit = defineEmits(['update:modelValue']);
 const { modelValue, disabled, noText, size } = toRefs(props);
 const isActive = ref(!!modelValue.value);
 watch(modelValue, (v) => {
-  isActive.value = !!v;
+  isActive.value = !!v; 
 });
 const showActive = computed(() => isActive.value && !disabled?.value);
 const iconSize = computed(() => size?.value ?? 22);
@@ -23,7 +23,7 @@ function toggle() {
 <template>
   <button
     class="favorite-toggle"
-    :class="{ active: showActive, disabled: disabled }"
+    :class="[showActive ? 'active' : '', !noText ? 'with-text' : '', disabled ? 'disabled' : '']"
     :disabled="disabled"
     @click="toggle"
   >
@@ -67,23 +67,27 @@ function toggle() {
   align-items: center;
   gap: 0.4em;
   font-size: 1.1em;
-  color: #ec4899;
+  color: var(--color-pink);
   padding: 0.2em 0.6em;
   border-radius: 4px;
   transition:
     background 0.2s,
     color 0.2s;
 }
-.favorite-toggle.active {
-  background: #ffe4f3;
+.favorite-toggle.with-text {
+  border: 1px solid var(--color-pink);
+}
+.favorite-toggle.active.with-text {
+  background: none;
+  border: 1px solid var(--color-pink);
 }
 .favorite-toggle svg {
   vertical-align: middle;
 }
 .favorite-toggle.disabled,
 .favorite-toggle:disabled {
-  color: #aaa !important;
-  background: #f3f3f3 !important;
+  color: var(--text-muted) !important;
+  background: var(--bg-sub) !important;
   cursor: not-allowed !important;
   opacity: 0.7;
 }

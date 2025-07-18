@@ -1,9 +1,9 @@
 <template>
-  <div class="list-import-wrapper">
+  <div>
     <BackButton />
     <div class="list-import-view">
-      <div class="import-header">
-        <h1 class="import-title">Import List</h1>
+      <div>
+        <h1>Import List</h1>
       </div>
       <div class="import-container">
         <label for="import-textarea">Paste your exported list here:</label>
@@ -14,9 +14,8 @@
           aria-label="Import list content"
         />
         <div class="import-actions-centered">
-          <button @click="handleBack">Cancel</button>
           <button
-            class="import-btn"
+            class="import-btn large"
             :disabled="!canImport"
             @click="handleImport"
           >
@@ -86,10 +85,6 @@ const showCreateModal = ref(false);
 const importedList = ref<any>(null);
 const createName = ref('');
 
-function handleBack() {
-  router.back();
-}
-
 function handleImport() {
   if (!game.value) {
     error.value = 'Game data not loaded.';
@@ -132,8 +127,11 @@ function handleCreate() {
   gap: 1rem;
 }
 .import-textarea {
+  background: var(--bg-sub);
+  color: var(--text-main);
   width: 100%;
   min-height: 550px;
+  max-height: 700px;
   font-family: monospace;
   font-size: 1rem;
 }
@@ -150,25 +148,36 @@ function handleCreate() {
   margin-top: 1.2em;
 }
 .import-btn {
-  background: #4caf50;
+  background: var(--success);
   color: white;
   border: none;
-  padding: 0.5rem 1.5rem;
+  padding: 0.7rem 2.2rem;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 1.15em;
+  font-weight: 600;
+  min-width: 180px;
+  display: block;
+  margin: 0 auto;
+}
+.import-btn.large {
+  min-width: 220px;
+  font-size: 1.18em;
+  padding: 0.9rem 2.6rem;
 }
 .import-btn:disabled {
-  background: #ccc;
+  background: var(--bg-sub);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 .import-error {
-  color: #c00;
+  color: var(--danger);
   font-weight: bold;
 }
 .import-summary {
   margin-bottom: 1em;
   font-size: 1em;
-  color: #333;
+  color: var(--text-main);
 }
 .import-summary ul {
   padding: 0;

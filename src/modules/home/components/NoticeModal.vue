@@ -54,7 +54,8 @@ const formattedTimestamp = computed(() => {
   justify-content: center;
 }
 .notice-modal {
-  background: #fff;
+  background: var(--bg-head);
+  color: var(--text-main);
   border-radius: 10px;
   max-width: 400px;
   width: 90vw;
@@ -69,7 +70,7 @@ const formattedTimestamp = computed(() => {
   background: none;
   border: none;
   font-size: 2em;
-  color: #888;
+  color: var(--text-muted);
   cursor: pointer;
 }
 .notice-modal-body {
@@ -77,7 +78,7 @@ const formattedTimestamp = computed(() => {
 }
 .notice-modal-timestamp {
   font-size: 0.9em;
-  color: #888;
+  color: var(--text-muted);
   text-align: right;
 }
 </style>

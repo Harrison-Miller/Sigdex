@@ -65,24 +65,24 @@ const hasRange = props.weapons.some((w) => w.range && w.range !== '');
 .weapon-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
-  color: #222;
+  background: var(--bg-head);
+  color: var(--text-main);
 }
 
 .weapon-table th,
 .weapon-table td {
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   padding: 8px;
   text-align: left;
 }
 
 .weapon-table th {
-  background: #f7f7f7;
+  background: var(--bg-head);
 }
 
 .weapon-abilities {
   font-size: 0.8em;
-  color: #888;
+  color: var(--text-muted);
   margin-top: 2px;
 }
 </style>

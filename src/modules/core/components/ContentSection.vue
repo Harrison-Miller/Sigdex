@@ -39,7 +39,7 @@ const { collapsed, toggle } = useCollapsableState(
   margin-bottom: 1.2em;
 }
 .section-divider {
-  border-top: 1.5px solid #e0e0e0;
+  border-top: 1.5px solid var(--border-color);
   margin: 1.2em 0 0.7em 0;
 }
 .section-header-row {
@@ -58,7 +58,7 @@ const { collapsed, toggle } = useCollapsableState(
   border: none;
   font-size: 1.2em;
   cursor: pointer;
-  color: #888;
+  color: var(--text-muted);
   padding: 0 0.2em;
   transition: color 0.2s;
 }

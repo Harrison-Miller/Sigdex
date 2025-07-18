@@ -54,7 +54,7 @@ function getAbilityIcon(type: string) {
     </div>
     <div
       class="card-header ability-header"
-      :class="(props.ability.color || 'black').toLowerCase()"
+      :class="'bg-'+(props.ability.color || 'black').toLowerCase()"
     >
       <span class="icon">
         <font-awesome-icon :icon="getAbilityIcon(props.ability.type)" />
@@ -92,9 +92,9 @@ function getAbilityIcon(type: string) {
   position: absolute;
   top: -12px;
   right: -12px;
-  background: #fff;
-  border: 2px solid #888;
-  color: #333;
+  background: var(--bg-sub);
+  border: 2px solid var(--border-color);
+  color: var(--text-main);
   font-weight: bold;
   border-radius: 50%;
   width: 36px;
@@ -121,8 +121,8 @@ function getAbilityIcon(type: string) {
 
 .diamond-bg {
   font-size: 2.2rem;
-  color: #fff;
-  stroke: #000;
+  color: var(--bg-sub);
+  stroke: var(--border-color);
   stroke-width: 20px;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
 }
@@ -132,7 +132,7 @@ function getAbilityIcon(type: string) {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #222;
+  color: var(--text-main);
   font-weight: bold;
   font-size: 1.1rem;
   pointer-events: none;
@@ -152,8 +152,8 @@ function getAbilityIcon(type: string) {
 
 .hexagon-bg {
   font-size: 2.2rem;
-  color: #fff;
-  stroke: #000;
+  color: var(--bg-sub);
+  stroke: var(--border-color);
   stroke-width: 20px;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
 }
@@ -163,23 +163,17 @@ function getAbilityIcon(type: string) {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #222;
+  color: var(--text-main);
   font-weight: bold;
   font-size: 1.1rem;
   pointer-events: none;
-}
-
-.ability-declare {
-  font-size: 0.95em;
-  color: #666;
-  margin-bottom: 0.3em;
 }
 
 .card.ability-card {
   position: relative;
 }
 .points-badge {
-  background: #8b0000;
+  background: var(--color-red);
   color: #fff;
   font-size: 0.78em;
   font-weight: 600;

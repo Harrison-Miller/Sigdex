@@ -97,27 +97,11 @@ function handleCreate() {
 }
 </script>
 <style scoped>
-.create-list-view {
-  max-width: 420px;
-  margin: 2.5rem auto;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-  padding: 2.2em 2em 1.5em 2em;
-  color: #222;
-  position: relative;
-}
 .floating-back-btn {
   position: absolute;
   top: 1.1em;
   left: 1.1em;
   z-index: 10;
-}
-.create-list-view h2 {
-  margin: 0 0 1em 0;
-  font-size: 1.5em;
-  font-weight: 700;
-  text-align: center;
 }
 .form-content {
   display: flex;
@@ -126,30 +110,35 @@ function handleCreate() {
 }
 .form-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 1em;
-  margin-top: 0.5em;
+  justify-content: center;
+  margin-top: 1.2em;
 }
 .create-btn {
-  background: #a00;
+  flex: 1 1 0;
+  min-width: 220px;
+  background: var(--success);
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 0.5em 1.2em;
+  padding: 0.7em 1.6em;
+  font-size: 1.15em;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
+  margin: 0 auto;
+  display: block;
 }
 .create-btn:disabled {
-  background: #ccc;
-  color: #888;
+  background: var(--bg-head);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 .create-btn:not(:disabled):hover {
-  background: #c00;
+  background: var(--success);
+  filter: brightness(1.1);
 }
 .input-error {
-  color: #c00;
+  color: var(--danger);
   font-size: 0.95em;
   margin-top: 0.2em;
 }

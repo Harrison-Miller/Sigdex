@@ -56,8 +56,8 @@ function select(left: boolean) {
   flex: 1 1 0;
   padding: 0.5em 1.2em;
   border: none;
-  background: #eee;
-  color: #333;
+  background: var(--bg-head);
+  color: var(--text-main);
   font-weight: 600;
   border-radius: 6px 6px 0 0;
   cursor: pointer;
@@ -65,8 +65,8 @@ function select(left: boolean) {
   text-align: center;
 }
 .two-tab-bar button.active {
-  background: #fff;
-  border-bottom: 2px solid #222;
-  color: #222;
+  background: var(--bg-sub);
+  color: var(--text-main);
+  border-bottom: 2px solid var(--border-color);
 }
 </style>
