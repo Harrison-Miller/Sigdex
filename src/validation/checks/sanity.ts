@@ -112,6 +112,8 @@ function validArmySelections(list: List, game: Game): string[] {
 }
 
 function validGameSelections(list: List, game: Game): string[] {
+  if (list.validator === 'holy havoc') return []; // no tactics in holy havoc
+
   const errors: string[] = [];
   if (!list.battleTacticCard1 || !list.battleTacticCard2) {
     return ['Must select two battle tactic cards.'];

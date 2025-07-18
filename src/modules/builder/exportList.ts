@@ -164,7 +164,8 @@ export function exportList(list: List, game: Game): string {
   const points = calculatePoints(list, game);
 
   // name and points
-  out += `${list.name} ${points}/2000 pts\n\n`;
+  const cap = list.pointsCap || 2000; // default to 2000 if no cap is set
+  out += `${list.name} ${points}/${cap} pts\n\n`;
 
   if (army.isArmyOfRenown) {
     const aorNameParts = army.name.split(' - ');

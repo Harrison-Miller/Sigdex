@@ -71,7 +71,7 @@
         </div>
       </div>
     </Section>
-    <Section
+    <Section v-if="showTactics"
       :default-collapsed="battleTacticCardsCollapsed"
       collapse-key="battleTacticCards"
     >
@@ -221,6 +221,10 @@ const selectedBattleTacticCard2 = computed(() => {
     battleTacticCards.value.find((card) => card.name === list.value.battleTacticCard2) ||
     new BattleTacticCardModel()
   );
+});
+
+const showTactics = computed(() => {
+  return list.value.validator !== 'holy havoc';
 });
 
 const battleTraitsCollapsed = ref(true);

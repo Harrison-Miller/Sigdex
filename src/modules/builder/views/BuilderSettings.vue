@@ -109,7 +109,7 @@ watch(list, (val) => {
 });
 
 // Validator logic
-const validatorOptions = ['standard', 'highlander', 'disabled'];
+const validatorOptions = ['standard', 'highlander', 'holy havoc','disabled'];
 const validator = ref(list.value?.validator ?? 'standard');
 watch(validator, (val) => {
   if (list.value) {
