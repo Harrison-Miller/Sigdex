@@ -3,15 +3,28 @@ import type { Model } from './model';
 import { Stats } from './stats';
 import type { Weapon } from './weapon';
 
-export const UnitCategories: UnitCategory[] = [
-  'LEGENDS',
+export const UnitCategoriesOrder: UnitCategory[] = [
   'HERO',
   'INFANTRY',
   'CAVALRY',
   'BEAST',
   'MONSTER',
   'WAR MACHINE',
+  'FACTION TERRAIN',
   'MANIFESTATION',
+  'LEGENDS',
+  'OTHER',
+];
+
+export const UnitCategories: UnitCategory[] = [
+  'LEGENDS',
+  'MANIFESTATION',
+  'HERO',
+  'INFANTRY',
+  'CAVALRY',
+  'BEAST',
+  'MONSTER',
+  'WAR MACHINE',
   'FACTION TERRAIN',
   'OTHER',
 ];

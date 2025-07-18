@@ -88,15 +88,14 @@ async function loadGame() {
     _game.value = game;
 
     const data = SuperJSON.stringify(game);
-    const bytes = new TextEncoder().encode(data);
-    console.log('Game data size:', bytes.length, 'bytes and ', data.length, 'characters');
-    // Compression test
-    const compressed = LZString.compressToUTF16(data);
-    const compressedBytes = new TextEncoder().encode(compressed);
-    console.log('Compressed game data size:', compressedBytes.length, 'bytes and ', compressed.length, 'characters');
-    // 5242880 bytes = 5MB
-
-    localStorage.setItem(GAME_STORAGE_KEY, compressed);
+    // Only compress in production
+    if (import.meta.env.DEV) {
+      localStorage.setItem(GAME_STORAGE_KEY, data);
+      console.log('Stored uncompressed game data in development mode.');
+    } else {
+      const compressed = LZString.compressToUTF16(data);
+      localStorage.setItem(GAME_STORAGE_KEY, compressed);
+    }
     localStorage.setItem(GAME_TIMESTAMP_KEY, Date.now().toString());
     localStorage.setItem(GAME_VERSION_KEY, SIGDEX_VERSION);
     _loading.value = false;

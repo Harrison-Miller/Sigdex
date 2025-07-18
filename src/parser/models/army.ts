@@ -1,7 +1,7 @@
 import { Ability } from './ability';
 import type { BattleProfile } from './battleProfile';
 import type { Lore } from './lore';
-import { UnitCategories, type UnitCategory } from './unit';
+import { UnitCategoriesOrder, type UnitCategory } from './unit';
 
 export type GrandAlliance = 'Order' | 'Chaos' | 'Death' | 'Destruction';
 
@@ -140,7 +140,7 @@ export class Army implements IArmy {
     }
 
     // compute the unit list by category
-    for (const cat of UnitCategories) {
+    for (const cat of UnitCategoriesOrder) {
       this.unitList.set(cat, []);
     }
 

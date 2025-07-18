@@ -66,7 +66,7 @@ export class Parser {
 
     // assign summon ability and summoned units
     this.units.forEach((unit) => {
-      if (unit.category === 'MANIFESTATION') {
+      if (unit.category === 'MANIFESTATION' || unit.hasKeyword('MANIFESTATION')) {
         this.allLores.forEach((lore) => {
           lore.abilities.forEach((ability: Ability) => {
             if (ability.keywords.includes('**^^Summon^^**')) {
@@ -84,8 +84,11 @@ export class Parser {
     // look at all lores and check if any are missing a summoning spell
     this.allLores.forEach((lore) => {
       lore.abilities.forEach((ability: Ability) => {
-        if (ability.keywords.includes('**^^Summon^^**') && !ability.summonedUnit) {
-          console.warn(`No unit found for summoning spell: ${ability.name}`);
+        // check if the summoned unit looks like a uuid
+        const isUUID = /^[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}$/i.test(ability.summonedUnit || '');
+        if (ability.keywords.includes('**^^Summon^^**') && (!ability.summonedUnit || isUUID)) {
+          // not sure why this triggers on eight fold doom-sigil, even though it is linked
+          console.warn(`No unit found for summoning spell: ${ability.name} with summonedUnit ${ability.summonedUnit}`);
         }
       });
     });

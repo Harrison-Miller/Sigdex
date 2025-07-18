@@ -67,7 +67,7 @@ import BackButton from '../../core/components/BackButton.vue';
 import Section from '../../core/components/ContentSection.vue';
 import { useGame } from '../../shared/composables/useGame';
 import { BattleProfile } from '../../../parser/models/battleProfile';
-import { UnitCategories, type UnitCategory } from '../../../parser/models/unit';
+import { UnitCategoriesOrder, type UnitCategory } from '../../../parser/models/unit';
 import { Army } from '../../../parser/models/army';
 import { filterBattleProfilesByRegimentOptions } from '../filter';
 import { useList } from '../../shared/composables/useList';
@@ -93,7 +93,7 @@ const army = computed(
 );
 const search = ref('');
 
-const unitPickerCategories = [...UnitCategories, 'Regiments of Renown'];
+const unitPickerCategories = [...UnitCategoriesOrder, 'Regiments of Renown'];
 
 const isRoR = filter.toLowerCase() === 'ror';
 
