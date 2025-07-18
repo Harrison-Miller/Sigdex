@@ -45,6 +45,7 @@ export interface IArmy {
   name: string;
   grandAlliance: GrandAlliance; // probably computed by looking up the keywords of the first unit in battleProfiles
 
+  battleTraitNotes: string[]; // notes for battle traits, if any
   battleTraits: Ability[];
   formations: Map<string, Ability[]>; // a formation may have more than one ability
 
@@ -79,6 +80,7 @@ export class Army implements IArmy {
   name: string;
   grandAlliance: GrandAlliance;
 
+  battleTraitNotes: string[];
   battleTraits: Ability[];
   formations: Map<string, Ability[]>;
 
@@ -110,6 +112,7 @@ export class Army implements IArmy {
     this.battleProfiles = data?.battleProfiles ?? new Map();
     this.grandAlliance = data?.grandAlliance ?? 'Order'; // default to order if not specified
 
+    this.battleTraitNotes = data?.battleTraitNotes ?? [];
     this.battleTraits = data?.battleTraits ?? [];
     this.formations = data?.formations ?? new Map();
 

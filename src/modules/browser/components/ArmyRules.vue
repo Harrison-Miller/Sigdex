@@ -5,6 +5,9 @@
       collapse-key="details"
     >
       <template #title>Details</template>
+        <ul v-if="army.battleTraitNotes.length" class="details-list">
+            <li v-for="(note, index) in army.battleTraitNotes" :key="index" v-html="formatText(note)"></li>
+          </ul>
       <ul class="details-list">
         <li
           v-if="army.requiredGeneral.length"
@@ -208,11 +211,12 @@ import OptionSelect from '../../core/components/OptionSelect.vue';
 import type { Army } from '../../../parser/models/army';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import Section from '../../core/components/ContentSection.vue';
+import { formatText } from '../../../utils/formatter';
 
 const props = defineProps<{ army: Army }>();
 
 const showAoRDetails = computed(() => {
-  return props.army.requiredGeneral.length > 0 || props.army.mustBeGeneralIfIncluded.length > 0;
+  return props.army.requiredGeneral.length > 0 || props.army.mustBeGeneralIfIncluded.length > 0 || props.army.battleTraitNotes.length > 0;
 });
 
 function formatRequiredGeneral(requiredGeneral: string[]): string {

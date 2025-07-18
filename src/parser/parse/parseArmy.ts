@@ -20,7 +20,6 @@ export function parseArmy(
   const army: Partial<IArmy> = {
     name,
     revision: catalogue?.['@_revision'],
-    battleTraits: parseBattleTraits(catalogue),
     formations: parseFormations(catalogue),
     artifacts: parseEnhancementTables(catalogue, 'Artefacts of Power'),
     heroicTraits: parseEnhancementTables(catalogue, 'Heroic Traits'),
@@ -32,6 +31,10 @@ export function parseArmy(
     requiredGeneral: parseRequiredGenerals(catalogue, units),
     mustBeGeneralIfIncluded: parseMustBeGeneralIfIncluded(catalogue, units),
   };
+
+  const battleTraits = parseBattleTraits(catalogue);
+  army.battleTraits = battleTraits.abilities;
+  army.battleTraitNotes = battleTraits.notes;
 
   // get the first unit
   const firstBp = army.battleProfiles?.keys().next().value || '';
@@ -51,12 +54,19 @@ export function parseArmy(
   return new Army(army);
 }
 
-export function parseBattleTraits(root: any): Ability[] {
+export function parseBattleTraits(root: any): { abilities: Ability[], notes: string[] } {
   const battleTraitsNode = root?.sharedSelectionEntries?.selectionEntry?.find((entry: any) =>
     entry['@_name'].startsWith('Battle Traits')
   );
 
-  return parseAbilities(battleTraitsNode?.profiles);
+  // get rules
+  const noteNodes = battleTraitsNode?.rules?.rule || [];
+  const notes = noteNodes.map((rule: any) => {
+    const description = (typeof rule?.description === 'string' ? rule.description : rule?.description?.['#text']) || '';
+    return description.trim() || '';
+  }).filter((note: string) => note.length > 0) || [];
+  const abilities = parseAbilities(battleTraitsNode?.profiles);
+  return { abilities, notes };
 }
 
 export function parseFormations(root: any): Map<string, Ability[]> {

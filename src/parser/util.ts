@@ -24,6 +24,7 @@ export function xmlParser(): XMLParser {
         'modifierGroup',
         'infoLink',
         'forceEntry',
+        'rule',
       ];
       if (arrayNames.includes(name)) {
         return true;
