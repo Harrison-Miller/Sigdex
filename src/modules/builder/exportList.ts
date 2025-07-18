@@ -200,7 +200,7 @@ export function exportList(list: List, game: Game): string {
   }
 
   const cards: string[] = [list.battleTacticCard1, list.battleTacticCard2].filter(Boolean);
-  if (cards.length > 0) {
+  if (cards.length > 0 && list.validator !== 'holy havoc') {
     out += '\nBattle Tactic Cards: ';
     out += `${cards.join(', ')}`;
   }

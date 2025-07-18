@@ -71,7 +71,8 @@
         </div>
       </div>
     </Section>
-    <Section v-if="showTactics"
+    <Section
+v-if="showTactics"
       :default-collapsed="battleTacticCardsCollapsed"
       collapse-key="battleTacticCards"
     >
