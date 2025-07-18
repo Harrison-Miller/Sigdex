@@ -111,8 +111,8 @@ const manifestationUnits = computed(() => {
   return (
     computedArmyLore.value
       .get(selectedLoreName.value)
-      ?.abilities.map((ability) => {
-        return ability.summonedUnit;
+      ?.abilities.flatMap((ability) => {
+        return ability.summonedUnits;
       })
       .filter((unit) => unit.length > 0) || []
   );

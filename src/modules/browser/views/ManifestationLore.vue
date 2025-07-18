@@ -10,7 +10,7 @@ const props = defineProps<{ loreName: string }>();
 
 const { lore } = useUniversalManifestationLore(props.loreName);
 const units = computed(() => {
-  return lore.value.abilities.map((ability) => ability.summonedUnit);
+  return lore.value.abilities.flatMap((ability) => ability.summonedUnits);
 });
 </script>
 <template>

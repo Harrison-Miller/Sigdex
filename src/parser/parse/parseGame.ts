@@ -42,7 +42,7 @@ export function parseLores(root: any): Map<string, Lore> {
     const points = parsePoints(loreNode);
 
     const spellEntires = loreNode.entryLinks?.entryLink || [];
-    const spellIdToTargtetIds = new Map<string, string>();
+    const spellIdToTargtetIds = new Map<string, string[]>();
     spellEntires.forEach((entry: any) => {
       const targetId = entry['@_targetId'];
       // <condition type="lessThan" value="1" field="selections" scope="parent" childId="0248-39ea-8a5e-7b1c" 
@@ -54,7 +54,9 @@ export function parseLores(root: any): Map<string, Lore> {
 
 
       if (targetId && spellId) {
-        spellIdToTargtetIds.set(spellId, targetId);
+        const targets = spellIdToTargtetIds.get(spellId) || [];
+        targets.push(targetId);
+        spellIdToTargtetIds.set(spellId, targets);
       }
     });
 
@@ -63,9 +65,9 @@ export function parseLores(root: any): Map<string, Lore> {
         const ability = parseAbility(entry?.profiles?.profile?.[0]);
         const id = entry['@_id'] || '';
         if (ability.name.includes('Summon ')) {
-          const targetId = spellIdToTargtetIds.get(id);
-          if (targetId) {
-            ability.summonedUnit = targetId;
+          const targetIds = spellIdToTargtetIds.get(id);
+          if (targetIds) {
+            ability.summonedUnits = targetIds;
           }
         }
         return ability;

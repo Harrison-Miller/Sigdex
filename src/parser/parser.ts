@@ -70,10 +70,21 @@ export class Parser {
         this.allLores.forEach((lore) => {
           lore.abilities.forEach((ability: Ability) => {
             if (ability.keywords.includes('**^^Summon^^**')) {
-              if ((ability.summonedUnit && unit.summoningSpell?.name && ability.summonedUnit === unit.summoningSpell?.name) || ability.name.includes(unit.name)) {
-                unit.summoningSpell = ability;
-                ability.summonedUnit = unit.name;
-                return;
+              if (ability.summonedUnits.length > 0 && unit.summoningSpell?.name) {
+                const idx = ability.summonedUnits.indexOf(unit.summoningSpell?.name || '');
+
+                // replace that particular index with the unit name
+                if (idx !== -1) {
+                  // console.log(`Replacing ${ability.summonedUnits[idx]} with ${unit.name} in ${ability.name}`);
+                  unit.summoningSpell = ability;
+                  ability.summonedUnits[idx] = unit.name;
+                  return;
+                } else if (ability.name.includes(unit.name)) {
+                  // console.log(`Assigning summoning spell ${ability.name} to unit ${unit.name}`);
+                  unit.summoningSpell = ability;
+                  ability.summonedUnits.push(unit.name);
+                  return;
+                }
               }
             }
           });
@@ -85,11 +96,18 @@ export class Parser {
     this.allLores.forEach((lore) => {
       lore.abilities.forEach((ability: Ability) => {
         // check if the summoned unit looks like a uuid
-        const isUUID = /^[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}$/i.test(ability.summonedUnit || '');
-        if (ability.keywords.includes('**^^Summon^^**') && (!ability.summonedUnit || isUUID)) {
-          // not sure why this triggers on eight fold doom-sigil, even though it is linked
-          console.warn(`No unit found for summoning spell: ${ability.name} with summonedUnit ${ability.summonedUnit}`);
-        }
+        ability.summonedUnits.forEach((summonedUnit) => {
+          const isUUID = /^[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}$/i.test(summonedUnit || '');
+          if (ability.keywords.includes('**^^Summon^^**') && (!summonedUnit || isUUID)) {
+            // not sure why this triggers on eight fold doom-sigil, even though it is linked
+            console.warn(`No unit found for summoning spell: ${ability.name} with summonedUnit ${summonedUnit} isUUID: ${isUUID}`);
+          }
+        });
+
+        // remove all uuids from summonedUnits
+        ability.summonedUnits = ability.summonedUnits.filter(
+          (summonedUnit) => !/^[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}$/i.test(summonedUnit || '')
+        );
       });
     });
 
@@ -136,19 +154,21 @@ export class Parser {
 
           // create a battle profile for each manifestation ability
           for (const ability of lore.abilities) {
-            const unit = this.units.get(ability.summonedUnit);
-            if (!unit) continue; // skip if the unit is not found
-            const battleProfile: Partial<IBattleProfile> = {
-              name: unit.name,
-              category: unit.category,
-            };
-            army.battleProfiles.set(unit.name, new BattleProfile(battleProfile));
+            for (const summonedUnit of ability.summonedUnits) {
+              const unit = this.units.get(summonedUnit);
+              if (!unit) continue; // skip if the unit is not found
+              const battleProfile: Partial<IBattleProfile> = {
+                name: unit.name,
+                category: unit.category,
+              };
+              army.battleProfiles.set(unit.name, new BattleProfile(battleProfile));
 
-            // update the unitList
-            army.unitList.get(unit.category)?.push({
-              name: unit.name,
-              points: 0,
-            });
+              // update the unitList
+              army.unitList.get(unit.category)?.push({
+                name: unit.name,
+                points: 0,
+              });
+            }
           }
         }
       }
