@@ -2,7 +2,7 @@ import type { Ability } from '../models/ability';
 import { Army, Enhancement, EnhancementTable, type IArmy } from '../models/army';
 import type { BattleProfile } from '../models/battleProfile';
 import { Lore } from '../models/lore';
-import { UnitCategories, type Unit } from '../models/unit';
+import { type Unit } from '../models/unit';
 import { parseAbilities, parseAbility } from './parseAbility';
 import { parseMustBeGeneralIfIncluded, parseRequiredGenerals } from './parseArmyOfRenown';
 import { parseBattleProfiles } from './parseBattleProfile';
@@ -179,8 +179,25 @@ export function calculateEnhancementTableKeywords(table: EnhancementTable, bps: 
     bp.enhancementTables.includes(table.name)
   );
   const keywords = calculateCommonKeywords(filteredBps);
+  const commonArmyKeywords = calculateCommonKeywords(Array.from(bps.values()));
+
+  // remove common army keywords from the table keywords
+  for (const keyword of commonArmyKeywords) {
+    const index = keywords.indexOf(keyword);
+    if (index !== -1) {
+      keywords.splice(index, 1);
+    }
+  }
 
   // filter down to only unit categories
-  const categories = Array.from(UnitCategories as string[]);
-  return keywords.filter(kw => categories.includes(kw)).sort();
+  // const categories = Array.from(UnitCategories as string[]);
+  // return keywords.filter(kw => categories.includes(kw)).sort();
+  return keywords.filter(kw => {
+    // filter common game keywords
+    if (['FLY'].includes(kw)) return false;
+    if (kw.includes('WARD')) return false;
+    return true;
+  }).sort();
+
+  // we could do better by calculating the common keywords for everything then subtract those
 }
