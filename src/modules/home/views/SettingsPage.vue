@@ -74,6 +74,7 @@
         </a>
       </div>
     </div>
+    <SupporterBanner />
     <div class="section legal">
       <strong>Disclaimer:</strong> This app is not affiliated with Games Workshop. It only downloads
       data from BSData.
@@ -95,6 +96,7 @@ import { saveGithubRepo } from '../../../github/config';
 import { clearAllLists } from '../../../list/manage';
 import { UNIT_SETTINGS_KEY } from '../../shared/composables/useUnitSettings';
 import { useDark } from '@vueuse/core';
+import SupporterBanner from '../components/SupporterBanner.vue';
 
 const isDark = useDark();
 

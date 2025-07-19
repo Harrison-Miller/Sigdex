@@ -121,3 +121,19 @@
 .text-muted {
 	color: var(--text-muted);
 }
+
+.text-supporter-level-1 {
+	color: var(--supporter-level-1-color);
+}
+
+.text-supporter-level-2 {
+	color: var(--supporter-level-2-color);
+}
+
+.text-contributor {
+	color: var(--contributor-color);
+}
+
+.text-special-thanks {
+	color: var(--special-thanks-color);
+}

@@ -8,18 +8,6 @@
 	--color-blue: #055c72;
 	--color-purple: #642a8d;
 	--color-white: #f3f3f3;
-	/* 
-	--color-black: #444;
-	--color-gray: #888;
-	--color-red: #8b0000;
-	--color-yellow: #b59f3b;
-	--color-orange: #a65f00;
-	--color-green: #3a7740;
-	--color-blue: #3f5fa3;
-	--color-purple: #5e3d89;
-	--color-white: #f3f3f3; */
-
-
 	--color-pink: #ec4899;
 
 	--primary: var(--color-blue);
@@ -30,44 +18,22 @@
 
 	/*
 	https://m3.material.io/styles/color/static/baseline
-	#ffffff
-#f6f2fa
-#f4edf8
-#ede6f1
-#e6dfe8
-
 	*/
 	--bg-main: #ffffff;
 	--bg-head: #f6f2fa;
 	--bg-sub: #ede6f1;
 	--bg-selected: #e6dfe8;
 
-	/* --bg-main: #f9f9f6;
-	--bg-head: #fffefb;
-	--bg-sub: #f3f3ef;
-	--bg-selected: #d6d6d6; */
-
-	/*
-
-	#78747e
-	#cbc3d1
-	*/
 	--border-color: #78747e;
 	--border-hover: #cbc3d1;
-
-	/* --border-color: #222;
-	--border-hover: #111; */
-
-	/*
-	#1e1b20
-#49454f
-	*/
 
 	--text-main: #1e1b20;
 	--text-muted: #49454f;
 
-	/* --text-main: #222;
-	--text-muted: #555; */
+	--supporter-level-1-color: var(--color-orange);
+	--supporter-level-2-color: var(--color-red);
+	--contributor-color: var(--color-blue);
+	--special-thanks-color: var(--color-purple);
 }
 
 .dark {
@@ -79,41 +45,14 @@
 	--danger: var(--color-red);
 	--warning: var(--color-yellow);
 
-	/*
-#100d14
-#1e1b20
-#26222c
-#2c2830
-#26222a
-*/
-
-	/* --bg-main: #100d14;
-	--bg-head: #1e1b20;
-	--bg-sub: #2c2830;
-	--bg-selected: #26222a; */
-
 	--bg-main: #121212;
 	--bg-head: #252525;
 	--bg-sub: #2c2c2c;
 	--bg-selected: #383838;
 
-	/*
-	#938f99
-#49454f
-	*/
-	/* --border-color: #938f99;
-	--border-hover: #49454f; */
-
 	--border-color: #4f4f4f;
 	--border-hover: #666;
 
-	/*
-#e6dfe8
-#cbc3d1
-	*/
-
 	--text-main: #e6dfe8;
 	--text-muted: #cbc3d1;
-	/* --text-main: #f0f0f0;
-	--text-muted: #9c9c9c; */
 }
