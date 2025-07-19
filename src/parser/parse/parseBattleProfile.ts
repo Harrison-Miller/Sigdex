@@ -132,6 +132,8 @@ export function parseBattleProfileCategories(root: any): Map<string, ICategory> 
         name,
         id,
         childConditionIds: [], // no child conditions by default
+        rosterMin: -1, // no roster min by default
+        rosterMax: -1, // no roster max by default
       });
     }
   }

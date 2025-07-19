@@ -61,6 +61,28 @@ export interface IUnitListItem {
   points: number;
 }
 
+export type ArmyOptionType = 'mustBeIncluded' | 'requiredGeneral' | 'generalIfIncluded';
+
+export interface IArmyOption {
+  min: number;
+  max: number;
+  units: string[];
+  type: ArmyOptionType;
+}
+
+export class ArmyOption implements IArmyOption {
+  min: number;
+  max: number;
+  units: string[];
+  type: ArmyOptionType;
+  constructor(data?: Partial<IArmyOption>) {
+    this.min = data?.min ?? 0;
+    this.max = data?.max ?? 0;
+    this.units = data?.units ?? [];
+    this.type = data?.type ?? 'mustBeIncluded'; // default to 'mustBeIncluded'
+  }
+}
+
 export interface IArmy {
   revision: string;
   name: string;
@@ -93,8 +115,7 @@ export interface IArmy {
   unitList: Map<UnitCategory, IUnitListItem[]>; // list of units in the army with their points by category
 
   // aor restrictions
-  requiredGeneral: string[]; // names of units, one of which must be the general
-  mustBeGeneralIfIncluded: string[]; // names of units that must be the general if included in the army
+  options: ArmyOption[];
 }
 
 export class Army implements IArmy {
@@ -126,8 +147,7 @@ export class Army implements IArmy {
 
   unitList: Map<UnitCategory, IUnitListItem[]> = new Map();
 
-  requiredGeneral: string[];
-  mustBeGeneralIfIncluded: string[];
+  options: ArmyOption[];
 
   constructor(data?: Partial<IArmy>) {
     this.revision = data?.revision ?? '';
@@ -152,10 +172,9 @@ export class Army implements IArmy {
 
     this.armiesOfRenown = data?.armiesOfRenown ?? []; // this will be computed elsewhere
 
-    this.requiredGeneral = data?.requiredGeneral ?? [];
-    this.mustBeGeneralIfIncluded = data?.mustBeGeneralIfIncluded ?? [];
-
     this.armyKeyword = data?.armyKeyword ?? '';
+
+    this.options = data?.options ?? [];
 
     // determine if this is an army of renown
     const armyParts = this.name.split(' - ');
@@ -188,6 +207,6 @@ export class Army implements IArmy {
 
   hasDetails(): boolean {
     return this.battleTraitNotes.length > 0 || this.armyKeyword !== '' ||
-      this.requiredGeneral.length > 0 || this.mustBeGeneralIfIncluded.length > 0;
+      this.options.length > 0;
   }
 }

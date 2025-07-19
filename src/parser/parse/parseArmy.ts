@@ -4,7 +4,7 @@ import type { BattleProfile } from '../models/battleProfile';
 import { Lore } from '../models/lore';
 import { type Unit } from '../models/unit';
 import { parseAbilities, parseAbility } from './parseAbility';
-import { parseMustBeGeneralIfIncluded, parseRequiredGenerals } from './parseArmyOfRenown';
+import { parseArmyOptions } from './parseArmyOfRenown';
 import { parseBattleProfiles } from './parseBattleProfile';
 import { calculateCommonKeywords, filterIgnoredEnhancementTables, parseCategories, parsePoints, type ICategory } from './parseCommon';
 
@@ -43,9 +43,8 @@ export function parseArmy(
     prayerLores: parseLoresByGroup(catalogue, 'Prayer Lores'),
     manifestationLores: parseLoresByGroup(catalogue, 'Manifestation Lores'),
     battleProfiles: parseBattleProfiles(catalogue, units, categories, armyCategories, armyKeyword),
-    requiredGeneral: parseRequiredGenerals(catalogue, units),
-    mustBeGeneralIfIncluded: parseMustBeGeneralIfIncluded(catalogue, units),
     armyKeyword: armyKeyword,
+    options: parseArmyOptions(catalogue, armyCategories, units),
   };
 
   const battleTraits = parseBattleTraits(catalogue);
@@ -74,6 +73,7 @@ export function parseArmy(
     }
   }
 
+  // deal with roster level categories
   return new Army(army);
 }
 

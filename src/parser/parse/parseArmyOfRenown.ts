@@ -1,11 +1,68 @@
+import { ArmyOption } from '../models/army';
 import type { Unit } from '../models/unit';
 import { findFirstByTagAndAttrs } from '../util';
+import type { ICategory } from './parseCommon';
 
 // armies of renown are parsed as normal armies
 // this file contains functions for parsing special additional rules or properties that
-// only apply to armies of renown
+// generally only apply to armies of renown
 
-export function parseRequiredGenerals(root: any, units: Map<string, Unit>): string[] {
+export function parseArmyOptions(root: any, armyCategories: Map<string, ICategory>, units: Map<string, Unit>): ArmyOption[] {
+  const options: ArmyOption[] = [];
+  const mustBeIncluded = parseMustBeIncluded(root, armyCategories);
+  if (mustBeIncluded.length > 0) {
+    options.push(...mustBeIncluded);
+  }
+  const requiredGeneral = parseRequiredGenerals(root, units);
+  if (requiredGeneral) {
+    options.push(requiredGeneral);
+  }
+  const mustBeGeneralIfIncluded = parseMustBeGeneralIfIncluded(root, units);
+  if (mustBeGeneralIfIncluded) {
+    options.push(mustBeGeneralIfIncluded);
+  }
+  console.log(`Parsed ${options.length} army options for ${root['@_name']}`);
+  return options;
+}
+
+export function parseMustBeIncluded(
+  root: any,
+  armyCategories: Map<string, ICategory>
+): ArmyOption[] {
+  const requiredOptions = Array.from(armyCategories.values())
+    .filter(category => category.rosterMin > 0);
+
+  const options: ArmyOption[] = [];
+  for (const r of requiredOptions) {
+    const o = new ArmyOption({
+      min: r.rosterMin,
+      max: r.rosterMax,
+      units: [],
+      type: 'mustBeIncluded',
+    });
+    // go through all the battle profiles and find the ones that have this category
+    const bps = root.entryLinks?.entryLink || [];
+    for (const bp of bps) {
+      const name = bp['@_name'];
+      const requiredCategory = bp?.categoryLinks?.categoryLink?.find(
+        (link: any) => link['@_targetId'] === r.id
+      );
+      if (name && requiredCategory) {
+        console.log(`Adding required unit ${name} for category ${r.name}`);
+        o.units.push(name);
+      }
+    }
+
+    if (o.units.length > 0) {
+      options.push(o);
+    } else {
+      console.warn(`No units found for required category ${r.name}`);
+    }
+  }
+  return options;
+}
+
+export function parseRequiredGenerals(root: any, units: Map<string, Unit>): ArmyOption | null {
   const bpNodes = root?.entryLinks?.entryLink || [];
   const requiredGenerals: Set<string> = new Set<string>();
   // look for roster constraint min=1
@@ -32,7 +89,12 @@ export function parseRequiredGenerals(root: any, units: Map<string, Unit>): stri
   });
 
   if (requiredGenerals.size > 0) {
-    return Array.from(requiredGenerals);
+    return new ArmyOption({
+      min: 1,
+      max: 1,
+      units: Array.from(requiredGenerals),
+      type: 'requiredGeneral',
+    });
   }
 
   // Sometimes the data doesn't use the constraints, it just marks eveything as Restrict General
@@ -58,16 +120,21 @@ export function parseRequiredGenerals(root: any, units: Map<string, Unit>): stri
 
   // we only want to return required generals if there are restricted generals
   if (generals.length !== restrictedGenerals.size) {
-    return generals;
+    return new ArmyOption({
+      min: 1,
+      max: 1,
+      units: generals,
+      type: 'requiredGeneral',
+    });
   }
-  return [];
+  return null;
 }
 
 export function parseMustBeGeneralIfIncluded(
   root: any,
   units: Map<string, Unit>,
   restrictGeneralId: string = 'abcb-73d0-2b6c-4f17' // default to the common restrict general id
-): string[] {
+): ArmyOption | null {
   const bpNodes = root?.entryLinks?.entryLink || [];
   const mustBeGeneralIfIncludedId: Set<string> = new Set<string>();
   const idToName: Map<string, string> = new Map<string, string>();
@@ -100,9 +167,18 @@ export function parseMustBeGeneralIfIncluded(
     }
   });
 
-  return Array.from(mustBeGeneralIfIncludedId)
+  const generals = Array.from(mustBeGeneralIfIncludedId)
     .map((id) => {
       return idToName.get(id) || '';
     })
     .filter((name) => name !== '');
+  if (generals.length > 0) {
+    return new ArmyOption({
+      min: 1,
+      max: 1,
+      units: generals,
+      type: 'generalIfIncluded',
+    });
+  }
+  return null;
 }

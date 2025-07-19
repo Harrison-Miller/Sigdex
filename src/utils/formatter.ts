@@ -3,6 +3,7 @@ import type { Model } from '../parser/models/model';
 import type { Unit } from '../parser/models/unit';
 import type { WeaponOption } from '../parser/models/weaponOption';
 import type { RegimentOption } from '../parser/models/battleProfile';
+import type { ArmyOption } from '../parser/models/army';
 
 export function formatText(text: string): string {
   if (!text) return '';
@@ -196,4 +197,54 @@ export function formatRegimentOptions(options: RegimentOption[]): string {
   }
 
   return html;
+}
+
+export function formatArmyOptions(options: ArmyOption[]): string {
+  let out = '';
+  for (const option of options) {
+    out += `<li>`;
+    switch (option.type) {
+      case 'requiredGeneral':
+        out += formatRequiredGeneral(option.units);
+        break;
+      case 'generalIfIncluded':
+        out += formatMustBeGeneralIfIncluded(option.units);
+        break;
+      case 'mustBeIncluded':
+        out += formatMustBeIncluded(option);
+        break;
+      default:
+        out += `Unknown army option type: ${option.type}`;
+    }
+    out += `</li>`;
+  }
+  return out
+}
+
+function formatRequiredGeneral(requiredGeneral: string[]): string {
+  if (requiredGeneral.length === 1) {
+    return `<strong>${requiredGeneral[0]}</strong> must be the general.`;
+  } else if (requiredGeneral.length > 1) {
+    return `One of the following units must be the general: <strong>${requiredGeneral.join(', ')}</strong>`;
+  }
+  return '';
+}
+
+function formatMustBeGeneralIfIncluded(units: string[]): string {
+  if (!units || units.length === 0) return '';
+  if (units.length === 1) {
+    return `<strong>${units[0]}</strong> must be the general if included.`;
+  } else {
+    return `One of the following must be the general if included: <strong>${units.join(', ')}</strong>`;
+  }
+}
+
+function formatMustBeIncluded(option: ArmyOption): string {
+  if (option.min === 0 && option.max === 0) {
+    return `No units must be included.`;
+  } else if (option.min === option.max) {
+    return `exactly ${option.min} <strong>${option.units.join(', ')}</strong> must be included.`;
+  } else {
+    return `${option.min}-${option.max} <strong>${option.units.join(', ')}</strong> must be included.`;
+  }
 }

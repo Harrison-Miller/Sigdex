@@ -9,16 +9,10 @@
       <ul v-if="army.battleTraitNotes.length" class="details-list">
         <li v-for="(note, index) in army.battleTraitNotes" :key="index" v-html="formatText(note)"></li>
       </ul>
-      <ul class="details-list">
-        <li v-if="army.armyKeyword" v-html="formatArmyKeywordText(army.armyKeyword)"></li>
-        <li
-          v-if="army.requiredGeneral.length"
-          v-html="formatRequiredGeneral(army.requiredGeneral)"
-        />
-        <li
-          v-if="army.mustBeGeneralIfIncluded.length"
-          v-html="formatMustBeGeneralIfIncluded(army.mustBeGeneralIfIncluded)"
-        />
+      <ul v-if="army.armyKeyword" class="details-list">
+        <li v-html="formatArmyKeywordText(army.armyKeyword)"></li>
+      </ul>
+      <ul v-if="army.options.length" class="details-list" v-html="formatArmyOptions(army.options)">
       </ul>
     </Section>
     <Section
@@ -228,31 +222,13 @@ import OptionSelect from '../../core/components/OptionSelect.vue';
 import type { Army } from '../../../parser/models/army';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import Section from '../../core/components/ContentSection.vue';
-import { formatText } from '../../../utils/formatter';
+import { formatArmyOptions, formatText } from '../../../utils/formatter';
 import ReportErrorButton from '../../shared/components/ReportErrorButton.vue';
 
 const props = defineProps<{ army: Army }>();
 
 function formatArmyKeywordText(keyword: string): string {
   return formatText(`All units in this army gain the **^^${keyword}^^** keyword.`);
-}
-
-function formatRequiredGeneral(requiredGeneral: string[]): string {
-  if (requiredGeneral.length === 1) {
-    return `<strong>${requiredGeneral[0]}</strong> must be your general.`;
-  } else if (requiredGeneral.length > 1) {
-    return `One of the following units must be your general: <strong>${requiredGeneral.join(', ')}</strong>`;
-  }
-  return '';
-}
-
-function formatMustBeGeneralIfIncluded(units: string[]): string {
-  if (!units || units.length === 0) return '';
-  if (units.length === 1) {
-    return `<strong>${units[0]}</strong> must be general if included.`;
-  } else {
-    return `One of the following must be the general if included: <strong>${units.join(', ')}</strong>`;
-  }
 }
 
 function formatEnhancementKeywords(enhTable: any): string {
