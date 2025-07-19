@@ -23,15 +23,18 @@ export class Enhancement implements IEnhancement {
 export interface IEnhancementTable {
   name: string;
   enhancements: Enhancement[];
+  keywords: string[]; // keywords of units allowed to take this enhancement table
 }
 
 export class EnhancementTable implements IEnhancementTable {
   name: string;
   enhancements: Enhancement[];
+  keywords: string[];
 
   constructor(data?: Partial<IEnhancementTable>) {
     this.name = data?.name ?? '';
     this.enhancements = data?.enhancements ?? [];
+    this.keywords = data?.keywords ?? [];
   }
 }
 

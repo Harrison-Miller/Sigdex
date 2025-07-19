@@ -1,11 +1,12 @@
 import type { Ability } from '../models/ability';
 import { Army, Enhancement, EnhancementTable, type IArmy } from '../models/army';
+import type { BattleProfile } from '../models/battleProfile';
 import { Lore } from '../models/lore';
-import type { Unit } from '../models/unit';
+import { UnitCategories, type Unit } from '../models/unit';
 import { parseAbilities, parseAbility } from './parseAbility';
 import { parseMustBeGeneralIfIncluded, parseRequiredGenerals } from './parseArmyOfRenown';
 import { parseBattleProfiles } from './parseBattleProfile';
-import { filterIgnoredEnhancementTables, parseCategories, parsePoints, type ICategory } from './parseCommon';
+import { calculateCommonKeywords, filterIgnoredEnhancementTables, parseCategories, parsePoints, type ICategory } from './parseCommon';
 
 export function parseArmy(
   root: any,
@@ -64,6 +65,13 @@ export function parseArmy(
       grandAlliance.slice(1).toLowerCase()) as 'Order' | 'Chaos' | 'Death' | 'Destruction';
   } else {
     army.grandAlliance = 'Order'; // default to Order if no units are found
+  }
+
+  // add keywords to enhancement tables
+  if (army.enhancements && army.enhancements.size > 0 && army.battleProfiles) {
+    for (const [_, table] of army.enhancements.entries()) {
+      table.keywords = calculateEnhancementTableKeywords(table, army.battleProfiles);
+    }
   }
 
   return new Army(army);
@@ -164,4 +172,15 @@ export function parseLoresByGroup(root: any, group: string): Map<string, Lore> {
   });
 
   return loresMap;
+}
+
+export function calculateEnhancementTableKeywords(table: EnhancementTable, bps: Map<string, BattleProfile>): string[] {
+  const filteredBps = Array.from(bps.values()).filter(bp =>
+    bp.enhancementTables.includes(table.name)
+  );
+  const keywords = calculateCommonKeywords(filteredBps);
+
+  // filter down to only unit categories
+  const categories = Array.from(UnitCategories as string[]);
+  return keywords.filter(kw => categories.includes(kw)).sort();
 }

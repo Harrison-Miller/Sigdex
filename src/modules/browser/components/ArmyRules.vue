@@ -95,6 +95,7 @@
         :key="table"
       >
         <h3 class="section-subheader">{{ enhTable.name }}</h3>
+        <span v-if="enhTable.keywords.length" class="enhancement-keywords" v-html="formatEnhancementKeywords(enhTable)"></span>
         <AbilityCard
           v-for="(enh, i) in enhTable.enhancements"
           :key="enh.ability.name + i"
@@ -248,6 +249,11 @@ function formatMustBeGeneralIfIncluded(units: string[]): string {
   } else {
     return `One of the following must be the general if included: <strong>${units.join(', ')}</strong>`;
   }
+}
+
+function formatEnhancementKeywords(enhTable: any): string {
+  const keywords = enhTable.keywords.map((kw: string) => `**^^${kw}^^**`).join(' ');
+  return formatText(`${keywords} only`);
 }
 
 const selectedSpellLore = ref<string>('');

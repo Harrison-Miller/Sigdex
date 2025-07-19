@@ -1,3 +1,4 @@
+import type { BattleProfile } from '../models/battleProfile';
 import { findAllByTagAndAttrs } from '../util';
 
 export const IGNORED_ENHANCEMENT_TABLES = [
@@ -53,4 +54,18 @@ export function parseCategories(root: any): Map<string, ICategory> {
     }
   }
   return categories;
+}
+
+export function calculateCommonKeywords(battleProfiles: BattleProfile[]): string[] {
+  if (!battleProfiles || battleProfiles.length === 0) return [];
+  const commonKeywords = new Set<string>(battleProfiles[0].keywords);
+  for (const profile of battleProfiles.slice(1)) {
+    const profileKeywords = new Set(profile.keywords);
+    for (const keyword of commonKeywords) {
+      if (!profileKeywords.has(keyword)) {
+        commonKeywords.delete(keyword);
+      }
+    }
+  }
+  return Array.from(commonKeywords);
 }
