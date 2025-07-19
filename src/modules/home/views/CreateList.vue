@@ -16,11 +16,16 @@
       <label>
         Army
         <OptionSelect
-          v-model="faction"
-          :options="flattenedArmyList"
+          v-model="selectedArmy"
+          :options="armyOptions"
           placeholder="Select an army"
         />
       </label>
+      <OptionSelect
+        v-model="faction"
+        :options="aorOptions"
+        placeholder="Select variant (optional)"
+      />
       <div class="form-actions">
         <button
           class="create-btn"
@@ -34,7 +39,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import TextInput from '../../core/components/TextInput.vue';
@@ -45,9 +50,10 @@ import { createList } from '../../../list/manage';
 import { setDefaultArmyOptions } from '../../../list/models/list';
 
 const router = useRouter();
-const initialFaction = 'Cities of Sigmar';
+const initialArmy = 'Cities of Sigmar';
 const name = ref('');
-const faction = ref(initialFaction);
+const selectedArmy = ref(initialArmy);
+const faction = ref(initialArmy);
 
 const { game } = useGame();
 
@@ -65,7 +71,8 @@ const nameError = computed(() => {
   return '';
 });
 
-const flattenedArmyList = computed(() => {
+// Only armies (no AoRs) for the first dropdown
+const armyOptions = computed(() => {
   const list: Map<string, string[]> = new Map();
   if (!game.value) return list;
   for (const key of game.value.armyList.keys()) {
@@ -74,14 +81,28 @@ const flattenedArmyList = computed(() => {
   game.value.armyList.forEach((armies, alliance) => {
     armies.forEach((army) => {
       list.get(alliance)?.push(army.name);
-      if (army.armiesOfRenown) {
-        army.armiesOfRenown.forEach((aor) => {
-          list.get(alliance)?.push(`${army.name} - ${aor}`);
-        });
-      }
     });
   });
   return list;
+});
+
+// AoRs for the selected army, always include the army name as first option
+const aorOptions = computed(() => {
+  if (!game.value) return [selectedArmy.value];
+  const army = game.value.armies.get(selectedArmy.value);
+  if (!army) return [selectedArmy.value];
+  const options = [army.name];
+  if (army.armiesOfRenown && army.armiesOfRenown.length > 0) {
+    army.armiesOfRenown.forEach((aor) => {
+      options.push(`${army.name} - ${aor}`);
+    });
+  }
+  return options;
+});
+
+// Reset the AoR dropdown to the army name when the army changes
+watch(selectedArmy, (newArmy) => {
+faction.value = newArmy as string;
 });
 
 function handleCreate() {
