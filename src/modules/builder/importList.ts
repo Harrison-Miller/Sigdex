@@ -95,19 +95,21 @@ function findFormationOrFirst(text: string, army: Army): string {
 }
 
 function findName(text: string): string {
-  // name should be the entire fist line minus xxxx/yyyy pts (if present)
-  const lines = text.split('\n');
-  if (lines.length === 0) return 'Imported List';
-  const firstLine = lines.find((line) => line.trim() !== '');
-  if (!firstLine) {
-    return 'Imported List';
+  const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+  // Try to find a line with xxxx/yyyy pts
+  const ptsLine = lines.find(line => /(\d+\/\d+ pts)$/i.test(line));
+  if (ptsLine) {
+    // Remove xxxx/yyyy pts if present
+    const ptsMatch = ptsLine.match(/(\d+\/\d+ pts)$/i);
+    if (ptsMatch) {
+      return ptsLine.replace(ptsMatch[0], '').trim();
+    }
+    return ptsLine;
   }
-  // remove xxxx/yyyy pts if present
-  const ptsMatch = firstLine.match(/(\d+\/\d+ pts)$/i);
-  if (ptsMatch) {
-    return firstLine.replace(ptsMatch[0], '').trim();
-  }
-  return firstLine;
+
+  // Fallback to first non-empty line
+  return lines[0] || 'Imported List';
 }
 
 function findBattleTacticCards(text: string, game: Game): { card1: string, card2: string } {
