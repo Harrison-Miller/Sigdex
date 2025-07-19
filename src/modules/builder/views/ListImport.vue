@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <BackButton />
+  <div class="list-import-wrapper">
+      <BackButton />
     <div class="list-import-view">
-      <div>
+      <div class="import-header">
         <h1>Import List</h1>
       </div>
       <div class="import-container">
@@ -111,14 +111,29 @@ function handleCreate() {
 }
 </script>
 <style scoped>
+/* Float BackButton above content */
 .list-import-wrapper {
-  padding: 2rem;
+  position: relative;
+  height: 100vh;
+}
+.list-import-view {
+  padding: 20px 10px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 .import-header {
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* margin-bottom: 20px; */
+  flex-shrink: 0;
+  gap: 12px;
 }
 .import-title {
-  font-size: 1.5rem;
+  margin: 0;
+  font-size: 0.5rem;
   font-weight: bold;
 }
 .import-container {
@@ -134,6 +149,13 @@ function handleCreate() {
   max-height: 700px;
   font-family: monospace;
   font-size: 1rem;
+}
+@media (max-width: 600px) {
+  .import-textarea {
+    min-height: 60vh;
+    max-height: 60vh;
+    font-size: 1em;
+  }
 }
 .import-actions-centered {
   display: flex;

@@ -154,6 +154,14 @@ const copyToClipboard = async () => {
   box-sizing: border-box;
 }
 
+@media (max-width: 600px) {
+  .export-textarea {
+    min-height: 60vh;
+    max-height: 70vh;
+    font-size: 1em;
+  }
+}
+
 .export-textarea:focus {
   border-color: var(--primary);
   background: var(--bg-sub);
