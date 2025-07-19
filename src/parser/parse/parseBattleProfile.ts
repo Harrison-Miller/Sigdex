@@ -49,7 +49,24 @@ export function parseBattleProfiles(
     const profile = parseBattleProfile(node, units, allCategories, armyCategories, errorConditions, armyKeyword);
     if (profile.category === 'OTHER' || profile.category === 'LEGENDS') continue; // skip other and legends categories
 
-    bpMap.set(profile.name, profile);
+    if (bpMap.has(profile.name)) {
+      console.warn(`Duplicate battle profile found: ${profile.name} merging profiles.`);
+      const existingProfile = bpMap.get(profile.name);
+      if (existingProfile) {
+        // add non-duplicate regiment options
+        const existingOptions = new Set(existingProfile.regimentOptions.map((o) => o.name));
+        for (const option of profile.regimentOptions) {
+          if (!existingOptions.has(option.name)) {
+            existingProfile.regimentOptions.push(option);
+          }
+        }
+        // TODO: may need to put more here if anything else goes wrong with kragnos
+        bpMap.set(profile.name, existingProfile);
+      }
+      continue; // skip duplicates
+    } else {
+      bpMap.set(profile.name, profile);
+    }
   }
 
   // link together companion units
