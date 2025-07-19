@@ -42,7 +42,8 @@
 <script setup lang="ts">
 const scroll = false;
 const supporters = [
-  { name: '@srscott', class: 'text-supporter-level-1' },
+  { name: 'srscott', class: 'text-supporter-level-1' },
+  { name: 'Fletch', class: 'text-special-thanks' }
 ];
 </script>
 
