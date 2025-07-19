@@ -333,6 +333,7 @@ function addUnitToRegiment(item: UnitPickerListItem) {
   font-size: 1.1em;
   padding: 0.6em 1em;
   border-radius: 6px;
+  color: var(--text-main);
   border: 1.5px solid var(--border-color);
   background: var(--bg-head);
   box-sizing: border-box;

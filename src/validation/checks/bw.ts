@@ -59,7 +59,6 @@ function halfRegimentsAreIJandKBZ(list: List, game: Game): string[] {
 		if (leaderData.hasKeyword('Ironjawz')) ij++;
 	}
 
-	console.log('Kruleboyz:', kbz, 'Ironjawz:', ij);
 	if (kbz === ij) return [];
 
 	return ['In a Big Waaagh! army, for every Kruleboyz regiment, there must be an Ironjawz regiment, and vice versa.'];
