@@ -112,7 +112,7 @@
       <div v-if="Array.from(army.spellLores.values()).length === 1">
         <h3 class="section-subheader">
           {{ Array.from(army.spellLores.values())[0].name
-          }}<span v-if="Array.from(army.spellLores.values())[0].points">
+          }}<span v-if="Array.from(army.spellLores.values())[0].points" class="points-badge">
             ({{ Array.from(army.spellLores.values())[0].points }} pts)</span>
         </h3>
         <AbilityCard
@@ -126,7 +126,11 @@
           v-model="selectedSpellLore"
           :options="Array.from(army.spellLores.values()).map((lore) => lore.name)"
         />
+        <!--- add points badge here -->
         <div v-if="selectedSpellLore">
+          <span v-if="army.spellLores.get(selectedSpellLore)?.points" class="points-badge">
+            {{ army.spellLores.get(selectedSpellLore)?.points }} pts
+          </span>
           <AbilityCard
             v-for="(ability, i) in army.spellLores.get(selectedSpellLore)?.abilities || []"
             :key="ability.name + i"
@@ -144,7 +148,7 @@
       <div v-if="Array.from(army.prayerLores.values()).length === 1">
         <h3 class="section-subheader">
           {{ Array.from(army.prayerLores.values())[0].name
-          }}<span v-if="Array.from(army.prayerLores.values())[0].points">
+          }}<span v-if="Array.from(army.prayerLores.values())[0].points" class="points-badge">
             ({{ Array.from(army.prayerLores.values())[0].points }} pts)</span>
         </h3>
         <AbilityCard
@@ -160,7 +164,11 @@
           class="lore-dropdown"
           placeholder="Select Prayer Lore"
         />
+        <!-- points badge goes here -->
         <div v-if="selectedPrayerLore">
+          <span v-if="army.prayerLores.get(selectedPrayerLore)?.points" class="points-badge">
+            {{ army.prayerLores.get(selectedPrayerLore)?.points }} pts
+          </span>
           <AbilityCard
             v-for="(ability, i) in army.prayerLores.get(selectedPrayerLore)?.abilities || []"
             :key="ability.name + i"
@@ -178,7 +186,7 @@
       <div v-if="Array.from(army.manifestationLores.values()).length === 1">
         <h3 class="section-subheader">
           {{ Array.from(army.manifestationLores.values())[0].name
-          }}<span v-if="Array.from(army.manifestationLores.values())[0].points">
+          }}<span v-if="Array.from(army.manifestationLores.values())[0].points" class="points-badge">
             ({{ Array.from(army.manifestationLores.values())[0].points }} pts)</span>
         </h3>
         <AbilityCard
@@ -195,6 +203,9 @@
           placeholder="Select Manifestation Lore"
         />
         <div v-if="selectedManifestationLore">
+          <span v-if="army.manifestationLores.get(selectedManifestationLore)?.points" class="points-badge">
+            {{ army.manifestationLores.get(selectedManifestationLore)?.points }} pts
+          </span>
           <AbilityCard
             v-for="(ability, i) in army.manifestationLores.get(selectedManifestationLore)
               ?.abilities || []"
@@ -281,5 +292,20 @@ watch(
 }
 .section-subheader {
   text-align: left;
+}
+.points-badge {
+  background: var(--color-red);
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 600;
+  border-radius: 1em;
+  padding: 0.08em 0.7em 0.08em 0.7em;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0.5em;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.01em;
 }
 </style>

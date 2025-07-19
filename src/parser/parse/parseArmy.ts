@@ -29,7 +29,6 @@ export function parseArmy(
   } else if (possibleArmyKeywords.length === 1) {
     // use the first one as the army keyword
     armyKeyword = possibleArmyKeywords[0];
-    console.log(`Using army keyword "${armyKeyword}" for ${name}`);
   }
 
   const army: Partial<IArmy> = {
