@@ -7,7 +7,7 @@ import { Weapon } from "./parser/models/weapon";
 import { Model } from "./parser/models/model";
 import { WeaponOption } from "./parser/models/weaponOption";
 import { Lore } from "./parser/models/lore";
-import { Army, Enhancement, EnhancementTable } from "./parser/models/army";
+import { Army, Enhancement, EnhancementTable, Formation } from "./parser/models/army";
 import { BattleProfile, RegimentOption } from "./parser/models/battleProfile";
 import { RegimentOfRenown } from "./parser/models/regimentOfRenown";
 import { List } from "./list/models/list";
@@ -19,6 +19,7 @@ export function registerSuperJSONClasses(): void {
 	SuperJSON.registerClass(Game, { identifier: 'Game' });
 	SuperJSON.registerClass(BattleTacticCard, { identifier: 'BattleTacticCard' });
 	SuperJSON.registerClass(Ability, { identifier: 'Ability' });
+	SuperJSON.registerClass(Formation, { identifier: 'Formation' });
 	SuperJSON.registerClass(Unit, { identifier: 'Unit' });
 	SuperJSON.registerClass(Stats, { identifier: 'Stats' });
 	SuperJSON.registerClass(Weapon, { identifier: 'Weapon' });

@@ -38,12 +38,12 @@
     >
       <template #title>Formations</template>
       <div
-        v-for="[formationName, abilities] in Array.from(army.formations.entries())"
+        v-for="[formationName, formation] in Array.from(army.formations.entries())"
         :key="formationName"
       >
-        <h3 class="section-subheader">{{ formationName }}</h3>
+        <h3 class="section-subheader">{{ formationName }}</h3><span v-if="formation.points > 0" class="points-badge">{{ formation.points }} pts</span>
         <AbilityCard
-          v-for="(ability, i) in abilities"
+          v-for="(ability, i) in formation.abilities"
           :key="ability.name + i"
           :ability="ability"
         />

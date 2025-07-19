@@ -38,6 +38,24 @@ export class EnhancementTable implements IEnhancementTable {
   }
 }
 
+export interface IFormation {
+  name: string;
+  abilities: Ability[];
+  points: number; // points cost of the formation, if applicable
+}
+
+export class Formation implements IFormation {
+  name: string;
+  abilities: Ability[];
+  points: number;
+
+  constructor(data?: Partial<IFormation>) {
+    this.name = data?.name ?? '';
+    this.abilities = data?.abilities ?? [];
+    this.points = data?.points ?? 0;
+  }
+}
+
 export interface IUnitListItem {
   name: string;
   points: number;
@@ -50,7 +68,7 @@ export interface IArmy {
 
   battleTraitNotes: string[]; // notes for battle traits, if any
   battleTraits: Ability[];
-  formations: Map<string, Ability[]>; // a formation may have more than one ability
+  formations: Map<string, Formation>; // a formation may have more than one ability
 
   artifacts: Map<string, EnhancementTable>; // there can be multiple artifact tables
   heroicTraits: Map<string, EnhancementTable>; // there can be multiple heroic trait tables
@@ -86,7 +104,7 @@ export class Army implements IArmy {
 
   battleTraitNotes: string[];
   battleTraits: Ability[];
-  formations: Map<string, Ability[]>;
+  formations: Map<string, Formation>;
 
   artifacts: Map<string, EnhancementTable>;
   heroicTraits: Map<string, EnhancementTable>;

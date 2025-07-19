@@ -1,5 +1,5 @@
 import type { Ability } from '../models/ability';
-import { Army, Enhancement, EnhancementTable, type IArmy } from '../models/army';
+import { Army, Enhancement, EnhancementTable, Formation, type IArmy } from '../models/army';
 import type { BattleProfile } from '../models/battleProfile';
 import { Lore } from '../models/lore';
 import { type Unit } from '../models/unit';
@@ -92,17 +92,18 @@ export function parseBattleTraits(root: any): { abilities: Ability[], notes: str
   return { abilities, notes };
 }
 
-export function parseFormations(root: any): Map<string, Ability[]> {
+export function parseFormations(root: any): Map<string, Formation> {
   const formationsNode = root?.sharedSelectionEntryGroups?.selectionEntryGroup?.find((entry: any) =>
     entry['@_name'].startsWith('Battle Formations')
   );
 
   const formationNodes = formationsNode?.selectionEntries?.selectionEntry || [];
-  const formationsMap = new Map<string, Ability[]>();
+  const formationsMap = new Map<string, Formation>();
   formationNodes.forEach((formationNode: any) => {
     const name = formationNode['@_name'];
     const abilities = parseAbilities(formationNode.profiles);
-    formationsMap.set(name, abilities);
+    const points = parsePoints(formationNode);
+    formationsMap.set(name, new Formation({ name, abilities, points }));
   });
 
   return formationsMap;

@@ -18,6 +18,11 @@ export function calculatePoints(list: List, game: Game): number {
 
   let total = 0;
 
+  // formation may cost points
+  if (list.formation) {
+    total += army.formations.get(list.formation)?.points || 0;
+  }
+
   if (list.regimentOfRenown) {
     total += game.regimentsOfRenown.get(list.regimentOfRenown)?.points || 0;
   }

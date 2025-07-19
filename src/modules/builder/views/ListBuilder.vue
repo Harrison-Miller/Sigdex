@@ -63,8 +63,11 @@
           :options="Array.from(army.formations.keys())"
         />
         <div>
+          <span v-if="selectedFormation.points > 0" class="points-badge"> 
+            {{ selectedFormation.points }} pts
+          </span>
           <AbilityCard
-            v-for="(ability, i) in selectedFormation"
+            v-for="(ability, i) in selectedFormation.abilities"
             :key="ability.name + i"
             :ability="ability"
           />
@@ -194,7 +197,7 @@ import BattleTacticCard from '../../shared/components/BattleTacticCard.vue';
 import FactionTerrainSection from '../components/FactionTerrainSection.vue';
 import AuxiliaryUnitsSection from '../components/AuxiliaryUnitsSection.vue';
 import RegimentOfRenownSection from '../components/RegimentOfRenownSection.vue';
-import { Army } from '../../../parser/models/army';
+import { Army, Formation } from '../../../parser/models/army';
 import { BattleTacticCard as BattleTacticCardModel } from '../../../parser/models/game';
 import { ListUnit } from '../../../list/models/unit';
 import { ListRegiment as ListRegimentModel } from '../../../list/models/regiment';
@@ -209,7 +212,7 @@ const army = computed(() => {
   return game.value?.armies.get(list.value?.faction || '') || new Army();
 });
 const selectedFormation = computed(() => {
-  return army.value.formations.get(list.value.formation) || [];
+  return army.value.formations.get(list.value.formation) || new Formation();
 });
 const selectedBattleTacticCard1 = computed(() => {
   return (
@@ -291,5 +294,20 @@ watch([selectedFormation, selectedBattleTacticCard1, selectedBattleTacticCard2, 
   display: flex;
   flex-direction: column;
   gap: 0.7em;
+}
+.points-badge {
+  background: var(--color-red);
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 600;
+  border-radius: 1em;
+  padding: 0.08em 0.7em 0.08em 0.7em;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0.5em;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.01em;
 }
 </style>

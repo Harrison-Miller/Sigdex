@@ -176,7 +176,9 @@ export function exportList(list: List, game: Game): string {
     }
     out += `Army of Renown\n`;
   } else {
-    out += `${list.faction}\n${list.formation}\n`;
+    out += `${list.faction}\n`;
+    const formation = army.formations.get(list.formation);
+    out += displayWithPoints(`${list.formation}`, formation?.points || 0);
   }
   out += 'General\'s Handbook 2025-26\n'; // TODO: actually have ghb version selection that leads to different rules
   out += `Drops: ${calculateDrops(list)}\n`;
