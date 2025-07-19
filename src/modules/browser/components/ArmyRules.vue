@@ -216,6 +216,9 @@
         </div>
       </div>
     </Section>
+    <ReportErrorButton 
+    :army-name="army.name"
+    :army-revision="army.revision"/>
   </div>
 </template>
 
@@ -226,6 +229,7 @@ import type { Army } from '../../../parser/models/army';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import Section from '../../core/components/ContentSection.vue';
 import { formatText } from '../../../utils/formatter';
+import ReportErrorButton from '../../shared/components/ReportErrorButton.vue';
 
 const props = defineProps<{ army: Army }>();
 

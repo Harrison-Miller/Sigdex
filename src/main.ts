@@ -26,6 +26,7 @@ import {
   faCopy,
   faEye,
   faClone,
+  faCircleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -56,7 +57,8 @@ library.add(
   faEye,
   faClone,
   faDiscord,
-  faGithub
+  faGithub,
+  faCircleExclamation
 );
 
 useDark();

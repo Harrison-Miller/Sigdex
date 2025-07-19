@@ -17,6 +17,7 @@ import {
 import { useArmy, useUnit } from '../../shared/composables/useGame';
 import { useUnitSettings } from '../../shared/composables/useUnitSettings';
 import WeaponOptionsSelection from '../../builder/components/WeaponOptionsSelection.vue';
+import ReportErrorButton from '../../shared/components/ReportErrorButton.vue';
 
 function formatCompanionUnits(unitName: string, companionLeader: string): string {
   const bold = (name: string) => `<b>${name}</b>`;
@@ -217,6 +218,10 @@ const unitKeywords = computed(() => {
           title="Default Weapon Options"
           :default-collapsed="true"
         />
+          <ReportErrorButton 
+    :unit-name="unitName"
+    :army-name="armyName"
+    :army-revision="army.revision"/>
   </div>
 </template>
 <style src="./unit-detail.css" scoped></style>
