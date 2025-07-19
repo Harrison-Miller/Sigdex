@@ -1,14 +1,16 @@
 <template>
   <div>
     <Section
-      v-if="showAoRDetails"
+      v-if="army.hasDetails()"
       collapse-key="details"
     >
       <template #title>Details</template>
-        <ul v-if="army.battleTraitNotes.length" class="details-list">
-            <li v-for="(note, index) in army.battleTraitNotes" :key="index" v-html="formatText(note)"></li>
-          </ul>
+
+      <ul v-if="army.battleTraitNotes.length" class="details-list">
+        <li v-for="(note, index) in army.battleTraitNotes" :key="index" v-html="formatText(note)"></li>
+      </ul>
       <ul class="details-list">
+        <li v-if="army.armyKeyword" v-html="formatArmyKeywordText(army.armyKeyword)"></li>
         <li
           v-if="army.requiredGeneral.length"
           v-html="formatRequiredGeneral(army.requiredGeneral)"
@@ -206,7 +208,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import type { Army } from '../../../parser/models/army';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
@@ -215,9 +217,9 @@ import { formatText } from '../../../utils/formatter';
 
 const props = defineProps<{ army: Army }>();
 
-const showAoRDetails = computed(() => {
-  return props.army.requiredGeneral.length > 0 || props.army.mustBeGeneralIfIncluded.length > 0 || props.army.battleTraitNotes.length > 0;
-});
+function formatArmyKeywordText(keyword: string): string {
+  return formatText(`All units in this army gain the **^^${keyword}^^** keyword.`);
+}
 
 function formatRequiredGeneral(requiredGeneral: string[]): string {
   if (requiredGeneral.length === 1) {

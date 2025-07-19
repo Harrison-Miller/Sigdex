@@ -5,7 +5,7 @@ import type { Unit } from '../models/unit';
 import { parseAbilities, parseAbility } from './parseAbility';
 import { parseMustBeGeneralIfIncluded, parseRequiredGenerals } from './parseArmyOfRenown';
 import { parseBattleProfiles } from './parseBattleProfile';
-import { filterIgnoredEnhancementTables, parsePoints, type ICategory } from './parseCommon';
+import { filterIgnoredEnhancementTables, parseCategories, parsePoints, type ICategory } from './parseCommon';
 
 export function parseArmy(
   root: any,
@@ -17,6 +17,21 @@ export function parseArmy(
   //trim non-basic characters from the name a-zA-Z0-9 punctuation and spaces
   name = name.replace(/[^a-zA-Z0-9\s.,'!-]/g, '').trim();
 
+  const armyCategories = parseCategories(catalogue);
+  // find all armyCategories with no childIds and all caps
+  const possibleArmyKeywords = Array.from(armyCategories.values())
+    .filter((cat) => !cat.childConditionIds?.length && cat.name === cat.name.toUpperCase())
+    .map((cat) => cat.name);
+
+  let armyKeyword: string = '';
+  if (possibleArmyKeywords.length > 1) {
+    console.warn(`Multiple possible army keywords found for ${name} not choosing any:`, possibleArmyKeywords);
+  } else if (possibleArmyKeywords.length === 1) {
+    // use the first one as the army keyword
+    armyKeyword = possibleArmyKeywords[0];
+    console.log(`Using army keyword "${armyKeyword}" for ${name}`);
+  }
+
   const army: Partial<IArmy> = {
     name,
     revision: catalogue?.['@_revision'],
@@ -27,9 +42,10 @@ export function parseArmy(
     spellLores: parseLoresByGroup(catalogue, 'Spell Lores'),
     prayerLores: parseLoresByGroup(catalogue, 'Prayer Lores'),
     manifestationLores: parseLoresByGroup(catalogue, 'Manifestation Lores'),
-    battleProfiles: parseBattleProfiles(catalogue, units, categories),
+    battleProfiles: parseBattleProfiles(catalogue, units, categories, armyCategories, armyKeyword),
     requiredGeneral: parseRequiredGenerals(catalogue, units),
     mustBeGeneralIfIncluded: parseMustBeGeneralIfIncluded(catalogue, units),
+    armyKeyword: armyKeyword,
   };
 
   const battleTraits = parseBattleTraits(catalogue);

@@ -66,6 +66,7 @@ export interface IArmy {
   isArmyOfRenown: boolean; // if this army is an army of renown
   baseArmyName: string; // the name of the base army this army is based on, if applicable
   armiesOfRenown: string[]; // names of armies of renown related to this army
+  armyKeyword: string; // the aor army keyword, may use it for all armies in the future
 
   // convience for UI
   unitList: Map<UnitCategory, IUnitListItem[]>; // list of units in the army with their points by category
@@ -100,6 +101,7 @@ export class Army implements IArmy {
   isArmyOfRenown: boolean;
   baseArmyName: string;
   armiesOfRenown: string[];
+  armyKeyword: string;
 
   unitList: Map<UnitCategory, IUnitListItem[]> = new Map();
 
@@ -132,6 +134,8 @@ export class Army implements IArmy {
     this.requiredGeneral = data?.requiredGeneral ?? [];
     this.mustBeGeneralIfIncluded = data?.mustBeGeneralIfIncluded ?? [];
 
+    this.armyKeyword = data?.armyKeyword ?? '';
+
     // determine if this is an army of renown
     const armyParts = this.name.split(' - ');
     if (armyParts.length > 1) {
@@ -159,5 +163,10 @@ export class Army implements IArmy {
         this.unitList.set(unitCategory, [{ name, points }]);
       }
     }
+  }
+
+  hasDetails(): boolean {
+    return this.battleTraitNotes.length > 0 || this.armyKeyword !== '' ||
+      this.requiredGeneral.length > 0 || this.mustBeGeneralIfIncluded.length > 0;
   }
 }

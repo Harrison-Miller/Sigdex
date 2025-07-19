@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import StatCircle from '../components/StatCircle.vue';
@@ -14,7 +14,7 @@ import {
   formatSubHeroTags,
   formatRegimentOptions,
 } from '../../../utils/formatter';
-import { useUnit } from '../../shared/composables/useGame';
+import { useArmy, useUnit } from '../../shared/composables/useGame';
 import { useUnitSettings } from '../../shared/composables/useUnitSettings';
 import WeaponOptionsSelection from '../../builder/components/WeaponOptionsSelection.vue';
 
@@ -32,6 +32,7 @@ const route = useRoute();
 const unitName = props.unitName ?? (route?.params?.unit as string | undefined);
 const armyName = props.armyName ?? (route?.params?.army as string | undefined);
 
+const { army } = useArmy(armyName ?? '');
 const { unit, battleProfile } = useUnit(armyName ?? '', unitName ?? '');
 const unitSettings = useUnitSettings(unit);
 
@@ -45,6 +46,15 @@ function toggleUnitFavoriteDetail(fav: boolean) {
   }
 }
 const favoriteToggleSize = 36;
+
+const unitKeywords = computed(() => {
+  const keywords = new Set<string>(unit.value.keywords);
+  if (army.value.armyKeyword) {
+    keywords.add(army.value.armyKeyword);
+  }
+  return Array.from(keywords).sort();
+})
+
 </script>
 <template>
   <BackButton :size="36" />
@@ -198,7 +208,7 @@ const favoriteToggleSize = 36;
       collapse-key="keywords"
     >
       <template #title>Keywords</template>
-      <KeywordsBar :keywords="unit.keywords" />
+      <KeywordsBar :keywords="unitKeywords" />
     </Section>
             <WeaponOptionsSelection
           v-if="unit.hasWeaponOptions()"

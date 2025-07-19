@@ -10,7 +10,6 @@ import { WeaponOption } from '../models/weaponOption';
 import { findAllByTagAndAttrs, findFirstByTagAndAttrs } from '../util';
 import {
   filterIgnoredEnhancementTables,
-  parseCategories,
   parsePoints,
   type ICategory,
 } from './parseCommon';
@@ -19,7 +18,9 @@ import { parseCompanionUnitLeader } from './parseCompanionUnits';
 export function parseBattleProfiles(
   root: any,
   units: Map<string, Unit>,
-  categories: Map<string, ICategory>
+  categories: Map<string, ICategory>,
+  armyCategories: Map<string, ICategory>,
+  armyKeyword: string,
 ): Map<string, BattleProfile> {
   const bpCategories = parseBattleProfileCategories(root);
   // add bp categories to the main categories map
@@ -29,7 +30,7 @@ export function parseBattleProfiles(
       allCategories.set(id, category);
     }
   }
-  const armyCategories = parseCategories(root);
+
   const errorConditions = parseErrorConditions(root, allCategories);
 
   const battleProfileNodes = root.entryLinks?.entryLink || [];
@@ -45,7 +46,7 @@ export function parseBattleProfiles(
     )
       continue;
 
-    const profile = parseBattleProfile(node, units, allCategories, armyCategories, errorConditions);
+    const profile = parseBattleProfile(node, units, allCategories, armyCategories, errorConditions, armyKeyword);
     if (profile.category === 'OTHER' || profile.category === 'LEGENDS') continue; // skip other and legends categories
 
     bpMap.set(profile.name, profile);
@@ -126,14 +127,15 @@ export function parseBattleProfile(
   units: Map<string, Unit>,
   allCategories: Map<string, ICategory>,
   armyCategories: Map<string, ICategory>,
-  errorConditions: IErrorCondition[]
+  errorConditions: IErrorCondition[],
+  armyKeyword: string,
 ): BattleProfile {
   const battleProfile: Partial<IBattleProfile> = {
     name: bpNode['@_name'],
     points: parsePoints(bpNode),
     reinforceable: parseReinforceable(bpNode),
     enhancementTables: parseAllowedEnhancementTables(bpNode),
-    regimentTags: parseRegimentTags(bpNode, armyCategories),
+    regimentTags: parseRegimentTags(bpNode, armyCategories, armyKeyword),
     regimentOptions: parseRegimentOptions(bpNode, allCategories, armyCategories, errorConditions),
     companionLeader: parseCompanionUnitLeader(bpNode, allCategories),
   };
@@ -197,7 +199,7 @@ export function parseAllowedEnhancementTables(bpNode: any): string[] {
   return allowedTabls.map((table: any) => table['@_name']);
 }
 
-export function parseRegimentTags(bpNode: any, armyCategories: Map<string, ICategory>): string[] {
+export function parseRegimentTags(bpNode: any, armyCategories: Map<string, ICategory>, armyKeyword: string): string[] {
   const tags: string[] = [];
   for (const [_, category] of armyCategories.entries()) {
     if (category.name.toLowerCase().includes('regiment')) continue;
@@ -214,7 +216,8 @@ export function parseRegimentTags(bpNode: any, armyCategories: Map<string, ICate
     const categoryLink = bpNode?.categoryLinks?.categoryLink?.find(
       (link: any) => link['@_name'] === category.name
     );
-    if (categoryLink) {
+    // armyKeyword is also a category, but it's not used for regiment options
+    if (categoryLink && category.name !== armyKeyword) {
       tags.push(category.name);
     }
   }
