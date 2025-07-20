@@ -11,6 +11,7 @@ import { parseCategories, type ICategory } from './parse/parseCommon';
 import { BattleProfile, type IBattleProfile } from './models/battleProfile';
 import type { RegimentOfRenown } from './models/regimentOfRenown';
 import { parseRegimentsOfRenown } from './parse/parseRegimentOfRenown';
+import { parserHacks } from './hacks';
 
 export class Parser {
   // configuration
@@ -206,14 +207,37 @@ export class Parser {
       }
     });
 
-    // deal with big waaagh manually it's an AoR but not parsed as one
-    const bigWaaagh = this.armies.get('Big Waaagh!');
-    // this.armies.delete('Big Waaagh!');
-    if (bigWaaagh) {
-      bigWaaagh.isArmyOfRenown = true;
-      // bigWaaagh.baseArmyName = 'Orruck Warclans';
-      // bigWaaagh.name = 'Orruck Warclans - Big Waaagh!';
-      // this.armies.set(bigWaaagh.name, bigWaaagh);
+
+
+    // regiments of renown
+    this.regimentsOfRenown = parseRegimentsOfRenown(
+      this.rorFile.catalogue,
+      this.gameFile.gameSystem,
+      this.armyIds
+    );
+
+    // update armies with a list of regiment of renowns that it is allowed to use
+    this.armies.forEach((army) => {
+      const allowedRors = Array.from(this.regimentsOfRenown.values())
+        .filter((ror) => ror.allowedArmies.includes(army.name))
+        .map((ror) => ror.name);
+      army.regimentsOfRenown = allowedRors;
+    });
+
+    const game: Game = {
+      battleTacticCards: this.battleTacticCards,
+      weaponAbilityDescriptions: new Map(), // TODO: later
+      keywordAbility: new Map(), // TODO: later
+      units: this.units,
+      universalManifestationLores: universalManifestationLores,
+      armies: this.armies,
+      armyList: new Map(),
+      regimentsOfRenown: this.regimentsOfRenown,
+    };
+
+    // run parser hacks
+    for (const hack of parserHacks) {
+      hack(game);
     }
 
     // sorted list of armies by grand alliance
@@ -236,31 +260,9 @@ export class Parser {
       armyList.set(ga, armies);
     });
 
-    // regiments of renown
-    this.regimentsOfRenown = parseRegimentsOfRenown(
-      this.rorFile.catalogue,
-      this.gameFile.gameSystem,
-      this.armyIds
-    );
+    game.armyList = armyList;
 
-    // update armies with a list of regiment of renowns that it is allowed to use
-    this.armies.forEach((army) => {
-      const allowedRors = Array.from(this.regimentsOfRenown.values())
-        .filter((ror) => ror.allowedArmies.includes(army.name))
-        .map((ror) => ror.name);
-      army.regimentsOfRenown = allowedRors;
-    });
-
-    return {
-      battleTacticCards: this.battleTacticCards,
-      weaponAbilityDescriptions: new Map(), // TODO: later
-      keywordAbility: new Map(), // TODO: later
-      units: this.units,
-      universalManifestationLores: universalManifestationLores,
-      armies: this.armies,
-      armyList: armyList,
-      regimentsOfRenown: this.regimentsOfRenown,
-    };
+    return game;
   }
 
   private async initFiles() {
