@@ -129,7 +129,7 @@ v-if="showTactics"
       </button>
 
       <RegimentOfRenownSection
-        v-if="list && game && !army.isArmyOfRenown && army.regimentsOfRenown.length > 0"
+        v-if="list && game && army.regimentsOfRenown.length > 0"
         :model-value-name="list.regimentOfRenown"
         :model-value-units="list.regimentOfRenownUnits"
         :list-id="list.id"

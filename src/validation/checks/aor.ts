@@ -5,7 +5,7 @@ import type { ListValidator } from '../validator';
 export const aorChecks: ListValidator[] = [
   requiredGeneralIsSelected,
   mustBeGeneralIfIncluded,
-  aorMayNotIncludeRoR,
+  // aorMayNotIncludeRoR,
   mustBeIncluded,
 ];
 
@@ -71,11 +71,12 @@ function mustBeIncluded(list: List, game: Game): string[] {
   return errors;
 }
 
-function aorMayNotIncludeRoR(list: List, game: Game): string[] {
-  const army = game.armies.get(list.faction);
-  if (!army) return [];
-  if (army.isArmyOfRenown && list.regimentOfRenown) {
-    return ['Regiments of Renown may not be included in an Army of Renown.'];
-  }
-  return [];
-}
+// Some AoR's may take RoR's (like LotFP)
+// function aorMayNotIncludeRoR(list: List, game: Game): string[] {
+//   const army = game.armies.get(list.faction);
+//   if (!army) return [];
+//   if (army.isArmyOfRenown && list.regimentOfRenown) {
+//     return ['Regiments of Renown may not be included in an Army of Renown.'];
+//   }
+//   return [];
+// }

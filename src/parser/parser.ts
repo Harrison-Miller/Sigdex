@@ -251,13 +251,6 @@ export class Parser {
       army.regimentsOfRenown = allowedRors;
     });
 
-    // check what units have extra text descriptions
-    this.units.forEach((unit) => {
-      if (unit.descriptions && unit.descriptions.length > 0) {
-        console.log(`Unit ${unit.name} has descriptions:`, unit.descriptions);
-      }
-    });
-
     return {
       battleTacticCards: this.battleTacticCards,
       weaponAbilityDescriptions: new Map(), // TODO: later
