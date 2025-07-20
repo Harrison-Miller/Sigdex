@@ -13,6 +13,7 @@ import {
   formatModelGroups,
   formatSubHeroTags,
   formatRegimentOptions,
+  formatText,
 } from '../../../utils/formatter';
 import { useArmy, useUnit } from '../../shared/composables/useGame';
 import { useUnitSettings } from '../../shared/composables/useUnitSettings';
@@ -153,6 +154,11 @@ const unitKeywords = computed(() => {
       <div
         class="unit-detail"
       >
+        <template v-if="unit.descriptions.length">
+          <div v-for="(desc, index) in unit.descriptions" :key="`desc-${index}`" class="unit-detail-section">
+            <span v-html="formatText(desc)" />
+          </div>
+        </template>
         <div
           v-if="armyName !== 'UniversalUnits' && !battleProfile.reinforceable && !battleProfile.defaultNotReinforceable()"
           class="unit-detail-section"

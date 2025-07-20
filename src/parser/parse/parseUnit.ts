@@ -48,6 +48,7 @@ export function parseUnit(unitNode: any, sharedAbilities: Map<string, Ability>):
     keywords: parseUnitKeywords(unitNode),
     abilities: parseAbilities(unitNode.profiles),
     models: parseModels(unitNode),
+    descriptions: parseDescriptions(unitNode),
   };
 
   // add shared abilities
@@ -174,4 +175,17 @@ export function isDefaultModels(modelGroups: Model[]): boolean {
   if (modelGroups.length === 0) return true;
   const group = modelGroups[0];
   return Array.from(group.weapons.values()).every((w) => w.type === 'default');
+}
+
+export function parseDescriptions(unitNode: any): string[] {
+  const ruleNodes = unitNode.rules?.rule || [];
+  const descriptions: string[] = [];
+  ruleNodes.forEach((node: any) => {
+    const description = (typeof node?.description === 'string' ? node.description : node?.description?.['#text']) || '';
+    const hasMod = node?.modifiers;
+    if (!hasMod && description) {
+      descriptions.push(description);
+    }
+  });
+  return descriptions;
 }

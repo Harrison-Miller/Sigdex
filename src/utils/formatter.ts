@@ -7,6 +7,10 @@ import type { ArmyOption } from '../parser/models/army';
 
 export function formatText(text: string): string {
   if (!text) return '';
+
+  // // Replace all newlines with <br>
+  text = text.replace(/\n/g, '<br>');
+
   // bullet point
   text = text.replace(/•\s*/g, '<br>•');
 
@@ -21,8 +25,8 @@ export function formatText(text: string): string {
   text = text.replace(/\^\^(.+?)\^\^/g, '<span style="font-variant: small-caps;">$1</s>');
 
 
-  // // Replace all newlines with <br>
-  text = text.replace(/\n/g, '<br>');
+
+
   // // Replace any number of sequential <br>'s (with optional whitespace between) with a single <br>
   text = text.replace(/(<br>\s*)+/g, '<br>');
 

@@ -57,6 +57,8 @@ export interface IUnit {
   models: Map<string, Model>;
 
   summoningSpell: Ability | null; // duplicate so we don't have to look it up
+
+  descriptions: string[];
 }
 
 export class Unit implements IUnit {
@@ -70,6 +72,7 @@ export class Unit implements IUnit {
   unitSize: number;
   models: Map<string, Model>;
   summoningSpell: Ability | null;
+  descriptions: string[];
 
   constructor(unit?: Partial<IUnit>) {
     this.name = unit?.name ?? '';
@@ -81,6 +84,7 @@ export class Unit implements IUnit {
     this.unitSize = unit?.unitSize ?? 1; // default to 1 if not specified
     this.models = unit?.models ?? new Map<string, Model>();
     this.summoningSpell = unit?.summoningSpell ?? null;
+    this.descriptions = unit?.descriptions ?? [];
 
     // set stats.ward based on if keyword "Ward (value)" is present
     const wardKeyword = this.keywords.find((keyword) => keyword.toUpperCase().startsWith('WARD'));

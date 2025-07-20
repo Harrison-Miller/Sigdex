@@ -21,7 +21,6 @@ export function parseArmyOptions(root: any, armyCategories: Map<string, ICategor
   if (mustBeGeneralIfIncluded) {
     options.push(mustBeGeneralIfIncluded);
   }
-  console.log(`Parsed ${options.length} army options for ${root['@_name']}`);
   return options;
 }
 
