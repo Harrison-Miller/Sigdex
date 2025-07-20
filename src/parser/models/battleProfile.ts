@@ -116,7 +116,9 @@ export class BattleProfile implements IBattleProfile {
       this.keywords.includes('HERO') ||
       this.keywords.includes('MONSTER') ||
       this.keywords.includes('UNIQUE') ||
-      this.keywords.includes('WAR MACHINE')
+      this.keywords.includes('WAR MACHINE') ||
+      this.keywords.includes('FACTION TERRAIN') ||
+      this.category === 'MANIFESTATION'
     );
   }
 }
