@@ -1,5 +1,5 @@
-export async function listFiles(githubRepo: string): Promise<string[]> {
-  const treeUrl = `https://api.github.com/repos/${githubRepo}/git/trees/main?recursive=1`;
+export async function listFiles(githubRepo: string, branch: string): Promise<string[]> {
+  const treeUrl = `https://api.github.com/repos/${githubRepo}/git/trees/${branch}?recursive=1`;
   const response = await fetch(treeUrl);
   const data = await response.json();
   if (!data.tree) {

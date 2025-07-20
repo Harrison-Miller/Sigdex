@@ -3,10 +3,10 @@ import { getFileContent } from '../github/content';
 import { xmlParser } from './util';
 
 // loadRepoFiles loads all the BSData XML files from a GitHub repository
-export async function loadRepoFiles(githubRepo: string): Promise<Map<string, any>> {
+export async function loadRepoFiles(githubRepo: string, branch: string): Promise<Map<string, any>> {
   const parser = xmlParser();
   const pathToXml: Map<string, any> = new Map();
-  let files = await listFiles(githubRepo);
+  let files = await listFiles(githubRepo, branch);
   files = files.filter((filePath) => filePath.endsWith('.cat') || filePath.endsWith('.gst'));
   files = files.filter(
     (filePath) =>
@@ -15,7 +15,7 @@ export async function loadRepoFiles(githubRepo: string): Promise<Map<string, any
   );
   await Promise.all(
     files.map((filePath) => {
-      return getFileContent(githubRepo, filePath)
+      return getFileContent(githubRepo, branch, filePath)
         .then((content) => {
           const result = parser.parse(content);
           pathToXml.set(filePath, result);

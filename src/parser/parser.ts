@@ -15,13 +15,16 @@ import { parseRegimentsOfRenown } from './parse/parseRegimentOfRenown';
 export class Parser {
   // configuration
   private githubRepo: string;
-  private getFiles: (githubRepo: string) => Promise<Map<string, any>>;
+  private branch: string;
+  private getFiles: (githubRepo: string, branch: string) => Promise<Map<string, any>>;
 
   constructor(
     githubRepo: string,
-    getFiles: (githubRepo: string) => Promise<Map<string, any>> = loadRepoFiles
+    branch: string,
+    getFiles: (githubRepo: string, branch: string) => Promise<Map<string, any>> = loadRepoFiles
   ) {
     this.githubRepo = githubRepo;
+    this.branch = branch;
     this.getFiles = getFiles;
   }
 
@@ -268,7 +271,7 @@ export class Parser {
   }
 
   private async initFiles() {
-    const pathToXml = await this.getFiles(this.githubRepo);
+    const pathToXml = await this.getFiles(this.githubRepo, this.branch);
     this.gameFile = pathToXml.get('Age of Sigmar 4.0.gst');
     this.loreFile = pathToXml.get('Lores.cat');
     this.rorFile = pathToXml.get('Regiments of Renown.cat');

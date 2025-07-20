@@ -41,7 +41,13 @@
         label="GITHUB_REPO"
         class="settings-input"
         placeholder="BSData/age-of-sigmar-4th"
-        @change="saveGithubRepoHandler"
+      />
+      <TextInput
+        v-model="githubBranch"
+        type="text"
+        label="GITHUB_BRANCH"
+        class="settings-input"
+        placeholder="main"
       />
     </div>
     <div class="section socials">
@@ -83,7 +89,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
 import { SIGDEX_VERSION } from '../../../version';
 import BackButton from '../../core/components/BackButton.vue';
 import ListButton from '../../shared/components/ListButton.vue';
@@ -92,26 +97,19 @@ import TextInput from '../../core/components/TextInput.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { clearAllFavorites } from '../../../favorites';
 import { clearGameCache } from '../../shared/composables/useGame';
-import { saveGithubRepo } from '../../../github/config';
+import { DEFAULT_GITHUB_BRANCH, DEFAULT_GITHUB_REPO, GITHUB_BRANCH_KEY, GITHUB_REPO_KEY } from '../../../github/config';
 import { clearAllLists } from '../../../list/manage';
 import { UNIT_SETTINGS_KEY } from '../../shared/composables/useUnitSettings';
-import { useDark } from '@vueuse/core';
+import { useDark, useStorage } from '@vueuse/core';
 import SupporterBanner from '../components/SupporterBanner.vue';
 
 const isDark = useDark();
 
-const githubRepoKey = 'GITHUB_REPO';
-const githubRepo = ref('');
-
-onMounted(() => {
-  githubRepo.value = localStorage.getItem(githubRepoKey) || '';
-});
+const githubRepo = useStorage(GITHUB_REPO_KEY, DEFAULT_GITHUB_REPO);
+const githubBranch = useStorage(GITHUB_BRANCH_KEY, DEFAULT_GITHUB_BRANCH);
 
 function clearBSDataHandler() {
   clearGameCache();
-}
-function saveGithubRepoHandler() {
-  saveGithubRepo(githubRepo.value);
 }
 
 function clearFavorites() {
