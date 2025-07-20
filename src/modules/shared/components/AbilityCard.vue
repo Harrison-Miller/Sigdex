@@ -53,6 +53,13 @@ function getAbilityIcon(type: string) {
       <span class="hexagon-cost-text">{{ props.ability.commandPoints }}</span>
     </div>
     <div
+      v-if="props.ability.bloodTithePoints"
+      class="blood-tithe-icon top-right"
+    >
+      <img src="/assets/splatter.png" alt="Blood Tithe" class="splatter-img" />
+      <span class="blood-tithe-text">{{ props.ability.bloodTithePoints }}</span>
+    </div>
+    <div
       class="card-header ability-header"
       :class="'bg-'+(props.ability.color || 'black').toLowerCase()"
     >
@@ -66,6 +73,7 @@ function getAbilityIcon(type: string) {
     </div>
     <div class="card-title ability-title">{{ props.ability.name }}</div>
     <div class="card-body">
+      <div v-if="props.ability.unlockCondition" class="card-text ability-text" v-html="formatText(`*${props.ability.unlockCondition}*`)"></div>
       <div
         v-if="props.ability.declare"
         class="card-text ability-text"
@@ -88,6 +96,41 @@ function getAbilityIcon(type: string) {
 </template>
 <style src="./AbilityCard.css" scoped></style>
 <style scoped>
+.blood-tithe-icon {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.blood-tithe-icon.top-right {
+  top: -18px;
+  right: -28px;
+  left: auto;
+}
+.splatter-img {
+  width: 7.2rem;
+  height: 7.2rem;
+  z-index: 20;
+  object-fit: contain;
+  filter:
+    invert(18%) sepia(100%) saturate(800%) hue-rotate(-10deg) brightness(0.95)
+    drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+}
+.blood-tithe-text {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1rem;
+  pointer-events: none;
+  text-shadow: 0 1px 2px #fff, 0 0 2px #fff;
+  z-index: 22;
+}
 .casting-value-circle {
   position: absolute;
   top: -12px;

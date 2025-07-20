@@ -18,6 +18,8 @@ export function parseAbility(abilityNode: any): Ability {
     castingValue: characteristics.get('Casting Value'),
     chantingValue: characteristics.get('Chanting Value'),
     commandPoints: characteristics.get('Cost'),
+    bloodTithePoints: characteristics.get('Blood Tithe Points'),
+    unlockCondition: characteristics.get('Unlock Condition'),
     keywords: splitAbilityKeywords(characteristics.get('Keywords') || ''),
   };
 

@@ -11,6 +11,9 @@ export interface IAbility {
   chantingValue: string;
   // only present for command abilities
   commandPoints: string;
+  // only present for khorne
+  bloodTithePoints: string;
+  unlockCondition: string;
 
   keywords: string[];
 
@@ -31,6 +34,8 @@ export class Ability implements IAbility {
   castingValue: string;
   chantingValue: string;
   commandPoints: string;
+  bloodTithePoints: string;
+  unlockCondition: string;
   keywords: string[];
   summonedUnits: string[];
 
@@ -44,6 +49,8 @@ export class Ability implements IAbility {
     this.castingValue = data?.castingValue ?? '';
     this.chantingValue = data?.chantingValue ?? '';
     this.commandPoints = data?.commandPoints ?? '';
+    this.bloodTithePoints = data?.bloodTithePoints ?? '';
+    this.unlockCondition = data?.unlockCondition ?? '';
     this.keywords = data?.keywords ?? [];
     this.summonedUnits = data?.summonedUnits ?? [];
 
