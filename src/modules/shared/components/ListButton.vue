@@ -7,6 +7,7 @@ import SoGBadge from './badges/SoGBadge.vue';
 import GeneralBadge from './badges/GeneralBadge.vue';
 import ReinforcedBadge from './badges/ReinforcedBadge.vue';
 import EnhancementsBadge from './badges/EnhancementsBadge.vue';
+import LegendsBadge from './badges/LegendsBadge.vue';
 
 const props = defineProps<{
   label: string;
@@ -17,6 +18,7 @@ const props = defineProps<{
   showGeneral?: boolean;
   showReinforced?: boolean;
   enhancementCount?: number;
+  legends?: boolean;
 }>();
 const emit = defineEmits(['click', 'toggle-favorite', 'ellipsis']);
 const { favorite } = toRefs(props);
@@ -56,6 +58,7 @@ const displayPoints = computed(() => {
       <BadgeRow>
         <PointsBadge :points="displayPoints" />
         <SoGBadge :sog="isSoG" />
+        <LegendsBadge :legends="legends" />
         <GeneralBadge :general="props.showGeneral" />
         <ReinforcedBadge :reinforced="props.showReinforced" />
         <EnhancementsBadge :count="props.enhancementCount" />

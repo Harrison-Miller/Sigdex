@@ -19,6 +19,7 @@ import { useArmy, useUnit } from '../../shared/composables/useGame';
 import { useUnitSettings } from '../../shared/composables/useUnitSettings';
 import WeaponOptionsSelection from '../../builder/components/WeaponOptionsSelection.vue';
 import ReportErrorButton from '../../shared/components/ReportErrorButton.vue';
+import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
 
 function formatCompanionUnits(unitName: string, companionLeader: string): string {
   const bold = (name: string) => `<b>${name}</b>`;
@@ -73,6 +74,7 @@ const unitKeywords = computed(() => {
       </div>
   <div>
           <h1>{{ unit.name }}</h1>
+          <LegendsBadge big :legends="unit.legends" style="margin-bottom: 1em" />
     <div class="stats-row">
       <StatCircle
         v-if="unit.stats.move"

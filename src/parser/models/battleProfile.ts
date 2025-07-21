@@ -26,6 +26,7 @@ export interface IBattleProfile {
   // and filtering.
   category: UnitCategory;
   keywords: string[]; // also duplicate info, but useful for sorting and filtering.
+  legends: boolean;
 
   points: number;
   reinforceable: boolean;
@@ -44,14 +45,13 @@ export interface IBattleProfile {
   isUndersize: boolean; // true if this is an undersize unit, false otherwise
   // the condition to take this undersize unit, e.g For each Knight-Draconis you may take 1 Stormdrake Guard (1 model)
   undersizeCondition: string;
-
-  // TODO: probably have boolean flags for: must be in list, must be general, may not be general.
 }
 
 export class BattleProfile implements IBattleProfile {
   name: string;
   category: UnitCategory;
   keywords: string[];
+  legends: boolean;
   points: number;
   reinforceable: boolean;
 
@@ -69,6 +69,7 @@ export class BattleProfile implements IBattleProfile {
     this.name = profile?.name ?? '';
     this.category = profile?.category ?? 'OTHER';
     this.keywords = profile?.keywords ?? [];
+    this.legends = profile?.legends ?? false;
     this.points = profile?.points ?? 0;
     this.reinforceable = profile?.reinforceable ?? false;
 
