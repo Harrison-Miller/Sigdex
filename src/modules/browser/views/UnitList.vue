@@ -4,6 +4,7 @@
     v-if="!loading && !error"
   >
     <h1>{{ armyName }}</h1>
+    <LegendsBadge big :legends="army.legends" style="margin-bottom: 1em;"/>
     <TwoTab
       v-model:left-active="leftActive"
       :left-label="'Warscrolls'"
@@ -83,6 +84,7 @@ import {
   setArmyUnitFavoriteToggleState,
 } from '../../../favorites';
 import Section from '../../core/components/ContentSection.vue';
+import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
 
 // Accept army as a prop for this view
 const props = defineProps<{ armyName?: string }>();

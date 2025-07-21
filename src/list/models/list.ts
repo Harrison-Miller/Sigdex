@@ -98,6 +98,10 @@ export function setDefaultArmyOptions(data: Partial<IList>, army: Army): Partial
     data.formation = Array.from(army.formations.keys())[0];
   }
 
+  if (army.legends) {
+    data.validator = 'legends';
+  }
+
   // Faction Terrain (first free/0pt terrain)
   if (!data.factionTerrain && army.unitList.has('FACTION TERRAIN')) {
     const terrains = army.unitList.get('FACTION TERRAIN') || [];

@@ -39,6 +39,7 @@
     >
       List not found.
     </div>
+    <LegendsBadge big :legends="army.legends" />
     <Section
       v-if="army.battleTraits.length > 0"
       :default-collapsed="battleTraitsCollapsed"
@@ -200,6 +201,7 @@ import { BattleTacticCard as BattleTacticCardModel } from '../../../parser/model
 import { ListUnit } from '../../../list/models/unit';
 import { ListRegiment as ListRegimentModel } from '../../../list/models/regiment';
 import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
+import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
 
 const props = defineProps<{ id: string }>();
 const route = useRoute();

@@ -28,9 +28,37 @@ export class BattleTacticCard implements IBattleTacticCard {
   }
 }
 
+export interface IArmyOfRenownListItem {
+  name: string,
+  legends: boolean,
+}
+
+export class ArmyOfRenownListItem {
+  name: string;
+  legends: boolean;
+
+  constructor(data?: Partial<IArmyOfRenownListItem>) {
+    this.name = data?.name ?? '';
+    this.legends = data?.legends ?? false;
+  }
+}
+
 export interface IArmyListItem {
   name: string;
-  armiesOfRenown: string[];
+  armiesOfRenown: ArmyOfRenownListItem[];
+  legends: boolean;
+}
+
+export class ArmyListItem {
+  name: string;
+  armiesOfRenown: ArmyOfRenownListItem[];
+  legends: boolean;
+
+  constructor(data?: Partial<IArmyListItem>) {
+    this.name = data?.name ?? '';
+    this.armiesOfRenown = data?.armiesOfRenown ?? [];
+    this.legends = data?.legends ?? false;
+  }
 }
 
 // TODO: we're assuming only 1 game mode ghb 2025-06, later we'll want to support multiple game modes

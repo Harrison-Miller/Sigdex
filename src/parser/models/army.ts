@@ -88,6 +88,7 @@ export interface IArmy {
   revision: string;
   name: string;
   grandAlliance: GrandAlliance; // probably computed by looking up the keywords of the first unit in battleProfiles
+  legends: boolean;
 
   battleTraitNotes: string[]; // notes for battle traits, if any
   battleTraits: Ability[];
@@ -123,6 +124,7 @@ export class Army implements IArmy {
   revision: string;
   name: string;
   grandAlliance: GrandAlliance;
+  legends: boolean;
 
   battleTraitNotes: string[];
   battleTraits: Ability[];
@@ -152,7 +154,14 @@ export class Army implements IArmy {
 
   constructor(data?: Partial<IArmy>) {
     this.revision = data?.revision ?? '';
-    this.name = data?.name ?? '';
+
+    let name = data?.name ?? '';
+    this.legends = name.toLowerCase().includes('legends');
+    // remove legends from name
+    name = name.replace(/\s*LEGENDS\s*/i, '').trim();
+
+
+    this.name = name;
     this.battleProfiles = data?.battleProfiles ?? new Map();
     this.grandAlliance = data?.grandAlliance ?? 'Order'; // default to order if not specified
 
