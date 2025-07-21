@@ -14,5 +14,6 @@ const { big, reinforced } = defineProps<{
 .reinforced-badge {
 	background-color: var(--color-yellow);
 	color: #111;
+	font-weight: 800;
 }
 </style>
