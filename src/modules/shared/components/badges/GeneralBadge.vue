@@ -14,5 +14,6 @@ const { big, general } = defineProps<{
 .general-badge {
 	background-color: var(--color-yellow);
 	color: #111;
+	font-weight: 800;
 }
 </style>
