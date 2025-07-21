@@ -18,7 +18,7 @@ function validArmySelections(list: List, game: Game): string[] {
 
   // formation
   // armies of renown do not have formations
-  if (!army.isArmyOfRenown) {
+  if (!army.isArmyOfRenown && army.formations.size > 0) {
     if (list.formation && list.formation === '') {
       errors.push('Formation must be selected.');
     } else {

@@ -89,18 +89,20 @@
                     :label="army.name"
                     :favorite="armyFavorites.includes(army.name)"
                     :show-favorite-toggle="true"
+                    :legends="army.legends"
                     @click="selectArmy(army.name)"
                     @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
                   >
                     <ul>
                       <li
                         v-for="aor in army.armiesOfRenown"
-                        :key="aor"
+                        :key="aor.name"
                       >
                         <ListButton
-                          :label="aor"
+                          :label="aor.name"
+                          :legends="aor.legends"
                           :show-favorite-toggle="false"
-                          @click="selectArmy(army.name + ' - ' + aor)"
+                          @click="selectArmy(army.name + ' - ' + aor.name)"
                         />
                       </li>
                     </ul>
@@ -111,6 +113,7 @@
                     :label="army.name"
                     :favorite="armyFavorites.includes(army.name)"
                     :show-favorite-toggle="true"
+                    :legends="army.legends"
                     @click="selectArmy(army.name)"
                     @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
                   />

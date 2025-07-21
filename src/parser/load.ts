@@ -10,7 +10,6 @@ export async function loadRepoFiles(githubRepo: string, branch: string): Promise
   files = files.filter((filePath) => filePath.endsWith('.cat') || filePath.endsWith('.gst'));
   files = files.filter(
     (filePath) =>
-      !filePath.toLowerCase().includes('legends') &&
       !filePath.toLowerCase().includes('path to glory')
   );
   await Promise.all(

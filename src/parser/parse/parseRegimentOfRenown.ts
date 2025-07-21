@@ -39,11 +39,11 @@ export function parseRegimentsOfRenown(
     }
 
     // remove legends and aor armies
-    ror.allowedArmies = ror.allowedArmies.filter(
-      (army) => !army.toLowerCase().includes('legends')
-      // some aor's can have ror's (like LotFP)
-      // && !army.includes(' - ') 
-    );
+    // ror.allowedArmies = ror.allowedArmies.filter(
+    //   (army) => !army.toLowerCase().includes('legends')
+    //   // some aor's can have ror's (like LotFP)
+    //   // && !army.includes(' - ') 
+    // );
 
     rorMap.set(name, new RegimentOfRenown(ror));
   }

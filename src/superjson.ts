@@ -1,5 +1,5 @@
 import SuperJSON from "superjson";
-import { BattleTacticCard, Game } from "./parser/models/game";
+import { ArmyListItem, ArmyOfRenownListItem, BattleTacticCard, Game } from "./parser/models/game";
 import { Ability } from "./parser/models/ability";
 import { Unit } from "./parser/models/unit";
 import { Stats } from "./parser/models/stats";
@@ -33,6 +33,8 @@ export function registerSuperJSONClasses(): void {
 	SuperJSON.registerClass(RegimentOption, { identifier: 'RegimentOption' });
 	SuperJSON.registerClass(RegimentOfRenown, { identifier: 'RegimentOfRenown' });
 	SuperJSON.registerClass(ArmyOption, { identifier: 'ArmyOption' });
+	SuperJSON.registerClass(ArmyListItem, { identifier: 'ArmyListItem' });
+	SuperJSON.registerClass(ArmyOfRenownListItem, { identifier: 'ArmyOfRenownListItem' });
 
 	// list models
 	SuperJSON.registerClass(List, { identifier: 'List' });

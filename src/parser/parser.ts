@@ -1,6 +1,6 @@
 import { parseUnits } from './parse/parseUnit';
 import { loadRepoFiles } from './load';
-import type { BattleTacticCard, Game, IArmyListItem } from './models/game';
+import { ArmyOfRenownListItem, type BattleTacticCard, type Game, type IArmyListItem } from './models/game';
 import type { Unit } from './models/unit';
 import { parseBattleTacticCards, parseLores } from './parse/parseGame';
 import type { Lore } from './models/lore';
@@ -117,12 +117,10 @@ export class Parser {
 
     // parse armies and assign their lores
     [...this.armyFiles.values()].forEach((xml) => {
-      // [this.armyFiles.get('Gloomspite Gitz.cat')].forEach((xml) => {
       const army = parseArmy(xml, this.units, this.categories);
       if (
         !army ||
         army.name === '' ||
-        army.name.toLowerCase().includes('legends') ||
         army.battleProfiles.size === 0
       ) {
         return;
@@ -249,9 +247,17 @@ export class Parser {
     armyList.set('Destruction', []);
     this.armies.forEach((army) => {
       if (!army.isArmyOfRenown || army.name === 'Big Waaagh!') {
+        const aors = army.armiesOfRenown.map((a) => {
+          return new ArmyOfRenownListItem({
+            name: a,
+            legends: this.armies.get(army.name + " - " + a)?.legends,
+          })
+        })
+
         armyList.get(army.grandAlliance)?.push({
           name: army.name,
-          armiesOfRenown: army.armiesOfRenown,
+          armiesOfRenown: aors,
+          legends: army.legends,
         });
       }
     });

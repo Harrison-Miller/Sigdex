@@ -12,7 +12,8 @@ export const basicChecks: ListValidator[] = [
   regimentLeaderIsHero,
   warmasterMustBeGeneral,
   noDuplicateUniqueUnits,
-  noLegendsUnits
+  noLegendsUnits,
+  noLegendsArmies
 ];
 
 function belowPointsCap(list: List, game: Game): string[] {
@@ -139,4 +140,10 @@ function noLegendsUnits(list: List, game: Game): string[] {
     }
   }
   return []
+}
+
+function noLegendsArmies(list: List, game: Game): string[] {
+  const army = game.armies.get(list.faction);
+  if (army && army.legends && list.validator !== 'legends') return ['Legends armies are not allowed in matched play (please change the list validation mode).']
+  return [];
 }
