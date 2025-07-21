@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import KeywordsBar from './KeywordsBar.vue';
 import { formatText } from '../../../utils/formatter';
 import type { Ability } from '../../../parser/models/ability';
+import PointsBadge from './badges/PointsBadge.vue';
 
 const props = defineProps<{
   ability: Ability;
@@ -84,13 +85,7 @@ function getAbilityIcon(type: string) {
         v-html="formatText(`**Effect**: ${props.ability.effect}`)"
       />
       <KeywordsBar :keywords="props.ability.keywords" />
-            <span
-        v-if="props.points && props.points > 0"
-        class="points-badge"
-        style="margin-left: 0.5em"
-      >
-        {{ props.points }} pts
-      </span>
+      <PointsBadge :points="props.points" />
     </div>
   </div>
 </template>
@@ -214,19 +209,5 @@ function getAbilityIcon(type: string) {
 
 .card.ability-card {
   position: relative;
-}
-.points-badge {
-  background: var(--color-red);
-  color: #fff;
-  font-size: 0.78em;
-  font-weight: 600;
-  border-radius: 1em;
-  padding: 0.08em 0.7em 0.08em 0.7em;
-  margin-top: 0;
-  margin-left: 0;
-  display: inline-block;
-  vertical-align: middle;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  letter-spacing: 0.01em;
 }
 </style>
