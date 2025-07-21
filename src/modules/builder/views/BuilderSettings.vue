@@ -13,7 +13,7 @@
       Validation
       <OptionSelect
         v-model="validator"
-        :options="validatorOptions"
+        :options="VALIDATOR_NAMES"
         class="validator-select"
       />
     </label>
@@ -70,8 +70,7 @@ import TextInput from '../../core/components/TextInput.vue';
 import { deleteList, useList } from '../../shared/composables/useList';
 import { useRoute, useRouter } from 'vue-router';
 import { LIST_NAME_MAX_LENGTH } from '../../../list/manage';
-// import CircleIconButton from '../../core/components/CircleIconButton.vue';
-// import { List } from '../../../list/models/list';
+import { VALIDATOR_NAMES } from '../../../validation/run';
 
 
 const route = useRoute();
@@ -109,7 +108,6 @@ watch(list, (val) => {
 });
 
 // Validator logic
-const validatorOptions = ['standard', 'highlander', 'holy havoc','disabled'];
 const validator = ref(list.value?.validator ?? 'standard');
 watch(validator, (val) => {
   if (list.value) {

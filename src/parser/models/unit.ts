@@ -12,12 +12,10 @@ export const UnitCategoriesOrder: UnitCategory[] = [
   'WAR MACHINE',
   'FACTION TERRAIN',
   'MANIFESTATION',
-  'LEGENDS',
   'OTHER',
 ];
 
 export const UnitCategories: UnitCategory[] = [
-  'LEGENDS',
   'MANIFESTATION',
   'HERO',
   'INFANTRY',
@@ -30,7 +28,6 @@ export const UnitCategories: UnitCategory[] = [
 ];
 
 export type UnitCategory =
-  | 'LEGENDS'
   | 'HERO'
   | 'INFANTRY'
   | 'CAVALRY'
@@ -59,6 +56,8 @@ export interface IUnit {
   summoningSpell: Ability | null; // duplicate so we don't have to look it up
 
   descriptions: string[];
+
+  legends: boolean;
 }
 
 export class Unit implements IUnit {
@@ -73,6 +72,7 @@ export class Unit implements IUnit {
   models: Map<string, Model>;
   summoningSpell: Ability | null;
   descriptions: string[];
+  legends: boolean;
 
   constructor(unit?: Partial<IUnit>) {
     this.name = unit?.name ?? '';
@@ -85,6 +85,7 @@ export class Unit implements IUnit {
     this.models = unit?.models ?? new Map<string, Model>();
     this.summoningSpell = unit?.summoningSpell ?? null;
     this.descriptions = unit?.descriptions ?? [];
+    this.legends = unit?.legends ?? false;
 
     // set stats.ward based on if keyword "Ward (value)" is present
     const wardKeyword = this.keywords.find((keyword) => keyword.toUpperCase().startsWith('WARD'));
@@ -102,6 +103,9 @@ export class Unit implements IUnit {
         }
         return false; // continue searching
       }) || 'OTHER'; // default to 'OTHER' if no match found
+
+    // determine if legends
+    this.legends = this.keywords.includes('LEGENDS') || this.name.toUpperCase().includes('LEGENDS');
   }
 
   hasKeyword(keyword: string): boolean {

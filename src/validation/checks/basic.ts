@@ -12,6 +12,7 @@ export const basicChecks: ListValidator[] = [
   regimentLeaderIsHero,
   warmasterMustBeGeneral,
   noDuplicateUniqueUnits,
+  noLegendsUnits
 ];
 
 function belowPointsCap(list: List, game: Game): string[] {
@@ -127,4 +128,15 @@ function noDuplicateUniqueUnits(list: List, game: Game): string[] {
   }
 
   return errors;
+}
+
+function noLegendsUnits(list: List, game: Game): string[] {
+  if (list.validator === 'legends') return [];
+  for (const unit of list.allUnits()) {
+    const unitData = game.units.get(unit.name);
+    if (unitData && unitData.legends) {
+      return ["Legends units can not be included in your army"]
+    }
+  }
+  return []
 }

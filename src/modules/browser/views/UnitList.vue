@@ -49,6 +49,7 @@
                     :favorite="unitFavorites.includes(u.name)"
                     :show-favorite-toggle="true"
                     :points="u.points"
+                    :legends="u.legends"
                     :href="href"
                     @click="navigate"
                     @toggle-favorite="(fav: boolean) => toggleUnitFavorite(u.name, fav)"

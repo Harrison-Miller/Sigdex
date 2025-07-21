@@ -47,7 +47,9 @@ export function parseBattleProfiles(
       continue;
 
     const profile = parseBattleProfile(node, units, allCategories, armyCategories, errorConditions, armyKeyword);
-    if (profile.category === 'OTHER' || profile.category === 'LEGENDS') continue; // skip other and legends categories
+
+    // skip units without a category, we no longer skip legends units we will filter them out in the UI
+    if (profile.category === 'OTHER') continue;
 
     if (bpMap.has(profile.name)) {
       console.warn(`Duplicate battle profile found: ${profile.name} merging profiles.`);
@@ -164,6 +166,7 @@ export function parseBattleProfile(
   if (unit) {
     battleProfile.category = unit.category;
     battleProfile.keywords = unit.keywords;
+    battleProfile.legends = unit.legends;
   }
 
   const undersizeInfo = parseUndersizeUnitCondition(bpNode, allCategories);

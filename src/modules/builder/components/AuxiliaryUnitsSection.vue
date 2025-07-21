@@ -14,6 +14,7 @@
           :label="unit.name"
           :points="battleProfiles.get(unit.name)?.points"
           :show-reinforced="unit.reinforced"
+          :legends="battleProfiles.get(unit.name)?.legends"
           :enhancement-count="unit.getEnhancementCount()"
           @click="
             () =>

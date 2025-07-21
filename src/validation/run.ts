@@ -11,6 +11,14 @@ import { sogChecks } from './checks/sog';
 import { unitConfigurationChecks } from './checks/unitConfiguration';
 import type { ListValidator } from './validator';
 
+export const VALIDATOR_NAMES: string[] = [
+  'standard',
+  'highlander',
+  'holy havoc',
+  'legends',
+  'disabled'
+]
+
 export const baseValidators: ListValidator[] = [
   ...sanityChecks,
   ...basicChecks,

@@ -20,6 +20,7 @@
           :points="battleProfiles.get(leader.name)?.points"
           :show-general="leader.general"
           :enhancement-count="leader.getEnhancementCount()"
+          :legends="battleProfiles.get(leader.name)?.legends"
           @click="() => goToUnitDetail(leader.name)"
         />
         <button
@@ -50,6 +51,7 @@
               :points="battleProfiles.get(unit.name)?.points"
               :show-reinforced="unit.reinforced"
               :enhancement-count="unit.getEnhancementCount()"
+              :legends="battleProfiles.get(unit.name)?.legends"
               @click="() => goToUnitDetail(unit.name)"
             />
           <button

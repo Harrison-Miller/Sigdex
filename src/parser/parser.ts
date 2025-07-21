@@ -171,6 +171,7 @@ export class Parser {
               army.unitList.get(unit.category)?.push({
                 name: unit.name,
                 points: 0,
+                legends: false,
               });
             }
           }

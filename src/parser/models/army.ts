@@ -59,6 +59,7 @@ export class Formation implements IFormation {
 export interface IUnitListItem {
   name: string;
   points: number;
+  legends: boolean;
 }
 
 export type ArmyOptionType = 'mustBeIncluded' | 'requiredGeneral' | 'generalIfIncluded';
@@ -194,13 +195,14 @@ export class Army implements IArmy {
     for (const [name, profile] of this.battleProfiles.entries()) {
       const unitCategory = profile.category || 'OTHER'; // default to 'OTHER' if no category is specified
       const points = profile.points || 0; // default to 0 if no points are specified
+      const legends = profile.legends || false;
 
       if (profile.isUndersize) continue; // don't want to show undersize units in the unit list
 
       if (this.unitList.has(unitCategory)) {
-        this.unitList.get(unitCategory)?.push({ name, points });
+        this.unitList.get(unitCategory)?.push({ name, points, legends });
       } else {
-        this.unitList.set(unitCategory, [{ name, points }]);
+        this.unitList.set(unitCategory, [{ name, points, legends }]);
       }
     }
   }

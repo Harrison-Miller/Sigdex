@@ -38,6 +38,7 @@
             <ListButton
               :label="item.name"
               :points="item.points"
+              :legends="item.legends"
               class="unit-list-btn"
               @click="() => addUnitToRegiment(item)"
             />
@@ -97,17 +98,17 @@ const unitPickerCategories = [...UnitCategoriesOrder, 'Regiments of Renown'];
 
 const isRoR = filter.toLowerCase() === 'ror';
 
-const availableRoRs = computed(() => {
+const availableRoRs = computed<UnitPickerListItem[]>(() => {
   if (!isRoR || !army.value || !game.value) return [];
   // army.value.regimentsOfRenown is a Set or array of RoR names
   const rorNames = Array.from(army.value.regimentsOfRenown || []);
-  // Map to { name, points } objects (points can be looked up from game.regimentsOfRenown)
+  // Map to { name, points, legends } objects (points can be looked up from game.regimentsOfRenown)
   return rorNames.map(name => {
     const ror = game.value?.regimentsOfRenown.get(name);
-    if (!ror) return { name, points: 0 };
     return {
       name,
-      points: ror?.points ?? 0
+      points: ror?.points ?? 0,
+      legends: false
     };
   }).filter(r => r.points > 0);
 });
@@ -193,6 +194,7 @@ const formattedRegimentOptions = computed(() => formatRegimentOptions(leaderRegi
 interface UnitPickerListItem {
   name: string;
   points: number;
+  legends: boolean;
 };
 
 const categorizeListItems = computed(() => {
@@ -208,6 +210,7 @@ const categorizeListItems = computed(() => {
     cats.get(cat)?.push({
       name: bp.name,
       points: bp.points,
+      legends: bp.legends,
     });
   }
   // Sort bps within each category by selected mode
