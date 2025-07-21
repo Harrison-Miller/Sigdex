@@ -6,12 +6,7 @@
   >
     <template #title>
       <span>{{ selectedLoreName || title }}</span>
-      <span
-        v-if="lore.points > 0"
-        class="lore-points-badge"
-      >
-        {{ lore.points }} pts
-      </span>
+      <PointsBadge :points="lore.points" style="margin-left: 0.4em;"/>
     </template>
     <div class="spell-lores-section">
       <OptionSelect
@@ -69,6 +64,7 @@ import AbilityCard from '../../shared/components/AbilityCard.vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { Lore } from '../../../parser/models/lore';
 import { useGame } from '../../shared/composables/useGame';
+import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
 
 const props = defineProps<{
   armyLore: Map<string, Lore>;
@@ -133,17 +129,6 @@ const isUniversalLore = computed(() => {
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 1em;
-}
-.lore-points-badge {
-  display: inline-block;
-  background: #a00;
-  color: #fff;
-  border-radius: 10px;
-  font-size: 0.75em;
-  font-weight: 600;
-  padding: 0.08em 0.4em 0.08em 0.4em;
-  margin-left: 0.4em;
-  vertical-align: middle;
 }
 ul {
   list-style: none;

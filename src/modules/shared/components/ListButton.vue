@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { ref, watch, toRefs, computed } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import BadgeRow from './badges/BadgeRow.vue';
+import PointsBadge from './badges/PointsBadge.vue';
+import SoGBadge from './badges/SoGBadge.vue';
+import GeneralBadge from './badges/GeneralBadge.vue';
+import ReinforcedBadge from './badges/ReinforcedBadge.vue';
+import EnhancementsBadge from './badges/EnhancementsBadge.vue';
+
 const props = defineProps<{
   label: string;
   favorite?: boolean;
@@ -46,42 +53,13 @@ const displayPoints = computed(() => {
       :class="{ center: !showFavoriteToggle }"
     >
       {{ displayLabel }}
-      <div
-        v-if="
-          (typeof props.points === 'number' && props.points > 0) ||
-            isSoG ||
-            props.showGeneral ||
-            props.showReinforced ||
-            (typeof props.enhancementCount === 'number' && props.enhancementCount > 0)
-        "
-        class="badges-row"
-      >
-        <span
-          v-if="typeof displayPoints === 'number' && displayPoints > 0"
-          class="points-badge"
-        >
-          {{ displayPoints }} pts
-        </span>
-        <span
-          v-if="isSoG"
-          class="sog-badge"
-        >SoG</span>
-        <span
-          v-if="props.showGeneral"
-          class="general-badge"
-        >General</span>
-        <span
-          v-if="props.showReinforced"
-          class="reinforced-badge"
-        >Reinforced</span>
-        <span
-          v-if="typeof props.enhancementCount === 'number' && props.enhancementCount > 0"
-          class="enhancement-badge"
-        >
-          Enhancements
-          <template v-if="props.enhancementCount > 1"> ×{{ props.enhancementCount }}</template>
-        </span>
-      </div>
+      <BadgeRow>
+        <PointsBadge :points="displayPoints" />
+        <SoGBadge :sog="isSoG" />
+        <GeneralBadge :general="props.showGeneral" />
+        <ReinforcedBadge :reinforced="props.showReinforced" />
+        <EnhancementsBadge :count="props.enhancementCount" />
+      </BadgeRow>
     </span>
     <span
       v-if="showFavoriteToggle"
@@ -193,75 +171,6 @@ const displayPoints = computed(() => {
   background: var(--bg-sub);
   color: var(--text-main);
   border: 1.5px solid var(--border-hover);
-}
-
-.badges-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.18em; /* Reduced gap between badges */
-  margin-top: 0.18em;
-}
-
-.points-badge {
-  background: var(--color-red);
-  color: #fff;
-  font-size: 0.78em;
-  font-weight: 600;
-  border-radius: 1em;
-  padding: 0.08em 0.7em 0.08em 0.7em;
-  margin-top: 0;
-  margin-left: 0;
-  display: inline-block;
-  vertical-align: middle;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  letter-spacing: 0.01em;
-}
-
-.sog-badge {
-  background: var(--color-green);
-  color: #fff;
-  font-size: 0.78em;
-  font-weight: 700;
-  border-radius: 1em;
-  padding: 0.08em 0.7em 0.08em 0.7em;
-  margin-top: 0;
-  margin-left: 0.5em;
-  display: inline-block;
-  vertical-align: middle;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  letter-spacing: 0.01em;
-}
-
-.general-badge,
-.reinforced-badge {
-  background: var(--color-yellow);
-  color: #111; /* Changed from #a08000 to black */
-  font-size: 0.78em;
-  font-weight: 700;
-  border-radius: 1em;
-  padding: 0.08em 0.7em 0.08em 0.7em;
-  margin-top: 0;
-  margin-left: 0.5em;
-  display: inline-block;
-  vertical-align: middle;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  letter-spacing: 0.01em;
-}
-
-.enhancement-badge {
-  background: var(--color-blue);;
-  color: #fff;
-  font-size: 0.78em;
-  font-weight: 700;
-  border-radius: 1em;
-  padding: 0.08em 0.7em 0.08em 0.7em;
-  margin-top: 0;
-  margin-left: 0.5em;
-  display: inline-block;
-  vertical-align: middle;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  letter-spacing: 0.01em;
 }
 
 .ellipsis-icon {

@@ -5,12 +5,7 @@
   >
     <template #title>
       <span>{{ props.modelValueName || 'Regiment Of Renown' }}</span>
-      <span
-        v-if="rorPoints > 0"
-        class="lore-points-badge"
-      >
-        {{ rorPoints }} pts
-      </span>
+      <PointsBadge :points="rorPoints" style="margin-left: 0.4em;"/>
       <button
         v-if="props.modelValueName"
         class="eye-btn"
@@ -59,6 +54,7 @@ import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
 import { ListUnit } from '../../../list/models/unit';
 import type { Game } from '../../../parser/models/game';
+import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
 
 const props = defineProps<{
   modelValueName: string;
@@ -116,17 +112,6 @@ function goToRegimentOfRenown() {
 }
 </script>
 <style scoped>
-.lore-points-badge {
-  display: inline-block;
-  background: var(--color-red);
-  color: #fff;
-  border-radius: 10px;
-  font-size: 0.75em;
-  font-weight: 600;
-  padding: 0.08em 0.4em 0.08em 0.4em;
-  margin-left: 0.4em;
-  vertical-align: middle;
-}
 .ror-unit-row {
   display: flex;
   align-items: stretch;

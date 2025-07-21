@@ -2,12 +2,7 @@
   <BackButton :size="36" />
   <div class="unit-detail">
     <h1 style="margin: 0">{{ regiment?.name }}</h1>
-    <h1 style="margin: 0">
-      <span
-        v-if="regiment?.points ? regiment?.points > 0 : 0"
-        class="points-badge"
-      >{{ regiment?.points }} pts</span>
-    </h1>
+    <PointsBadge big :points="regiment?.points" />
     <Section
       v-if="regiment?.abilities.length"
       collapse-key="abilities"
@@ -70,6 +65,7 @@ import ListButton from '../../shared/components/ListButton.vue';
 import Section from '../../core/components/ContentSection.vue';
 import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
+import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -108,18 +104,6 @@ function goToUnit(unit: string) {
 }
 </script>
 <style scoped>
-.points-badge {
-  display: inline-block;
-  background: #8b0000;
-  color: #f3f4f6;
-  font-weight: 600;
-  font-size: 0.65em;
-  border-radius: 12px;
-  padding: 0.12em 0.5em;
-  margin-left: 0.7em;
-  vertical-align: middle;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-}
 .abilities {
   margin-bottom: 1em;
 }

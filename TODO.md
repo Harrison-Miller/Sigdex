@@ -32,3 +32,5 @@ It'd be nice to add it as a weapon ability. But that would be confusing with com
 
 * duplicate list button - doing this from list settings is tricky because of router history
 * make back button work in an explicit fashion based on the page not just calling router.back()
+
+* manifestation lore of the first pricne is broken check other aors with sub-lores

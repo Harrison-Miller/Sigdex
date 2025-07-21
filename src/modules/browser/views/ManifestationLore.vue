@@ -5,6 +5,7 @@ import ListButton from '../../shared/components/ListButton.vue';
 import BackButton from '../../core/components/BackButton.vue';
 import Section from '../../core/components/ContentSection.vue';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
+import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
 
 const props = defineProps<{ loreName: string }>();
 
@@ -22,12 +23,7 @@ const units = computed(() => {
     <h1 style="margin: 0">
       {{ loreName }}
     </h1>
-    <h1 style="margin: 0">
-      <span
-        v-if="lore?.points ? lore?.points > 0 : 0"
-        class="points-badge"
-      >{{ lore?.points }} pts</span>
-    </h1>
+    <PointsBadge big :points="lore.points" />
     <Section collapse-key="warscrolls">
       <template #title>Warscrolls</template>
       <ul>
@@ -67,18 +63,6 @@ const units = computed(() => {
 <style scoped>
 .unit-list-back {
   margin-bottom: 0.5rem;
-}
-.points-badge {
-  display: inline-block;
-  background: var(--color-red);
-  color: #f3f4f6;
-  font-weight: 600;
-  font-size: 0.65em;
-  border-radius: 12px;
-  padding: 0.12em 0.5em;
-  margin-left: 0.7em;
-  vertical-align: middle;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 .error {
   color: var(--color-red);

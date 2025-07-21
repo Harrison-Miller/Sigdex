@@ -35,7 +35,7 @@
         v-for="[formationName, formation] in Array.from(army.formations.entries())"
         :key="formationName"
       >
-        <h3 class="section-subheader">{{ formationName }}</h3><span v-if="formation.points > 0" class="points-badge">{{ formation.points }} pts</span>
+        <h3 class="section-subheader">{{ formationName }}</h3><PointsBadge big :points="formation.points" />
         <AbilityCard
           v-for="(ability, i) in formation.abilities"
           :key="ability.name + i"
@@ -106,10 +106,9 @@
       <template #title>Spell Lores</template>
       <div v-if="Array.from(army.spellLores.values()).length === 1">
         <h3 class="section-subheader">
-          {{ Array.from(army.spellLores.values())[0].name
-          }}<span v-if="Array.from(army.spellLores.values())[0].points" class="points-badge">
-            ({{ Array.from(army.spellLores.values())[0].points }} pts)</span>
+          {{ Array.from(army.spellLores.values())[0].name}}
         </h3>
+        <PointsBadge big :points="Array.from(army.spellLores.values())[0].points" />
         <AbilityCard
           v-for="(ability, i) in Array.from(army.spellLores.values())[0].abilities"
           :key="ability.name + i"
@@ -123,9 +122,7 @@
         />
         <!--- add points badge here -->
         <div v-if="selectedSpellLore">
-          <span v-if="army.spellLores.get(selectedSpellLore)?.points" class="points-badge">
-            {{ army.spellLores.get(selectedSpellLore)?.points }} pts
-          </span>
+          <PointsBadge big :points="army.spellLores.get(selectedSpellLore)?.points" />
           <AbilityCard
             v-for="(ability, i) in army.spellLores.get(selectedSpellLore)?.abilities || []"
             :key="ability.name + i"
@@ -142,10 +139,9 @@
       <template #title>Prayer Lores</template>
       <div v-if="Array.from(army.prayerLores.values()).length === 1">
         <h3 class="section-subheader">
-          {{ Array.from(army.prayerLores.values())[0].name
-          }}<span v-if="Array.from(army.prayerLores.values())[0].points" class="points-badge">
-            ({{ Array.from(army.prayerLores.values())[0].points }} pts)</span>
+          {{ Array.from(army.prayerLores.values())[0].name }}
         </h3>
+        <PointsBadge big :points="Array.from(army.prayerLores.values())[0].points" />
         <AbilityCard
           v-for="(ability, i) in Array.from(army.prayerLores.values())[0].abilities"
           :key="ability.name + i"
@@ -161,9 +157,7 @@
         />
         <!-- points badge goes here -->
         <div v-if="selectedPrayerLore">
-          <span v-if="army.prayerLores.get(selectedPrayerLore)?.points" class="points-badge">
-            {{ army.prayerLores.get(selectedPrayerLore)?.points }} pts
-          </span>
+          <PointsBadge big :points="army.prayerLores.get(selectedPrayerLore)?.points" />
           <AbilityCard
             v-for="(ability, i) in army.prayerLores.get(selectedPrayerLore)?.abilities || []"
             :key="ability.name + i"
@@ -180,10 +174,9 @@
       <template #title>Manifestation Lores</template>
       <div v-if="Array.from(army.manifestationLores.values()).length === 1">
         <h3 class="section-subheader">
-          {{ Array.from(army.manifestationLores.values())[0].name
-          }}<span v-if="Array.from(army.manifestationLores.values())[0].points" class="points-badge">
-            ({{ Array.from(army.manifestationLores.values())[0].points }} pts)</span>
+          {{ Array.from(army.manifestationLores.values())[0].name }}
         </h3>
+        <PointsBadge big :points="Array.from(army.manifestationLores.values())[0].points" />
         <AbilityCard
           v-for="(ability, i) in Array.from(army.manifestationLores.values())[0].abilities"
           :key="ability.name + i"
@@ -198,9 +191,7 @@
           placeholder="Select Manifestation Lore"
         />
         <div v-if="selectedManifestationLore">
-          <span v-if="army.manifestationLores.get(selectedManifestationLore)?.points" class="points-badge">
-            {{ army.manifestationLores.get(selectedManifestationLore)?.points }} pts
-          </span>
+          <PointsBadge big :points="army.manifestationLores.get(selectedManifestationLore)?.points" />
           <AbilityCard
             v-for="(ability, i) in army.manifestationLores.get(selectedManifestationLore)
               ?.abilities || []"
@@ -224,6 +215,7 @@ import AbilityCard from '../../shared/components/AbilityCard.vue';
 import Section from '../../core/components/ContentSection.vue';
 import { formatArmyOptions, formatText } from '../../../utils/formatter';
 import ReportErrorButton from '../../shared/components/ReportErrorButton.vue';
+import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
 
 const props = defineProps<{ army: Army }>();
 
@@ -278,20 +270,5 @@ watch(
 }
 .section-subheader {
   text-align: left;
-}
-.points-badge {
-  background: var(--color-red);
-  color: #fff;
-  font-size: 1.2em;
-  font-weight: 600;
-  border-radius: 1em;
-  padding: 0.08em 0.7em 0.08em 0.7em;
-  margin-top: 0;
-  margin-left: 0;
-  margin-bottom: 0.5em;
-  display: inline-block;
-  vertical-align: middle;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  letter-spacing: 0.01em;
 }
 </style>
