@@ -158,7 +158,7 @@ export class Army implements IArmy {
     let name = data?.name ?? '';
     this.legends = name.toLowerCase().includes('legends');
     // remove legends from name
-    name = name.replace(/\s*LEGENDS\s*/i, '').trim();
+    name = name.replace(/\s*legends\s*/i, '').trim();
 
 
     this.name = name;
