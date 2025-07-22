@@ -246,7 +246,7 @@ export class Parser {
     armyList.set('Death', []);
     armyList.set('Destruction', []);
     this.armies.forEach((army) => {
-      if (!army.isArmyOfRenown || army.name === 'Big Waaagh!') {
+      if (!army.isArmyOfRenown || army.name === 'Big Waaagh!' || army.name === 'The Duardin Ascendant') {
         const aors = army.armiesOfRenown.map((a) => {
           return new ArmyOfRenownListItem({
             name: a,
