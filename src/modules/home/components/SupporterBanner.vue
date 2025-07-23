@@ -40,12 +40,13 @@
 </template>
 
 <script setup lang="ts">
-const scroll = false;
+const scroll = true;
 const supporters = [
   { name: 'srscott', class: 'text-supporter-level-1' },
   { name: 'sturmysturm', class: 'text-supporter-level-1' },
   { name: 'max', class: 'text-supporter-level-1' },
-  { name: 'Fletch', class: 'text-special-thanks' }
+  { name: 'Fletch', class: 'text-special-thanks' },
+  { name: 'Big Man Tommy G', class: 'text-special-thanks' },
 ];
 </script>
 
