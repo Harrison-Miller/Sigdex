@@ -35,5 +35,4 @@ It'd be nice to add it as a weapon ability. But that would be confusing with com
 
 * manifestation lore of the first pricne is broken check other aors with sub-lores
 
-* figure out how to mark all units in legends armies that are not in other armies as legends or just update the data source
-* the duradian ascendents are supposed to be an AoR of cities of sigmar
+* mark enhancements/formations as sog (fix gargants duplicate named heroic trait table)

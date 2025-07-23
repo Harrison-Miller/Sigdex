@@ -32,6 +32,10 @@ export function parseBattleProfiles(
   }
 
   const errorConditions = parseErrorConditions(root, allCategories);
+  const limitedUnits = parseLimitedUnits(root);
+  if (limitedUnits.size > 0) {
+    console.log(`Found limited units:`, limitedUnits);
+  }
 
   const battleProfileNodes = root.entryLinks?.entryLink || [];
   const bpMap = new Map<string, BattleProfile>();
@@ -46,7 +50,7 @@ export function parseBattleProfiles(
     )
       continue;
 
-    const profile = parseBattleProfile(node, units, allCategories, armyCategories, errorConditions, armyKeyword);
+    const profile = parseBattleProfile(node, units, allCategories, armyCategories, errorConditions, limitedUnits, armyKeyword);
 
     // skip units without a category, we no longer skip legends units we will filter them out in the UI
     if (profile.category === 'OTHER') continue;
@@ -104,7 +108,7 @@ export function parseBattleProfiles(
   }
 
   // cap regiment options of heroes to 1 per regiment
-  // TODO: figure out how to remove units filtered out by checks above (legends)
+  // TODO: mark specific units that are legends as legends regiment options so they don't show or have a badge
   for (const bp of bpMap.values()) {
     bp.regimentOptions = bp.regimentOptions.map((option: RegimentOption) => {
       const optionUnit = bpMap.get(option.name);
@@ -128,11 +132,21 @@ export function parseBattleProfileCategories(root: any): Map<string, ICategory> 
   const bpNodes = root.entryLinks?.entryLink || [];
   for (const bpNode of bpNodes) {
     const id = bpNode['@_id'];
+    const targetId = bpNode['@_targetId'];
     const name = bpNode['@_name'] || '';
     if (id && name && !categories.has(id)) {
       categories.set(id, {
         name,
         id,
+        childConditionIds: [], // no child conditions by default
+        rosterMin: -1, // no roster min by default
+        rosterMax: -1, // no roster max by default
+      });
+    }
+    if (targetId && name && !categories.has(targetId)) {
+      categories.set(targetId, {
+        name,
+        id: targetId,
         childConditionIds: [], // no child conditions by default
         rosterMin: -1, // no roster min by default
         rosterMax: -1, // no roster max by default
@@ -149,6 +163,7 @@ export function parseBattleProfile(
   allCategories: Map<string, ICategory>,
   armyCategories: Map<string, ICategory>,
   errorConditions: IErrorCondition[],
+  limitedUnits: Map<string, ILimitedUnit>,
   armyKeyword: string,
 ): BattleProfile {
   const battleProfile: Partial<IBattleProfile> = {
@@ -157,7 +172,7 @@ export function parseBattleProfile(
     reinforceable: parseReinforceable(bpNode),
     enhancementTables: parseAllowedEnhancementTables(bpNode),
     regimentTags: parseRegimentTags(bpNode, armyCategories, armyKeyword),
-    regimentOptions: parseRegimentOptions(bpNode, allCategories, armyCategories, errorConditions),
+    regimentOptions: parseRegimentOptions(bpNode, allCategories, armyCategories, errorConditions, limitedUnits),
     companionLeader: parseCompanionUnitLeader(bpNode, allCategories),
   };
 
@@ -250,16 +265,18 @@ export function parseRegimentOptions(
   bpNode: any,
   allCategories: Map<string, ICategory>,
   armyCategories: Map<string, ICategory>,
-  errorConditions: IErrorCondition[]
+  errorConditions: IErrorCondition[],
+  limitedUnits: Map<string, ILimitedUnit>,
 ): RegimentOption[] {
   const options: RegimentOption[] = [];
   const name = bpNode['@_name'] || '';
   const id = bpNode['@_id'] || '';
+  const targetId = bpNode['@_targetId'] || '';
 
   // This should only  be army categories
   for (const [_, category] of armyCategories) {
     // Categories that have a reference to this bp, mean this bp can take this category.
-    if (category.childConditionIds.includes(id)) {
+    if (category.childConditionIds.includes(id) || category.childConditionIds.includes(targetId)) {
       const option: IRegimentOption = {
         name: category.name,
         max: 1, // these are always 1
@@ -305,9 +322,12 @@ export function parseRegimentOptions(
           }
         }
 
+        const unitLimit = getUnitLimit(limitedUnits, category.name, id, targetId);
+        const max = unitLimit ? unitLimit : errorCondition?.max || 0;
+
         const option: IRegimentOption = {
           name: category.name,
-          max: errorCondition?.max || 0, // use max from error condition, or 0 (any amount)
+          max: max, // use max from error condition, or 0 (any amount)
           min: 0,
         };
         options.push(new RegimentOption(option));
@@ -315,7 +335,15 @@ export function parseRegimentOptions(
     }
   });
 
-  return options;
+  // deduplicate options by name
+  const uniqueOptions = new Map<string, RegimentOption>();
+  for (const option of options) {
+    uniqueOptions.set(option.name, option);
+  }
+
+  return Array.from(uniqueOptions.values()).map(
+    (option) => new RegimentOption(option)
+  );
 }
 
 export interface IErrorCondition {
@@ -409,4 +437,99 @@ export function parseUndersizeUnitCondition(
   return {
     isUndersize: true,
   };
+}
+
+interface ILimitedUnit {
+  name: string;
+  ids: string[];
+  max: number;
+}
+
+function getUnitLimit(limitedUnits: Map<string, ILimitedUnit>, name: string, id: string, targetId: string): number | null {
+  const unit = limitedUnits.get(name);
+  if (unit) {
+    // unit.ids length is 0 if it applies to all regimental leaders
+    if (unit.ids.includes(id) || unit.ids.includes(targetId) || unit.ids.length === 0) {
+      return unit.max;
+    }
+  }
+  return null;
+}
+
+// returns unit name to leader ids
+export function parseLimitedUnits(root: any): Map<string, ILimitedUnit> {
+  const armyName = root['@_name'] || '';
+  console.log(`Parsing limited units for army: ${armyName}`);
+
+  const limitedUnits = new Map<string, ILimitedUnit>();
+  const bpNodes = root.entryLinks?.entryLink || [];
+  for (const bp of bpNodes) {
+    const name = bp['@_name'];
+    if (!name) continue;
+
+    //         <constraint type="max" value="1" field="selections" scope="force" shared="true" id="5383-844c-da86-b7bd"/>
+    const constraint = findFirstByTagAndAttrs(bp, 'constraint', {
+      type: 'max',
+      field: 'selections',
+      scope: 'force',
+    });
+
+    if (constraint) {
+      const max = parseInt(constraint['@_value'] || '0', 10);
+      if (max > 0) {
+        limitedUnits.set(name, {
+          name,
+          ids: [], // this constraint applies to all regimental leaders that can take this unit
+          max,
+        });
+        continue;
+      }
+    }
+
+
+    // <modifier type="set" value="1" field="c13d-57e7-bdb8-f0c4">
+    const modifier = findFirstByTagAndAttrs(bp, 'modifier', {
+      type: 'set',
+      value: '1',
+    });
+
+    if (!modifier) continue;
+
+    //                         <condition type="instanceOf" value="1" field="selections" scope="self" childId="ed1c-9fa9-8e7-d583" shared="true"/>
+    //                     <condition type="instanceOf" value="1" field="selections" scope="self" childId="d1f3-921c-b403-1106" shared="true"/>
+    const childConditionIds = findAllByTagAndAttrs(bp, 'condition', {
+      type: 'instanceOf',
+      value: '1',
+    }).map((condition: any) => condition['@_childId'] || '');
+
+    const childIds: Set<string> = new Set();
+    for (const childId of childConditionIds) {
+      childIds.add(childId);
+    }
+
+    // <condition type="atLeast" value="1" field="selections" scope="force" childId="3e12-c43b-6ea7-00fb" shared="true"/>
+    const forceCondition = findAllByTagAndAttrs(bp, 'condition', {
+      type: 'atLeast',
+      value: '1',
+      field: 'selections',
+      scope: 'force',
+    });
+    if (forceCondition) {
+      for (const condition of forceCondition) {
+        const childId = condition['@_childId'];
+        if (childId) {
+          childIds.add(childId);
+        }
+      }
+    }
+
+    if (childIds.size > 0) {
+      limitedUnits.set(name, {
+        name,
+        ids: Array.from(childIds),
+        max: 1,
+      });
+    }
+  }
+  return limitedUnits;
 }

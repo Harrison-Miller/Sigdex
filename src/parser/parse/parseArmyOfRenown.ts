@@ -47,7 +47,6 @@ export function parseMustBeIncluded(
         (link: any) => link['@_targetId'] === r.id
       );
       if (name && requiredCategory) {
-        console.log(`Adding required unit ${name} for category ${r.name}`);
         o.units.push(name);
       }
     }

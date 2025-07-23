@@ -30,11 +30,8 @@ function addManifestationsToThryxRoR(game: Game) {
 
 function makeDuardinAscendantArmyOfRenown(game: Game) {
 	const duardinAscendant = game.armies.get("The Duardin Ascendant");
-	console.log('duardin ascendant', duardinAscendant);
 	if (duardinAscendant) {
 		duardinAscendant.isArmyOfRenown = true;
-	} else {
-		console.log('all armies', game.armies.keys());
 	}
 }
 
