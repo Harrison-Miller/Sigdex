@@ -33,9 +33,6 @@ export function parseBattleProfiles(
 
   const errorConditions = parseErrorConditions(root, allCategories);
   const limitedUnits = parseLimitedUnits(root);
-  if (limitedUnits.size > 0) {
-    console.log(`Found limited units:`, limitedUnits);
-  }
 
   const battleProfileNodes = root.entryLinks?.entryLink || [];
   const bpMap = new Map<string, BattleProfile>();
@@ -458,9 +455,6 @@ function getUnitLimit(limitedUnits: Map<string, ILimitedUnit>, name: string, id:
 
 // returns unit name to leader ids
 export function parseLimitedUnits(root: any): Map<string, ILimitedUnit> {
-  const armyName = root['@_name'] || '';
-  console.log(`Parsing limited units for army: ${armyName}`);
-
   const limitedUnits = new Map<string, ILimitedUnit>();
   const bpNodes = root.entryLinks?.entryLink || [];
   for (const bp of bpNodes) {

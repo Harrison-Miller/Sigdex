@@ -24,17 +24,20 @@ export interface IEnhancementTable {
   name: string;
   enhancements: Enhancement[];
   keywords: string[]; // keywords of units allowed to take this enhancement table
+  sog: boolean;
 }
 
 export class EnhancementTable implements IEnhancementTable {
   name: string;
   enhancements: Enhancement[];
   keywords: string[];
+  sog: boolean;
 
   constructor(data?: Partial<IEnhancementTable>) {
     this.name = data?.name ?? '';
     this.enhancements = data?.enhancements ?? [];
     this.keywords = data?.keywords ?? [];
+    this.sog = data?.sog ?? false;
   }
 }
 
@@ -42,17 +45,20 @@ export interface IFormation {
   name: string;
   abilities: Ability[];
   points: number; // points cost of the formation, if applicable
+  sog: boolean;
 }
 
 export class Formation implements IFormation {
   name: string;
   abilities: Ability[];
   points: number;
+  sog: boolean;
 
   constructor(data?: Partial<IFormation>) {
     this.name = data?.name ?? '';
     this.abilities = data?.abilities ?? [];
     this.points = data?.points ?? 0;
+    this.sog = data?.sog ?? false;
   }
 }
 

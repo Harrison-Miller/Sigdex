@@ -57,14 +57,13 @@
       :default-collapsed="formationCollapsed"
       collapse-key="formations"
     >
-      <template #title>{{ list.formation || 'Formations' }}</template>
+      <template #title>{{ list.formation || 'Formations' }}<BadgeRow inline><SoGBadge :sog="selectedFormation.sog" /><PointsBadge :points="selectedFormation.points" /></BadgeRow></template>
       <div class="formation-section">
         <OptionSelect
           v-model="list.formation"
           :options="Array.from(army.formations.keys())"
         />
         <div>
-          <PointsBadge big :points="selectedFormation.points" style="margin-bottom: 0.5em;"/>
           <AbilityCard
             v-for="(ability, i) in selectedFormation.abilities"
             :key="ability.name + i"
@@ -202,6 +201,8 @@ import { ListUnit } from '../../../list/models/unit';
 import { ListRegiment as ListRegimentModel } from '../../../list/models/regiment';
 import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
 import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
+import SoGBadge from '../../shared/components/badges/SoGBadge.vue';
+import BadgeRow from '../../shared/components/badges/BadgeRow.vue';
 
 const props = defineProps<{ id: string }>();
 const route = useRoute();

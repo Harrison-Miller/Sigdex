@@ -89,3 +89,19 @@ export function calculateCommonKeywords(battleProfiles: BattleProfile[]): string
   }
   return Array.from(commonKeywords);
 }
+
+const sogConditionId = 'f079-501a-2738-6845'; // this is the SoG condition id
+// TODO: get this from game file instead of hardcoding
+export function parseIsSoG(root: any): boolean | undefined {
+  const sogCondition = findFirstByTagAndAttrs(root, 'condition', {
+    type: 'instanceOf',
+    value: '1',
+    field: 'selections',
+    scope: 'ancestor',
+    childId: sogConditionId,
+  });
+  if (sogCondition) {
+    return true;
+  }
+  return undefined;
+}

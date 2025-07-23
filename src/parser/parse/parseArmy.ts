@@ -6,7 +6,7 @@ import { type Unit } from '../models/unit';
 import { parseAbilities, parseAbility } from './parseAbility';
 import { parseArmyOptions } from './parseArmyOfRenown';
 import { parseBattleProfiles } from './parseBattleProfile';
-import { calculateCommonKeywords, filterIgnoredEnhancementTables, parseCategories, parsePoints, type ICategory } from './parseCommon';
+import { calculateCommonKeywords, filterIgnoredEnhancementTables, parseCategories, parseIsSoG, parsePoints, type ICategory } from './parseCommon';
 
 export function parseArmy(
   root: any,
@@ -103,7 +103,8 @@ export function parseFormations(root: any): Map<string, Formation> {
     const name = formationNode['@_name'];
     const abilities = parseAbilities(formationNode.profiles);
     const points = parsePoints(formationNode);
-    formationsMap.set(name, new Formation({ name, abilities, points }));
+    const sog = parseIsSoG(formationNode);
+    formationsMap.set(name, new Formation({ name, abilities, points, sog }));
   });
 
   return formationsMap;
@@ -127,14 +128,35 @@ export function parseEnhancementTables(
 
   const tableNodes = groupNode?.selectionEntryGroups?.selectionEntryGroup || [];
 
-  const tablesMap = new Map<string, EnhancementTable>();
+  const tables: EnhancementTable[] = [];
   tableNodes.forEach((tableNode: any) => {
     const name = tableNode['@_name'];
+    if (!name) return;
+
+    const sog = parseIsSoG(tableNode);
     const enhancements: Enhancement[] =
       tableNode.selectionEntries?.selectionEntry?.map((entry: any) => parseEnhancement(entry)) ||
       [];
-    tablesMap.set(name, new EnhancementTable({ name, enhancements }));
+    tables.push(name, new EnhancementTable({ name, enhancements, sog }));
   });
+
+  // create the map, if we find multiple tables with the same name, the one with sog will add (Scourge of Gyhran) to the name.
+  const tablesMap = new Map<string, EnhancementTable>();
+  tables.forEach((table: EnhancementTable) => {
+    let tableName = table.name;
+    if (table.sog) {
+      if (tablesMap.has(tableName)) {
+        // if we already have a table with this name, append (Scourge of Gyhran)
+        tableName += ' (Scourge of Gyhran)';
+        table.name = tableName; // update the name in the table
+      }
+    }
+
+    if (!tablesMap.has(tableName) && tableName) {
+      tablesMap.set(tableName, table);
+    }
+  });
+
   return tablesMap;
 }
 
@@ -143,18 +165,36 @@ export function parseOtherEnhancementTables(root: any): Map<string, EnhancementT
   const tableGroups =
     filterIgnoredEnhancementTables(root?.sharedSelectionEntryGroups?.selectionEntryGroup) || [];
 
-  const tablesMap = new Map<string, EnhancementTable>();
+  const tables: EnhancementTable[] = [];
   tableGroups.forEach((groupNode: any) => {
     const name = groupNode['@_name']; // enhancement table type name
     const tableNode = groupNode?.selectionEntryGroups?.selectionEntryGroup[0] || {};
+    const sog = parseIsSoG(tableNode);
 
     const enhancements: Enhancement[] =
       tableNode?.selectionEntries?.selectionEntry?.map((entry: any) => parseEnhancement(entry)) ||
       [];
     if (enhancements.length > 0) {
-      tablesMap.set(name, new EnhancementTable({ name, enhancements }));
+      tables.push(name, new EnhancementTable({ name, enhancements, sog }));
     }
   });
+
+  // create the map, if we find multiple tables with the same name, the one with sog will add (Scourge of Gyhran) to the name.
+  const tablesMap = new Map<string, EnhancementTable>();
+  tables.forEach((table: EnhancementTable) => {
+    let tableName = table.name;
+    if (table.sog) {
+      if (tablesMap.has(tableName)) {
+        // if we already have a table with this name, append (Scourge of Gyhran)
+        tableName += ' (Scourge of Gyhran)';
+        table.name = tableName; // update the name in the table
+      }
+    }
+    if (!tablesMap.has(tableName) && tableName) {
+      tablesMap.set(tableName, table);
+    }
+  });
+
   return tablesMap;
 }
 
