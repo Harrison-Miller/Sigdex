@@ -46,6 +46,7 @@ export function parseCategories(root: any): Map<string, ICategory> {
   const categoryNodes = root?.categoryEntries?.categoryEntry || [];
   for (const node of categoryNodes) {
     const id = node['@_id'];
+    const targetId = node['@_targetId'];
     const name = node['@_name'];
     const childConditionIds = findAllByTagAndAttrs(node, 'condition', {
       type: 'instanceOf',
@@ -66,10 +67,10 @@ export function parseCategories(root: any): Map<string, ICategory> {
     })?.['@_value'] || '-1', 10);
 
     if (id && name) {
-      if (rosterMin >= 0 || rosterMax >= 0) {
-        console.log(`Parsed category: ${name} (ID: ${id}) with min: ${rosterMin}, max: ${rosterMax}`);
-      }
       categories.set(id, { name, id, childConditionIds, rosterMin, rosterMax });
+    }
+    if (targetId && name) {
+      categories.set(targetId, { name, id: targetId, childConditionIds, rosterMin, rosterMax });
     }
   }
   return categories;
