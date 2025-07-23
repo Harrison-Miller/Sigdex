@@ -35,7 +35,7 @@
         v-for="[formationName, formation] in Array.from(army.formations.entries())"
         :key="formationName"
       >
-        <h3 class="section-subheader">{{ formationName }}</h3><PointsBadge big :points="formation.points" />
+        <h3 class="section-subheader">{{ formationName }}<BadgeRow inline><SoGBadge :sog="formation.sog" /><PointsBadge :points="formation.points" /></BadgeRow></h3>
         <AbilityCard
           v-for="(ability, i) in formation.abilities"
           :key="ability.name + i"
@@ -52,7 +52,7 @@
         v-for="[group, table] in Array.from(army.artifacts.entries())"
         :key="group"
       >
-        <h3 class="section-subheader">{{ table.name }}</h3>
+        <h3 class="section-subheader">{{ table.name }}<BadgeRow inline><SoGBadge :sog="table.sog" /></BadgeRow></h3>
         <AbilityCard
           v-for="(enh, j) in table.enhancements"
           :key="enh.ability.name + j"
@@ -70,7 +70,7 @@
         v-for="[group, table] in Array.from(army.heroicTraits.entries())"
         :key="group"
       >
-        <h3 class="section-subheader">{{ table.name }}</h3>
+        <h3 class="section-subheader">{{ table.name }}<BadgeRow inline><SoGBadge :sog="table.sog" /></BadgeRow></h3>
         <AbilityCard
           v-for="(enh, j) in table.enhancements"
           :key="enh.ability.name + j"
@@ -88,7 +88,7 @@
         v-for="[table, enhTable] in Array.from(army.enhancements.entries())"
         :key="table"
       >
-        <h3 class="section-subheader">{{ enhTable.name }}</h3>
+        <h3 class="section-subheader">{{ enhTable.name }}<BadgeRow inline><SoGBadge :sog="enhTable.sog" /></BadgeRow></h3>
         <span v-if="enhTable.keywords.length" class="enhancement-keywords" v-html="formatEnhancementKeywords(enhTable)"></span>
         <AbilityCard
           v-for="(enh, i) in enhTable.enhancements"
@@ -216,6 +216,8 @@ import Section from '../../core/components/ContentSection.vue';
 import { formatArmyOptions, formatText } from '../../../utils/formatter';
 import ReportErrorButton from '../../shared/components/ReportErrorButton.vue';
 import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
+import SoGBadge from '../../shared/components/badges/SoGBadge.vue';
+import BadgeRow from '../../shared/components/badges/BadgeRow.vue';
 
 const props = defineProps<{ army: Army }>();
 
