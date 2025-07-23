@@ -44,6 +44,7 @@ const scroll = false;
 const supporters = [
   { name: 'srscott', class: 'text-supporter-level-1' },
   { name: 'sturmysturm', class: 'text-supporter-level-1' },
+  { name: 'max', class: 'text-supporter-level-1' },
   { name: 'Fletch', class: 'text-special-thanks' }
 ];
 </script>
