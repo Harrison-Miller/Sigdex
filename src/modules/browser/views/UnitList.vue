@@ -36,10 +36,8 @@
           >
             <template #title>{{ cat }}</template>
             <ul>
-              <li
-                v-for="u in filteredUnits(units)"
-                :key="u.name"
-              >
+              <template v-for="u in filteredUnits(units)" :key="u.name">
+              <li v-if="(showLegends && u.legends) || !u.legends">
                 <router-link
                   v-slot="{ navigate, href }"
                   :to="{ name: 'UnitDetail', params: { armyName: armyName, unitName: u.name } }"
@@ -57,6 +55,7 @@
                   />
                 </router-link>
               </li>
+            </template>
             </ul>
           </Section>
         </template>
@@ -82,12 +81,16 @@ import {
   getFavorites,
   getArmyUnitFavoriteToggleState,
   setArmyUnitFavoriteToggleState,
+  SHOW_LEGENDS_KEY,
 } from '../../../favorites';
 import Section from '../../core/components/ContentSection.vue';
 import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
+import { useStorage } from '@vueuse/core';
 
 // Accept army as a prop for this view
 const props = defineProps<{ armyName?: string }>();
+
+const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
 
 // Use prop if provided, otherwise fallback to route param
 const route = useRoute();

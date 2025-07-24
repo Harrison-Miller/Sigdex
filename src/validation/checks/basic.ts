@@ -136,7 +136,7 @@ function noLegendsUnits(list: List, game: Game): string[] {
   for (const unit of list.allUnits()) {
     const unitData = game.units.get(unit.name);
     if (unitData && unitData.legends) {
-      return ["Legends units can not be included in your army"]
+      return ["Legends units are not allowed in matched play (please change the list validation mode)."];
     }
   }
   return []

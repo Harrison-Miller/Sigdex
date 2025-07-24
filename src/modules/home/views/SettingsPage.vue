@@ -6,8 +6,9 @@
     />
 
     <h1>Settings</h1>
-        <div class="section">
-      <ToggleBox v-model="isDark">Dark Mode</ToggleBox>
+    <div class="section">
+      <ToggleBox v-model="isDark" style="margin-bottom: 0.5em">Dark Mode</ToggleBox>
+      <ToggleBox v-model="showLegends">Show Legends</ToggleBox>
     </div>
     <div class="section">
       <ListButton
@@ -95,7 +96,7 @@ import ListButton from '../../shared/components/ListButton.vue';
 import ToggleBox from '../../core/components/ToggleBox.vue';
 import TextInput from '../../core/components/TextInput.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { clearAllFavorites } from '../../../favorites';
+import { clearAllFavorites, SHOW_LEGENDS_KEY } from '../../../favorites';
 import { clearGameCache } from '../../shared/composables/useGame';
 import { DEFAULT_GITHUB_BRANCH, DEFAULT_GITHUB_REPO, GITHUB_BRANCH_KEY, GITHUB_REPO_KEY } from '../../../github/config';
 import { clearAllLists } from '../../../list/manage';
@@ -104,6 +105,7 @@ import { useDark, useStorage } from '@vueuse/core';
 import SupporterBanner from '../components/SupporterBanner.vue';
 
 const isDark = useDark();
+const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
 
 const githubRepo = useStorage(GITHUB_REPO_KEY, DEFAULT_GITHUB_REPO);
 const githubBranch = useStorage(GITHUB_BRANCH_KEY, DEFAULT_GITHUB_BRANCH);
