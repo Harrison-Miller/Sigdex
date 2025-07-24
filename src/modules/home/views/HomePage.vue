@@ -86,6 +86,7 @@
               >
                 <template v-if="army.armiesOfRenown && army.armiesOfRenown.length > 0">
                   <ListButtonSection
+v-if="(showLegends && army.legends) || !army.legends"
                     :label="army.name"
                     :favorite="armyFavorites.includes(army.name)"
                     :show-favorite-toggle="true"
@@ -99,6 +100,7 @@
                         :key="aor.name"
                       >
                         <ListButton
+v-if="(showLegends && aor.legends) || !aor.legends"
                           :label="aor.name"
                           :legends="aor.legends"
                           :show-favorite-toggle="false"
@@ -110,6 +112,7 @@
                 </template>
                 <template v-else>
                   <ListButton
+v-if="(showLegends && army.legends) || !army.legends"
                     :label="army.name"
                     :favorite="armyFavorites.includes(army.name)"
                     :show-favorite-toggle="true"
@@ -155,13 +158,16 @@ import {
   getFavorites,
   getFavoriteToggleState,
   setFavoriteToggleState,
+  SHOW_LEGENDS_KEY,
 } from '../../../favorites';
+import { useStorage } from '@vueuse/core';
 
 const router = useRouter();
 const armyFavorites = ref<string[]>([]);
 const showOnlyFavorites = ref(getFavoriteToggleState('army'));
 const leftActive = ref(true);
 
+const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
 // Load game data (reactive, not awaited)
 const { game, loading, error } = useGame();
 

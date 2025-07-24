@@ -30,11 +30,8 @@
       <Section v-if="categorizeListItems.get(cat)?.length">
         <template #title>{{ cat }}</template>
         <ul class="unit-list">
-          <li
-            v-for="item in categorizeListItems.get(cat)"
-            :key="item.name"
-            class="unit-row"
-          >
+          <template v-for="item in categorizeListItems.get(cat)" :key="item.name">
+          <li v-if="(showLegends && item.legends) || !item.legends" class="unit-row">
             <ListButton
               :label="item.name"
               :points="item.points"
@@ -50,6 +47,7 @@
               <FontAwesomeIcon icon="eye" />
             </button>
           </li>
+          </template>
         </ul>
       </Section>
     </template>
@@ -77,6 +75,8 @@ import { assignRoR } from '../ror';
 import { useUnitSettings } from '../../shared/composables/useUnitSettings';
 import ToggleBox from '../../core/components/ToggleBox.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useStorage } from '@vueuse/core';
+import { SHOW_LEGENDS_KEY } from '../../../favorites';
 
 const route = useRoute();
 const router = useRouter();
@@ -84,6 +84,7 @@ const listId = route.params.id as string;
 const regimentIdx = Number(route.params.regimentIdx);
 const filter = (route.params.filter as string) || '';
 const overrideRegimentOptions = ref(false);
+const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
 
 const list = useList(listId);
 const { game, loading } = useGame();

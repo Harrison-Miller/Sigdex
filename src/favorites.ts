@@ -1,6 +1,8 @@
 // favorites.ts
 // Utility for saving and retrieving favorites for armies and units
 
+export const SHOW_LEGENDS_KEY = 'sigdex-show-legends';
+
 const FAVORITES_KEY = 'sigdex-favorites';
 
 export type FavoriteType = 'army' | 'unit';

@@ -28,6 +28,7 @@
 
 * make back button work in an explicit fashion based on the page not just calling router.back()
 
+* reintroduce prettier/fix formattings
 
 # v9 release todo
 * manifestation lore of the first pricne is broken check other aors with sub-lores
@@ -40,9 +41,10 @@
 * add a little champion tag to weapon tables. I'm not sure how I want to do this.
 It'd be nice to add it as a weapon ability. But that would be confusing with companion.
 
-* show legends in settings
 * filter bar standardization
 
 * finish fixing all the regiment option stuff
 
 * on mobile abilities should always be 100% width
+
+* change settings icon to a gear
