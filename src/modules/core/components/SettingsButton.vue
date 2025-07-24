@@ -11,7 +11,7 @@ const iconSize = props.size ?? 36;
   >
     <font-awesome-icon
 class="bg-sub text-muted"
-      icon="fa-solid fa-ellipsis-vertical"
+      icon="fa-solid fa-gear"
       :style="{
         fontSize: iconSize + 'px',
         borderRadius: '50%',

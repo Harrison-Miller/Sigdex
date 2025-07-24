@@ -30,7 +30,7 @@
           title="Unit Settings"
           @click="() => goToAuxUnitSettings(i)"
         >
-          <font-awesome-icon icon="ellipsis-v" />
+          <font-awesome-icon icon="gear" />
         </button>
       </div>
     </div>

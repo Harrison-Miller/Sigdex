@@ -77,7 +77,7 @@ const hasRange = props.weapons.some((w) => w.range && w.range !== '');
 }
 
 .weapon-table th {
-  background: var(--bg-head);
+  background: var(--bg-sub);
 }
 
 .weapon-abilities {
