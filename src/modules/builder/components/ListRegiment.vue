@@ -28,7 +28,7 @@
           title="Leader Settings"
           @click="goToUnitSettings('leader')"
         >
-          <font-awesome-icon icon="ellipsis-v" />
+          <font-awesome-icon icon="gear" />
         </button>
       </div>
       <button
@@ -59,7 +59,7 @@
             title="Unit Settings"
             @click="goToUnitSettings(idx)"
           >
-            <font-awesome-icon icon="ellipsis-v" />
+            <font-awesome-icon icon="gear" />
           </button>
         </div>
     </div>

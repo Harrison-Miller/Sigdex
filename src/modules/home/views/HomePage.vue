@@ -35,6 +35,7 @@
               :key="name"
             >
               <ListButton
+style="width: calc(100% - 22px - 0.9em);"
                 :label="name"
                 :points="lore.points"
                 :favorite="armyFavorites.includes(name)"
@@ -60,6 +61,7 @@
               :key="name"
             >
               <ListButton
+style="width: calc(100% - 22px - 0.9em);"
                 :label="name"
                 :points="regiment.points"
                 :favorite="armyFavorites.includes(name)"
@@ -94,11 +96,7 @@ v-if="(showLegends && army.legends) || !army.legends"
                     @click="selectArmy(army.name)"
                     @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
                   >
-                    <ul>
-                      <li
-                        v-for="aor in army.armiesOfRenown"
-                        :key="aor.name"
-                      >
+                  <template v-for="aor in army.armiesOfRenown" :key="aor.name">
                         <ListButton
 v-if="(showLegends && aor.legends) || !aor.legends"
                           :label="aor.name"
@@ -106,13 +104,13 @@ v-if="(showLegends && aor.legends) || !aor.legends"
                           :show-favorite-toggle="false"
                           @click="selectArmy(army.name + ' - ' + aor.name)"
                         />
-                      </li>
-                    </ul>
+                  </template>
                   </ListButtonSection>
                 </template>
                 <template v-else>
                   <ListButton
 v-if="(showLegends && army.legends) || !army.legends"
+                    style="width: calc(100% - 22px - 0.9em);"
                     :label="army.name"
                     :favorite="armyFavorites.includes(army.name)"
                     :show-favorite-toggle="true"

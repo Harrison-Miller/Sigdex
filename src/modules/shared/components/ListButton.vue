@@ -105,7 +105,7 @@ const displayPoints = computed(() => {
       title="More options"
       @click="onEllipsisClick"
     >
-      <FontAwesomeIcon icon="ellipsis-v" />
+      <FontAwesomeIcon icon="gear" />
     </span>
   </button>
 </template>

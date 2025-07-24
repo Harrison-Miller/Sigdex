@@ -30,12 +30,13 @@
 
 * reintroduce prettier/fix formattings
 
+* link enhancement tables by id not name - incase we rename with sog suffix
+
 # v9 release todo
 * manifestation lore of the first pricne is broken check other aors with sub-lores
 
 * duplicate list button - doing this from list settings is tricky because of router history
 * manage lists from list list (delete/duplicate)
-* fix listButtonSection alignment
 
 * double or half weapon options when toggling reinforce - I'm not sure this is a god idea, the halfing gets a bit complicated
 * add a little champion tag to weapon tables. I'm not sure how I want to do this.
@@ -44,7 +45,3 @@ It'd be nice to add it as a weapon ability. But that would be confusing with com
 * filter bar standardization
 
 * finish fixing all the regiment option stuff
-
-* on mobile abilities should always be 100% width
-
-* change settings icon to a gear
