@@ -29,6 +29,10 @@ function formatCompanionUnits(unitName: string, companionLeader: string): string
   return '';
 }
 
+const hasChampion = computed(() => {
+  return unit.value.hasKeyword('Champion');
+});
+
 const props = defineProps<{ unitName: string; armyName: string }>();
 const route = useRoute();
 
@@ -111,7 +115,10 @@ const unitKeywords = computed(() => {
       v-if="unit.meleeWeapons.length"
       collapse-key="meleeWeapons"
     >
-      <template #title>Melee Weapons</template>
+      <template #title>
+        Melee Weapons
+        <img v-if="hasChampion" src="/assets/icons/laurel-wreath.png" alt="Champion" class="champion-icon" />
+      </template>
       <WeaponTable
         :weapons="unit.meleeWeapons"
         short-headers
@@ -121,7 +128,10 @@ const unitKeywords = computed(() => {
       v-if="unit.rangedWeapons.length"
       collapse-key="rangedWeapons"
     >
-      <template #title>Ranged Weapons</template>
+      <template #title>
+        Ranged Weapons
+        <img v-if="hasChampion" src="/assets/icons/laurel-wreath.png" alt="Champion" class="champion-icon" />
+      </template>
       <WeaponTable
         :weapons="unit.rangedWeapons"
         short-headers
@@ -271,5 +281,15 @@ const unitKeywords = computed(() => {
   flex-direction: column;
   gap: 0.3em;
   align-items: center;
+}
+
+.champion-icon {
+  height: 1.2em;
+  margin-left: 0.4em;
+  vertical-align: middle;
+  /* default: no filter */
+}
+.dark .champion-icon {
+  filter: invert(1) brightness(1.6);
 }
 </style>
