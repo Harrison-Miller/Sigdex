@@ -6,8 +6,7 @@ Errors in regiment options parsed by Sigdex
 * a lot of 0-1 monster marked as any
 
 # Cities
-* Assassin should not have any regiment options
-* Callis & Toll missing their companions as required, but not vice-a-versa
+* Assassin should not have any regiment options - this is a data issue
 
 # DoK - all correct
 
@@ -58,7 +57,7 @@ Errors in regiment options parsed by Sigdex
 # IJ - all correct
 
 # Kruleboyz
-* hobgrot slitta boss should be 0-1 monster, but is any monster
+* hobgrot slitta boss should be 0-1 monster, but is any monster. Because kbz has no non-hero monsters, this regiment option doesn't matter.
 
 # Ogors - all correct
 

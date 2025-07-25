@@ -76,15 +76,9 @@ export class Parser {
             if (ability.keywords.includes('**^^Summon^^**')) {
               if (ability.summonedUnits.length > 0 && unit.summoningSpell?.name) {
                 const idx = ability.summonedUnits.indexOf(unit.summoningSpell?.name || '');
-
-                // replace that particular index with the unit name
-                if (idx !== -1) {
-                  // console.log(`Replacing ${ability.summonedUnits[idx]} with ${unit.name} in ${ability.name}`);
-                  unit.summoningSpell = ability;
-                  ability.summonedUnits[idx] = unit.name;
-                  return;
-                } else if (ability.name.includes(unit.name)) {
-                  // console.log(`Assigning summoning spell ${ability.name} to unit ${unit.name}`);
+                if (idx !== -1
+                  || ability.summonedUnits.map(u => u.toLowerCase()).includes(unit.name.toLowerCase())
+                  || ability.name.toLowerCase().includes(unit.name.toLowerCase())) {
                   unit.summoningSpell = ability;
                   ability.summonedUnits.push(unit.name);
                   return;
@@ -99,19 +93,20 @@ export class Parser {
     // look at all lores and check if any are missing a summoning spell
     this.allLores.forEach((lore) => {
       lore.abilities.forEach((ability: Ability) => {
-        // check if the summoned unit looks like a uuid
-        ability.summonedUnits.forEach((summonedUnit) => {
-          const isUUID = /^[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}$/i.test(summonedUnit || '');
-          if (ability.keywords.includes('**^^Summon^^**') && (!summonedUnit || isUUID)) {
-            // not sure why this triggers on eight fold doom-sigil, even though it is linked
-            console.warn(`No unit found for summoning spell: ${ability.name} with summonedUnit ${summonedUnit} isUUID: ${isUUID}`);
-          }
-        });
+        const isManifesation = ability.keywords.includes('**^^Summon^^**');
+        if (!isManifesation) return
 
         // remove all uuids from summonedUnits
         ability.summonedUnits = ability.summonedUnits.filter(
-          (summonedUnit) => !/^[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}$/i.test(summonedUnit || '')
+          (summonedUnit) => !/^[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{3,4}-[0-9a-f]{4}$/i.test(summonedUnit || '')
         );
+
+        // deduplicate summoned units
+        ability.summonedUnits = Array.from(new Set(ability.summonedUnits));
+
+        if (ability.summonedUnits.length === 0) {
+          console.warn(`No valid summoned units found for ability: ${ability.name}`);
+        }
       });
     });
 
