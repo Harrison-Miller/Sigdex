@@ -57,7 +57,7 @@ function getAbilityIcon(type: string) {
       v-if="props.ability.bloodTithePoints"
       class="blood-tithe-icon top-right"
     >
-      <img src="/assets/splatter.png" alt="Blood Tithe" class="splatter-img" />
+      <img src="/assets/icons/splatter.png" alt="Blood Tithe" class="splatter-img" />
       <span class="blood-tithe-text">{{ props.ability.bloodTithePoints }}</span>
     </div>
     <div
