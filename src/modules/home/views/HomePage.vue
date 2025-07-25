@@ -86,7 +86,7 @@ style="width: calc(100% - 22px - 0.9em);"
                 v-for="army in alliance.armies"
                 :key="army.name"
               >
-                <template v-if="army.armiesOfRenown && army.armiesOfRenown.length > 0">
+                <template v-if="hasAoRsToShow(army)">
                   <ListButtonSection
 v-if="(showLegends && army.legends) || !army.legends"
                     :label="army.name"
@@ -159,6 +159,7 @@ import {
   SHOW_LEGENDS_KEY,
 } from '../../../favorites';
 import { useStorage } from '@vueuse/core';
+import type { ArmyListItem } from '../../../parser/models/game';
 
 const router = useRouter();
 const armyFavorites = ref<string[]>([]);
@@ -168,6 +169,12 @@ const leftActive = ref(true);
 const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
 // Load game data (reactive, not awaited)
 const { game, loading, error } = useGame();
+
+function hasAoRsToShow(army: ArmyListItem): boolean {
+  return army.armiesOfRenown && army.armiesOfRenown.filter((aor) => {
+    return (showLegends.value && aor.legends) || !aor.legends;
+  }).length > 0;
+}
 
 onMounted(() => {
   armyFavorites.value = getFavorites('army');

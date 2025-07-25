@@ -38,7 +38,7 @@
 * duplicate list button - doing this from list settings is tricky because of router history
 * manage lists from list list (delete/duplicate)
 
-* double or half weapon options when toggling reinforce - I'm not sure this is a god idea, the halfing gets a bit complicated
+* double or half weapon options when toggling reinforce - I'm not sure this is a good idea, the halfing gets a bit complicated
 * add a little champion tag to weapon tables. I'm not sure how I want to do this.
 It'd be nice to add it as a weapon ability. But that would be confusing with companion.
 
