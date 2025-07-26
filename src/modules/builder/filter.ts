@@ -12,7 +12,7 @@ export function filterBattleProfilesByRegimentOptions(
   companionUnits: string[]
 ): BattleProfile[] {
   if (!options || options.length === 0) return units;
-  const optionNames = options.map((opt) => opt.name.toLowerCase());
+  const optionNames = options.flatMap((opt) => opt.names.map((name) => name.toLowerCase()));
 
   // 1. Filter out Faction Terrain and Manifestations
   let filtered = units.filter((unit) => {

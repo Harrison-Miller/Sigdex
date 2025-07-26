@@ -1,20 +1,26 @@
 import type { UnitCategory } from './unit';
 
 export interface IRegimentOption {
-  name: string; // the keyword, category or name of a thing that can be taken in the regiment
+  // the keywords, categories or names of a thing that can be taken in the regiment
+  // if multiple are present they mutually exclusive of each other
+  names: string[];
   max: number; // the maximum number of this option that can be taken in the regiment (0 means any)
   min: number; // the minimum number of this option that must be taken in the regiment (0 means none required)
 }
 
 export class RegimentOption implements IRegimentOption {
-  name: string;
+  names: string[];
   max: number;
   min: number;
 
   constructor(data?: Partial<IRegimentOption>) {
-    this.name = data?.name ?? '';
+    this.names = data?.names?.sort() ?? [];
     this.max = data?.max ?? 0;
     this.min = data?.min ?? 0;
+  }
+
+  optNames(): string {
+    return this.names.join(', ');
   }
 }
 
@@ -89,24 +95,29 @@ export class BattleProfile implements IBattleProfile {
     return this.keywords.some((k) => k.toLowerCase() === keyword.toLowerCase());
   }
 
-  matchesRegimentOption(optName: string): boolean {
-    const lOptName = optName.toLowerCase();
+  matchesRegimentOption(optNames: string[]): boolean {
+    const lOptNames = optNames.map((n) => n.toLowerCase());
     const name = this.name.toLowerCase();
     const category = this.category.toLowerCase();
     const keywords = (this.keywords || []).map((k) => k.toLowerCase());
     const tags = (this.regimentTags || []).map((t) => t.toLowerCase());
 
-    // special case where optName is a multi keyword
-    if (lOptName.includes(' ')) {
-      const parts = lOptName.split(/\s+/);
-      if (parts.every((part: string) => keywords.includes(part))) return true;
+    for (const lOptName of lOptNames) {
+      // special case where optName is a multi keyword
+      if (lOptName.includes(' ')) {
+        const parts = lOptName.split(/\s+/);
+        if (parts.every((part: string) => keywords.includes(part))) return true;
+      }
+      if (
+        name === lOptName ||
+        category === lOptName ||
+        keywords.some((kw) => kw === lOptName) ||
+        tags.some((tag) => tag === lOptName)
+      ) {
+        return true;
+      }
     }
-    return (
-      name === lOptName ||
-      category === lOptName ||
-      keywords.some((kw) => kw === lOptName) ||
-      tags.some((tag) => tag === lOptName)
-    );
+    return false;
   }
 
   // Many things by default aren't reinforceable, we want to differentiate those from things that are explicitly not reinforceable.

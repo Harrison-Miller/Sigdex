@@ -57,9 +57,9 @@ export function parseBattleProfiles(
       const existingProfile = bpMap.get(profile.name);
       if (existingProfile) {
         // add non-duplicate regiment options
-        const existingOptions = new Set(existingProfile.regimentOptions.map((o) => o.name));
+        const existingOptions = new Set(existingProfile.regimentOptions.map((o) => o.optNames()));
         for (const option of profile.regimentOptions) {
-          if (!existingOptions.has(option.name)) {
+          if (!existingOptions.has(option.optNames())) {
             existingProfile.regimentOptions.push(option);
           }
         }
@@ -92,12 +92,12 @@ export function parseBattleProfiles(
       leaderBp.companionUnits.push(...companions);
       // modify regiment options to make companions required
       leaderBp.regimentOptions = leaderBp.regimentOptions.map((option: RegimentOption) => {
-        if (companions.includes(option.name)) {
-          return {
+        if (companions.some((c) => option.names.includes(c))) {
+          return new RegimentOption({
             ...option,
             min: 1, // companions are always required
             max: 1, // companions can only be taken once
-          };
+          });
         }
         return option;
       });
@@ -108,12 +108,15 @@ export function parseBattleProfiles(
   // TODO: mark specific units that are legends as legends regiment options so they don't show or have a badge
   for (const bp of bpMap.values()) {
     bp.regimentOptions = bp.regimentOptions.map((option: RegimentOption) => {
-      const optionUnit = bpMap.get(option.name);
-      if (optionUnit && optionUnit.category === 'HERO') {
-        return {
+      const hasHero = option.names.some((name) => {
+        const unit = bpMap.get(name);
+        return unit && unit.category === 'HERO';
+      });
+      if (hasHero) {
+        return new RegimentOption({
           ...option,
           max: 1, // heroes can only be taken once in a regiment
-        };
+        });
       }
       return option;
     });
@@ -136,8 +139,17 @@ export function parseBattleProfileCategories(root: any): Map<string, ICategory> 
         name,
         id,
         childConditionIds: [], // no child conditions by default
+        notChildConditionIds: [],
         rosterMin: -1, // no roster min by default
         rosterMax: -1, // no roster max by default
+      });
+      categories.set(name, {
+        name,
+        id,
+        childConditionIds: [],
+        notChildConditionIds: [],
+        rosterMin: -1,
+        rosterMax: -1,
       });
     }
     if (targetId && name && !categories.has(targetId)) {
@@ -145,6 +157,7 @@ export function parseBattleProfileCategories(root: any): Map<string, ICategory> 
         name,
         id: targetId,
         childConditionIds: [], // no child conditions by default
+        notChildConditionIds: [],
         rosterMin: -1, // no roster min by default
         rosterMax: -1, // no roster max by default
       });
@@ -275,7 +288,7 @@ export function parseRegimentOptions(
     // Categories that have a reference to this bp, mean this bp can take this category.
     if (category.childConditionIds.includes(id) || category.childConditionIds.includes(targetId)) {
       const option: IRegimentOption = {
-        name: category.name,
+        names: [category.name],
         max: 1, // these are always 1
         min: 0,
       };
@@ -290,7 +303,7 @@ export function parseRegimentOptions(
       affects: `self.entries.recursive.${category.id}`,
     });
     if (modifier) {
-      options.push(new RegimentOption({ name: category.name }));
+      options.push(new RegimentOption({ names: [category.name] }));
     }
   }
 
@@ -323,7 +336,7 @@ export function parseRegimentOptions(
         const max = unitLimit ? unitLimit : errorCondition?.max || 0;
 
         const option: IRegimentOption = {
-          name: category.name,
+          names: [category.name],
           max: max, // use max from error condition, or 0 (any amount)
           min: 0,
         };
@@ -332,10 +345,60 @@ export function parseRegimentOptions(
     }
   });
 
+  // create xor regiment options
+  // if we have a regiment option for a category and one of it's notChildConditionIds we replaces it with an xor option
+  const xorOptions: RegimentOption[] = [];
+  for (const option of options) {
+    const category = allCategories.get(option.names[0]) || armyCategories.get(option.names[0]);
+    if (category && category.notChildConditionIds.length > 0) {
+      const xorOptNames = [category.name];
+      for (const notId of category.notChildConditionIds) {
+        const notCategory = allCategories.get(notId) || armyCategories.get(notId);
+        if (
+          notCategory &&
+          options.some((opt) => opt.names.includes(notCategory.name))
+        ) {
+          xorOptNames.push(notCategory.name);
+        }
+      }
+      if (xorOptNames.length < 2) continue; // no xor options to create
+      console.log(`Creating xor regiment options for ${name} category: ${category.name} with options: `, xorOptNames);
+
+      // create a new xor option
+      const xorOption: IRegimentOption = {
+        names: xorOptNames,
+        max: option.max,
+        min: option.min,
+      };
+      xorOptions.push(new RegimentOption(xorOption));
+    }
+  }
+
+  // remove original options that have xor options
+  for (const xorOption of xorOptions) {
+    const optsToRemove = options.filter((opt) =>
+      opt.names.some((name) => xorOption.names.includes(name))
+    );
+    if (optsToRemove.length > 0) {
+      optsToRemove.forEach(opt => {
+        const index = options.indexOf(opt);
+        if (index !== -1) {
+          options.splice(index, 1); // remove the original option
+        }
+      });
+    }
+  }
+
+  if (xorOptions.length > 0) {
+    console.log(`Created ${xorOptions.length} xor regiment options for ${name}: `, xorOptions);
+    // add xor options to
+    options.push(...xorOptions); // add xor options to the list
+  }
+
   // deduplicate options by name
   const uniqueOptions = new Map<string, RegimentOption>();
   for (const option of options) {
-    uniqueOptions.set(option.name, option);
+    uniqueOptions.set(option.optNames(), option);
   }
 
   return Array.from(uniqueOptions.values()).map(

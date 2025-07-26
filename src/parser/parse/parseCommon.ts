@@ -37,6 +37,7 @@ export interface ICategory {
   name: string;
   id: string;
   childConditionIds: string[]; // ids of conditions that apply to this category
+  notChildConditionIds: string[]; // ids of conditions that make this category not apply
   rosterMin: number;
   rosterMax: number;
 }
@@ -48,12 +49,12 @@ export function parseCategories(root: any): Map<string, ICategory> {
     const id = node['@_id'];
     const targetId = node['@_targetId'];
     const name = node['@_name'];
-    const childConditionIds = findAllByTagAndAttrs(node, 'condition', {
+
+    const childConditionIds = findAllByTagAndAttrs(node?.modifiers?.modifier?.[0]?.conditionGroups?.conditionGroup?.[0]?.localConditionGroups, 'condition', {
       type: 'instanceOf',
       value: '1',
     }).map((condition: any) => condition['@_childId'] || '');
 
-    //  <constraint type="min" value="1" field="selections" scope="roster" shared="true" id="ddca-74ca-7b07-cc42-min" includeChildSelections="true" includeChildForces="true"/>
     const rosterMin = parseInt(findFirstByTagAndAttrs(node, 'constraint', {
       type: 'min',
       field: 'selections',
@@ -66,11 +67,37 @@ export function parseCategories(root: any): Map<string, ICategory> {
       scope: 'roster',
     })?.['@_value'] || '-1', 10);
 
+    // <localConditionGroup type="lessThan" value="1" scope="force" field="selections"
+    // <condition type="instanceOf" value="1" field="selections" scope="self" childId="4a6d-57cc-4f15-dd3a" shared="true" includeChildSelections="true"/>
+    let notChildConditionIds = findAllByTagAndAttrs(node, 'localConditionGroup', {
+      type: 'lessThan',
+      value: '1',
+      scope: 'force',
+      field: 'selections',
+    }).flatMap((group: any) => findAllByTagAndAttrs(group, 'condition', {
+      type: 'instanceOf',
+      value: '1',
+      field: 'selections',
+      scope: 'self',
+    })).map((condition: any) => condition['@_childId'] || '');
+
+    // add simple not conditions
+    const simpleNotConditions = findAllByTagAndAttrs(node, 'condition', {
+      type: 'lessThan',
+      value: '1',
+      scope: 'force',
+      field: 'selections',
+    }).map((condition: any) => condition['@_childId'] || '');
+    notChildConditionIds.push(...simpleNotConditions);
+
+    notChildConditionIds = Array.from(new Set(notChildConditionIds)).sort();
+
     if (id && name) {
-      categories.set(id, { name, id, childConditionIds, rosterMin, rosterMax });
+      categories.set(id, { name, id, childConditionIds, notChildConditionIds, rosterMin, rosterMax });
+      categories.set(name, { name, id, childConditionIds, notChildConditionIds, rosterMin, rosterMax });
     }
     if (targetId && name) {
-      categories.set(targetId, { name, id: targetId, childConditionIds, rosterMin, rosterMax });
+      categories.set(targetId, { name, id: targetId, childConditionIds, notChildConditionIds, rosterMin, rosterMax });
     }
   }
   return categories;

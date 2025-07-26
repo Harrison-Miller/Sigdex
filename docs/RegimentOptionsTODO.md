@@ -2,7 +2,7 @@ Errors in regiment options parsed by Sigdex
 
 # Summary of common issues
 * A lot of times when a specific units in a regiment option my system marks them as any instead of the amount - I think this is all fixed
-* No way to handle xor regiment options
+* No way to handle xor regiment options - almost all fixed now
 * a lot of 0-1 monster marked as any
 
 # Cities
@@ -18,8 +18,7 @@ Errors in regiment options parsed by Sigdex
 
 # LRL - all correct
 
-# Seraphon
-* kroak and slanmaster should be starpriest XOR favored spawn
+# Seraphon - all correct
 
 # Stormcast
 
@@ -30,8 +29,6 @@ Errors in regiment options parsed by Sigdex
 # Tzeentch - all correct
 
 # Slaanesh
-* dexcessa should be beguiler XOR synessa
-* synessa should be beguiler XOR dexcessa
 * sylesske should be beguiler XOR dark egoist
 
 # Nurgle - all correct
