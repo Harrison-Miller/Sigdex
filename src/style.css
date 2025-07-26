@@ -88,3 +88,12 @@ button:hover {
   margin-top: 0.5em;
   margin-bottom: 0.3em;
 }
+
+h1 {
+  font-family: 'Metamorphous', sans-serif;
+}
+
+@font-face {
+  font-family: 'Metamorphous';
+  src: url('/src/assets/Metamorphous-Regular.ttf') format('truetype');
+}

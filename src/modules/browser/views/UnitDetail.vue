@@ -117,7 +117,7 @@ const unitKeywords = computed(() => {
     >
       <template #title>
         Melee Weapons
-        <img v-if="hasChampion" src="/assets/icons/laurel-wreath.png" alt="Champion" class="champion-icon" />
+        <img v-if="hasChampion" src="/assets/icons/wreath-laurel-solid.svg" alt="Champion" class="champion-icon" />
       </template>
       <WeaponTable
         :weapons="unit.meleeWeapons"
@@ -130,7 +130,7 @@ const unitKeywords = computed(() => {
     >
       <template #title>
         Ranged Weapons
-        <img v-if="hasChampion" src="/assets/icons/laurel-wreath.png" alt="Champion" class="champion-icon" />
+        <img v-if="hasChampion" src="/assets/icons/wreath-laurel-solid.svg" alt="Champion" class="champion-icon" />
       </template>
       <WeaponTable
         :weapons="unit.rangedWeapons"
@@ -293,3 +293,4 @@ const unitKeywords = computed(() => {
   filter: invert(1) brightness(1.6);
 }
 </style>
+

@@ -9,7 +9,10 @@
         />
       </div>
     </div>
-    <h1 style="margin:0;margin-bottom:0.75em;">Sigdex</h1>
+    <img
+      alt="Sigdex Logo"
+      class="sigdex-logo"
+    />
     <TwoTab
       v-model:left-active="leftActive"
       :left-label="'Browse'"
@@ -300,5 +303,16 @@ watch(armyFavorites, (favs) => {
   color: #c00;
   text-align: center;
   margin-top: 1rem;
+}
+.sigdex-logo {
+  display: block;
+  margin: 0 auto;
+  max-width: 200px;
+  height: auto;
+  content: url('/src/assets/sigdex_logo_black.png');
+}
+
+.dark .sigdex-logo {
+  content: url('/src/assets/sigdex_logo_white.png');
 }
 </style>
