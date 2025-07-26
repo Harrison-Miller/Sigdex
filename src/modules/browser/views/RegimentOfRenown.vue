@@ -1,7 +1,7 @@
 <template>
   <BackButton :size="36" />
   <div class="unit-detail">
-    <h1 style="margin: 0">{{ regiment?.name }}</h1>
+    <h1 style="margin: 0" class="fancy-text">{{ regiment?.name }}</h1>
     <PointsBadge big :points="regiment?.points" />
     <Section
       v-if="regiment?.abilities.length"

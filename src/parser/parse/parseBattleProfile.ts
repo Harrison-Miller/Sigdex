@@ -10,6 +10,7 @@ import { WeaponOption } from '../models/weaponOption';
 import { findAllByTagAndAttrs, findFirstByTagAndAttrs } from '../util';
 import {
   filterIgnoredEnhancementTables,
+  getCategoryModifierForCondition,
   parsePoints,
   type ICategory,
 } from './parseCommon';
@@ -138,7 +139,7 @@ export function parseBattleProfileCategories(root: any): Map<string, ICategory> 
       categories.set(id, {
         name,
         id,
-        childConditionIds: [], // no child conditions by default
+        modifiers: [],
         notChildConditionIds: [],
         rosterMin: -1, // no roster min by default
         rosterMax: -1, // no roster max by default
@@ -146,7 +147,7 @@ export function parseBattleProfileCategories(root: any): Map<string, ICategory> 
       categories.set(name, {
         name,
         id,
-        childConditionIds: [],
+        modifiers: [],
         notChildConditionIds: [],
         rosterMin: -1,
         rosterMax: -1,
@@ -156,7 +157,7 @@ export function parseBattleProfileCategories(root: any): Map<string, ICategory> 
       categories.set(targetId, {
         name,
         id: targetId,
-        childConditionIds: [], // no child conditions by default
+        modifiers: [],
         notChildConditionIds: [],
         rosterMin: -1, // no roster min by default
         rosterMax: -1, // no roster max by default
@@ -268,7 +269,7 @@ export function parseRegimentTags(bpNode: any, armyCategories: Map<string, ICate
       tags.push(category.name);
     }
   }
-  return tags;
+  return Array.from(new Set(tags));
 }
 
 export function parseRegimentOptions(
@@ -286,10 +287,12 @@ export function parseRegimentOptions(
   // This should only  be army categories
   for (const [_, category] of armyCategories) {
     // Categories that have a reference to this bp, mean this bp can take this category.
-    if (category.childConditionIds.includes(id) || category.childConditionIds.includes(targetId)) {
+    const catModifier = getCategoryModifierForCondition(category, name, id, targetId);
+    if (catModifier) {
+      console.log(`catModifier for ${name} category: ${category.name} with max: ${catModifier.max}`);
       const option: IRegimentOption = {
         names: [category.name],
-        max: 1, // these are always 1
+        max: catModifier.max || 1,
         min: 0,
       };
       options.push(new RegimentOption(option));

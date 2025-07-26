@@ -77,7 +77,7 @@ const unitKeywords = computed(() => {
         />
       </div>
   <div>
-          <h1>{{ unit.name }}</h1>
+          <h1 class="fancy-text">{{ unit.name }}</h1>
           <LegendsBadge big :legends="unit.legends" style="margin-bottom: 1em" />
     <div class="stats-row">
       <StatCircle

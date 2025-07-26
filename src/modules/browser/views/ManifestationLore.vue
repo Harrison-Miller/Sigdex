@@ -20,7 +20,7 @@ const units = computed(() => {
     class="unit-list-back"
   />
   <div class="list-container">
-    <h1 style="margin: 0">
+    <h1 style="margin: 0" class="fancy-text">
       {{ loreName }}
     </h1>
     <PointsBadge big :points="lore.points" />

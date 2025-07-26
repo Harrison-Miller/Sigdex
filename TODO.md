@@ -41,3 +41,7 @@
 * filter bar standardization
 
 * finish fixing all the regiment option stuff
+
+* favicon
+
+* toggle for fancy text

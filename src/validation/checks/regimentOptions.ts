@@ -66,7 +66,7 @@ function validateRegimentOptions(regiment: ListRegiment, army: Army): string[] {
 
   // enforce min/max of options
   for (const opt of leaderUnit.regimentOptions) {
-    if (opt.max === 0 && opt.min == 0) continue; // skip options with no limits
+    if (opt.max <= 0 && opt.min == 0) continue; // skip options with no limits
 
     let count = 0;
 

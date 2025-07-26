@@ -36,10 +36,15 @@ export function filterIgnoredEnhancementTables(entries: any[]): any[] {
 export interface ICategory {
   name: string;
   id: string;
-  childConditionIds: string[]; // ids of conditions that apply to this category
+  modifiers: IModifier[]; // modifiers that apply to this category
   notChildConditionIds: string[]; // ids of conditions that make this category not apply
   rosterMin: number;
   rosterMax: number;
+}
+
+export interface IModifier {
+  max: number; // max number of this modifier that can be applied
+  childConditionIds: string[]; // ids of conditions that apply to this modifier
 }
 
 export function parseCategories(root: any): Map<string, ICategory> {
@@ -50,10 +55,16 @@ export function parseCategories(root: any): Map<string, ICategory> {
     const targetId = node['@_targetId'];
     const name = node['@_name'];
 
-    const childConditionIds = findAllByTagAndAttrs(node?.modifiers?.modifier?.[0]?.conditionGroups?.conditionGroup?.[0]?.localConditionGroups, 'condition', {
-      type: 'instanceOf',
-      value: '1',
-    }).map((condition: any) => condition['@_childId'] || '');
+    const modifiers = node?.modifiers?.modifier || [];
+    const parsedModifiers: IModifier[] = modifiers.map((modifier: any) => {
+      const value = parseInt(modifier['@_value'] || '0', 10);
+      const childConditionIds = findAllByTagAndAttrs(modifier?.conditionGroups?.conditionGroup?.[0]?.localConditionGroups, 'condition', {
+        type: 'instanceOf',
+        value: '1',
+      }).map((condition: any) => condition['@_childId'] || '');
+
+      return { max: value, childConditionIds };
+    });
 
     const rosterMin = parseInt(findFirstByTagAndAttrs(node, 'constraint', {
       type: 'min',
@@ -67,8 +78,6 @@ export function parseCategories(root: any): Map<string, ICategory> {
       scope: 'roster',
     })?.['@_value'] || '-1', 10);
 
-    // <localConditionGroup type="lessThan" value="1" scope="force" field="selections"
-    // <condition type="instanceOf" value="1" field="selections" scope="self" childId="4a6d-57cc-4f15-dd3a" shared="true" includeChildSelections="true"/>
     let notChildConditionIds = findAllByTagAndAttrs(node, 'localConditionGroup', {
       type: 'lessThan',
       value: '1',
@@ -93,15 +102,28 @@ export function parseCategories(root: any): Map<string, ICategory> {
     notChildConditionIds = Array.from(new Set(notChildConditionIds)).sort();
 
     if (id && name) {
-      categories.set(id, { name, id, childConditionIds, notChildConditionIds, rosterMin, rosterMax });
-      categories.set(name, { name, id, childConditionIds, notChildConditionIds, rosterMin, rosterMax });
+      categories.set(id, { name, id, modifiers: parsedModifiers, notChildConditionIds, rosterMin, rosterMax });
+      categories.set(name, { name, id, modifiers: parsedModifiers, notChildConditionIds, rosterMin, rosterMax });
     }
     if (targetId && name) {
-      categories.set(targetId, { name, id: targetId, childConditionIds, notChildConditionIds, rosterMin, rosterMax });
+      categories.set(targetId, { name, id: targetId, modifiers: parsedModifiers, notChildConditionIds, rosterMin, rosterMax });
     }
   }
   return categories;
 }
+
+export function getCategoryModifierForCondition(
+  category: ICategory,
+  name: string,
+  id: string,
+  targetId: string,
+): IModifier | undefined {
+  return category.modifiers.find(modifier =>
+    modifier.childConditionIds.includes(id) ||
+    modifier.childConditionIds.includes(targetId) ||
+    modifier.childConditionIds.includes(name)
+  );
+};
 
 export function calculateCommonKeywords(battleProfiles: BattleProfile[]): string[] {
   if (!battleProfiles || battleProfiles.length === 0) return [];

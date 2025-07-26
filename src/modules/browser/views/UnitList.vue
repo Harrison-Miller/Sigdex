@@ -3,7 +3,7 @@
   <div
     v-if="!loading && !error"
   >
-    <h1>{{ armyName }}</h1>
+    <h1 class="fancy-text">{{ armyName }}</h1>
     <LegendsBadge big :legends="army.legends" style="margin-bottom: 1em;"/>
     <TwoTab
       v-model:left-active="leftActive"

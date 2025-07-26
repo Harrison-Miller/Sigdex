@@ -21,7 +21,7 @@ export function parseArmy(
   const armyCategories = parseCategories(catalogue);
   // find all armyCategories with no childIds and all caps
   const possibleArmyKeywords = Array.from(new Set(Array.from(armyCategories.values())
-    .filter((cat) => !cat.childConditionIds?.length && cat.name === cat.name.toUpperCase())
+    .filter((cat) => !cat.modifiers.some(m => m.childConditionIds.length) && cat.name === cat.name.toUpperCase())
     .map((cat) => cat.name)));
 
   let armyKeyword: string = '';
