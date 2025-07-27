@@ -7,6 +7,7 @@ import { highlanderChecks } from './checks/highlander';
 import { regimentOptionsChecks } from './checks/regimentOptions';
 import { rorChecks } from './checks/ror';
 import { sanityChecks } from './checks/sanity';
+import { sbglChecks } from './checks/sbgl';
 import { sogChecks } from './checks/sog';
 import { unitConfigurationChecks } from './checks/unitConfiguration';
 import type { ListValidator } from './validator';
@@ -27,6 +28,7 @@ export const baseValidators: ListValidator[] = [
   ...sogChecks,
   ...aorChecks,
   ...rorChecks,
+  ...sbglChecks,
 ];
 
 function getValidatorsForList(list: List): ListValidator[] {
