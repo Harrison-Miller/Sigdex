@@ -306,7 +306,7 @@ watch(armyFavorites, (favs) => {
 }
 .sigdex-logo {
   display: block;
-  margin: 0 auto;
+  margin: 0 auto 1em;
   max-width: 200px;
   height: auto;
   content: url('/src/assets/sigdex_logo_black.png');

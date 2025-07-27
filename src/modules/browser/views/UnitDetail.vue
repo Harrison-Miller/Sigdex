@@ -20,6 +20,7 @@ import { useUnitSettings } from '../../shared/composables/useUnitSettings';
 import WeaponOptionsSelection from '../../builder/components/WeaponOptionsSelection.vue';
 import ReportErrorButton from '../../shared/components/ReportErrorButton.vue';
 import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
+import SoGBadge from '../../shared/components/badges/SoGBadge.vue';
 
 function formatCompanionUnits(unitName: string, companionLeader: string): string {
   const bold = (name: string) => `<b>${name}</b>`;
@@ -38,6 +39,9 @@ const route = useRoute();
 
 const unitName = props.unitName ?? (route?.params?.unit as string | undefined);
 const armyName = props.armyName ?? (route?.params?.army as string | undefined);
+
+const isSoG = computed(() => /\(Scourge of Ghyran\)/.test(unitName));
+const displayName = computed(() => unitName.replace(/\s*\(Scourge of Ghyran\)/, ''));
 
 const { army } = useArmy(armyName ?? '');
 const { unit, battleProfile } = useUnit(armyName ?? '', unitName ?? '');
@@ -77,8 +81,9 @@ const unitKeywords = computed(() => {
         />
       </div>
   <div>
-          <h1 class="fancy-text">{{ unit.name }}</h1>
+          <h1 class="fancy-text">{{ displayName }}</h1>
           <LegendsBadge big :legends="unit.legends" style="margin-bottom: 1em" />
+          <SoGBadge big :sog="isSoG" style="margin-bottom: 1em" />
     <div class="stats-row">
       <StatCircle
         v-if="unit.stats.move"

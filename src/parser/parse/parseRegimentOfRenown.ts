@@ -34,7 +34,7 @@ export function parseRegimentsOfRenown(
     };
 
     if (!ror.units || !ror.points || !ror.allowedArmies) {
-      console.warn(`Skipping Regiment of Renown "${name}" due to missing data.`);
+      // console.warn(`Skipping Regiment of Renown "${name}" due to missing data.`);
       continue;
     }
 

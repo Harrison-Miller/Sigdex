@@ -178,7 +178,9 @@ export function isDefaultModels(modelGroups: Model[]): boolean {
 }
 
 export function parseDescriptions(unitNode: any): string[] {
-  const ruleNodes = unitNode.rules?.rule || [];
+  const ruleNodes = findAllByTagAndAttrs(unitNode, 'rule', {
+    hidden: 'false',
+  });
   const descriptions: string[] = [];
   ruleNodes.forEach((node: any) => {
     const description = (typeof node?.description === 'string' ? node.description : node?.description?.['#text']) || '';

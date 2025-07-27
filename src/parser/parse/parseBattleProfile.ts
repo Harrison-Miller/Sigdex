@@ -11,6 +11,7 @@ import { findAllByTagAndAttrs, findFirstByTagAndAttrs } from '../util';
 import {
   filterIgnoredEnhancementTables,
   getCategoryModifierForCondition,
+  parseCategory,
   parsePoints,
   type ICategory,
 } from './parseCommon';
@@ -33,7 +34,6 @@ export function parseBattleProfiles(
   }
 
   const errorConditions = parseErrorConditions(root, allCategories);
-  const limitedUnits = parseLimitedUnits(root);
 
   const battleProfileNodes = root.entryLinks?.entryLink || [];
   const bpMap = new Map<string, BattleProfile>();
@@ -48,13 +48,13 @@ export function parseBattleProfiles(
     )
       continue;
 
-    const profile = parseBattleProfile(node, units, allCategories, armyCategories, errorConditions, limitedUnits, armyKeyword);
+    const profile = parseBattleProfile(node, units, allCategories, armyCategories, errorConditions, armyKeyword);
 
     // skip units without a category, we no longer skip legends units we will filter them out in the UI
     if (profile.category === 'OTHER') continue;
 
     if (bpMap.has(profile.name)) {
-      console.warn(`Duplicate battle profile found: ${profile.name} merging profiles.`);
+      // console.warn(`Duplicate battle profile found: ${profile.name} merging profiles.`);
       const existingProfile = bpMap.get(profile.name);
       if (existingProfile) {
         // add non-duplicate regiment options
@@ -132,36 +132,9 @@ export function parseBattleProfileCategories(root: any): Map<string, ICategory> 
   // create a category for each bp
   const bpNodes = root.entryLinks?.entryLink || [];
   for (const bpNode of bpNodes) {
-    const id = bpNode['@_id'];
-    const targetId = bpNode['@_targetId'];
-    const name = bpNode['@_name'] || '';
-    if (id && name && !categories.has(id)) {
-      categories.set(id, {
-        name,
-        id,
-        modifiers: [],
-        notChildConditionIds: [],
-        rosterMin: -1, // no roster min by default
-        rosterMax: -1, // no roster max by default
-      });
-      categories.set(name, {
-        name,
-        id,
-        modifiers: [],
-        notChildConditionIds: [],
-        rosterMin: -1,
-        rosterMax: -1,
-      });
-    }
-    if (targetId && name && !categories.has(targetId)) {
-      categories.set(targetId, {
-        name,
-        id: targetId,
-        modifiers: [],
-        notChildConditionIds: [],
-        rosterMin: -1, // no roster min by default
-        rosterMax: -1, // no roster max by default
-      });
+    const bpCategories = parseCategory(bpNode);
+    for (const [id, category] of bpCategories) {
+      categories.set(id, category);
     }
   }
 
@@ -174,7 +147,6 @@ export function parseBattleProfile(
   allCategories: Map<string, ICategory>,
   armyCategories: Map<string, ICategory>,
   errorConditions: IErrorCondition[],
-  limitedUnits: Map<string, ILimitedUnit>,
   armyKeyword: string,
 ): BattleProfile {
   const battleProfile: Partial<IBattleProfile> = {
@@ -183,7 +155,7 @@ export function parseBattleProfile(
     reinforceable: parseReinforceable(bpNode),
     enhancementTables: parseAllowedEnhancementTables(bpNode),
     regimentTags: parseRegimentTags(bpNode, armyCategories, armyKeyword),
-    regimentOptions: parseRegimentOptions(bpNode, allCategories, armyCategories, errorConditions, limitedUnits),
+    regimentOptions: parseRegimentOptions(bpNode, allCategories, armyCategories, errorConditions),
     companionLeader: parseCompanionUnitLeader(bpNode, allCategories),
   };
 
@@ -277,7 +249,6 @@ export function parseRegimentOptions(
   allCategories: Map<string, ICategory>,
   armyCategories: Map<string, ICategory>,
   errorConditions: IErrorCondition[],
-  limitedUnits: Map<string, ILimitedUnit>,
 ): RegimentOption[] {
   const options: RegimentOption[] = [];
   const name = bpNode['@_name'] || '';
@@ -289,7 +260,6 @@ export function parseRegimentOptions(
     // Categories that have a reference to this bp, mean this bp can take this category.
     const catModifier = getCategoryModifierForCondition(category, name, id, targetId);
     if (catModifier) {
-      console.log(`catModifier for ${name} category: ${category.name} with max: ${catModifier.max}`);
       const option: IRegimentOption = {
         names: [category.name],
         max: catModifier.max || 1,
@@ -335,8 +305,14 @@ export function parseRegimentOptions(
           }
         }
 
-        const unitLimit = getUnitLimit(limitedUnits, category.name, id, targetId);
-        const max = unitLimit ? unitLimit : errorCondition?.max || 0;
+        // forceMax is typically the default max for when a unit can take a category
+        let max = category.forceMax;
+        const catMod = getCategoryModifierForCondition(category, name, id, targetId);
+        if (catMod) {
+          max = catMod.max;
+        } else if (errorCondition) {
+          max = errorCondition.max; // use the max from the error condition if it exists
+        }
 
         const option: IRegimentOption = {
           names: [category.name],
@@ -365,13 +341,17 @@ export function parseRegimentOptions(
         }
       }
       if (xorOptNames.length < 2) continue; // no xor options to create
-      console.log(`Creating xor regiment options for ${name} category: ${category.name} with options: `, xorOptNames);
+
+      // skip if xor option with both names already exists
+      if (xorOptions.some((opt) => opt.names.length === xorOptNames.length && opt.names.every((name) => xorOptNames.includes(name)))) {
+        continue;
+      }
 
       // create a new xor option
       const xorOption: IRegimentOption = {
         names: xorOptNames,
-        max: option.max,
-        min: option.min,
+        max: 1, // I think this is currnetly only ever used for 0-1
+        min: 0.
       };
       xorOptions.push(new RegimentOption(xorOption));
     }
@@ -393,7 +373,6 @@ export function parseRegimentOptions(
   }
 
   if (xorOptions.length > 0) {
-    console.log(`Created ${xorOptions.length} xor regiment options for ${name}: `, xorOptions);
     // add xor options to
     options.push(...xorOptions); // add xor options to the list
   }
@@ -500,96 +479,4 @@ export function parseUndersizeUnitCondition(
   return {
     isUndersize: true,
   };
-}
-
-interface ILimitedUnit {
-  name: string;
-  ids: string[];
-  max: number;
-}
-
-function getUnitLimit(limitedUnits: Map<string, ILimitedUnit>, name: string, id: string, targetId: string): number | null {
-  const unit = limitedUnits.get(name);
-  if (unit) {
-    // unit.ids length is 0 if it applies to all regimental leaders
-    if (unit.ids.includes(id) || unit.ids.includes(targetId) || unit.ids.length === 0) {
-      return unit.max;
-    }
-  }
-  return null;
-}
-
-// returns unit name to leader ids
-export function parseLimitedUnits(root: any): Map<string, ILimitedUnit> {
-  const limitedUnits = new Map<string, ILimitedUnit>();
-  const bpNodes = root.entryLinks?.entryLink || [];
-  for (const bp of bpNodes) {
-    const name = bp['@_name'];
-    if (!name) continue;
-
-    //         <constraint type="max" value="1" field="selections" scope="force" shared="true" id="5383-844c-da86-b7bd"/>
-    const constraint = findFirstByTagAndAttrs(bp, 'constraint', {
-      type: 'max',
-      field: 'selections',
-      scope: 'force',
-    });
-
-    if (constraint) {
-      const max = parseInt(constraint['@_value'] || '0', 10);
-      if (max > 0) {
-        limitedUnits.set(name, {
-          name,
-          ids: [], // this constraint applies to all regimental leaders that can take this unit
-          max,
-        });
-        continue;
-      }
-    }
-
-
-    // <modifier type="set" value="1" field="c13d-57e7-bdb8-f0c4">
-    const modifier = findFirstByTagAndAttrs(bp, 'modifier', {
-      type: 'set',
-      value: '1',
-    });
-
-    if (!modifier) continue;
-
-    //                         <condition type="instanceOf" value="1" field="selections" scope="self" childId="ed1c-9fa9-8e7-d583" shared="true"/>
-    //                     <condition type="instanceOf" value="1" field="selections" scope="self" childId="d1f3-921c-b403-1106" shared="true"/>
-    const childConditionIds = findAllByTagAndAttrs(bp, 'condition', {
-      type: 'instanceOf',
-      value: '1',
-    }).map((condition: any) => condition['@_childId'] || '');
-
-    const childIds: Set<string> = new Set();
-    for (const childId of childConditionIds) {
-      childIds.add(childId);
-    }
-
-    // <condition type="atLeast" value="1" field="selections" scope="force" childId="3e12-c43b-6ea7-00fb" shared="true"/>
-    const forceCondition = findAllByTagAndAttrs(bp, 'condition', {
-      type: 'atLeast',
-      value: '1',
-      field: 'selections',
-      scope: 'force',
-    });
-    if (forceCondition) {
-      for (const condition of forceCondition) {
-        const childId = condition['@_childId'];
-        if (childId) {
-          childIds.add(childId);
-        }
-      }
-    }
-
-    if (childIds.size > 0) {
-      limitedUnits.set(name, {
-        name,
-        ids: Array.from(childIds),
-        max: 1,
-      });
-    }
-  }
-  return limitedUnits;
 }

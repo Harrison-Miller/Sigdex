@@ -57,7 +57,7 @@ export class Parser {
       const units = parseUnits(xml.catalogue || xml.gameSystem);
       units.forEach((unit) => {
         if (this.units.has(unit.name)) {
-          console.warn(`Duplicate unit found: ${unit.name} combining keywords`);
+          // console.warn(`Duplicate unit found: ${unit.name} combining keywords`);
           const existingUnit = this.units.get(unit.name);
           if (existingUnit) {
             existingUnit.keywords = Array.from(new Set([...existingUnit.keywords, ...unit.keywords]));
