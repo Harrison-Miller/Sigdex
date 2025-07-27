@@ -16,6 +16,7 @@
           :show-reinforced="unit.reinforced"
           :legends="battleProfiles.get(unit.name)?.legends"
           :enhancement-count="unit.getEnhancementCount()"
+          :split-on-sub-label="true"
           @click="
             () =>
               router &&

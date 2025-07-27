@@ -98,7 +98,7 @@ export class Parser {
 
         // remove all uuids from summonedUnits
         ability.summonedUnits = ability.summonedUnits.filter(
-          (summonedUnit) => !/^[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{3,4}-[0-9a-f]{4}$/i.test(summonedUnit || '')
+          (summonedUnit) => !/^[0-9a-f]{3,4}-[0-9a-f]{3,4}-[0-9a-f]{3,4}-[0-9a-f]{3,4}$/i.test(summonedUnit || '')
         );
 
         // deduplicate summoned units

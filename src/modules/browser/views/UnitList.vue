@@ -50,6 +50,7 @@
                     :points="u.points"
                     :legends="u.legends"
                     :href="href"
+                    :split-on-sub-label="true"
                     @click="navigate"
                     @toggle-favorite="(fav: boolean) => toggleUnitFavorite(u.name, fav)"
                   />

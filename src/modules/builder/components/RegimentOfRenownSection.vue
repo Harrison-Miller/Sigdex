@@ -33,6 +33,7 @@
           :show-reinforced="unit.reinforced"
           :show-ellipsis="true"
           :enhancement-count="unit.getEnhancementCount()"
+          :split-on-sub-label="true"
           @click="() => goToUnitDetail(unit.name)"
           @ellipsis="() => goToRorUnitSettings(i)"
         />

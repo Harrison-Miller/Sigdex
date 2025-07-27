@@ -66,12 +66,16 @@ library.add(
 useDark();
 
 const fancyText = useStorage('fancyText', true);
-watch(fancyText, (newValue) => {
-  document.documentElement.style.setProperty(
-    '--fancy-font',
-    newValue ? 'Metamorphous' : 'inherit'
-  );
-});
+watch(
+  fancyText,
+  (newValue) => {
+    document.documentElement.style.setProperty(
+      '--fancy-font',
+      newValue ? 'Metamorphous' : 'inherit'
+    );
+  },
+  { immediate: true }
+);
 
 const app = createApp(App);
 app.component('FontAwesomeIcon', FontAwesomeIcon);

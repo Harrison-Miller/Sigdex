@@ -19,6 +19,7 @@ const props = defineProps<{
   showReinforced?: boolean;
   enhancementCount?: number;
   legends?: boolean;
+  splitOnSubLabel?: boolean;
 }>();
 const emit = defineEmits(['click', 'toggle-favorite', 'ellipsis']);
 const { favorite } = toRefs(props);
@@ -38,7 +39,18 @@ function onEllipsisClick(e: Event) {
 }
 // Remove (Scourge of Ghyran) from label and detect if present
 const isSoG = computed(() => /\(Scourge of Ghyran\)/.test(props.label));
-const displayLabel = computed(() => props.label.replace(/\s*\(Scourge of Ghyran\)/, ''));
+const withoutSoG = computed(() => props.label.replace(/\s*\(Scourge of Ghyran\)/, ''));
+
+
+const splitLabel = computed(() => withoutSoG.value.split(/,| on | with /));
+const displayLabel = computed(() => splitLabel.value[0]);
+const displaySubLabel = computed(() => {
+  if (splitLabel.value.length <= 1) return '';
+  // Only preserve "on"/"with" (not ",") in the sublabel
+  const original = withoutSoG.value;
+  const match = original.match(/ (on|with) (.*)$/);
+  return match ? match[0].trim() : splitLabel.value.slice(1).join(' ');
+});
 // Double the displayed points if showReinforced is true, as requested.
 const displayPoints = computed(() => {
   if (typeof props.points !== 'number') return undefined;
@@ -54,7 +66,7 @@ const displayPoints = computed(() => {
       class="list-label"
       :class="{ center: !showFavoriteToggle }"
     >
-      {{ displayLabel }}
+      {{ splitOnSubLabel ? displayLabel : withoutSoG }} <span v-if="displaySubLabel && splitOnSubLabel" class="list-sublabel">{{ displaySubLabel }}</span>
       <BadgeRow>
         <PointsBadge :points="displayPoints" />
         <SoGBadge :sog="isSoG" />
@@ -142,6 +154,15 @@ const displayPoints = computed(() => {
   justify-content: flex-start;
   flex: 1;
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-sublabel {
+  font-size: 0.9em;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -13,6 +13,7 @@
         <ListButton
           :label="factionTerrain"
           :points="battleProfiles.get(factionTerrain)?.points"
+          :split-on-sub-label="true"
           @click="goToUnitDetail"
         />
         <button

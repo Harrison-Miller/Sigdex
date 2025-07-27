@@ -41,7 +41,18 @@ const unitName = props.unitName ?? (route?.params?.unit as string | undefined);
 const armyName = props.armyName ?? (route?.params?.army as string | undefined);
 
 const isSoG = computed(() => /\(Scourge of Ghyran\)/.test(unitName));
-const displayName = computed(() => unitName.replace(/\s*\(Scourge of Ghyran\)/, ''));
+const withoutSoG = computed(() => unitName.replace(/\s*\(Scourge of Ghyran\)/, ''));
+
+
+const splitLabel = computed(() => withoutSoG.value.split(/,| on | with /));
+const displayLabel = computed(() => splitLabel.value[0]);
+const displaySubLabel = computed(() => {
+  if (splitLabel.value.length <= 1) return '';
+  // Only preserve "on"/"with" (not ",") in the sublabel
+  const original = withoutSoG.value;
+  const match = original.match(/ (on|with) (.*)$/);
+  return match ? match[0].trim() : splitLabel.value.slice(1).join(' ');
+});
 
 const { army } = useArmy(armyName ?? '');
 const { unit, battleProfile } = useUnit(armyName ?? '', unitName ?? '');
@@ -81,7 +92,15 @@ const unitKeywords = computed(() => {
         />
       </div>
   <div>
-          <h1 class="fancy-text">{{ displayName }}</h1>
+          <h1 class="fancy-text">{{ displayLabel }}
+              <br v-if="displaySubLabel" />
+              <span
+                v-if="displaySubLabel"
+                class="sub-label"
+              >
+                {{ displaySubLabel }}
+              </span>
+          </h1>
           <LegendsBadge big :legends="unit.legends" style="margin-bottom: 1em" />
           <SoGBadge big :sog="isSoG" style="margin-bottom: 1em" />
     <div class="stats-row">
@@ -264,6 +283,14 @@ const unitKeywords = computed(() => {
   font-size: 0.95em;
   color: var(--text-head);
   text-align: left;
+}
+
+.sub-label {
+  display: block;
+  font-size: 0.5em;
+  color: var(--text-muted);
+  margin-top: 0.4em;
+  font-family: 'system-ui', sans-serif;
 }
 
 .unit-detail-section {
