@@ -90,7 +90,7 @@ button:hover {
 }
 
 .fancy-text {
-  font-family: 'Metamorphous', sans-serif;
+  font-family: var(--fancy-font), sans-serif;
 }
 
 @font-face {

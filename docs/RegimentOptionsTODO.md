@@ -59,8 +59,6 @@ Errors in regiment options parsed by Sigdex
 
 # SBGL
 * bloodseeker palanquin missing all options - data issue
-* cado and hallow king can not be in the same army - need to implement validation and stuff for it, might just make a it special case instead of parsin
-* radakur the beast and wolf can not be in the same army
 
 ----
 # Destruction

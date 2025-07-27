@@ -1,4 +1,4 @@
-import { createApp } from 'vue';
+import { createApp, watch } from 'vue';
 import './style.css';
 import './style/helpers.css';
 import App from './App.vue';
@@ -33,7 +33,7 @@ import {
 import { faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons';
 
 import { registerSuperJSONClasses } from './superjson'; // Adjust the import path as necessary
-import { useDark } from '@vueuse/core';
+import { useDark, useStorage } from '@vueuse/core';
 registerSuperJSONClasses();
 
 // Add icons to the library
@@ -64,6 +64,14 @@ library.add(
 );
 
 useDark();
+
+const fancyText = useStorage('fancyText', true);
+watch(fancyText, (newValue) => {
+  document.documentElement.style.setProperty(
+    '--fancy-font',
+    newValue ? 'Metamorphous' : 'inherit'
+  );
+});
 
 const app = createApp(App);
 app.component('FontAwesomeIcon', FontAwesomeIcon);

@@ -43,5 +43,3 @@
 * finish fixing all the regiment option stuff - almost done, just aors and supplements
 
 * favicon
-
-* toggle for fancy text

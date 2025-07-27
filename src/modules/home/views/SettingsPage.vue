@@ -8,7 +8,8 @@
     <h1>Settings</h1>
     <div class="section">
       <ToggleBox v-model="isDark" style="margin-bottom: 0.5em">Dark Mode</ToggleBox>
-      <ToggleBox v-model="showLegends">Show Legends</ToggleBox>
+      <ToggleBox v-model="showLegends" style="margin-bottom: 0.5em">Show Legends</ToggleBox>
+      <ToggleBox v-model="fancyText" class="fancy-text">Fancy Text</ToggleBox>
     </div>
     <div class="section">
       <ListButton
@@ -106,6 +107,7 @@ import SupporterBanner from '../components/SupporterBanner.vue';
 
 const isDark = useDark();
 const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
+const fancyText = useStorage('fancyText', true);
 
 const githubRepo = useStorage(GITHUB_REPO_KEY, DEFAULT_GITHUB_REPO);
 const githubBranch = useStorage(GITHUB_BRANCH_KEY, DEFAULT_GITHUB_BRANCH);
