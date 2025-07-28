@@ -1,11 +1,11 @@
 <template>
   <BackButton class="settings-back-btn" />
-  <!-- <CircleIconButton
+  <CircleIconButton
     class="settings-duplicate-btn"
     icon="fa-solid fa-copy"
     :size="32"
     @click="duplicateList"
-  /> -->
+  />
   <div class="modal settings-modal">
     <h1>List Settings</h1>
     <h2>{{ listName }}</h2>
@@ -69,8 +69,10 @@ import { ref, computed, watch } from 'vue';
 import TextInput from '../../core/components/TextInput.vue';
 import { deleteList, useList } from '../../shared/composables/useList';
 import { useRoute, useRouter } from 'vue-router';
-import { LIST_NAME_MAX_LENGTH } from '../../../list/manage';
+import { createList, getAllLists, LIST_NAME_MAX_LENGTH } from '../../../list/manage';
 import { VALIDATOR_NAMES } from '../../../validation/run';
+import { List } from '../../../list/models/list';
+import CircleIconButton from '../../core/components/CircleIconButton.vue';
 
 
 const route = useRoute();
@@ -135,14 +137,15 @@ function renameCurrentList() {
   }
 }
 
-// function duplicateList() {
-//   let newList = new List({...list.value });
-//   const nameCount = getAllLists().filter(l => l.name.startsWith(list.value.name)).length;
-//   newList.name = `${list.value.name} (Copy${nameCount > 0 ? ` ${nameCount}` : ''})`;
-//   const id = createList(newList);
-//   if (!id) return;
-//   router.replace({ name: 'BuilderSettings', params: { id } });
-// }
+function duplicateList() {
+  const newList = new List({...list.value });
+  const nameCount = getAllLists().filter(l => l.name.startsWith(list.value.name)).length;
+  newList.name = `${list.value.name} (Copy${nameCount > 0 ? ` ${nameCount}` : ''})`;
+  const id = createList(newList);
+  if (!id) return;
+  router.back();
+  router.replace({ name: 'ListBuilder', params: { id } });
+}
 
 </script>
 <style scoped>

@@ -33,8 +33,6 @@
 * link enhancement tables by id not name - incase we rename with sog suffix
 
 # v9 release todo
-* duplicate list button - doing this from list settings is tricky because of router history
-* manage lists from list list (delete/duplicate)
 
 * double or half weapon options when toggling reinforce - I'm not sure this is a good idea, the halfing gets a bit complicated
 
