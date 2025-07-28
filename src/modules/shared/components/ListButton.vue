@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, toRefs, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import BadgeRow from './badges/BadgeRow.vue';
 import PointsBadge from './badges/PointsBadge.vue';
@@ -9,11 +9,11 @@ import ReinforcedBadge from './badges/ReinforcedBadge.vue';
 import EnhancementsBadge from './badges/EnhancementsBadge.vue';
 import LegendsBadge from './badges/LegendsBadge.vue';
 import PillBadge from '../../core/components/PillBadge.vue';
+import { useFavorite } from '../../core/composables/useFavorite';
 
 const props = defineProps<{
   label: string;
-  favorite?: boolean;
-  showFavoriteToggle?: boolean;
+  favoriteType?: 'army' | 'unit';
   points?: number;
   showEllipsis?: boolean;
   showGeneral?: boolean;
@@ -24,22 +24,18 @@ const props = defineProps<{
   overrideSubLabel?: string;
   validator?: string;
 }>();
-const emit = defineEmits(['click', 'toggle-favorite', 'ellipsis']);
-const { favorite } = toRefs(props);
-const isFavorite = ref(!!favorite?.value);
-const showFavoriteToggle = props.showFavoriteToggle !== false;
-watch(favorite, (val) => {
-  isFavorite.value = !!val;
-});
-function toggleFavorite(e: Event) {
-  e.stopPropagation();
-  isFavorite.value = !isFavorite.value;
-  emit('toggle-favorite', isFavorite.value);
-}
+
+const emit = defineEmits(['click', 'ellipsis']);
+
+const { isFavorited, toggleFavorite } = props.favoriteType
+  ? useFavorite(props.favoriteType, props.label)
+  : { isFavorited: ref(false), toggleFavorite: () => {} };
+
 function onEllipsisClick(e: Event) {
   e.stopPropagation();
   emit('ellipsis');
 }
+
 // Remove (Scourge of Ghyran) from label and detect if present
 const isSoG = computed(() => /\(Scourge of Ghyran\)/.test(props.label));
 const withoutSoG = computed(() => props.label.replace(/\s*\(Scourge of Ghyran\)/, ''));
@@ -67,7 +63,6 @@ const displayPoints = computed(() => {
   >
     <span
       class="list-label"
-      :class="{ center: !showFavoriteToggle }"
     >
       {{ splitOnSubLabel ? displayLabel : withoutSoG }} <span v-if="(displaySubLabel && splitOnSubLabel) || overrideSubLabel" class="list-sublabel">{{ displaySubLabel || overrideSubLabel }}</span>
       <BadgeRow>
@@ -83,45 +78,18 @@ const displayPoints = computed(() => {
       </BadgeRow>
     </span>
     <span
-      v-if="showFavoriteToggle"
+      v-if="favoriteType"
       class="favorite-icon"
-      :class="{ active: isFavorite }"
-      @click="toggleFavorite"
+      :class="{ active: isFavorited }"
+      @click.stop="toggleFavorite"
     >
-      <svg
-        v-if="isFavorite"
-        xmlns="http://www.w3.org/2000/svg"
-        width="22"
-        height="22"
-        viewBox="0 0 24 24"
-        fill="#eab308"
-      >
-        <path
-          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-        />
-      </svg>
-      <svg
-        v-else
-        xmlns="http://www.w3.org/2000/svg"
-        width="22"
-        height="22"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#aaa"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path
-          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-        />
-      </svg>
+      <FontAwesomeIcon icon="star" />
     </span>
     <span
       v-if="props.showEllipsis"
       class="ellipsis-icon"
       title="More options"
-      @click="onEllipsisClick"
+      @click.stop="onEllipsisClick"
     >
       <FontAwesomeIcon icon="gear" />
     </span>
@@ -187,14 +155,18 @@ const displayPoints = computed(() => {
   align-items: center;
   cursor: pointer;
   transition: color 0.2s;
+  width: 32px;
+  height: 32px; 
+  justify-content: center;
 }
 
 .favorite-icon.active svg {
-  filter: drop-shadow(0 0 2px #ec4899);
+  color: var(--color-yellow);
 }
 
-.favorite-icon svg[fill='#eab308'] {
-  fill: #ec4899 !important;
+.favorite-icon svg {
+  color: #aaa;
+  font-size: 1.4em;
 }
 
 .list-button:hover {

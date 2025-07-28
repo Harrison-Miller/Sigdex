@@ -18,10 +18,3 @@ ul {
 li {
   margin: 0.9rem 0;
 }
-
-.filters-bar {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  margin-bottom: 1.2rem;
-}

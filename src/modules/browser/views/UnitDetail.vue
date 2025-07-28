@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import StatCircle from '../components/StatCircle.vue';
 import KeywordsBar from '../../shared/components/KeywordsBar.vue';
 import WeaponTable from '../components/WeaponTable.vue';
-import FavoriteToggle from '../../core/components/FavoriteToggle.vue';
 import BackButton from '../../core/components/BackButton.vue';
 import Section from '../../core/components/ContentSection.vue';
-import { isFavorite, saveFavorite, removeFavorite } from '../../../favorites';
 import {
   formatModelGroups,
   formatSubHeroTags,
@@ -21,6 +19,8 @@ import WeaponOptionsSelection from '../../builder/components/WeaponOptionsSelect
 import ReportErrorButton from '../../shared/components/ReportErrorButton.vue';
 import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
 import SoGBadge from '../../shared/components/badges/SoGBadge.vue';
+import { useFavorite } from '../../core/composables/useFavorite';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 function formatCompanionUnits(unitName: string, companionLeader: string): string {
   const bold = (name: string) => `<b>${name}</b>`;
@@ -58,17 +58,8 @@ const { army } = useArmy(armyName ?? '');
 const { unit, battleProfile } = useUnit(armyName ?? '', unitName ?? '');
 const unitSettings = useUnitSettings(unit);
 
-const unitFavorite = ref(isFavorite('unit', unitName));
-function toggleUnitFavoriteDetail(fav: boolean) {
-  unitFavorite.value = fav;
-  if (fav) {
-    saveFavorite('unit', unitName);
-  } else {
-    removeFavorite('unit', unitName);
-  }
-}
-const favoriteToggleSize = 36;
 
+const { isFavorited, toggleFavorite } = useFavorite('unit', unitName);
 const unitKeywords = computed(() => {
   const keywords = new Set<string>(unit.value.keywords);
   if (army.value.armyKeyword) {
@@ -80,29 +71,30 @@ const unitKeywords = computed(() => {
 </script>
 <template>
   <BackButton :size="36" />
-        <div
-        v-if="armyName !== 'UniversalUnits'"
-        class="floating-header-buttons"
-      >
-        <FavoriteToggle
-          :model-value="unitFavorite"
-          :size="favoriteToggleSize"
-          no-text
-          @update:model-value="toggleUnitFavoriteDetail"
-        />
-      </div>
+  <div
+    v-if="armyName !== 'UniversalUnits'"
+    class="floating-header-buttons"
+  >
+    <button
+      class="favorite-icon"
+      :class="{ active: isFavorited }"
+      @click.stop="toggleFavorite"
+    >
+      <FontAwesomeIcon icon="star" />
+    </button>
+  </div>
   <div>
-          <h1 class="fancy-text">{{ displayLabel }}
-              <br v-if="displaySubLabel" />
-              <span
-                v-if="displaySubLabel"
-                class="sub-label"
-              >
-                {{ displaySubLabel }}
-              </span>
-          </h1>
-          <LegendsBadge big :legends="unit.legends" style="margin-bottom: 1em" />
-          <SoGBadge big :sog="isSoG" style="margin-bottom: 1em" />
+    <h1 class="fancy-text">{{ displayLabel }}
+      <br v-if="displaySubLabel" />
+      <span
+        v-if="displaySubLabel"
+        class="sub-label"
+      >
+        {{ displaySubLabel }}
+      </span>
+    </h1>
+    <LegendsBadge big :legends="unit.legends" style="margin-bottom: 1em" />
+    <SoGBadge big :sog="isSoG" style="margin-bottom: 1em" />
     <div class="stats-row">
       <StatCircle
         v-if="unit.stats.move"
@@ -277,6 +269,26 @@ const unitKeywords = computed(() => {
   gap: 8px;
   z-index: 10;
   padding: 1.2em 0.3em 0 0;
+}
+
+.favorite-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.2s;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+}
+
+.favorite-icon.active svg {
+  color: var(--color-yellow);
+}
+.favorite-icon svg {
+  color: #aaa;
+  font-size: 2em;
 }
 
 .unit-detail {

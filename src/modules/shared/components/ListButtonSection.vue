@@ -53,8 +53,7 @@ import { useCollapsableState } from '../../core/composables/useCollapsableState'
 
 const props = defineProps({
   label: { type: String, required: true },
-  favorite: { type: Boolean, default: false },
-  showFavoriteToggle: { type: Boolean, default: true },
+  favoriteType: { type: String, default: '' },
   points: { type: Number, default: 0 },
   showEllipsis: { type: Boolean, default: false },
   showGeneral: { type: Boolean, default: false },
@@ -72,19 +71,17 @@ function toggleCollapse(e: Event) {
   emit('update:collapsed', collapsed.value);
 }
 
-const buttonProps = computed(() => {
-  // Pass all ListButton props
-  return {
-    label: props.label,
-    favorite: props.favorite,
-    showFavoriteToggle: props.showFavoriteToggle,
-    points: props.points,
-    showEllipsis: props.showEllipsis,
-    showGeneral: props.showGeneral,
-    showReinforced: props.showReinforced,
-    enhancementCount: props.enhancementCount,
-  };
-});
+const buttonProps = computed(() => ({
+  label: props.label,
+  favoriteType: props.favoriteType === "army" || props.favoriteType === "unit"
+    ? props.favoriteType as "army" | "unit"
+    : undefined,
+  points: props.points,
+  showEllipsis: props.showEllipsis,
+  showGeneral: props.showGeneral,
+  showReinforced: props.showReinforced,
+  enhancementCount: props.enhancementCount,
+}));
 
 const headerBtnRef = ref<HTMLElement | null>(null);
 

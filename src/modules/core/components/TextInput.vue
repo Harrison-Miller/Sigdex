@@ -16,7 +16,7 @@ import { defineProps, defineEmits } from 'vue';
 defineProps<{
   modelValue: string;
   type?: string;
-  label: string;
+  label?: string;
 }>();
 const emit = defineEmits(['update:modelValue']);
 

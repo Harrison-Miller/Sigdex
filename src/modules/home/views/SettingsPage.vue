@@ -6,6 +6,36 @@
     />
 
     <h1>Settings</h1>
+    <div class="section socials">
+      <span>Join our community or view the project:</span>
+      <div class="social-links">
+        <a
+          href="https://discord.gg/Fn6ZUFb9vZ" target="_blank"
+          class="social-btn discord"
+          aria-label="Discord"
+        >
+          <FontAwesomeIcon icon="fa-brands fa-discord" /> Discord
+        </a>
+        <a
+          href="https://github.com/Harrison-Miller/sigdex" target="_blank"
+          class="social-btn github"
+          aria-label="GitHub"
+        >
+          <FontAwesomeIcon icon="fa-brands fa-github" /> GitHub
+        </a>
+      </div>
+      <div class="social-links" style="margin-top: 0.7em; justify-content: center;">
+        <a
+          href="https://ko-fi.com/F1F11I630O"
+          target="_blank"
+          class="social-btn kofi"
+          aria-label="Ko-fi"
+        >
+          <img src="/assets/brands/kofi_symbol.png" alt="Ko-fi" style="height:1.2em;vertical-align:middle;" />
+          Support on Ko-fi
+        </a>
+      </div>
+    </div>
     <div class="section">
       <ToggleBox v-model="isDark" style="margin-bottom: 0.5em">Dark Mode</ToggleBox>
       <ToggleBox v-model="showLegends" style="margin-bottom: 0.5em">Show Legends</ToggleBox>
@@ -51,36 +81,6 @@
         class="settings-input"
         placeholder="main"
       />
-    </div>
-    <div class="section socials">
-      <span>Join our community or view the project:</span>
-      <div class="social-links">
-        <a
-          href="https://discord.gg/Fn6ZUFb9vZ" target="_blank"
-          class="social-btn discord"
-          aria-label="Discord"
-        >
-          <FontAwesomeIcon icon="fa-brands fa-discord" /> Discord
-        </a>
-        <a
-          href="https://github.com/Harrison-Miller/sigdex" target="_blank"
-          class="social-btn github"
-          aria-label="GitHub"
-        >
-          <FontAwesomeIcon icon="fa-brands fa-github" /> GitHub
-        </a>
-      </div>
-      <div class="social-links" style="margin-top: 0.7em; justify-content: center;">
-        <a
-          href="https://ko-fi.com/F1F11I630O"
-          target="_blank"
-          class="social-btn kofi"
-          aria-label="Ko-fi"
-        >
-          <img src="/assets/brands/kofi_symbol.png" alt="Ko-fi" style="height:1.2em;vertical-align:middle;" />
-          Support on Ko-fi
-        </a>
-      </div>
     </div>
     <SupporterBanner />
     <div class="section legal">

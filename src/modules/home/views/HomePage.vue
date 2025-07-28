@@ -19,13 +19,9 @@
       :right-label="'Lists'"
     >
       <template #left>
-        <div class="filters-bar">
-          <FavoriteToggle
-            :model-value="showOnlyFavorites"
-            :disabled="armyFavorites.length === 0"
-            @update:model-value="updateShowOnlyFavoritesState"
-          />
-        </div>
+        <FilterBar
+          @update="onFilterBarUpdate"
+        />
         <Section
           v-if="filteredManifestationLores && filteredManifestationLores.length > 0"
           :default-collapsed="true"
@@ -41,12 +37,10 @@
 style="width: calc(100% - 22px - 0.9em);"
                 :label="name"
                 :points="lore.points"
-                :favorite="armyFavorites.includes(name)"
-                :show-favorite-toggle="true"
+                favorite-type="army"
                 @click="
                   () => $router.push({ name: 'ManifestationLore', params: { loreName: name } })
                 "
-                @toggle-favorite="(fav) => toggleArmyFavorite(name, fav)"
               />
             </li>
           </ul>
@@ -67,10 +61,8 @@ style="width: calc(100% - 22px - 0.9em);"
 style="width: calc(100% - 22px - 0.9em);"
                 :label="name"
                 :points="regiment.points"
-                :favorite="armyFavorites.includes(name)"
-                :show-favorite-toggle="true"
+                favorite-type="army"
                 @click="() => goToRegimentOfRenown(name)"
-                @toggle-favorite="(fav) => toggleArmyFavorite(name, fav)"
               />
             </li>
           </ul>
@@ -93,18 +85,15 @@ style="width: calc(100% - 22px - 0.9em);"
                   <ListButtonSection
 v-if="(showLegends && army.legends) || !army.legends"
                     :label="army.name"
-                    :favorite="armyFavorites.includes(army.name)"
-                    :show-favorite-toggle="true"
+                    favorite-type="army"
                     :legends="army.legends"
                     @click="selectArmy(army.name)"
-                    @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
                   >
                   <template v-for="aor in army.armiesOfRenown" :key="aor.name">
                         <ListButton
 v-if="(showLegends && aor.legends) || !aor.legends"
                           :label="aor.name"
                           :legends="aor.legends"
-                          :show-favorite-toggle="false"
                           @click="selectArmy(army.name + ' - ' + aor.name)"
                         />
                   </template>
@@ -115,11 +104,9 @@ v-if="(showLegends && aor.legends) || !aor.legends"
 v-if="(showLegends && army.legends) || !army.legends"
                     style="width: calc(100% - 22px - 0.9em);"
                     :label="army.name"
-                    :favorite="armyFavorites.includes(army.name)"
-                    :show-favorite-toggle="true"
+                    favorite-type="army"
                     :legends="army.legends"
                     @click="selectArmy(army.name)"
-                    @toggle-favorite="(fav) => toggleArmyFavorite(army.name, fav)"
                   />
                 </template>
               </li>
@@ -142,11 +129,10 @@ v-if="(showLegends && army.legends) || !army.legends"
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useGame } from '../../shared/composables/useGame';
 import ListButton from '../../shared/components/ListButton.vue';
-import FavoriteToggle from '../../core/components/FavoriteToggle.vue';
 import SettingsButton from '../../core/components/SettingsButton.vue';
 import { SIGDEX_VERSION } from '../../../version';
 import Section from '../../core/components/ContentSection.vue';
@@ -154,24 +140,23 @@ import ListList from '../components/ListList.vue';
 import TwoTab from '../../core/components/TwoTab.vue';
 import ListButtonSection from '../../shared/components/ListButtonSection.vue';
 import {
-  saveFavorite,
-  removeFavorite,
-  getFavorites,
-  getFavoriteToggleState,
-  setFavoriteToggleState,
   SHOW_LEGENDS_KEY,
 } from '../../../favorites';
 import { useStorage } from '@vueuse/core';
 import type { ArmyListItem } from '../../../parser/models/game';
+import FilterBar from '../../shared/components/FilterBar.vue';
+import { useFilterBar } from '../../shared/composables/useFilterBar';
+import { useFavorites } from '../../core/composables/useFavorite';
 
 const router = useRouter();
-const armyFavorites = ref<string[]>([]);
-const showOnlyFavorites = ref(getFavoriteToggleState('army'));
+const { favorites } = useFavorites('army');
 const leftActive = ref(true);
 
 const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
 // Load game data (reactive, not awaited)
 const { game, loading, error } = useGame();
+
+const { searchQuery, showFavorites, sortMode, onFilterBarUpdate } = useFilterBar();
 
 function hasAoRsToShow(army: ArmyListItem): boolean {
   return army.armiesOfRenown && army.armiesOfRenown.filter((aor) => {
@@ -179,26 +164,10 @@ function hasAoRsToShow(army: ArmyListItem): boolean {
   }).length > 0;
 }
 
-onMounted(() => {
-  armyFavorites.value = getFavorites('army');
-});
-
 function selectArmy(army: string) {
   router.push({ name: 'UnitList', params: { armyName: army } });
 }
-function toggleArmyFavorite(army: string, fav: boolean) {
-  if (fav) {
-    saveFavorite('army', army);
-    if (!armyFavorites.value.includes(army)) armyFavorites.value.push(army);
-  } else {
-    removeFavorite('army', army);
-    armyFavorites.value = armyFavorites.value.filter((a) => a !== army);
-  }
-}
-function updateShowOnlyFavoritesState(newVal: boolean) {
-  showOnlyFavorites.value = newVal;
-  setFavoriteToggleState('army', newVal);
-}
+
 function goToSettings() {
   router.push({ name: 'Settings' });
 }
@@ -209,9 +178,20 @@ const filteredArmiesByAlliance = computed(() => {
   // game.value.armyList is Map<GrandAlliance, IArmyListItem[]>
   return Array.from(game.value.armyList.entries()).map(([name, armies]) => {
     let filtered = armies;
-    if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
-      filtered = armies.filter((army) => armyFavorites.value.includes(army.name));
+    if (showFavorites.value) {
+      filtered = armies.filter((army) => favorites.value.includes(army.name));
     }
+    if (searchQuery.value) {
+      filtered = filtered.filter((army) =>
+        army.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          army.armiesOfRenown.some((aor) =>
+            aor.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+          )
+      );
+    }
+
+    // always sort alpha, armies don't have points
+    filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
     return { name: String(name), armies: filtered };
   });
 });
@@ -220,8 +200,26 @@ const filteredManifestationLores = computed(() => {
   if (!game.value) return [];
   // Use the keys (lore names) from the map
   const allLoreNames = Array.from(game.value.universalManifestationLores.entries());
-  if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
-    return allLoreNames.filter(([loreName]) => armyFavorites.value.includes(loreName));
+  if (showFavorites.value) {
+    return allLoreNames.filter(([loreName]) => favorites.value.includes(loreName));
+  }
+  if (searchQuery.value) {
+    return allLoreNames.filter(([loreName]) =>
+      loreName.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+  }
+  // sort by points or alpha
+  if (sortMode.value === 'points') {
+    return allLoreNames.sort((a, b) => {
+      const pointsA = game.value?.universalManifestationLores.get(a[0])?.points || 0;
+      const pointsB = game.value?.universalManifestationLores.get(b[0])?.points || 0;
+      if (pointsA !== pointsB) {
+        return pointsA - pointsB;
+      }
+      return a[0].localeCompare(b[0]);
+    });
+  } else {
+    return allLoreNames.sort((a, b) => a[0].localeCompare(b[0]));
   }
   return allLoreNames;
 });
@@ -229,23 +227,34 @@ const filteredManifestationLores = computed(() => {
 const filteredRegimentsOfRenownList = computed(() => {
   if (!game.value) return [];
   let allRegiments = Array.from(game.value.regimentsOfRenown.entries());
-  if (showOnlyFavorites.value && armyFavorites.value.length > 0) {
-    allRegiments = allRegiments.filter(([name]) => armyFavorites.value.includes(name));
+  if (showFavorites.value) {
+    allRegiments = allRegiments.filter(([name]) => favorites.value.includes(name));
+  }
+  if (searchQuery.value) {
+    allRegiments = allRegiments.filter(([name]) =>
+      name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+  }
+  // Sort by points or alpha
+  if (sortMode.value === 'points') {
+    allRegiments.sort((a, b) => {
+      const pointsA = game.value?.regimentsOfRenown.get(a[0])?.points || 0;
+      const pointsB = game.value?.regimentsOfRenown.get(b[0])?.points || 0;
+      if (pointsA !== pointsB) {
+        return pointsA - pointsB;
+      }
+      return a[0].localeCompare(b[0]);
+    });
+  } else {
+    allRegiments.sort((a, b) => a[0].localeCompare(b[0]));
   }
   // Sort alphabetically by regiment name
-  return allRegiments.sort((a, b) => a[0].localeCompare(b[0]));
+  return allRegiments;
 });
 
 function goToRegimentOfRenown(regiment: string) {
   router.push({ name: 'RegimentOfRenown', params: { regimentName: regiment } });
 }
-
-watch(armyFavorites, (favs) => {
-  if (showOnlyFavorites.value && favs.length === 0) {
-    showOnlyFavorites.value = false;
-    setFavoriteToggleState('army', false);
-  }
-});
 </script>
 <style src="./list-shared.css" scoped></style>
 <style scoped>
@@ -280,12 +289,6 @@ watch(armyFavorites, (favs) => {
 
 .settings-btn:hover {
   background: #e5e5e5;
-}
-.filters-bar {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  margin-bottom: 1.2rem;
 }
 .lists-placeholder {
   text-align: center;

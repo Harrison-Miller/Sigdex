@@ -25,19 +25,16 @@
   * "make a list" button on army page
   * default battle tactic cards (app settings)
 
-
-* make back button work in an explicit fashion based on the page not just calling router.back()
-
 * reintroduce prettier/fix formattings
 
 * link enhancement tables by id not name - incase we rename with sog suffix
 
-# v9 release todo
-
 * double or half weapon options when toggling reinforce - I'm not sure this is a good idea, the halfing gets a bit complicated
 
-* filter bar standardization
+# v9 release todo
 
 * finish fixing all the regiment option stuff - almost done, just aors and supplements
 
 * favicon
+
+* add favorites to regiment/manifesation/army page

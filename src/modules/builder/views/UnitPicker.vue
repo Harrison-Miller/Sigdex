@@ -8,21 +8,9 @@
       class="regiment-options-bar"
       v-html="formattedRegimentOptions"
     />
-    <div class="filters-bar">
-      <input
-        v-model="search"
-        placeholder="Search units..."
-        class="search-bar"
-      >
-      <button
-        class="sort-toggle"
-        :class="sortMode === 'points' ? 'points' : 'alpha'"
-        :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'"
-        @click="toggleSortMode"
-      >
-        Sort: {{ sortLabel }}
-      </button>
-    </div>
+    <FilterBar
+      @update="onFilterBarUpdate"
+    />
     <template
       v-for="cat in unitPickerCategories"
       :key="cat"
@@ -34,8 +22,10 @@
           <li v-if="(showLegends && item.legends) || !item.legends" class="unit-row">
             <ListButton
               :label="item.name"
+              :favorite-type="isRoR ? 'army' : 'unit'"
               :points="item.points"
               :legends="item.legends"
+              :split-on-sub-label="true"
               class="unit-list-btn"
               @click="() => addUnitToRegiment(item)"
             />
@@ -77,6 +67,9 @@ import ToggleBox from '../../core/components/ToggleBox.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useStorage } from '@vueuse/core';
 import { SHOW_LEGENDS_KEY } from '../../../favorites';
+import FilterBar from '../../shared/components/FilterBar.vue';
+import { useFilterBar } from '../../shared/composables/useFilterBar';
+import { useFavorites } from '../../core/composables/useFavorite';
 
 const route = useRoute();
 const router = useRouter();
@@ -86,6 +79,9 @@ const filter = (route.params.filter as string) || '';
 const overrideRegimentOptions = ref(false);
 const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
 
+const { favorites: armyFavorites } = useFavorites('army');
+const { favorites: unitFavorites } = useFavorites('unit');
+
 const list = useList(listId);
 const { game, loading } = useGame();
 const army = computed(
@@ -93,7 +89,8 @@ const army = computed(
     game.value?.armies.get(list.value?.faction || '') ||
     new Army({ name: list.value?.faction || '' })
 );
-const search = ref('');
+
+const { searchQuery, showFavorites, sortMode, onFilterBarUpdate } = useFilterBar();
 
 const unitPickerCategories = [...UnitCategoriesOrder, 'Regiments of Renown'];
 
@@ -165,18 +162,8 @@ const filteredBPs = computed(() => {
           (u) => u.category === (filter.toUpperCase() as UnitCategory)
         ) || [];
   }
-
-  if (search.value) {
-    us = us.filter((u) => u.name.toLowerCase().includes(search.value.toLowerCase()));
-  }
   return us;
 });
-
-const sortMode = ref<'alpha' | 'points'>('alpha');
-const sortLabel = computed(() => (sortMode.value === 'alpha' ? 'A-Z' : 'Points'));
-function toggleSortMode() {
-  sortMode.value = sortMode.value === 'alpha' ? 'points' : 'alpha';
-}
 
 const regiment = computed(() => list.value?.regiments?.[regimentIdx]);
 const leaderName = computed(() => regiment.value?.leader?.name || '');
@@ -201,11 +188,42 @@ interface UnitPickerListItem {
 const categorizeListItems = computed(() => {
   if (isRoR) {
     // For RoR, show all available RoRs in a single category
-    return new Map<string, UnitPickerListItem[]>([['Regiments of Renown', availableRoRs.value]]);
+    let items= availableRoRs.value;
+    if (showFavorites.value) {
+      items = items.filter((u) => armyFavorites.value.includes(u.name));
+    }
+    if (searchQuery.value) {
+      const query = searchQuery.value.toLowerCase();
+      items = items.filter((u) => u.name.toLowerCase().includes(query));
+    }
+    // sort by points or name
+    if (sortMode.value === 'points') {
+      items = items.sort((a, b) => {
+        const pointsA = a.points || 0;
+        const pointsB = b.points || 0;
+        if (pointsA !== pointsB) {
+          return pointsA - pointsB;
+        }
+        return a.name.localeCompare(b.name);
+      });
+    } else {
+      items = items.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    return new Map<string, UnitPickerListItem[]>([['Regiments of Renown', items]]);
+  }
+
+
+  let items = filteredBPs.value;
+  if (showFavorites.value) {
+    items = items.filter((u) => unitFavorites.value.includes(u.name));
+  }
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    items = items.filter((u) => u.name.toLowerCase().includes(query));
   }
 
   const cats: Map<string, UnitPickerListItem[]> = new Map();
-  for (const bp of filteredBPs.value) {
+  for (const bp of items) {
     const cat = bp.category;
     if (!cats.has(cat)) cats.set(cat, []);
     cats.get(cat)?.push({
@@ -225,6 +243,8 @@ const categorizeListItems = computed(() => {
       cats.get(cat)?.sort((a, b) => a.name.localeCompare(b.name));
     }
   }
+
+  
   return cats;
 });
 
@@ -325,30 +345,6 @@ function addUnitToRegiment(item: UnitPickerListItem) {
   margin: 2rem auto;
   text-align: center;
 }
-.filters-bar {
-  display: flex;
-  gap: 1em;
-  margin-bottom: 1.2em;
-  justify-content: center;
-}
-.search-bar {
-  width: 100%;
-  max-width: 340px;
-  font-size: 1.1em;
-  padding: 0.6em 1em;
-  border-radius: 6px;
-  color: var(--text-main);
-  border: 1.5px solid var(--border-color);
-  background: var(--bg-head);
-  box-sizing: border-box;
-  margin: 0 auto;
-  transition: border 0.18s;
-}
-.search-bar:focus {
-  background: var(--bg-sub);
-  border: 1.5px solid var(--primary);
-  outline: none;
-}
 .unit-list {
   padding: 0;
   margin: 0;
@@ -410,30 +406,5 @@ function addUnitToRegiment(item: UnitPickerListItem) {
   padding: 0;
   /* text-indent: 0; */
   display: list-item;
-}
-.sort-toggle {
-  font-size: 1em;
-  padding: 0.5em 1.1em;
-  border-radius: 6px;
-  border: 1.5px solid var(--color-red);
-  background: var(--bg-sub);
-  cursor: pointer;
-  margin-left: 0.5em;
-  transition:
-    background 0.18s,
-    color 0.18s;
-}
-.sort-toggle.points {
-  background: var(--color-red);
-  color: #fff;
-  border: 1.5px solid var(--colo-red);
-}
-.sort-toggle.alpha {
-  background: var(--bg-sub);
-  color: var(--text-main);
-  border: 1.5px solid var(--bored-color);
-}
-.sort-toggle:hover {
-  filter: brightness(0.95);
 }
 </style>

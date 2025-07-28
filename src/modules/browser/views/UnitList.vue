@@ -20,21 +20,9 @@
       :right-label="'Rules'"
     >
       <template #left>
-        <div class="filters-bar">
-          <FavoriteToggle
-            :model-value="showOnlyFavorites"
-            :disabled="!hasAnyFavoriteInArmy"
-            @update:model-value="updateShowOnlyFavoritesState"
+          <FilterBar
+            @update="onFilterBarUpdate"
           />
-          <button
-            class="sort-toggle"
-            :class="sortMode === 'points' ? 'points' : 'alpha'"
-            :title="sortMode === 'alpha' ? 'Sort by points' : 'Sort A-Z'"
-            @click="toggleSortMode"
-          >
-            Sort: {{ sortLabel }}
-          </button>
-        </div>
         <template
           v-for="[cat, units] in Array.from(army.unitList.entries())"
           :key="cat"
@@ -54,14 +42,12 @@
                 >
                   <ListButton
                     :label="u.name"
-                    :favorite="unitFavorites.includes(u.name)"
-                    :show-favorite-toggle="true"
+                    favorite-type="unit"
                     :points="u.points"
                     :legends="u.legends"
                     :href="href"
                     :split-on-sub-label="true"
                     @click="navigate"
-                    @toggle-favorite="(fav: boolean) => toggleUnitFavorite(u.name, fav)"
                   />
                 </router-link>
               </li>
@@ -78,31 +64,26 @@
 </template>
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useArmy } from '../../shared/composables/useGame';
 import ListButton from '../../shared/components/ListButton.vue';
-import FavoriteToggle from '../../core/components/FavoriteToggle.vue';
 import BackButton from '../../core/components/BackButton.vue';
 import ArmyRules from '../components/ArmyRules.vue';
 import TwoTab from '../../core/components/TwoTab.vue';
 import {
-  saveFavorite,
-  removeFavorite,
-  getFavorites,
-  getArmyUnitFavoriteToggleState,
-  setArmyUnitFavoriteToggleState,
   SHOW_LEGENDS_KEY,
 } from '../../../favorites';
 import Section from '../../core/components/ContentSection.vue';
 import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
 import { useStorage } from '@vueuse/core';
+import FilterBar from '../../shared/components/FilterBar.vue';
+import { useFilterBar } from '../../shared/composables/useFilterBar';
+import { useFavorites } from '../../core/composables/useFavorite';
 
-// Accept army as a prop for this view
 const props = defineProps<{ armyName?: string }>();
 
 const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
 
-// Use prop if provided, otherwise fallback to route param
 const route = useRoute();
 const armyName = props.armyName ?? (route.params.armyName as string);
 
@@ -113,43 +94,22 @@ const displaySubLabel = computed(() => {
   return splitLabel.value[1];
 });
 
-const unitFavorites = ref<string[]>([]);
-const showOnlyFavorites = ref(getArmyUnitFavoriteToggleState(armyName));
-const sortMode = ref<'alpha' | 'points'>('alpha');
-const sortLabel = computed(() => (sortMode.value === 'alpha' ? 'A-Z' : 'Points'));
+const { favorites } = useFavorites('unit');
+
+const { searchQuery, showFavorites, sortMode, onFilterBarUpdate } = useFilterBar();
+
 const leftActive = ref(true);
 
-// Use the new useArmy composable
 const { army, loading, error } = useArmy(armyName);
-
-function updateShowOnlyFavoritesState(newVal: boolean) {
-  showOnlyFavorites.value = newVal;
-  setArmyUnitFavoriteToggleState(armyName, newVal);
-}
-
-onMounted(() => {
-  unitFavorites.value = getFavorites('unit');
-  showOnlyFavorites.value = getArmyUnitFavoriteToggleState(armyName);
-});
-
-function toggleUnitFavorite(unit: string, fav: boolean) {
-  if (fav) {
-    saveFavorite('unit', unit);
-    if (!unitFavorites.value.includes(unit)) unitFavorites.value.push(unit);
-  } else {
-    removeFavorite('unit', unit);
-    unitFavorites.value = unitFavorites.value.filter((u) => u !== unit);
-  }
-}
-
-function toggleSortMode() {
-  sortMode.value = sortMode.value === 'alpha' ? 'points' : 'alpha';
-}
 
 const filteredUnits = (units: any[]) => {
   let filtered = units;
-  if (showOnlyFavorites.value && hasAnyFavoriteInArmy.value) {
-    filtered = filtered.filter((x) => unitFavorites.value.includes(x.name));
+  if (showFavorites.value) {
+    filtered = filtered.filter((x) => favorites.value.includes(x.name));
+  }
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter((x) => x.name.toLowerCase().includes(query));
   }
   if (sortMode.value === 'points') {
     filtered = [...filtered].sort((a, b) => {
@@ -168,42 +128,9 @@ const filteredUnits = (units: any[]) => {
   }
   return filtered;
 };
-
-const hasAnyFavoriteInArmy = computed(() => {
-  return Array.from(army.value.unitList.values()).some((units) =>
-    units.some((u) => unitFavorites.value.includes(u.name))
-  );
-});
-
-watch(unitFavorites, (favs) => {
-  if (showOnlyFavorites.value && favs.length === 0) {
-    showOnlyFavorites.value = false;
-    setArmyUnitFavoriteToggleState(armyName, false);
-  }
-});
 </script>
 <style src="../../home/views/list-shared.css" scoped></style>
 <style scoped>
-.filters-bar {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  margin-bottom: 1.2rem;
-}
-
-.favorite-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.4em;
-  font-size: 1.1em;
-  color: #ec4899;
-  padding: 0.2em 0.6em;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
 
 .sub-label {
   display: block;
@@ -213,48 +140,11 @@ watch(unitFavorites, (favs) => {
   font-family: 'system-ui', sans-serif;
 }
 
-.favorite-toggle.active {
-  background: #ffe4f3;
-}
-
-.favorite-toggle svg {
-  vertical-align: middle;
-}
-
 .unit-list-header-row {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 0.5rem;
-}
-
-.sort-toggle {
-  background: var(--bg-sub);
-  border: 1.5px solid var(--border-color);
-  color: var(--text-main);
-  font-size: 1em;
-  font-weight: 500;
-  border-radius: 4px;
-  padding: 0.2em 1em;
-  margin-left: 0.5em;
-  cursor: pointer;
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border 0.2s;
-}
-.sort-toggle.points {
-  background: var(--color-red);
-  color: #fff;
-  border: 1.5px solid var(--color-red);
-}
-.sort-toggle.alpha {
-  background: var(--bg-sub);
-  color: var(--text-main);
-  border: 1.5px solid var(--border-color);
-}
-.sort-toggle:hover {
-  filter: brightness(0.95);
 }
 
 .army-rules-section {
