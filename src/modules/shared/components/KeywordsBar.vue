@@ -11,8 +11,10 @@ const props = defineProps<{ keywords?: string[] | null }>();
       v-for="kw in props.keywords"
       :key="kw"
       class="keyword"
-      v-html="formatText(kw)"
-    />
+    >
+    {{ formatText(kw) }}
+    <img v-if="kw.toLowerCase().includes('champion')" src="/assets/icons/wreath-laurel-solid.svg" alt="Champion" class="champion-icon" />
+  </span>
   </div>
 </template>
 <style scoped>
@@ -36,5 +38,15 @@ const props = defineProps<{ keywords?: string[] | null }>();
   margin-bottom: 0.3em;
   white-space: nowrap;
   display: inline-block;
+}
+
+.champion-icon {
+  height: 1.2em;
+  margin-left: 0.4em;
+  vertical-align: middle;
+  /* default: no filter */
+}
+.dark .champion-icon {
+  filter: invert(1) brightness(1.6);
 }
 </style>
