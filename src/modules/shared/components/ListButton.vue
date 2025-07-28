@@ -8,6 +8,7 @@ import GeneralBadge from './badges/GeneralBadge.vue';
 import ReinforcedBadge from './badges/ReinforcedBadge.vue';
 import EnhancementsBadge from './badges/EnhancementsBadge.vue';
 import LegendsBadge from './badges/LegendsBadge.vue';
+import PillBadge from '../../core/components/PillBadge.vue';
 
 const props = defineProps<{
   label: string;
@@ -20,6 +21,8 @@ const props = defineProps<{
   enhancementCount?: number;
   legends?: boolean;
   splitOnSubLabel?: boolean;
+  overrideSubLabel?: string;
+  validator?: string;
 }>();
 const emit = defineEmits(['click', 'toggle-favorite', 'ellipsis']);
 const { favorite } = toRefs(props);
@@ -66,7 +69,7 @@ const displayPoints = computed(() => {
       class="list-label"
       :class="{ center: !showFavoriteToggle }"
     >
-      {{ splitOnSubLabel ? displayLabel : withoutSoG }} <span v-if="displaySubLabel && splitOnSubLabel" class="list-sublabel">{{ displaySubLabel }}</span>
+      {{ splitOnSubLabel ? displayLabel : withoutSoG }} <span v-if="(displaySubLabel && splitOnSubLabel) || overrideSubLabel" class="list-sublabel">{{ displaySubLabel || overrideSubLabel }}</span>
       <BadgeRow>
         <PointsBadge :points="displayPoints" />
         <SoGBadge :sog="isSoG" />
@@ -74,6 +77,9 @@ const displayPoints = computed(() => {
         <GeneralBadge :general="props.showGeneral" />
         <ReinforcedBadge :reinforced="props.showReinforced" />
         <EnhancementsBadge :count="props.enhancementCount" />
+        <PillBadge v-if="validator" :class="`validator-${validator}`">
+          {{ validator }}
+        </PillBadge>
       </BadgeRow>
     </span>
     <span
@@ -228,5 +234,26 @@ const displayPoints = computed(() => {
 .ellipsis-icon:has(:hover),
 .ellipsis-icon:hover::before {
   color: #222;
+}
+
+.validator-standard {
+  display: none !important;
+}
+.validator-highlander {
+	background-color: var(--color-yellow) !important;
+	color: #111;
+	font-weight: 800;
+}
+.validator-holy.havoc {
+  background-color: var(--color-blue) !important;
+  color: #fff;
+}
+.validator-legends {
+  background: var(--color-purple) !important;
+  color: #fff;
+}
+.validator-disabled {
+  background: var(--color-gray) !important;
+  color: #fff;
 }
 </style>

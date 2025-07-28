@@ -3,7 +3,16 @@
   <div
     v-if="!loading && !error"
   >
-    <h1 class="fancy-text">{{ armyName }}</h1>
+    <h1 class="fancy-text">{{ displayLabel }}
+
+                    <br v-if="displaySubLabel" />
+              <span
+                v-if="displaySubLabel"
+                class="sub-label"
+              >
+                {{ displaySubLabel }}
+              </span>
+    </h1>
     <LegendsBadge big :legends="army.legends" style="margin-bottom: 1em;"/>
     <TwoTab
       v-model:left-active="leftActive"
@@ -97,6 +106,13 @@ const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
 const route = useRoute();
 const armyName = props.armyName ?? (route.params.armyName as string);
 
+const splitLabel = computed(() => armyName.split(/ - /));
+const displayLabel = computed(() => splitLabel.value[0]);
+const displaySubLabel = computed(() => {
+  if (splitLabel.value.length <= 1) return '';
+  return splitLabel.value[1];
+});
+
 const unitFavorites = ref<string[]>([]);
 const showOnlyFavorites = ref(getArmyUnitFavoriteToggleState(armyName));
 const sortMode = ref<'alpha' | 'points'>('alpha');
@@ -187,6 +203,14 @@ watch(unitFavorites, (favs) => {
   padding: 0.2em 0.6em;
   border-radius: 4px;
   transition: background 0.2s;
+}
+
+.sub-label {
+  display: block;
+  font-size: 0.5em;
+  color: var(--text-muted);
+  margin-top: 0.4em;
+  font-family: 'system-ui', sans-serif;
 }
 
 .favorite-toggle.active {

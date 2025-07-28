@@ -22,7 +22,10 @@
         :key="list.id"
       >
         <ListButton
-          :label="`${list.name} | ${list.faction}`"
+          :label="list.name"
+          :override-sub-label="list.faction"
+          :points="list.pointsCap"
+          :validator="list.validator"
           @click="goToList(list)"
         />
       </li>

@@ -25,7 +25,9 @@ export interface IListItem {
   id: string;
   name: string;
   faction: string;
-  createdAt: Date;
+  modifiedAt: Date;
+  pointsCap: number;
+  validator: string;
 }
 
 export function getAllLists(): IListItem[] {
@@ -41,7 +43,9 @@ export function getAllLists(): IListItem[] {
           id: list.id,
           name: list.name,
           faction: list.faction,
-          createdAt: list.createdAt ? new Date(list.createdAt) : new Date(0),
+          modifiedAt: list.modifiedAt ? new Date(list.modifiedAt) : new Date(0),
+          pointsCap: list.pointsCap,
+          validator: list.validator
         });
       } catch {
         // skip corrupted
@@ -49,9 +53,9 @@ export function getAllLists(): IListItem[] {
       }
     }
   }
-  // Sort by createdAt (desc), then alpha by name
+  // Sort by modifiedAt (desc), then alpha by name
   return lists.filter((list) => list.name !== '').sort((a, b) => {
-    if (b.createdAt?.getTime() !== a.createdAt?.getTime()) return b.createdAt?.getTime() - a.createdAt?.getTime();
+    if (b.modifiedAt?.getTime() !== a.modifiedAt?.getTime()) return b.modifiedAt?.getTime() - a.modifiedAt?.getTime();
     return a.name.localeCompare(b.name);
   });
 }
