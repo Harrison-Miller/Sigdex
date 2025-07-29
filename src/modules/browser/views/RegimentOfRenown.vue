@@ -1,5 +1,14 @@
 <template>
   <BackButton :size="36" />
+  <div class="floating-header-buttons">
+    <button
+      class="favorite-icon"
+      :class="{ active: isFavorited }"
+      @click.stop="toggleFavorite"
+    >
+      <FontAwesomeIcon icon="star" />
+    </button>
+  </div>
   <div class="unit-detail">
     <h1 style="margin: 0" class="fancy-text">{{ regiment?.name }}</h1>
     <PointsBadge big :points="regiment?.points" />
@@ -66,6 +75,7 @@ import Section from '../../core/components/ContentSection.vue';
 import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
 import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
+import { useFavorite } from '../../core/composables/useFavorite';
 
 const route = useRoute();
 const router = useRouter();
@@ -79,31 +89,43 @@ const unitList = computed(() => {
   return Array.from(regiment.value.units.entries()); // [unitName, count][]
 });
 
+const { isFavorited, toggleFavorite } = useFavorite('army', regimentName.value);
+
 function goToUnit(unit: string) {
-  // Find the first non-AoR army that has a battleProfile with the given unit name
-//   if (!game.value) {
-//     console.warn(`Game data not loaded, cannot navigate to unit: ${unit}`);
-//     return;
-//   }
-//   // Build a set of all main army names (not AoR)
-//   const mainArmyNames = new Set<string>();
-//   for (const armyList of game.value.armyList.values()) {
-//     for (const item of armyList) {
-//       mainArmyNames.add(item.name);
-//     }
-//   }
-//   let foundArmy: string | undefined = undefined;
-//   for (const [armyName, army] of game.value.armies.entries()) {
-//     if (!mainArmyNames.has(armyName)) continue;
-//     if (army.battleProfiles && army.battleProfiles.has(unit)) {
-//       foundArmy = armyName;
-//       break;
-//     }
-//   }
   router.push({ name: 'UnitDetail', params: { unitName: unit, armyName: 'UniversalUnits' } });
 }
 </script>
 <style scoped>
+.floating-header-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  padding: 1.2em 0.3em 0 0;
+}
+
+.favorite-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.2s;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+}
+
+.favorite-icon.active svg {
+  color: var(--color-yellow);
+}
+.favorite-icon svg {
+  color: #aaa;
+  font-size: 2em;
+}
 .abilities {
   margin-bottom: 1em;
 }

@@ -34,5 +34,3 @@
 # v9 release todo
 
 * finish fixing all the regiment option stuff - almost done, just aors and supplements
-
-* add favorites to regiment/manifesation/army page

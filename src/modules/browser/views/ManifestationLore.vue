@@ -6,8 +6,11 @@ import BackButton from '../../core/components/BackButton.vue';
 import Section from '../../core/components/ContentSection.vue';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
+import { useFavorite } from '../../core/composables/useFavorite';
 
 const props = defineProps<{ loreName: string }>();
+
+const { isFavorited, toggleFavorite } = useFavorite('army', props.loreName);
 
 const { lore } = useUniversalManifestationLore(props.loreName);
 const units = computed(() => {
@@ -19,6 +22,15 @@ const units = computed(() => {
     :size="36"
     class="unit-list-back"
   />
+  <div class="floating-header-buttons">
+    <button
+      class="favorite-icon"
+      :class="{ active: isFavorited }"
+      @click.stop="toggleFavorite"
+    >
+      <FontAwesomeIcon icon="star" />
+    </button>
+  </div>
   <div class="list-container">
     <h1 style="margin: 0" class="fancy-text">
       {{ loreName }}
@@ -61,6 +73,36 @@ const units = computed(() => {
 </template>
 <style src="../../home/views/list-shared.css" scoped></style>
 <style scoped>
+.floating-header-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  padding: 1.2em 0.3em 0 0;
+}
+
+.favorite-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.2s;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+}
+
+.favorite-icon.active svg {
+  color: var(--color-yellow);
+}
+.favorite-icon svg {
+  color: #aaa;
+  font-size: 2em;
+}
 .unit-list-back {
   margin-bottom: 0.5rem;
 }
