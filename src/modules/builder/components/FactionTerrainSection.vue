@@ -21,7 +21,7 @@
           title="Delete Faction Terrain"
           @click="handleDeleteFactionTerrain"
         >
-          <font-awesome-icon icon="trash" />
+          <FontAwesomeIcon icon="trash" />
         </button>
       </div>
       <div v-else>
@@ -41,6 +41,7 @@ import Section from '../../core/components/ContentSection.vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
 import type { BattleProfile } from '../../../parser/models/battleProfile';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps<{
   modelValue: string;

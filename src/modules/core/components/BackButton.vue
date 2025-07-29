@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useRouter } from 'vue-router';
 const props = defineProps<{ size?: number }>();
 const router = useRouter();
@@ -18,7 +19,7 @@ function goBack() {
     aria-label="Back"
     @click="goBack"
   >
-    <font-awesome-icon
+    <FontAwesomeIcon
 class="bg-sub text-muted"
       icon="fa-solid fa-arrow-left"
       :style="{

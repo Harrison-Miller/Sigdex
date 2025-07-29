@@ -12,31 +12,37 @@
         title="View Regiment Of Renown"
         @click.stop="goToRegimentOfRenown"
       >
-        <font-awesome-icon icon="eye" />
+        <FontAwesomeIcon icon="eye" />
       </button>
       <button
+v-if="props.modelValueName"
         class="delete-ror-btn"
         title="Delete Regiment Of Renown"
         @click.stop="handleDeleteRor"
       >
-        <font-awesome-icon icon="trash" />
+        <FontAwesomeIcon icon="trash" />
       </button>
     </template>
     <div v-if="modelValueUnits && modelValueUnits.length > 0">
       <div
         v-for="(unit, i) in modelValueUnits"
         :key="unit?.name + i"
-        class="ror-unit-row"
+        class="unit-row"
       >
         <ListButton
           :label="unit.name"
           :show-reinforced="unit.reinforced"
-          :show-ellipsis="true"
           :enhancement-count="unit.getEnhancementCount()"
           :split-on-sub-label="true"
           @click="() => goToUnitDetail(unit.name)"
-          @ellipsis="() => goToRorUnitSettings(i)"
         />
+        <button
+          class="unit-settings-btn"
+          title="Unit Settings"
+          @click="() => goToRorUnitSettings(i)"
+        >
+          <FontAwesomeIcon icon="gear" />
+        </button>
       </div>
     </div>
     <button
@@ -56,6 +62,7 @@ import { useRouter } from 'vue-router';
 import { ListUnit } from '../../../list/models/unit';
 import type { Game } from '../../../parser/models/game';
 import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps<{
   modelValueName: string;
@@ -113,10 +120,38 @@ function goToRegimentOfRenown() {
 }
 </script>
 <style scoped>
-.ror-unit-row {
+.unit-row {
   display: flex;
   align-items: stretch;
-  margin-bottom: 0.7em;
+  margin-bottom: 0.5em;
+}
+.unit-settings-btn {
+  width: 67px;
+  min-height: 44px;
+  height: auto;
+  font-size: 1.3em;
+  background: var(--bg-head);
+  color: var(--text-main);
+  border: 1.5px solid var(--border-color);
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.25em;
+  margin-right: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0 1em;
+  box-sizing: border-box;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    border 0.18s;
+}
+
+.unit-settings-btn:hover {
+  background: var(--bg-sub);
 }
 .add-ror-btn {
   width: 100%;

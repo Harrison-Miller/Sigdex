@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
 const props = defineProps<{ size?: number }>();
 const emit = defineEmits(['click']);
 const iconSize = props.size ?? 36;
@@ -9,7 +11,7 @@ const iconSize = props.size ?? 36;
     aria-label="Back"
     @click="emit('click')"
   >
-    <font-awesome-icon
+    <FontAwesomeIcon
 class="bg-sub text-muted"
       icon="fa-solid fa-gear"
       :style="{

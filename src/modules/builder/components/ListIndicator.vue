@@ -6,12 +6,12 @@
       :title="isListValid ? 'List is valid' : 'List has issues'"
       @click="!isListValid ? (showViolationsModal = true) : null"
     >
-      <font-awesome-icon
+      <FontAwesomeIcon
         v-if="isListValid"
         icon="fa-solid fa-check"
         class="valid-check"
       />
-      <font-awesome-icon
+      <FontAwesomeIcon
         v-else
         icon="fa-solid fa-triangle-exclamation"
         class="valid-warning"
@@ -55,6 +55,7 @@ import { calculatePoints } from '../../../validation/points';
 import type { List } from '../../../list/models/list';
 import type { Game } from '../../../parser/models/game';
 import { validateList } from '../../../validation/run';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps<{
   list: List;

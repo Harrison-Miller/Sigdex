@@ -8,7 +8,7 @@
           aria-label="Copy to clipboard"
           @click="copyToClipboard"
         >
-          <font-awesome-icon icon="fa-solid fa-copy" />
+          <FontAwesomeIcon icon="fa-solid fa-copy" />
           Copy to Clipboard
         </button>
         <h1
@@ -46,6 +46,7 @@ import { exportList } from '../exportList';
 import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
 import { useList } from '../../shared/composables/useList';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const route = useRoute();
 const id = route.params.id as string;

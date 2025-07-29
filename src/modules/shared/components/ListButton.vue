@@ -15,7 +15,6 @@ const props = defineProps<{
   label: string;
   favoriteType?: 'army' | 'unit';
   points?: number;
-  showEllipsis?: boolean;
   showGeneral?: boolean;
   showReinforced?: boolean;
   enhancementCount?: number;
@@ -25,16 +24,11 @@ const props = defineProps<{
   validator?: string;
 }>();
 
-const emit = defineEmits(['click', 'ellipsis']);
+const emit = defineEmits(['click']);
 
 const { isFavorited, toggleFavorite } = props.favoriteType
   ? useFavorite(props.favoriteType, props.label)
   : { isFavorited: ref(false), toggleFavorite: () => {} };
-
-function onEllipsisClick(e: Event) {
-  e.stopPropagation();
-  emit('ellipsis');
-}
 
 // Remove (Scourge of Ghyran) from label and detect if present
 const isSoG = computed(() => /\(Scourge of Ghyran\)/.test(props.label));
@@ -59,7 +53,7 @@ const displayPoints = computed(() => {
 <template>
   <button
     class="list-button"
-    @click="$emit('click')"
+    @click="() => emit('click')"
   >
     <span
       class="list-label"
@@ -84,14 +78,6 @@ const displayPoints = computed(() => {
       @click.stop="toggleFavorite"
     >
       <FontAwesomeIcon icon="star" />
-    </span>
-    <span
-      v-if="props.showEllipsis"
-      class="ellipsis-icon"
-      title="More options"
-      @click.stop="onEllipsisClick"
-    >
-      <FontAwesomeIcon icon="gear" />
     </span>
   </button>
 </template>
@@ -173,39 +159,6 @@ const displayPoints = computed(() => {
   background: var(--bg-sub);
   color: var(--text-main);
   border: 1.5px solid var(--border-hover);
-}
-
-.ellipsis-icon {
-  margin-left: 0.7rem;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  color: #888;
-  font-size: 1.25em;
-  transition: color 0.18s;
-  /* Make the clickable area larger without changing the visual size */
-  position: relative;
-  z-index: 1;
-}
-
-.ellipsis-icon::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 2.2em;
-  height: 2.2em;
-  border-radius: 50%;
-  /* transparent clickable area */
-  background: transparent;
-  z-index: -1;
-}
-
-.ellipsis-icon:hover,
-.ellipsis-icon:has(:hover),
-.ellipsis-icon:hover::before {
-  color: #222;
 }
 
 .validator-standard {

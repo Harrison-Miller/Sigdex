@@ -8,7 +8,6 @@
             class="list-button header-btn"
             @click="$emit('click')"
             @toggle-favorite="$emit('toggle-favorite', $event)"
-            @ellipsis="$emit('ellipsis')"
           />
         </div>
         <transition name="section-fade">
@@ -55,13 +54,12 @@ const props = defineProps({
   label: { type: String, required: true },
   favoriteType: { type: String, default: '' },
   points: { type: Number, default: 0 },
-  showEllipsis: { type: Boolean, default: false },
   showGeneral: { type: Boolean, default: false },
   showReinforced: { type: Boolean, default: false },
   enhancementCount: { type: Number, default: 0 },
 });
 
-const emit = defineEmits(['click', 'toggle-favorite', 'ellipsis', 'update:collapsed']);
+const emit = defineEmits(['click', 'toggle-favorite', 'update:collapsed']);
 
 const { collapsed, toggle } = useCollapsableState(props.label, true);
 
@@ -77,7 +75,6 @@ const buttonProps = computed(() => ({
     ? props.favoriteType as "army" | "unit"
     : undefined,
   points: props.points,
-  showEllipsis: props.showEllipsis,
   showGeneral: props.showGeneral,
   showReinforced: props.showReinforced,
   enhancementCount: props.enhancementCount,

@@ -31,7 +31,7 @@
           title="Unit Settings"
           @click="() => goToAuxUnitSettings(i)"
         >
-          <font-awesome-icon icon="gear" />
+          <FontAwesomeIcon icon="gear" />
         </button>
       </div>
     </div>
@@ -51,6 +51,7 @@ import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
 import { ListUnit } from '../../../list/models/unit';
 import type { BattleProfile } from '../../../parser/models/battleProfile';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps<{
   modelValue: ListUnit[];

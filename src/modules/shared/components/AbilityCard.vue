@@ -37,7 +37,7 @@ function getAbilityIcon(type: string) {
       v-else-if="props.ability.chantingValue"
       class="chanting-value-diamond"
     >
-      <font-awesome-icon
+      <FontAwesomeIcon
         :icon="['fas', 'diamond']"
         class="diamond-bg"
       />
@@ -47,7 +47,7 @@ function getAbilityIcon(type: string) {
       v-else-if="props.ability.commandPoints"
       class="cost-hexagon-icon"
     >
-      <font-awesome-icon
+      <FontAwesomeIcon
         :icon="['fas', 'stop']"
         class="hexagon-bg"
       />

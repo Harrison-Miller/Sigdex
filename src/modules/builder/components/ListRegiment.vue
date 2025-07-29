@@ -7,7 +7,7 @@
         title="Delete Regiment"
         @click.stop="() => emit('delete')"
       >
-        <font-awesome-icon icon="trash" />
+        <FontAwesomeIcon icon="trash" />
       </button>
     </template>
     <div>
@@ -29,7 +29,7 @@
           title="Leader Settings"
           @click="goToUnitSettings('leader')"
         >
-          <font-awesome-icon icon="gear" />
+          <FontAwesomeIcon icon="gear" />
         </button>
       </div>
       <button
@@ -81,6 +81,7 @@ import ListButton from '../../shared/components/ListButton.vue';
 import Section from '../../core/components/ContentSection.vue';
 import { useRouter } from 'vue-router';
 import type { BattleProfile } from '../../../parser/models/battleProfile';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps<{
   regimentIdx: number;
