@@ -162,6 +162,9 @@ const filteredBPs = computed(() => {
           (u) => u.category === (filter.toUpperCase() as UnitCategory)
         ) || [];
   }
+
+  us = us.filter((u) => u.name !== 'Auto-Endrin'); // Exclude Auto-Endrin from unit picker since it's not a real unit
+
   return us;
 });
 

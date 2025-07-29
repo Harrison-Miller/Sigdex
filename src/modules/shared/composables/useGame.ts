@@ -6,7 +6,7 @@ import { Army } from '../../../parser/models/army';
 import { type MaybeRefOrGetter } from '@vueuse/core';
 import { BattleProfile } from '../../../parser/models/battleProfile';
 import { Lore } from '../../../parser/models/lore';
-import { GITHUB_BRANCH, GITHUB_REPO } from '../../../github/config';
+import { DEFAULT_GITHUB_BRANCH, DEFAULT_GITHUB_REPO, GITHUB_BRANCH, GITHUB_REPO } from '../../../github/config';
 import { SIGDEX_VERSION } from '../../../version';
 import SuperJSON from 'superjson';
 import LZString from 'lz-string';
@@ -83,8 +83,10 @@ async function loadGame() {
       return;
     }
     // Parse and store new game data
-    console.log('Loading game data from GitHub...', GITHUB_REPO.value, GITHUB_BRANCH.value);
-    const parser = new Parser(GITHUB_REPO.value, GITHUB_BRANCH.value);
+    const repo = GITHUB_REPO.value || DEFAULT_GITHUB_REPO;
+    const branch = GITHUB_BRANCH.value || DEFAULT_GITHUB_BRANCH;
+    console.log('Loading game data from GitHub...', repo, branch);
+    const parser = new Parser(repo, branch);
     const game = await parser.parse();
     _game.value = game;
 

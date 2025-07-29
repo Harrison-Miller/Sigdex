@@ -1,6 +1,7 @@
 // this file contains hacks for the parsing process
 // basically accounting for exceptions that are too complex/annoying to handle generically in the main parser logic
 
+import { BattleProfile } from "./models/battleProfile";
 import type { Game } from "./models/game";
 
 type ParserHack = (game: Game) => void;
@@ -9,7 +10,8 @@ export const parserHacks: ParserHack[] = [
 	markBigWaaaghAsArmyOfRenown,
 	addManifestationsToThryxRoR,
 	makeDuardinAscendantArmyOfRenown,
-	markLegendsArmiesUnitsAsLegends
+	markLegendsArmiesUnitsAsLegends,
+	addAutoEndrinBattleprofile,
 ];
 
 function markBigWaaaghAsArmyOfRenown(game: Game) {
@@ -75,6 +77,48 @@ function markLegendsArmiesUnitsAsLegends(game: Game) {
 					}
 				}
 			}
+		}
+	}
+}
+
+function addAutoEndrinBattleprofile(game: Game) {
+	const autoEndrin = game.units.get('Auto-Endrin');
+	if (autoEndrin) {
+		const dock = game.units.get('Zontari Endrin Dock');
+		if (dock) {
+			dock.subUnits.push(autoEndrin.name);
+		}
+
+		const bp = new BattleProfile({
+			name: autoEndrin.name,
+			category: autoEndrin.category,
+			keywords: autoEndrin.keywords,
+			legends: false,
+			points: 0,
+			reinforceable: false,
+		});
+
+		const ko = game.armies.get('Kharadron Overlords');
+		if (ko) {
+			ko.battleProfiles.set(bp.name, bp);
+			ko.unitList.get(bp.category)?.push({
+				name: bp.name,
+				points: 0,
+				legends: false
+			});
+		}
+
+		// add to an aors
+		const aorNames = ko?.armiesOfRenown || [];
+		for (const aorName of aorNames) {
+			const aor = game.armies.get(aorName);
+			if (!aor) continue;
+			aor.battleProfiles.set(bp.name, bp);
+			aor.unitList.get(bp.category)?.push({
+				name: bp.name,
+				points: 0,
+				legends: false
+			});
 		}
 	}
 }

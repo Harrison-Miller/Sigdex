@@ -4,6 +4,7 @@ import { aorChecks } from './checks/aor';
 import { basicChecks } from './checks/basic';
 import { bwChecks } from './checks/bw';
 import { highlanderChecks } from './checks/highlander';
+import { koChecks } from './checks/ko';
 import { regimentOptionsChecks } from './checks/regimentOptions';
 import { rorChecks } from './checks/ror';
 import { sanityChecks } from './checks/sanity';
@@ -29,6 +30,7 @@ export const baseValidators: ListValidator[] = [
   ...aorChecks,
   ...rorChecks,
   ...sbglChecks,
+  ...koChecks,
 ];
 
 function getValidatorsForList(list: List): ListValidator[] {

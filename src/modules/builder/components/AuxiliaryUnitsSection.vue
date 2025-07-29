@@ -59,7 +59,6 @@ const props = defineProps<{
   armyName: string;
   listId: string;
 }>();
-// const emit = defineEmits(['update:modelValue', 'update']);
 
 const router = useRouter();
 

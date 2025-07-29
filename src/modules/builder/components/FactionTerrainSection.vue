@@ -32,6 +32,26 @@
           + Faction Terrain
         </button>
       </div>
+      <div v-if="subUnits && subUnits.length > 0">
+        <div
+          v-for="(unitName, i) in subUnits"
+          :key="unitName + i"
+          class="unit-row"
+        >
+          <ListButton
+            :label="unitName"
+            :split-on-sub-label="true"
+            @click="
+              () =>
+                router &&
+                router.push({
+                  name: 'UnitDetail',
+                  params: { armyName: armyName, unitName: unitName },
+                })
+            "
+          />
+        </div>
+      </div>
     </div>
   </Section>
 </template>
@@ -42,12 +62,14 @@ import ListButton from '../../shared/components/ListButton.vue';
 import { useRouter } from 'vue-router';
 import type { BattleProfile } from '../../../parser/models/battleProfile';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import type { Game } from '../../../parser/models/game';
 
 const props = defineProps<{
   modelValue: string;
   battleProfiles: Map<string, BattleProfile>;
   armyName: string;
   listId: string;
+  game: Game;
 }>();
 
 const emit = defineEmits(['update:modelValue']);
@@ -67,6 +89,10 @@ const factionTerrain = computed({
   set: (val: string) => {
     emit('update:modelValue', val);
   },
+});
+
+const subUnits = computed(() => {
+  return props.game.units.get(props.modelValue)?.subUnits || [];
 });
 
 function handleAddFactionTerrain() {
@@ -93,10 +119,17 @@ function goToUnitDetail() {
 }
 </script>
 <style scoped>
+.unit-row {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 0.5em;
+  margin-right: calc(67px + 0.25em);
+}
+
 .faction-terrain-controls {
   display: flex;
   align-items: stretch;
-  /* gap: 0.5em; */
+  margin-bottom: 0.5em;
 }
 .add-terrain-btn {
   width: 100%;

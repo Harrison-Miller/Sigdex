@@ -58,6 +58,8 @@ export interface IUnit {
   descriptions: string[];
 
   legends: boolean;
+
+  subUnits: string[];
 }
 
 export class Unit implements IUnit {
@@ -73,6 +75,7 @@ export class Unit implements IUnit {
   summoningSpell: Ability | null;
   descriptions: string[];
   legends: boolean;
+  subUnits: string[];
 
   constructor(unit?: Partial<IUnit>) {
     this.name = unit?.name ?? '';
@@ -86,6 +89,7 @@ export class Unit implements IUnit {
     this.summoningSpell = unit?.summoningSpell ?? null;
     this.descriptions = unit?.descriptions ?? [];
     this.legends = unit?.legends ?? false;
+    this.subUnits = unit?.subUnits ?? [];
 
     // set stats.ward based on if keyword "Ward (value)" is present
     const wardKeyword = this.keywords.find((keyword) => keyword.toUpperCase().startsWith('WARD'));

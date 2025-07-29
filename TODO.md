@@ -38,6 +38,3 @@
 * favicon
 
 * add favorites to regiment/manifesation/army page
-
-* only show ror trashcan if ror selected
-* in ror units have the same button layout

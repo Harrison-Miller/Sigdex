@@ -141,11 +141,12 @@ v-if="showTactics"
         :army-name="list.faction"
         :list-id="list.id"
       />
-      <FactionTerrainSection
+      <FactionTerrainSection v-if="list && game"
         v-model="list.factionTerrain"
         :battle-profiles="army.battleProfiles"
         :army-name="list.faction"
         :list-id="list.id"
+        :game="game"
       />
       <!-- Lore Sections -->
       <ListBuilderLoreSection

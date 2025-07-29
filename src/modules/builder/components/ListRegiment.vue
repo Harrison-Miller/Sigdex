@@ -61,7 +61,7 @@
             title="Unit Settings"
             @click="goToUnitSettings(idx)"
           >
-            <font-awesome-icon icon="gear" />
+            <FontAwesomeIcon icon="gear" />
           </button>
         </div>
     </div>
