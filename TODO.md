@@ -39,7 +39,5 @@
 
 * add favorites to regiment/manifesation/army page
 
-* fix legends army name in ror allowed list
-
 * only show ror trashcan if ror selected
 * in ror units have the same button layout

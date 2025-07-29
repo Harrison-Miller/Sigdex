@@ -95,7 +95,9 @@ function parseRoRProfiles(gameRoot: any, armyIds: Map<string, string>): Map<stri
     for (const condition of armyConditions) {
       const childId = condition['@_childId'];
       if (childId) {
-        const armyName = armyIds.get(childId);
+        let armyName = armyIds.get(childId);
+        armyName = armyName?.replace(/[^a-zA-Z0-9\s.,'!-]/g, '').trim();
+        armyName = armyName?.replace(/legends/i, '').trim();
         if (armyName) {
           armies.push(armyName);
         }
