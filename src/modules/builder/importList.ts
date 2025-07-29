@@ -3,6 +3,10 @@ import { ListUnit } from '../../list/models/unit';
 import type { Army } from '../../parser/models/army';
 import type { Game } from '../../parser/models/game';
 
+const alternateUnitNames: Map<string, string[]> = new Map([
+  ['Kruleboyz Monsta-killaz', ['Monsta-Killaz']],
+]);
+
 export function importList(text: string, game: Game): List {
   const listText = text.toLowerCase().trim();
   // search the text for the name of a faction
@@ -236,6 +240,11 @@ function parseUnits(text: string, army: Army, game: Game): ListUnit[] {
         }
         return false;
       } else {
+        if (alternateUnitNames.has(bp.name)) {
+          return alternateUnitNames.get(bp.name)!.some((name) => {
+            return line.includes(name.toLowerCase())
+          });
+        }
         return line.includes(bp.name.toLowerCase());
       }
     });
