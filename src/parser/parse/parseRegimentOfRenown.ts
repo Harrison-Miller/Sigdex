@@ -1,3 +1,4 @@
+import type { Ability } from '../models/ability';
 import { RegimentOfRenown, type IRegimentOfRenown } from '../models/regimentOfRenown';
 import { findAllByTagAndAttrs, findFirstByTagAndAttrs } from '../util';
 import { parseAbilities } from './parseAbility';
@@ -25,9 +26,19 @@ export function parseRegimentsOfRenown(
     });
     const rorProfile = rorProfiles.get(name) || rorProfiles.get(rorCondition?.['@_childId'] || '');
 
+    const abilities: Ability[] = [];
+    const rorUnitAbilities = parseRoRUnitAbilities(rorNode, rorUnitDefinitions);
+    if (rorUnitAbilities && rorUnitAbilities.length > 0) {
+      abilities.push(...rorUnitAbilities);
+    }
+    const rorAbilities = parseAbilities(rorNode.profiles);
+    if (rorAbilities && rorAbilities.length > 0) {
+      abilities.push(...rorAbilities);
+    }
+
     const ror: Partial<IRegimentOfRenown> = {
       name,
-      abilities: parseAbilities(rorNode.profiles),
+      abilities,
       points: rorProfile?.points,
       units: parseRoRUnits(rorNode, rorUnitDefinitions),
       allowedArmies: rorProfile?.armies,
@@ -110,6 +121,7 @@ function parseRoRProfiles(gameRoot: any, armyIds: Map<string, string>): Map<stri
 
 interface IRoRUnitDefinition {
   name: string;
+  abilities: Ability[];
   // map because multiple rors can have the same unit
   // ror condition id to count
   counts: Map<string, number>;
@@ -121,6 +133,8 @@ function parseRoRUnitDefinitions(rorRoot: any): IRoRUnitDefinition[] {
   for (const unitNode of unitNodes) {
     const name = unitNode['@_name'];
     if (!name) continue; // skip if no name
+
+    const abilities: Ability[] = parseAbilities(unitNode.profiles);
 
     const modiferGroups = unitNode.modifierGroups?.modifierGroup || [];
     const counts = new Map<string, number>();
@@ -146,6 +160,7 @@ function parseRoRUnitDefinitions(rorRoot: any): IRoRUnitDefinition[] {
     }
 
     units.push({
+      abilities,
       name,
       counts,
     });
@@ -176,4 +191,30 @@ function parseRoRUnits(
   }
 
   return units;
+}
+
+function parseRoRUnitAbilities(
+  rorNode: any,
+  rorUnitDefinitions: IRoRUnitDefinition[]
+): Ability[] {
+  const abilities: Ability[] = [];
+
+  const conditions = findAllByTagAndAttrs(rorNode, 'condition', {
+    type: 'atLeast',
+    field: 'selections',
+    scope: 'roster',
+  });
+
+  for (const condition of conditions) {
+    const childId = condition['@_childId'];
+    const definitions = rorUnitDefinitions.filter((def) => def.counts.has(childId));
+    if (definitions.length > 0) {
+      for (const definition of definitions) {
+        if (!definition.abilities) continue; // skip if no abilities
+        abilities.push(...definition.abilities);
+      }
+    }
+  }
+
+  return abilities;
 }

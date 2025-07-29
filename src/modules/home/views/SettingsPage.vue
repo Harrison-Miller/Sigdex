@@ -87,11 +87,9 @@
       <strong>Disclaimer:</strong> This app is not affiliated with Games Workshop. It only downloads
       data from BSData.
     </div>
-    <div class="section version"><strong>Version:</strong> {{ SIGDEX_VERSION }}</div>
   </div>
 </template>
 <script setup lang="ts">
-import { SIGDEX_VERSION } from '../../../version';
 import BackButton from '../../core/components/BackButton.vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import ToggleBox from '../../core/components/ToggleBox.vue';
@@ -143,16 +141,6 @@ function clearLists() {
   margin-bottom: 1rem;
   font-weight: 500;
 }
-/* .settings-input {
-  width: 100%;
-  font-size: 1.1rem;
-  padding: 0.7em 1em;
-  border-radius: 4px;
-  border: 1.5px solid #222;
-  margin-top: 0.3em;
-  box-sizing: border-box;
-  background: #f9f9f9;
-} */
 .legal {
   color: var(--danger);
   font-size: 0.95em;
@@ -198,10 +186,6 @@ function clearLists() {
 }
 .social-btn.kofi:hover {
   background: #e04e4b;
-}
-.version {
-  color: #888;
-  font-size: 0.9em;
 }
 .dark-toggle-row {
   display: flex;

@@ -15,7 +15,7 @@ const iconMap: Record<string, string> = {
   defensive: 'shield-alt',
   movement: 'running',
   special: 'star',
-  damage: 'bolt',
+  damage: 'skull',
   shooting: 'crosshairs',
   rallying: 'bullhorn',
   control: 'bullseye',

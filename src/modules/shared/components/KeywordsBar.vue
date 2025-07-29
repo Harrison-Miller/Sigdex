@@ -12,7 +12,7 @@ const props = defineProps<{ keywords?: string[] | null }>();
       :key="kw"
       class="keyword"
     >
-    {{ formatText(kw) }}
+    <span v-html="formatText(kw)" />
     <img v-if="kw.toLowerCase().includes('champion')" src="/assets/icons/wreath-laurel-solid.svg" alt="Champion" class="champion-icon" />
   </span>
   </div>

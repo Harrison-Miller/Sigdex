@@ -77,7 +77,7 @@ const battleProfile = computed(() => {
   );
 });
 
-const isHero = computed(() => battleProfile.value.category === 'HERO');
+const isHero = computed(() => battleProfile.value.category === 'HERO' || unit.value.name === 'Daemon Prince');
 
 const hasEnhancementTables = computed(() => {
   return availableEnhancementTables.value.length > 0;
@@ -130,6 +130,10 @@ onMounted(() => {
 });
 
 const availableEnhancementTables = computed(() => {
+  // if (unit.value.name === 'Daemon Prince') {
+  //   return Army. 
+  // }
+
   if (battleProfile.value.enhancementTables.length === 0 || props.army.enhancements.size === 0)
     return [];
   return battleProfile.value.enhancementTables.filter((tableName) =>

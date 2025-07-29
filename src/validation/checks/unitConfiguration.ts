@@ -66,7 +66,7 @@ function checkEnhancementSelectionsAreValid(list: List, game: Game): string[] {
   if (!army) return []; // error handled elsewhere
 
   const errors: string[] = [];
-  const units = list.allUnits().filter((unit) => {
+  const units = list.allUnits(true).filter((unit) => {
     const count = unit.getEnhancementCount();
     return count > 0;
   });
@@ -76,26 +76,31 @@ function checkEnhancementSelectionsAreValid(list: List, game: Game): string[] {
   const enhancementCount: Map<string, number> = new Map();
 
   for (const unit of units) {
-    const bp = army.battleProfiles.get(unit.name) as BattleProfile;
-    if (!bp) continue; // error handled elsewhere
+    const u = game.units.get(unit.name);
+    if (!u) continue; // error handled elsewhere
+    // const bp = army.battleProfiles.get(unit.name) as BattleProfile;
+    // if (!bp) continue; // error handled elsewhere
 
     if (unit.artifact) {
       artifactCount++;
-      if (bp.category !== 'HERO') {
+      if (u.category !== 'HERO') {
         errors.push(`Unit "${unit.name}" can only take an artifact if it is a hero.`);
-      } else if (bp.hasKeyword('unique')) {
+      } else if (u.hasKeyword('unique')) {
         errors.push(`Unit "${unit.name}" is unique and cannot take an artifact.`);
       }
     }
 
     if (unit.heroicTrait) {
       heroicTraitCount++;
-      if (bp.category !== 'HERO') {
+      if (u.category !== 'HERO') {
         errors.push(`Unit "${unit.name}" can only take a heroic trait if it is a hero.`);
-      } else if (bp.hasKeyword('unique')) {
+      } else if (u.hasKeyword('unique')) {
         errors.push(`Unit "${unit.name}" is unique and cannot take a heroic trait.`);
       }
     }
+
+    const bp = army.battleProfiles.get(unit.name) as BattleProfile;
+    if (!bp) continue; // error handled elsewhere
 
     for (const [table, _] of unit.enhancements.entries()) {
       if (!enhancementCount.has(table)) {

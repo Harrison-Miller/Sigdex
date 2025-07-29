@@ -28,7 +28,7 @@ v-if="!isRoRUnit && !isLeader"
       :unit-data="unitData"
     />
     <EnhancementsSelection
-      v-if="!isRoRUnit && !unitData.hasKeyword('unique')"
+      v-if="showEnhancementsSection"
       v-model="unit"
       :unit-data="unitData"
       :army="army"
@@ -104,6 +104,13 @@ const bp = computed(
   () =>
     (army.value?.battleProfiles.get(unit.value?.name || '') as BattleProfile) || new BattleProfile()
 );
+
+const showEnhancementsSection = computed(() => {
+  if (isRoRUnit && unit.value.name === 'Daemon Prince') return true; // God Marked Ascendant is a special case
+  if (isRoRUnit) return false;
+  return !unitData.value.hasKeyword('unique');
+});
+
 
 function duplicateUnit() {
   list.value.modifiedAt = new Date();

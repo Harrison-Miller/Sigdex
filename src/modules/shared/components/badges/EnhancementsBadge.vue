@@ -18,7 +18,7 @@ const { big, count } = defineProps<{
 .sparkle-icon {
   width: 1.2em;
   height: 1.2em;
-  margin-left: 2px;
+  margin: 0 2px;
   vertical-align: middle;
   filter: invert(1) brightness(2);
 }

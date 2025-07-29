@@ -43,7 +43,7 @@ Errors in regiment options parsed by Sigdex
 # Skaven - all correct
 
 # S2D - all correct 
-* Ogroid Myrmidon should be any monsters - this is a data issue, this may be a me problem now
+* Ogroid Myrmidon should be any monsters
 
 ----
 # DEATH

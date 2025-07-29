@@ -71,13 +71,13 @@ function checkAoRUnitsHaveNoConfiguration(list: List): string[] {
 		if (unit.reinforced) {
 			errors.push(`${unit.name} in Regiment of Renown cannot be reinforced.`);
 		}
-		if (unit.artifact) {
+		if (unit.artifact && unit.name !== 'Daemon Prince') {
 			errors.push(`${unit.name} in Regiment of Renown cannot have an artifact.`);
 		}
-		if (unit.heroicTrait) {
+		if (unit.heroicTrait && unit.name !== 'Daemon Prince') {
 			errors.push(`${unit.name} in Regiment of Renown cannot have a heroic trait.`);
 		}
-		if (unit.enhancements.size > 0) {
+		if (unit.enhancements.size > 0 && unit.name !== 'Daemon Prince') {
 			errors.push(`${unit.name} in Regiment of Renown cannot have enhancements.`);
 		}
 	}

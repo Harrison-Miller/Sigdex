@@ -5,6 +5,7 @@ import NoticeModal from './modules/home/components/NoticeModal.vue';
 import { findNextNoticeToShow, markNoticeSeen, type Notice } from './utils/notices';
 import { clearGameCache, useGame } from './modules/shared/composables/useGame';
 import { useDark, useToggle } from '@vueuse/core';
+import { SIGDEX_VERSION } from './version';
 
 const showNotice = ref(false);
 const currentNotice = ref<Notice | null>(null);
@@ -60,4 +61,13 @@ onUnmounted(() => {
     @close="handleNoticeClose"
   />
   <RouterView />
+  <div class="sigdex-version">Sigdex v{{ SIGDEX_VERSION }}</div>
 </template>
+<style scoped>
+.sigdex-version {
+  margin-top: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.95em;
+}
+</style>

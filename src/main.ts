@@ -8,7 +8,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {
   faShieldAlt,
-  faBolt,
+  faSkull,
   faRunning,
   faCrosshairs,
   faBullseye,
@@ -41,7 +41,7 @@ registerSuperJSONClasses();
 // Add icons to the library
 library.add(
   faShieldAlt,
-  faBolt,
+  faSkull,
   faRunning,
   faCrosshairs,
   faBullseye,
@@ -64,7 +64,7 @@ library.add(
   faCircleExclamation,
   faGear,
   faArrowDown19,
-  faArrowDownAZ
+  faArrowDownAZ,
 );
 
 useDark();

@@ -118,7 +118,6 @@ v-if="(showLegends && army.legends) || !army.legends"
         <ListList />
       </template>
     </TwoTab>
-    <div class="sigdex-version">Sigdex v{{ SIGDEX_VERSION }}</div>
     <div v-if="loading">Loading game data...</div>
     <div
       v-if="error"
@@ -133,8 +132,7 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useGame } from '../../shared/composables/useGame';
 import ListButton from '../../shared/components/ListButton.vue';
-import SettingsButton from '../../core/components/SettingsButton.vue';
-import { SIGDEX_VERSION } from '../../../version';
+import SettingsButton from '../../core/components/SettingsButton.vue'
 import Section from '../../core/components/ContentSection.vue';
 import ListList from '../components/ListList.vue';
 import TwoTab from '../../core/components/TwoTab.vue';
@@ -295,12 +293,6 @@ function goToRegimentOfRenown(regiment: string) {
   color: #888;
   font-size: 1.1em;
   margin-top: 2em;
-}
-.sigdex-version {
-  margin-top: 2rem;
-  text-align: center;
-  color: #888;
-  font-size: 0.95em;
 }
 .error {
   color: #c00;

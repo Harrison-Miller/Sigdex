@@ -22,7 +22,7 @@ export function formatText(text: string): string {
   // *text* => italics
   text = text.replace(/\*(?!\*)(.+?)\*(?!\*)/g, '<i>$1</i>');
   // ^^text^^ => small caps
-  text = text.replace(/\^\^(.+?)\^\^/g, '<span style="font-variant: small-caps;">$1</s>');
+  text = text.replace(/\^\^(.+?)\^\^/g, '<span style="font-variant: small-caps;">$1</span>');
 
 
 
