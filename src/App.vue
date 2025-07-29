@@ -6,6 +6,7 @@ import { findNextNoticeToShow, markNoticeSeen, type Notice } from './utils/notic
 import { clearGameCache, useGame } from './modules/shared/composables/useGame';
 import { useDark, useToggle } from '@vueuse/core';
 import { SIGDEX_VERSION } from './version';
+import BackToTop from './modules/core/components/BackToTop.vue';
 
 const showNotice = ref(false);
 const currentNotice = ref<Notice | null>(null);
@@ -61,6 +62,7 @@ onUnmounted(() => {
     @close="handleNoticeClose"
   />
   <RouterView />
+  <BackToTop />
   <div class="sigdex-version">Sigdex v{{ SIGDEX_VERSION }}</div>
 </template>
 <style scoped>
