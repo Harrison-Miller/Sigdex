@@ -53,6 +53,32 @@ export const NOTICES: Notice[] = [
     category: 'special',
     alwaysShow: true, // Always show this notice
   },
+  {
+    title: 'Sigdex v9 Released!',
+    body: `
+      <p>We're excited to announce the release of Sigdex v9! This update includes:</p>
+      <ul style="list-style-type: disc inside; text-align: left;">
+        <li>Legends toggle in settings to show legends units and armies</li>
+        <li>Support for new KO and Khorne books</li>
+        <li>Unit designer notes</li>
+        <li>Improved styling</li>
+        <li>Lots of fixes to regiment option parsing</li>
+      </ul>
+      <p>And much more. Join the Discord to get more updates, report bugs, or request features:</p>
+      <div style="margin: 2em 0; text-align: center;">
+        <a
+          href="https://discord.gg/Fn6ZUFb9vZ" target="_blank"
+          style="display:inline-flex;align-items:center;gap:0.5em;font-weight:600;padding:0.8em 1.5em;border-radius:6px;text-decoration:none;font-size:1.2em;background:#5865F2;color:#fff;"
+          aria-label="Join Discord"
+        >
+          <img src="/assets/brands/discord-brands.svg" alt="Discord" style="height:1.5em;width:1.5em;vertical-align:middle;" /> Join the Discord
+        </a>
+      </div>
+    `,
+    timestamp: '2025-07-30T00:00:00Z',
+    category: 'changelog',
+    alwaysShow: true,
+  },
 ];
 
 export function getNoticeKey(notice: Notice): string {

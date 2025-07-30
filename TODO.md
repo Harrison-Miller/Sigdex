@@ -1,7 +1,6 @@
 * fix desktop view
 * spinner for page load
 * math hammer on warscrolls
-* back to top button
 
 * data issues
   * KO regiment options are incorrect/to permissive
@@ -30,7 +29,3 @@
 * link enhancement tables by id not name - incase we rename with sog suffix
 
 * double or half weapon options when toggling reinforce - I'm not sure this is a good idea, the halfing gets a bit complicated
-
-# v9 release todo
-
-* finish fixing all the regiment option stuff - almost done, just aors and supplements

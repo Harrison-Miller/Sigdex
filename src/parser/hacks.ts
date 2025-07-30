@@ -13,6 +13,7 @@ export const parserHacks: ParserHack[] = [
 	markLegendsArmiesUnitsAsLegends,
 	addAutoEndrinBattleprofile,
 	removeTruebladeDescription,
+	addSteelhelmsNotes,
 ];
 
 function markBigWaaaghAsArmyOfRenown(game: Game) {
@@ -129,5 +130,12 @@ function removeTruebladeDescription(game: Game) {
 	const trueblade = game.units.get('Askurgan Trueblades');
 	if (trueblade) {
 		trueblade.descriptions = [];
+	}
+}
+
+function addSteelhelmsNotes(game: Game) {
+	const steelhelms = game.units.get('Freeguild Steelhelms');
+	if (steelhelms) {
+		steelhelms.descriptions.push('This unit\'s musician and standard bearer are the same model.');
 	}
 }

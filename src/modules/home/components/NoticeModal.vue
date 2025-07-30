@@ -65,13 +65,14 @@ const formattedTimestamp = computed(() => {
 }
 .notice-modal-close {
   position: absolute;
-  right: 1em;
-  top: 1em;
+  right: 0.2em;
+  top: 0.2em;
   background: none;
   border: none;
   font-size: 2em;
   color: var(--text-muted);
   cursor: pointer;
+  padding: 0.2em;
 }
 .notice-modal-body {
   margin: 1em 0;

@@ -28,7 +28,7 @@ export function importList(text: string, game: Game): List {
       army,
       Array.from(game.universalManifestationLores.keys())
     ),
-    // TODO: find battle tactics and points cap
+    // TODO: points cap
   };
 
   // to get eslint to not complain about missing properties
