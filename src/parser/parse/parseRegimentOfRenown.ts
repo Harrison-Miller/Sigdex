@@ -45,7 +45,7 @@ export function parseRegimentsOfRenown(
     };
 
     if (!ror.units || !ror.points || !ror.allowedArmies) {
-      // console.warn(`Skipping Regiment of Renown "${name}" due to missing data.`);
+      console.warn(`Skipping Regiment of Renown "${name}" due to missing data: `, ror);
       continue;
     }
 
@@ -74,7 +74,7 @@ function parseRoRProfiles(gameRoot: any, armyIds: Map<string, string>): Map<stri
   );
   if (!ghb) return new Map();
 
-  const rorNode = ghb?.forceEntries?.forceEntry || [];
+  const rorNode = ghb?.forceEntries?.forceEntry || gameRoot?.forceEntries?.forceEntry || [];
   const profiles: Map<string, IRoRProfile> = new Map();
   for (const profileNode of rorNode) {
     const name = profileNode['@_name']?.trim();
