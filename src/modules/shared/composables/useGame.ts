@@ -10,17 +10,16 @@ import { DEFAULT_GITHUB_BRANCH, DEFAULT_GITHUB_REPO, GITHUB_BRANCH, GITHUB_REPO 
 import { SIGDEX_VERSION } from '../../../version';
 import SuperJSON from 'superjson';
 import LZString from 'lz-string';
+import { getLatestCommit } from '../../../github/commit';
 
 const GAME_STORAGE_KEY = 'game';
-const GAME_TIMESTAMP_KEY = 'gameTimestamp';
+const GAME_COMMIT_KEY = 'gameCommit';
 const GAME_VERSION_KEY = 'SIGDEX_VERSION';
-const GAME_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 1 week
 
-function isGameCacheOutOfDate(): boolean {
-  const cachedTimestamp = localStorage.getItem(GAME_TIMESTAMP_KEY);
-  if (!cachedTimestamp) return true;
-  const age = Date.now() - Number(cachedTimestamp);
-  return age >= GAME_MAX_AGE_MS;
+function isGameCacheOutOfDate(latestCommit: string): boolean {
+  const cachedCommit = localStorage.getItem(GAME_COMMIT_KEY);
+  if (!cachedCommit) return true;
+  return cachedCommit !== latestCommit;
 }
 
 function isGameVersionOutOfDate(): boolean {
@@ -43,7 +42,7 @@ export function clearGameCache() {
   _error.value = null;
   _loadPromise = null;
   localStorage.removeItem(GAME_STORAGE_KEY);
-  localStorage.removeItem(GAME_TIMESTAMP_KEY);
+  localStorage.removeItem(GAME_COMMIT_KEY);
   localStorage.removeItem(GAME_VERSION_KEY);
 }
 
@@ -67,7 +66,11 @@ export function useGame() {
 async function loadGame() {
   _loading.value = true;
   try {
-    const needsUpdate = isGameCacheOutOfDate() || isGameVersionOutOfDate();
+    const repo = GITHUB_REPO.value || DEFAULT_GITHUB_REPO;
+    const branch = GITHUB_BRANCH.value || DEFAULT_GITHUB_BRANCH;
+    const latestCommit = await getLatestCommit(repo, branch);
+
+    const needsUpdate = isGameCacheOutOfDate(latestCommit) || isGameVersionOutOfDate();
     const cached = localStorage.getItem(GAME_STORAGE_KEY);
     if (!needsUpdate && cached) {
       try {
@@ -83,8 +86,6 @@ async function loadGame() {
       return;
     }
     // Parse and store new game data
-    const repo = GITHUB_REPO.value || DEFAULT_GITHUB_REPO;
-    const branch = GITHUB_BRANCH.value || DEFAULT_GITHUB_BRANCH;
     console.log('Loading game data from GitHub...', repo, branch);
     const parser = new Parser(repo, branch);
     const game = await parser.parse();
@@ -99,12 +100,31 @@ async function loadGame() {
       const compressed = LZString.compressToUTF16(data);
       localStorage.setItem(GAME_STORAGE_KEY, compressed);
     }
-    localStorage.setItem(GAME_TIMESTAMP_KEY, Date.now().toString());
+    localStorage.setItem(GAME_COMMIT_KEY, latestCommit);
     localStorage.setItem(GAME_VERSION_KEY, SIGDEX_VERSION);
     _loading.value = false;
   } catch (e: any) {
-    _error.value = e?.message || 'Failed to load game data';
-    _loading.value = false;
+    console.error('Failed to load game data:', e);
+    try {
+      // try cached if we failed (we might have failed because of network issues)
+      const cached = localStorage.getItem(GAME_STORAGE_KEY);
+      if (cached) {
+        try {
+          // try decompressing
+          const decompressed = LZString.decompressFromUTF16(cached);
+          if (!decompressed) throw new Error('Failed to decompress game data');
+          _game.value = SuperJSON.parse(decompressed);
+        } catch {
+          // If decompression fails, assume it's a regular SuperJSON string
+          _game.value = SuperJSON.parse(cached);
+        }
+        _loading.value = false;
+        return;
+      }
+    } catch (e2: any) {
+      _error.value = e2?.message || 'Failed to load game data';
+      _loading.value = false;
+    }
   }
 }
 
