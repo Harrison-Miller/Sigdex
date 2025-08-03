@@ -23,6 +23,30 @@
           >
             {{ supporter.name }}
           </span>
+          <span
+            v-for="(supporter, idx) in supporters"
+            :key="`clone-${idx}`"
+            class="supporter-name"
+            :class="supporter.class"
+          >
+            {{ supporter.name }}
+          </span>
+          <span
+            v-for="(supporter, idx) in supporters"
+            :key="`clone-${idx}`"
+            class="supporter-name"
+            :class="supporter.class"
+          >
+            {{ supporter.name }}
+          </span>
+          <span
+            v-for="(supporter, idx) in supporters"
+            :key="`clone-${idx}`"
+            class="supporter-name"
+            :class="supporter.class"
+          >
+            {{ supporter.name }}
+          </span>
         </template>
         <template v-else>
           <span
@@ -47,6 +71,7 @@ const supporters = [
   { name: 'Max', class: 'text-supporter-level-1' },
   { name: 'Fletch', class: 'text-special-thanks' },
   { name: 'Big Man Tommy G', class: 'text-special-thanks' },
+  { name: 'Jeff', class: 'text-supporter-level-1' },
 ];
 </script>
 
@@ -92,7 +117,7 @@ const supporters = [
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-92%);
   }
 }
 </style>
