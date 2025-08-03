@@ -84,7 +84,7 @@ function toggleFavorites() {
 
 .search-input {
   flex: 1;
-  max-width: 600px;
+  /* max-width: 600px; */
 }
 
 .sort-toggle,

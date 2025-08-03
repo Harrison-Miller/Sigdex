@@ -13,19 +13,24 @@
       <div v-if="nameError" class="input-error">
         {{ nameError }}
       </div>
-      <label>
+      <label class="select-label">
         Army
         <OptionSelect
+          style="width: 100%; max-width: 100%;"
           v-model="selectedArmy"
           :options="armyOptions"
           placeholder="Select an army"
         />
       </label>
-      <OptionSelect
-        v-model="faction"
-        :options="aorOptions"
-        placeholder="Select variant (optional)"
-      />
+      <label class="select-label">
+        Variant
+        <OptionSelect
+          style="width: 100%; max-width: 100%;"
+          v-model="faction"
+          :options="aorOptions"
+          placeholder="Select variant (optional)"
+        />
+      </label>
       <div class="form-actions">
         <button
           class="create-btn"
@@ -127,12 +132,21 @@ function handleCreate() {
 .form-content {
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: 1.2em;
 }
 .form-actions {
   display: flex;
   justify-content: center;
   margin-top: 1.2em;
+}
+.select-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 0.5em;
+  font-weight: 600;
 }
 .create-btn {
   flex: 1 1 0;
