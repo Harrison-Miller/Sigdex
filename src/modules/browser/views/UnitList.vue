@@ -124,7 +124,15 @@ const filteredUnits = (units: any[]) => {
   }
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter((x) => x.name.toLowerCase().includes(query));
+    filtered = filtered.filter((x) => {
+      const nameIncludes = x.name.toLowerCase().includes(query);
+      const parts = query.split(',');
+      const keywordIncludes = parts.every((part) => {
+        const trimmed = part.trim();
+        return trimmed && x.keywords.some((k: string) => k.toLowerCase().includes(trimmed));
+      });
+      return nameIncludes || keywordIncludes;
+    });
   }
   if (sortMode.value === 'points') {
     filtered = [...filtered].sort((a, b) => {

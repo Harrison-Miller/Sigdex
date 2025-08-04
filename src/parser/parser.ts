@@ -165,6 +165,7 @@ export class Parser {
                 name: unit.name,
                 points: 0,
                 legends: false,
+                keywords: unit.keywords,
               });
             }
           }

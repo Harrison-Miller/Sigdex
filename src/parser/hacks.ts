@@ -61,15 +61,6 @@ function markLegendsArmiesUnitsAsLegends(game: Game) {
 					profile.keywords.push('LEGENDS');
 				}
 
-				// update unitList in army
-				const unitList = army.unitList.get(profile.category);
-				if (unitList) {
-					const listItem = unitList.find(unit => unit.name === profile.name);
-					if (listItem) {
-						listItem.legends = true;
-					}
-				}
-
 				// update unit data in game
 				const unitData = game.units.get(profile.name);
 				if (unitData) {
@@ -80,6 +71,7 @@ function markLegendsArmiesUnitsAsLegends(game: Game) {
 				}
 			}
 		}
+		army.recalculateUnitList(); // recalculate unit list to ensure legends units are included
 	}
 }
 
@@ -100,13 +92,14 @@ function addAutoEndrinBattleprofile(game: Game) {
 			reinforceable: false,
 		});
 
-		const ko = game.armies.get('Kharadron Overlords');
+		const ko = game.armies.get('Kharadron Overlords'); // TODO: do this for AoRs
 		if (ko) {
 			ko.battleProfiles.set(bp.name, bp);
 			ko.unitList.get(bp.category)?.push({
 				name: bp.name,
 				points: 0,
-				legends: false
+				legends: false,
+				keywords: bp.keywords,
 			});
 		}
 
@@ -119,9 +112,12 @@ function addAutoEndrinBattleprofile(game: Game) {
 			aor.unitList.get(bp.category)?.push({
 				name: bp.name,
 				points: 0,
-				legends: false
+				legends: false,
+				keywords: bp.keywords,
 			});
 		}
+
+		ko?.recalculateUnitList();
 	}
 }
 

@@ -66,6 +66,7 @@ export interface IUnitListItem {
   name: string;
   points: number;
   legends: boolean;
+  keywords: string[];
 }
 
 export type ArmyOptionType = 'mustBeIncluded' | 'requiredGeneral' | 'generalIfIncluded';
@@ -124,6 +125,8 @@ export interface IArmy {
 
   // aor restrictions
   options: ArmyOption[];
+
+  allKeywords: string[];
 }
 
 export class Army implements IArmy {
@@ -158,6 +161,8 @@ export class Army implements IArmy {
 
   options: ArmyOption[];
 
+  allKeywords: string[];
+
   constructor(data?: Partial<IArmy>) {
     this.revision = data?.revision ?? '';
 
@@ -191,6 +196,7 @@ export class Army implements IArmy {
     this.armyKeyword = data?.armyKeyword ?? '';
 
     this.options = data?.options ?? [];
+    this.allKeywords = data?.allKeywords ?? [];
 
     // determine if this is an army of renown
     const armyParts = this.name.split(' - ');
@@ -202,7 +208,11 @@ export class Army implements IArmy {
       this.baseArmyName = this.name; // if not an army of renown, the base army is the same as the army name
     }
 
-    // compute the unit list by category
+    this.recalculateUnitList();
+  }
+
+  recalculateUnitList() {
+    this.unitList.clear();
     for (const cat of UnitCategoriesOrder) {
       this.unitList.set(cat, []);
     }
@@ -215,11 +225,20 @@ export class Army implements IArmy {
       if (profile.isUndersize) continue; // don't want to show undersize units in the unit list
 
       if (this.unitList.has(unitCategory)) {
-        this.unitList.get(unitCategory)?.push({ name, points, legends });
+        this.unitList.get(unitCategory)?.push({
+          name,
+          points,
+          legends,
+          keywords: profile.keywords || []
+        });
       } else {
-        this.unitList.set(unitCategory, [{ name, points, legends }]);
+        this.unitList.set(unitCategory, [{ name, points, legends, keywords: profile.keywords || [] }]);
       }
     }
+
+    this.allKeywords = Array.from(new Set(
+      Array.from(this.unitList.values()).flatMap((items) => items.flatMap(item => item.keywords))
+    )).sort((a, b) => a.localeCompare(b));
   }
 
   hasDetails(): boolean {
