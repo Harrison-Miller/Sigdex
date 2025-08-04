@@ -28,4 +28,17 @@
 
 * link enhancement tables by id not name - incase we rename with sog suffix
 
+# v10 todo
+* popup for keyword rules and weapon abilities
+* separate terrain abilities into a sepcial thing other than just notes
+* popup for terrain abilitiy rules
+* faq in home
+* show faq in rules, warscroll and ability where applicable
+* finish pdf data use pdf data for regular armies
+* improve restrictions of AoRs
+* ideally compute and display AoR restrictions
+* make sure non-keywords are working
+* fix auto-endrin bug
+* improve enhancement table constraint calculation
 * double or half weapon options when toggling reinforce - I'm not sure this is a good idea, the halfing gets a bit complicated
+* improve desktop view
