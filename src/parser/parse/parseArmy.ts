@@ -241,6 +241,7 @@ export function calculateEnhancementTableKeywords(table: EnhancementTable, bps: 
 
   if (finalKeywords.length === 0) {
     const unitNames = filteredBps.map(bp => bp.name).sort();
+    console.warn(`No keywords found for enhancement table "${table.name}". Units:`, unitNames);
     return unitNames;
   }
 

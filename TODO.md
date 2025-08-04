@@ -38,7 +38,5 @@
 * improve restrictions of AoRs
 * ideally compute and display AoR restrictions
 * make sure non-keywords are working
-* fix auto-endrin bug
-* improve enhancement table constraint calculation
 * double or half weapon options when toggling reinforce - I'm not sure this is a good idea, the halfing gets a bit complicated
 * improve desktop view

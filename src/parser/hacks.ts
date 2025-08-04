@@ -14,6 +14,7 @@ export const parserHacks: ParserHack[] = [
 	addAutoEndrinBattleprofile,
 	removeTruebladeDescription,
 	addSteelhelmsNotes,
+	fixEnhancementTableKeywords,
 ];
 
 function markBigWaaaghAsArmyOfRenown(game: Game) {
@@ -92,7 +93,7 @@ function addAutoEndrinBattleprofile(game: Game) {
 			reinforceable: false,
 		});
 
-		const ko = game.armies.get('Kharadron Overlords'); // TODO: do this for AoRs
+		const ko = game.armies.get('Kharadron Overlords');
 		if (ko) {
 			ko.battleProfiles.set(bp.name, bp);
 			ko.unitList.get(bp.category)?.push({
@@ -133,5 +134,25 @@ function addSteelhelmsNotes(game: Game) {
 	const steelhelms = game.units.get('Freeguild Steelhelms');
 	if (steelhelms) {
 		steelhelms.descriptions.push('This unit\'s musician and standard bearer are the same model.');
+	}
+}
+
+// the keyword calculation for enhancement tables doesn't always work and will fall back to unit names which is ugly
+// this corrects the ones where it fallsback to unit names
+function fixEnhancementTableKeywords(game: Game) {
+	const ogors = game.armies.get('Ogor Mawtribes');
+	if (ogors) {
+		const table = ogors.enhancements.get('Big Names');
+		if (table) {
+			table.keywords = ['OGOR MAWTRIBES', 'HERO'];
+		}
+	}
+
+	const s2d = game.armies.get('Slaves to Darkness');
+	if (s2d) {
+		const table = s2d.enhancements.get('Ensorcelled Banners');
+		if (table) {
+			table.keywords = ['SLAVES TO DARKNESS', 'INFANTRY or CAVALRY', 'STANDARD BEARER'];
+		}
 	}
 }
