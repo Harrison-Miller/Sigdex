@@ -22,6 +22,8 @@ const props = defineProps<{
   splitOnSubLabel?: boolean;
   overrideSubLabel?: string;
   validator?: string;
+  castingValue?: string;
+  chantingValue?: string;
 }>();
 
 const emit = defineEmits(['click']);
@@ -55,6 +57,22 @@ const displayPoints = computed(() => {
     class="list-button"
     @click="() => emit('click')"
   >
+    <div
+      v-if="props.castingValue"
+      class="casting-value-circle"
+    >
+      {{ props.castingValue }}
+    </div>
+    <div
+      v-else-if="props.chantingValue"
+      class="chanting-value-diamond"
+    >
+      <FontAwesomeIcon
+        :icon="['fas', 'diamond']"
+        class="diamond-bg"
+      />
+      <span class="diamond-chanting-text">{{ props.chantingValue }}</span>
+    </div>
     <span
       class="list-label"
     >
@@ -84,6 +102,7 @@ const displayPoints = computed(() => {
 <style scoped>
 
 .list-button {
+  position: relative;
   width: 100%;
   min-width: 0;
   max-width: none;
@@ -180,5 +199,54 @@ const displayPoints = computed(() => {
 .validator-disabled {
   background: var(--color-gray) !important;
   color: #fff;
+}
+.casting-value-circle {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  background: var(--bg-sub);
+  border: 2px solid var(--border-color);
+  color: var(--text-main);
+  font-weight: bold;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.chanting-value-diamond {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.diamond-bg {
+  font-size: 2.2rem;
+  color: var(--bg-sub);
+  stroke: var(--border-color);
+  stroke-width: 20px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+}
+
+.diamond-chanting-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--text-main);
+  font-weight: bold;
+  font-size: 1.1rem;
+  pointer-events: none;
 }
 </style>

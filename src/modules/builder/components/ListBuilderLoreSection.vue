@@ -17,8 +17,8 @@
       <div v-if="props.manifestationMode && !loading && !error && selectedLoreName">
         <ul>
           <li
-            v-for="unitName in manifestationUnits"
-            :key="unitName"
+            v-for="unit in manifestationUnits"
+            :key="unit.unitName"
           >
             <router-link
               v-slot="{ navigate, href }"
@@ -26,14 +26,16 @@
                 name: 'UnitDetail',
                 params: {
                   armyName: isUniversalLore ? 'UniversalManifestations' : armyName,
-                  unitName: unitName,
+                  unitName: unit.unitName,
                 },
               }"
               custom
             >
               <ListButton
-                :label="unitName"
+                :label="unit.unitName"
                 :href="href"
+                :casting-value="unit.castingValue"
+                :chanting-value="unit.chantingValue"
                 @click="navigate"
               />
             </router-link>
@@ -104,14 +106,16 @@ const lore = computed(() => {
 });
 
 const manifestationUnits = computed(() => {
-  return (
-    computedArmyLore.value
-      .get(selectedLoreName.value)
-      ?.abilities.flatMap((ability) => {
-        return ability.summonedUnits;
-      })
-      .filter((unit) => unit.length > 0) || []
-  );
+  const lore = computedArmyLore.value.get(selectedLoreName.value);
+  if (!lore) return [];
+  return lore.abilities.flatMap((ability) => {
+    if (!ability.summonedUnits || ability.summonedUnits.length === 0) return [];
+    return ability.summonedUnits.map((unitName: string) => ({
+      unitName,
+      castingValue: ability.castingValue,
+      chantingValue: ability.chantingValue,
+    }));
+  });
 });
 
 const isUniversalLore = computed(() => {
