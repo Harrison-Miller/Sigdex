@@ -219,26 +219,30 @@ export function calculateEnhancementTableKeywords(table: EnhancementTable, bps: 
   const filteredBps = Array.from(bps.values()).filter(bp =>
     bp.enhancementTables.includes(table.name)
   );
-  const keywords = calculateCommonKeywords(filteredBps);
-  const commonArmyKeywords = calculateCommonKeywords(Array.from(bps.values()));
+  const keywords = new Set(calculateCommonKeywords(filteredBps));
 
-  // remove common army keywords from the table keywords
-  for (const keyword of commonArmyKeywords) {
-    const index = keywords.indexOf(keyword);
-    if (index !== -1) {
-      keywords.splice(index, 1);
-    }
+  const nonTableBps = Array.from(bps.values()).filter(bp =>
+    !bp.enhancementTables.includes(table.name) && !bp.keywords.includes('UNIQUE')
+  );
+  const nonTableKeywords = new Set(nonTableBps.flatMap(bp => bp.keywords));
+
+
+  // remove non-table keywords from the keywords
+  for (const kw of nonTableKeywords) {
+    keywords.delete(kw);
   }
 
-  // filter down to only unit categories
-  // const categories = Array.from(UnitCategories as string[]);
-  // return keywords.filter(kw => categories.includes(kw)).sort();
-  return keywords.filter(kw => {
+  const finalKeywords = Array.from(keywords).filter(kw => {
     // filter common game keywords
     if (['FLY'].includes(kw)) return false;
     if (kw.includes('WARD')) return false;
     return true;
   }).sort();
 
-  // we could do better by calculating the common keywords for everything then subtract those
+  if (finalKeywords.length === 0) {
+    const unitNames = filteredBps.map(bp => bp.name).sort();
+    return unitNames;
+  }
+
+  return finalKeywords;
 }
