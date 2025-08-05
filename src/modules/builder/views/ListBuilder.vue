@@ -205,12 +205,16 @@ import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
 import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
 import SoGBadge from '../../shared/components/badges/SoGBadge.vue';
 import BadgeRow from '../../shared/components/badges/BadgeRow.vue';
+import { useTitle } from '@vueuse/core';
 
 const props = defineProps<{ id: string }>();
 const route = useRoute();
 const router = useRouter();
 const listId = props.id ?? (route.params.id as string);
 const list = useList(listId);
+
+useTitle(`${list.value?.name || 'List Builder'}`);
+
 const { game, loading } = useGame();
 const army = computed(() => {
   return game.value?.armies.get(list.value?.faction || '') || new Army();

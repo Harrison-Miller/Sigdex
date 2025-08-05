@@ -140,7 +140,7 @@ import ListButtonSection from '../../shared/components/ListButtonSection.vue';
 import {
   SHOW_LEGENDS_KEY,
 } from '../../../favorites';
-import { useStorage } from '@vueuse/core';
+import { useStorage, useTitle } from '@vueuse/core';
 import type { ArmyListItem } from '../../../parser/models/game';
 import FilterBar from '../../shared/components/FilterBar.vue';
 import { useFilterBar } from '../../shared/composables/useFilterBar';
@@ -149,6 +149,8 @@ import { useFavorites } from '../../core/composables/useFavorite';
 const router = useRouter();
 const { favorites } = useFavorites('army');
 const leftActive = ref(true);
+
+useTitle('Sigdex');
 
 const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
 // Load game data (reactive, not awaited)

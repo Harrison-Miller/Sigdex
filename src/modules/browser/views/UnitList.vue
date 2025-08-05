@@ -87,7 +87,7 @@ import {
 } from '../../../favorites';
 import Section from '../../core/components/ContentSection.vue';
 import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
-import { useStorage } from '@vueuse/core';
+import { useStorage, useTitle } from '@vueuse/core';
 import FilterBar from '../../shared/components/FilterBar.vue';
 import { useFilterBar } from '../../shared/composables/useFilterBar';
 import { useFavorite, useFavorites } from '../../core/composables/useFavorite';
@@ -116,6 +116,8 @@ const { searchQuery, showFavorites, sortMode, onFilterBarUpdate } = useFilterBar
 const leftActive = ref(true);
 
 const { army, loading, error } = useArmy(armyName);
+
+useTitle(`${armyName}`);
 
 const filteredUnits = (units: any[]) => {
   let filtered = units;

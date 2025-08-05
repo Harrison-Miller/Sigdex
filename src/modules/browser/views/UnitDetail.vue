@@ -21,6 +21,7 @@ import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
 import SoGBadge from '../../shared/components/badges/SoGBadge.vue';
 import { useFavorite } from '../../core/composables/useFavorite';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useTitle } from '@vueuse/core';
 
 function formatCompanionUnits(unitName: string, companionLeader: string): string {
   const bold = (name: string) => `<b>${name}</b>`;
@@ -67,6 +68,8 @@ const unitKeywords = computed(() => {
   }
   return Array.from(keywords).sort();
 })
+
+useTitle(`${unitName}`);
 
 </script>
 <template>
