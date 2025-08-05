@@ -14,7 +14,7 @@ export default defineConfig(({ command }) => ({
         short_name: 'Sigdex',
         icons: [
           {
-            src: '/assets/icon192png',
+            src: '/assets/icon192.png',
             sizes: '192x192',
             type: 'image/png',
           },
