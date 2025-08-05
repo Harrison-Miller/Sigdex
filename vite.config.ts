@@ -12,6 +12,8 @@ export default defineConfig(({ command }) => ({
       manifest: {
         name: 'Sigdex',
         short_name: 'Sigdex',
+        background_color: '#000000',
+        theme_color: '#a10000',
         icons: [
           {
             src: '/assets/icon192.png',
