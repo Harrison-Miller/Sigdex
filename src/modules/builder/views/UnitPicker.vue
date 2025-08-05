@@ -45,6 +45,11 @@
       Only use the override if you think the regiment options are wrong. You may need to disable validation in the list settings.
     </div>
   </div>
+  <ListIndicator
+    v-if="list && game"
+    :list="list"
+    :game="game"
+  />
 </template>
 <script setup lang="ts">
 import { ref, computed } from 'vue';
@@ -68,6 +73,7 @@ import { SHOW_LEGENDS_KEY } from '../../../favorites';
 import FilterBar from '../../shared/components/FilterBar.vue';
 import { useFilterBar } from '../../shared/composables/useFilterBar';
 import { useFavorites } from '../../core/composables/useFavorite';
+import ListIndicator from '../components/ListIndicator.vue';
 
 const route = useRoute();
 const router = useRouter();
