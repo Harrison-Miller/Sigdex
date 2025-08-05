@@ -70,6 +70,7 @@ import { createList, getAllLists, LIST_NAME_MAX_LENGTH } from '../../../list/man
 import { VALIDATOR_NAMES } from '../../../validation/run';
 import { List } from '../../../list/models/list';
 import CircleIconButton from '../../core/components/CircleIconButton.vue';
+import { useTitle } from '@vueuse/core';
 
 
 const route = useRoute();
@@ -77,6 +78,8 @@ const listId = route.params.id as string;
 const list = useList(listId);
 const listName = computed(() => list.value?.name || '');
 const newName = ref(listName.value);
+
+useTitle(`${list.value?.name || 'List Builder'} - Settings`);
 
 const isNameValid = computed(() => {
   const trimmed = newName.value.trim();

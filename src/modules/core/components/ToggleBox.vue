@@ -1,7 +1,7 @@
 <template>
   <label
     class="toggle-box"
-    :class="{ checked: modelValue }"
+    :class="{ checked: modelValue, mini: mini }"
   >
     <span class="toggle-label"><slot /></span>
     <span class="toggle-slider" />
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ modelValue: boolean }>();
+defineProps<{ modelValue: boolean; mini?: boolean }>();
 defineEmits(['update:modelValue']);
 </script>
 
@@ -62,5 +62,23 @@ defineEmits(['update:modelValue']);
 .toggle-box.checked .toggle-slider::before {
   transform: translateX(32px);
   background: var(--bg-main);
+}
+
+/* Mini version styles */
+.toggle-box.mini .toggle-label {
+  font-size: 1em;
+}
+.toggle-box.mini .toggle-slider {
+  width: 50px;
+  height: 28px;
+}
+.toggle-box.mini .toggle-slider::before {
+  width: 20px;
+  height: 20px;
+  left: 4px;
+  top: 4px;
+}
+.toggle-box.mini.checked .toggle-slider::before {
+  transform: translateX(22px);
 }
 </style>

@@ -7,6 +7,11 @@
       class="regiment-options-bar"
       v-html="formattedRegimentOptions"
     />
+    <ToggleBox v-if="showMultiAdd"
+    style="margin-bottom: 0.5em;"
+      v-model="multiAdd"
+      :mini="true"
+    > Multi-Add </ToggleBox>
     <FilterBar
       @update="onFilterBarUpdate"
     />
@@ -82,6 +87,10 @@ const regimentIdx = Number(route.params.regimentIdx);
 const filter = (route.params.filter as string) || '';
 const overrideRegimentOptions = ref(false);
 const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
+const multiAdd = useStorage('unit-picker-multi-add', false);
+const showMultiAdd = computed(() => {
+  return filter.toLowerCase() === 'unit' || filter.toLowerCase() === 'aux';
+});
 
 const { favorites: armyFavorites } = useFavorites('army');
 const { favorites: unitFavorites } = useFavorites('unit');
@@ -267,6 +276,14 @@ function goToDetail(item: UnitPickerListItem) {
   }
 }
 
+
+function returnToList() {
+  if (multiAdd.value && showMultiAdd.value) {
+    return;
+  }
+  router.back();
+}
+
 function addUnitToRegiment(item: UnitPickerListItem) {
   if (!list.value) return;
   list.value.modifiedAt = new Date();
@@ -300,7 +317,7 @@ function addUnitToRegiment(item: UnitPickerListItem) {
         weaponOptions: unitSettings.value.weaponOptions,
       })
     );
-    router.back();
+    returnToList();
     return;
   }
 
@@ -343,7 +360,7 @@ function addUnitToRegiment(item: UnitPickerListItem) {
       }
     }
   }
-  router.back();
+  returnToList();
 }
 </script>
 <style scoped>

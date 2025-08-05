@@ -50,6 +50,7 @@ import { Army } from '../../../parser/models/army';
 import { Unit } from '../../../parser/models/unit';
 import { BattleProfile } from '../../../parser/models/battleProfile';
 import { ListUnit } from '../../../list/models/unit';
+import { useTitle } from '@vueuse/core';
 
 const route = useRoute();
 const router = useRouter();
@@ -94,6 +95,8 @@ const unit = computed({
     list.value.modifiedAt = new Date();
   },
 });
+
+useTitle(`${list.value?.name || 'List Builder'} - ${unit.value?.name || 'Unit'} - Settings`);
 
 const unitData = computed(
   () => (game.value?.units.get(unit.value?.name || '') as Unit) || new Unit()
