@@ -1,5 +1,4 @@
 <template>
-  <BackButton />
   <h2>Select a Unit</h2>
   <div v-if="loading">Loading...</div>
   <div v-else>
@@ -52,7 +51,6 @@ import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { formatRegimentOptions } from '../../../utils/formatter';
 import ListButton from '../../shared/components/ListButton.vue';
-import BackButton from '../../core/components/BackButton.vue';
 import Section from '../../core/components/ContentSection.vue';
 import { useGame } from '../../shared/composables/useGame';
 import { BattleProfile } from '../../../parser/models/battleProfile';

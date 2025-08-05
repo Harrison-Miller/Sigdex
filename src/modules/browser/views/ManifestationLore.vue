@@ -2,7 +2,6 @@
 import { computed } from 'vue';
 import { useUniversalManifestationLore } from '../../shared/composables/useGame';
 import ListButton from '../../shared/components/ListButton.vue';
-import BackButton from '../../core/components/BackButton.vue';
 import Section from '../../core/components/ContentSection.vue';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
@@ -16,10 +15,6 @@ const units = computed(() => {
 });
 </script>
 <template>
-  <BackButton
-    :size="36"
-    class="unit-list-back"
-  />
   <FavoritesToggle
     type="army"
     :name="lore.name"
@@ -66,9 +61,6 @@ const units = computed(() => {
 </template>
 <style src="../../home/views/list-shared.css" scoped></style>
 <style scoped>
-.unit-list-back {
-  margin-bottom: 0.5rem;
-}
 .error {
   color: var(--color-red);
   margin-top: 1em;

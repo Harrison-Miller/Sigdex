@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
-const props = defineProps<{ size?: number }>();
 const router = useRouter();
-const iconSize = props.size ?? 36;
+const iconSize = 36;
 function goBack() {
   // If there is no history or going back would leave the app, go to HomePage
   if (window.history.length > 2) {
@@ -12,25 +12,31 @@ function goBack() {
     router.replace({ path: '/' });
   }
 }
+const isBackButtonVisible = computed(() => {
+  return router.currentRoute.value.name !== 'HomePage';
+});
+
 </script>
 <template>
-  <button
-    class="back-btn"
-    aria-label="Back"
-    @click="goBack"
-  >
-    <FontAwesomeIcon
-class="bg-sub text-muted"
-      icon="fa-solid fa-arrow-left"
-      :style="{
-        fontSize: iconSize + 'px',
-        borderRadius: '50%',
-        width: iconSize + 'px',
-        height: iconSize + 'px',
-        padding: iconSize * 0.22 + 'px',
-      }"
-    />
-  </button>
+  <template v-if="isBackButtonVisible">
+    <button
+      class="back-btn"
+      aria-label="Back"
+      @click="goBack"
+    >
+      <FontAwesomeIcon
+  class="bg-sub text-muted"
+        icon="fa-solid fa-arrow-left"
+        :style="{
+          fontSize: iconSize + 'px',
+          borderRadius: '50%',
+          width: iconSize + 'px',
+          height: iconSize + 'px',
+          padding: iconSize * 0.22 + 'px',
+        }"
+      />
+    </button>
+  </template>
 </template>
 <style scoped>
 .back-btn {

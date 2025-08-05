@@ -1,6 +1,5 @@
 <template>
   <div class="list-export-wrapper">
-    <BackButton />
     <div class="list-export-view">
       <div class="export-header">
         <button
@@ -43,7 +42,6 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { exportList } from '../exportList';
-import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
 import { useList } from '../../shared/composables/useList';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

@@ -1,10 +1,5 @@
 <template>
   <div class="settings-view">
-    <BackButton
-      class="back-btn"
-      :size="36"
-    />
-
     <h1>Settings</h1>
     <div class="section socials">
       <span>Join our community or view the project:</span>
@@ -90,7 +85,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import BackButton from '../../core/components/BackButton.vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import ToggleBox from '../../core/components/ToggleBox.vue';
 import TextInput from '../../core/components/TextInput.vue';
@@ -127,12 +121,6 @@ function clearLists() {
 }
 </script>
 <style scoped>
-.back-btn {
-  position: absolute;
-  left: 1.2rem;
-  top: 1.2rem;
-  z-index: 2;
-}
 .section {
   margin-bottom: 1.5rem;
 }

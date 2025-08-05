@@ -4,9 +4,6 @@
     class="list-builder-view"
   >
     <div class="header-bar">
-      <div style="flex: 1; min-width: 0; display: flex; align-items: center">
-        <BackButton />
-      </div>
       <div class="floating-header-buttons">
         <CircleIconButton
           class="export-btn"
@@ -184,7 +181,6 @@ import OptionSelect from '../../core/components/OptionSelect.vue';
 import { ref, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useList } from '../../shared/composables/useList';
-import BackButton from '../../core/components/BackButton.vue';
 import SettingsButton from '../../core/components/SettingsButton.vue';
 import CircleIconButton from '../../core/components/CircleIconButton.vue';
 import { useGame } from '../../shared/composables/useGame';

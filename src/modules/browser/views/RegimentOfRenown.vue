@@ -1,5 +1,4 @@
 <template>
-  <BackButton :size="36" />
   <FavoritesToggle
     type="army"
     :name="regimentName"
@@ -67,7 +66,6 @@ import { useRoute, useRouter } from 'vue-router';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
 import ListButton from '../../shared/components/ListButton.vue';
 import Section from '../../core/components/ContentSection.vue';
-import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
 import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
 import FavoritesToggle from '../../shared/components/FavoritesToggle.vue';

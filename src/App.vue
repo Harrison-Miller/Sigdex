@@ -7,6 +7,7 @@ import { clearGameCache, useGame } from './modules/shared/composables/useGame';
 import { useDark, useToggle } from '@vueuse/core';
 import { SIGDEX_VERSION } from './version';
 import BackToTop from './modules/core/components/BackToTop.vue';
+import BackButton from './modules/core/components/BackButton.vue';
 
 const showNotice = ref(false);
 const currentNotice = ref<Notice | null>(null);
@@ -61,6 +62,7 @@ onUnmounted(() => {
     :visible="showNotice"
     @close="handleNoticeClose"
   />
+  <BackButton />
   <RouterView />
   <BackToTop />
   <div class="sigdex-version">Sigdex v{{ SIGDEX_VERSION }}</div>

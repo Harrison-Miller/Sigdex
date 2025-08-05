@@ -1,6 +1,5 @@
 <template>
   <div class="unit-settings-header-bar">
-    <BackButton class="unit-settings-back-btn" />
     <CircleIconButton
 v-if="!isRoRUnit && !isLeader"
       class="duplicate-btn"
@@ -45,7 +44,6 @@ import { useRoute, useRouter } from 'vue-router';
 import ToggleBox from '../../core/components/ToggleBox.vue';
 import WeaponOptionsSelection from '../components/WeaponOptionsSelection.vue';
 import EnhancementsSelection from '../components/EnhancementsSelection.vue';
-import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
 import { useList } from '../../shared/composables/useList';
 import { Army } from '../../../parser/models/army';

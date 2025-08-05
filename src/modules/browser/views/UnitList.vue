@@ -1,5 +1,4 @@
 <template>
-  <BackButton :size="36" />
   <FavoritesToggle
     v-if="!isAor"
     type="army"
@@ -72,7 +71,6 @@ import { useRoute } from 'vue-router';
 import { ref, computed } from 'vue';
 import { useArmy } from '../../shared/composables/useGame';
 import ListButton from '../../shared/components/ListButton.vue';
-import BackButton from '../../core/components/BackButton.vue';
 import ArmyRules from '../components/ArmyRules.vue';
 import TwoTab from '../../core/components/TwoTab.vue';
 import {

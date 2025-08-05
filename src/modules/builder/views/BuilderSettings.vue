@@ -1,5 +1,4 @@
 <template>
-  <BackButton class="settings-back-btn" />
   <CircleIconButton
     class="settings-duplicate-btn"
     icon="fa-solid fa-copy"
@@ -61,8 +60,6 @@
   </div>
 </template>
 <script setup lang="ts">
-
-import BackButton from '../../core/components/BackButton.vue';
 import CounterBox from '../../core/components/CounterBox.vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import { ref, computed, watch } from 'vue';

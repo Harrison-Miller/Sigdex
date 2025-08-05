@@ -1,6 +1,5 @@
 <template>
   <div>
-    <BackButton class="floating-back-btn" />
     <h2>Create New List</h2>
     <div class="form-content">
       <TextInput
@@ -16,8 +15,8 @@
       <label class="select-label">
         Army
         <OptionSelect
-          style="width: 100%; max-width: 100%;"
           v-model="selectedArmy"
+          style="width: 100%; max-width: 100%;"
           :options="armyOptions"
           placeholder="Select an army"
         />
@@ -25,8 +24,8 @@
       <label class="select-label">
         Variant
         <OptionSelect
-          style="width: 100%; max-width: 100%;"
           v-model="faction"
+          style="width: 100%; max-width: 100%;"
           :options="aorOptions"
           placeholder="Select variant (optional)"
         />
@@ -48,7 +47,6 @@ import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import TextInput from '../../core/components/TextInput.vue';
-import BackButton from '../../core/components/BackButton.vue';
 import { LIST_NAME_MAX_LENGTH } from '../../../list/manage';
 import { useGame } from '../../shared/composables/useGame';
 import { createList } from '../../../list/manage';
@@ -123,12 +121,6 @@ function handleCreate() {
 }
 </script>
 <style scoped>
-.floating-back-btn {
-  position: absolute;
-  top: 1.1em;
-  left: 1.1em;
-  z-index: 10;
-}
 .form-content {
   display: flex;
   flex-direction: column;

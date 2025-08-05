@@ -1,6 +1,5 @@
 <template>
   <div class="list-import-wrapper">
-      <BackButton />
     <div class="list-import-view">
       <div class="import-header">
         <h1>Import List</h1>
@@ -66,7 +65,6 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { importList } from '../importList';
-import BackButton from '../../core/components/BackButton.vue';
 import { useGame } from '../../shared/composables/useGame';
 import { createList } from '../../../list/manage';
 import ModalBox from '../../core/components/ModalBox.vue';

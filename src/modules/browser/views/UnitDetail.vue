@@ -5,7 +5,6 @@ import AbilityCard from '../../shared/components/AbilityCard.vue';
 import StatCircle from '../components/StatCircle.vue';
 import KeywordsBar from '../../shared/components/KeywordsBar.vue';
 import WeaponTable from '../components/WeaponTable.vue';
-import BackButton from '../../core/components/BackButton.vue';
 import Section from '../../core/components/ContentSection.vue';
 import {
   formatModelGroups,
@@ -70,7 +69,6 @@ useTitle(`${unitName}`);
 
 </script>
 <template>
-  <BackButton :size="36" />
   <FavoritesToggle
     v-if="armyName !== 'UniversalUnits'"
     type="unit"
