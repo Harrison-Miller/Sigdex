@@ -9,6 +9,22 @@ export default defineConfig(({ command }) => ({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
+      manifest: {
+        name: 'Sigdex',
+        short_name: 'Sigdex',
+        icons: [
+          {
+            src: '/assets/icon192png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: '/assets/icon512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+        ],
+      },
       workbox: {
         runtimeCaching: [
           {
