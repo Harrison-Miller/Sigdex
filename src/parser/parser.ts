@@ -111,73 +111,76 @@ export class Parser {
     });
 
     // parse armies and assign their lores
-    [...this.armyFiles.values()].forEach((xml) => {
-      const army = parseArmy(xml, this.units, this.categories);
-      if (
-        !army ||
-        army.name === '' ||
-        army.battleProfiles.size === 0
-      ) {
-        return;
-      }
-
-      for (const armyLore of army.spellLores.values()) {
-        const lore = this.allLores.get(armyLore.name);
-        if (lore) {
-          army.spellLores.set(armyLore.name, {
-            ...lore,
-            points: armyLore.points,
-          });
+    [...this.armyFiles.entries()]
+      .sort((a, b) => a[0].length - b[0].length)
+      .map(([_, xml]) => xml)
+      .forEach((xml) => {
+        const army = parseArmy(xml, this.units, this.categories);
+        if (
+          !army ||
+          army.name === '' ||
+          army.battleProfiles.size === 0
+        ) {
+          return;
         }
-      }
 
-      for (const armyLore of army.prayerLores.values()) {
-        const lore = this.allLores.get(armyLore.name);
-        if (lore) {
-          army.prayerLores.set(armyLore.name, {
-            ...lore,
-            points: armyLore.points,
-          });
+        for (const armyLore of army.spellLores.values()) {
+          const lore = this.allLores.get(armyLore.name);
+          if (lore) {
+            army.spellLores.set(armyLore.name, {
+              ...lore,
+              points: armyLore.points,
+            });
+          }
         }
-      }
 
-      for (const armyLore of army.manifestationLores.values()) {
-        const lore = this.allLores.get(armyLore.name);
-        if (lore) {
-          army.manifestationLores.set(armyLore.name, {
-            ...lore,
-            points: armyLore.points,
-          });
+        for (const armyLore of army.prayerLores.values()) {
+          const lore = this.allLores.get(armyLore.name);
+          if (lore) {
+            army.prayerLores.set(armyLore.name, {
+              ...lore,
+              points: armyLore.points,
+            });
+          }
+        }
 
-          // create a battle profile for each manifestation ability
-          for (const ability of lore.abilities) {
-            for (const summonedUnit of ability.summonedUnits) {
-              const unit = this.units.get(summonedUnit);
-              if (!unit) continue; // skip if the unit is not found
-              const battleProfile: Partial<IBattleProfile> = {
-                name: unit.name,
-                category: unit.category,
-              };
-              army.battleProfiles.set(unit.name, new BattleProfile(battleProfile));
+        for (const armyLore of army.manifestationLores.values()) {
+          const lore = this.allLores.get(armyLore.name);
+          if (lore) {
+            army.manifestationLores.set(armyLore.name, {
+              ...lore,
+              points: armyLore.points,
+            });
 
-              // update the unitList
-              army.unitList.get(unit.category)?.push({
-                name: unit.name,
-                points: 0,
-                legends: false,
-                keywords: unit.keywords,
-              });
+            // create a battle profile for each manifestation ability
+            for (const ability of lore.abilities) {
+              for (const summonedUnit of ability.summonedUnits) {
+                const unit = this.units.get(summonedUnit);
+                if (!unit) continue; // skip if the unit is not found
+                const battleProfile: Partial<IBattleProfile> = {
+                  name: unit.name,
+                  category: unit.category,
+                };
+                army.battleProfiles.set(unit.name, new BattleProfile(battleProfile));
+
+                // update the unitList
+                army.unitList.get(unit.category)?.push({
+                  name: unit.name,
+                  points: 0,
+                  legends: false,
+                  keywords: unit.keywords,
+                });
+              }
             }
           }
         }
-      }
 
-      if (this.armies.has(army.name)) {
-        console.warn(`Duplicate army found: ${army.name}`);
-      } else {
-        this.armies.set(army.name, army);
-      }
-    });
+        if (this.armies.has(army.name)) {
+          console.warn(`Duplicate army found: ${army.name}`);
+        } else {
+          this.armies.set(army.name, army);
+        }
+      });
 
     // assign list of armies of renown to each army
     this.armies.forEach((army) => {

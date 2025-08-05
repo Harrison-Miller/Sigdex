@@ -19,6 +19,12 @@ export function parseArmy(
   name = name.replace(/[^a-zA-Z0-9\s.,'!-]/g, '').trim();
 
   const armyCategories = parseCategories(catalogue);
+  // add to all categories always override
+  for (const [id, category] of armyCategories.entries()) {
+    categories.set(id, category);
+  }
+
+
   // find all armyCategories with no childIds and all caps
   const possibleArmyKeywords = Array.from(new Set(Array.from(armyCategories.values())
     .filter((cat) => !cat.modifiers.some(m => m.childConditionIds.length) && cat.name === cat.name.toUpperCase())
