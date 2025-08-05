@@ -8,7 +8,7 @@ const alternateUnitNames: Map<string, string[]> = new Map([
 ]);
 
 export function importList(text: string, game: Game): List {
-  const listText = text.toLowerCase().trim();
+  const listText = text.toLowerCase().replace('```', '').trim();
   // search the text for the name of a faction
   const army = findArmy(listText, game);
   if (!army) {

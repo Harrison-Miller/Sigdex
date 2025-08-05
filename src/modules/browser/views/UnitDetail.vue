@@ -20,6 +20,9 @@ import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
 import SoGBadge from '../../shared/components/badges/SoGBadge.vue';
 import { useTitle } from '@vueuse/core';
 import FavoritesToggle from '../../shared/components/FavoritesToggle.vue';
+import BadgeRow from '../../shared/components/badges/BadgeRow.vue';
+import WizardBadge from '../../shared/components/badges/WizardBadge.vue';
+import PriestBadge from '../../shared/components/badges/PriestBadge.vue';
 
 function formatCompanionUnits(unitName: string, companionLeader: string): string {
   const bold = (name: string) => `<b>${name}</b>`;
@@ -84,8 +87,12 @@ useTitle(`${unitName}`);
         {{ displaySubLabel }}
       </span>
     </h1>
-    <LegendsBadge big :legends="unit.legends" style="margin-bottom: 1em" />
-    <SoGBadge big :sog="isSoG" style="margin-bottom: 1em" />
+    <BadgeRow style="justify-content: center; margin-bottom: 1em">
+      <LegendsBadge big :legends="unit.legends"/>
+      <SoGBadge big :sog="isSoG"/>
+      <WizardBadge big :keywords="unit.keywords"/>
+      <PriestBadge big :keywords="unit.keywords"/>
+    </BadgeRow>
     <div class="stats-row">
       <StatCircle
         v-if="unit.stats.move"
