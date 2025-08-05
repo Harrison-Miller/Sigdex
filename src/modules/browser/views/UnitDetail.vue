@@ -19,9 +19,8 @@ import WeaponOptionsSelection from '../../builder/components/WeaponOptionsSelect
 import ReportErrorButton from '../../shared/components/ReportErrorButton.vue';
 import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
 import SoGBadge from '../../shared/components/badges/SoGBadge.vue';
-import { useFavorite } from '../../core/composables/useFavorite';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTitle } from '@vueuse/core';
+import FavoritesToggle from '../../shared/components/FavoritesToggle.vue';
 
 function formatCompanionUnits(unitName: string, companionLeader: string): string {
   const bold = (name: string) => `<b>${name}</b>`;
@@ -59,8 +58,6 @@ const { army } = useArmy(armyName ?? '');
 const { unit, battleProfile } = useUnit(armyName ?? '', unitName ?? '');
 const unitSettings = useUnitSettings(unit);
 
-
-const { isFavorited, toggleFavorite } = useFavorite('unit', unitName);
 const unitKeywords = computed(() => {
   const keywords = new Set<string>(unit.value.keywords);
   if (army.value.armyKeyword) {
@@ -74,18 +71,11 @@ useTitle(`${unitName}`);
 </script>
 <template>
   <BackButton :size="36" />
-  <div
+  <FavoritesToggle
     v-if="armyName !== 'UniversalUnits'"
-    class="floating-header-buttons"
-  >
-    <button
-      class="favorite-icon"
-      :class="{ active: isFavorited }"
-      @click.stop="toggleFavorite"
-    >
-      <FontAwesomeIcon icon="star" />
-    </button>
-  </div>
+    type="unit"
+    :name="unitName"
+  />
   <div>
     <h1 class="fancy-text">{{ displayLabel }}
       <br v-if="displaySubLabel" />
@@ -263,37 +253,6 @@ useTitle(`${unitName}`);
 </template>
 <style src="./unit-detail.css" scoped></style>
 <style scoped>
-.floating-header-buttons {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  z-index: 10;
-  padding: 1.2em 0.3em 0 0;
-}
-
-.favorite-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: color 0.2s;
-  width: 36px;
-  height: 36px;
-  background: none;
-  border: none;
-}
-
-.favorite-icon.active svg {
-  color: var(--color-yellow);
-}
-.favorite-icon svg {
-  color: #aaa;
-  font-size: 2em;
-}
-
 .unit-detail {
   font-size: 0.95em;
   color: var(--text-head);

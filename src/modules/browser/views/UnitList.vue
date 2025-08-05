@@ -1,17 +1,10 @@
 <template>
   <BackButton :size="36" />
-  <div 
+  <FavoritesToggle
     v-if="!isAor"
-    class="floating-header-buttons"
-  >
-    <button
-      class="favorite-icon"
-      :class="{ active: isFavorited }"
-      @click.stop="toggleFavorite"
-    >
-      <FontAwesomeIcon icon="star" />
-    </button>
-  </div>
+    type="army"
+    :name="armyName"
+    />
   <div
     v-if="!loading && !error"
   >
@@ -90,13 +83,12 @@ import LegendsBadge from '../../shared/components/badges/LegendsBadge.vue';
 import { useStorage, useTitle } from '@vueuse/core';
 import FilterBar from '../../shared/components/FilterBar.vue';
 import { useFilterBar } from '../../shared/composables/useFilterBar';
-import { useFavorite, useFavorites } from '../../core/composables/useFavorite';
+import FavoritesToggle from '../../shared/components/FavoritesToggle.vue';
+import { useFavorites } from '../../core/composables/useFavorite';
 
 const props = defineProps<{ armyName?: string }>();
 
 const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
-
-const { isFavorited, toggleFavorite } = useFavorite('army', props.armyName ?? '');
 
 const route = useRoute();
 const armyName = props.armyName ?? (route.params.armyName as string);
@@ -156,36 +148,6 @@ const filteredUnits = (units: any[]) => {
 </script>
 <style src="../../home/views/list-shared.css" scoped></style>
 <style scoped>
-.floating-header-buttons {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  z-index: 10;
-  padding: 1.2em 0.3em 0 0;
-}
-
-.favorite-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: color 0.2s;
-  width: 36px;
-  height: 36px;
-  background: none;
-  border: none;
-}
-
-.favorite-icon.active svg {
-  color: var(--color-yellow);
-}
-.favorite-icon svg {
-  color: #aaa;
-  font-size: 2em;
-}
 .sub-label {
   display: block;
   font-size: 0.5em;
