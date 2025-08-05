@@ -15,8 +15,11 @@ export function importList(text: string, game: Game): List {
     throw new Error('No valid army found in the list text.');
   }
 
+  const { name, points } = findNameAndPointsCap(text);
+
   const list: Partial<List> = {
-    name: findName(text),
+    name: name,
+    pointsCap: points,
     faction: army.name,
     formation: findFormationOrFirst(listText, army),
     regiments: [],
@@ -98,22 +101,23 @@ function findFormationOrFirst(text: string, army: Army): string {
   return army.formations.keys().next().value || '';
 }
 
-function findName(text: string): string {
+function findNameAndPointsCap(text: string): { name: string; points: number } {
   const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
 
   // Try to find a line with xxxx/yyyy pts
   const ptsLine = lines.find(line => /(\d+\/\d+ pts)$/i.test(line));
   if (ptsLine) {
-    // Remove xxxx/yyyy pts if present
-    const ptsMatch = ptsLine.match(/(\d+\/\d+ pts)$/i);
+    const ptsMatch = ptsLine.match(/(\d+)\/(\d+) pts$/i);
     if (ptsMatch) {
-      return ptsLine.replace(ptsMatch[0], '').trim();
+      const name = ptsLine.replace(ptsMatch[0], '').trim();
+      const points = parseInt(ptsMatch[2], 10) || 2000;
+      return { name, points };
     }
-    return ptsLine;
+    return { name: ptsLine, points: 2000 };
   }
 
   // Fallback to first non-empty line
-  return lines[0] || 'Imported List';
+  return { name: lines[0] || 'Imported List', points: 2000 };
 }
 
 function findBattleTacticCards(text: string, game: Game): { card1: string, card2: string } {
