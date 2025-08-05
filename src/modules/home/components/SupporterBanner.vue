@@ -71,7 +71,7 @@ const supporters = [
   { name: 'Max', class: 'text-supporter-level-1' },
   { name: 'Fletch', class: 'text-special-thanks' },
   { name: 'Big Man Tommy G', class: 'text-special-thanks' },
-  { name: 'Jeff', class: 'text-supporter-level-1' },
+  { name: 'Test2', class: 'text-supporter-level-1' },
 ];
 </script>
 
