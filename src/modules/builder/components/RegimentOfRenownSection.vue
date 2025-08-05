@@ -34,6 +34,7 @@ v-if="props.modelValueName"
           :show-reinforced="unit.reinforced"
           :enhancement-count="unit.getEnhancementCount()"
           :split-on-sub-label="true"
+          :keywords="game.units.get(unit.name)?.keywords"
           @click="() => goToUnitDetail(unit.name)"
         />
         <button

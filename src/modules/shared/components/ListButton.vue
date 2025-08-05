@@ -10,6 +10,8 @@ import EnhancementsBadge from './badges/EnhancementsBadge.vue';
 import LegendsBadge from './badges/LegendsBadge.vue';
 import PillBadge from '../../core/components/PillBadge.vue';
 import { useFavorite } from '../../core/composables/useFavorite';
+import WizardBadge from './badges/WizardBadge.vue';
+import PriestBadge from './badges/PriestBadge.vue';
 
 const props = defineProps<{
   label: string;
@@ -24,6 +26,7 @@ const props = defineProps<{
   validator?: string;
   castingValue?: string;
   chantingValue?: string;
+  keywords?: string[];
 }>();
 
 const emit = defineEmits(['click']);
@@ -81,6 +84,8 @@ const displayPoints = computed(() => {
         <PointsBadge :points="displayPoints" />
         <SoGBadge :sog="isSoG" />
         <LegendsBadge :legends="legends" />
+        <WizardBadge :keywords="props.keywords" />
+        <PriestBadge :keywords="props.keywords" />
         <GeneralBadge :general="props.showGeneral" />
         <ReinforcedBadge :reinforced="props.showReinforced" />
         <EnhancementsBadge :count="props.enhancementCount" />

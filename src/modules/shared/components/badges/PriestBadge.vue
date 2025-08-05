@@ -29,12 +29,13 @@ const powerLevel = computed(() => {
 <style scoped>
 .priest-badge {
 	background-color: var(--color-gray);
-	color: #111;
+	color: #fff;
   font-weight: 600;
 }
 .priest-icon {
   width: 1.2em;
   height: 1.2em;
   vertical-align: middle;
+  filter: invert(1) brightness(2);
 }
 </style>

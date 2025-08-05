@@ -17,6 +17,7 @@
           :legends="battleProfiles.get(unit.name)?.legends"
           :enhancement-count="unit.getEnhancementCount()"
           :split-on-sub-label="true"
+          :keywords="battleProfiles.get(unit.name)?.keywords"
           @click="
             () =>
               router &&

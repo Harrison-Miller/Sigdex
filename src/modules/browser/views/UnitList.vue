@@ -51,6 +51,7 @@
                     :legends="u.legends"
                     :href="href"
                     :split-on-sub-label="true"
+                    :keywords="u.keywords"
                     @click="navigate"
                   />
                 </router-link>

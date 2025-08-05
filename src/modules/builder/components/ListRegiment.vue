@@ -22,6 +22,7 @@
           :enhancement-count="leader.getEnhancementCount()"
           :legends="battleProfiles.get(leader.name)?.legends"
           :split-on-sub-label="true"
+          :keywords="battleProfiles.get(leader.name)?.keywords"
           @click="() => goToUnitDetail(leader.name)"
         />
         <button
@@ -54,6 +55,7 @@
               :enhancement-count="unit.getEnhancementCount()"
               :legends="battleProfiles.get(unit.name)?.legends"
               :split-on-sub-label="true"
+              :keywords="battleProfiles.get(unit.name)?.keywords"
               @click="() => goToUnitDetail(unit.name)"
             />
           <button
