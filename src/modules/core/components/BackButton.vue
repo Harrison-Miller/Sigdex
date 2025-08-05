@@ -13,7 +13,8 @@ function goBack() {
   }
 }
 const isBackButtonVisible = computed(() => {
-  return router.currentRoute.value.name !== 'HomePage';
+  return router.currentRoute.value.name !== 'HomePage' &&
+  router.currentRoute.value.path !== '/';
 });
 
 </script>

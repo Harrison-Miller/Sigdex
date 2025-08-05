@@ -167,7 +167,6 @@ v-if="showTactics"
         manifestation-mode
       />
     </div>
-    <div class="scroll-buffer" />
   </div>
   <ListIndicator
     v-if="list && game"

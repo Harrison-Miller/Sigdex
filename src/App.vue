@@ -66,6 +66,7 @@ onUnmounted(() => {
   <RouterView />
   <BackToTop />
   <div class="sigdex-version">Sigdex v{{ SIGDEX_VERSION }}</div>
+  <div class="scroll-buffer" />
 </template>
 <style scoped>
 .sigdex-version {
@@ -73,5 +74,9 @@ onUnmounted(() => {
   text-align: center;
   color: var(--text-muted);
   font-size: 0.95em;
+}
+.scroll-buffer {
+  height: 5em;
+  width: 100%;
 }
 </style>
