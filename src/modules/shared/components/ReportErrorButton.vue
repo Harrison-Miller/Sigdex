@@ -30,7 +30,7 @@ const APP_VERSION_FIELD = 'entry.1167406783';
 const formLink = computed(() => {
   const params = new URLSearchParams({
     [ARMY_NAME_FIELD]: props.armyName,
-    [ARMY_REVISION_FIELD]: props.armyRevision,
+    [ARMY_REVISION_FIELD]: props.armyRevision || '0',
     [APP_VERSION_FIELD]: SIGDEX_VERSION,
     ...(props.unitName ? { [UNIT_NAME_FIELD]: props.unitName } : {}),
   });
