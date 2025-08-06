@@ -69,7 +69,7 @@ export interface IUnitListItem {
   keywords: string[];
 }
 
-export type ArmyOptionType = 'mustBeIncluded' | 'requiredGeneral' | 'generalIfIncluded';
+export type ArmyOptionType = 'mustBeIncluded' | 'requiredGeneral' | 'generalIfIncluded' | 'unitConstraint';
 
 export interface IArmyOption {
   min: number;

@@ -24,7 +24,7 @@ export function parseBattleProfiles(
   armyCategories: Map<string, ICategory>,
   armyKeyword: string,
 ): Map<string, BattleProfile> {
-  const bpCategories = parseBattleProfileCategories(root);
+  const bpCategories = parseBattleProfileCategories(root, armyKeyword);
   // add bp categories to the main categories map
   const allCategories = new Map<string, ICategory>(categories);
   for (const [id, category] of bpCategories.entries()) {
@@ -126,7 +126,7 @@ export function parseBattleProfiles(
   return bpMap;
 }
 
-export function parseBattleProfileCategories(root: any): Map<string, ICategory> {
+export function parseBattleProfileCategories(root: any, armyKeyword: string): Map<string, ICategory> {
   const categories: Map<string, ICategory> = new Map();
 
   // create a category for each bp
@@ -135,6 +135,13 @@ export function parseBattleProfileCategories(root: any): Map<string, ICategory> 
     const bpCategories = parseCategory(bpNode);
     for (const [id, category] of bpCategories) {
       categories.set(id, category);
+    }
+  }
+
+  // filter battle traits and army keywords
+  for (const [id, category] of categories.entries()) {
+    if (category.name.toLowerCase().includes('battle traits') || category.name === armyKeyword) {
+      categories.delete(id);
     }
   }
 

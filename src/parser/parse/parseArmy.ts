@@ -50,7 +50,7 @@ export function parseArmy(
     manifestationLores: parseLoresByGroup(catalogue, 'Manifestation Lores'),
     battleProfiles: parseBattleProfiles(catalogue, units, categories, armyCategories, armyKeyword),
     armyKeyword: armyKeyword,
-    options: parseArmyOptions(catalogue, armyCategories, units),
+    options: parseArmyOptions(catalogue, armyCategories, units, armyKeyword),
   };
 
   const battleTraits = parseBattleTraits(catalogue);

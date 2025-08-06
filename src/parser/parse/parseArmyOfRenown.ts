@@ -1,14 +1,17 @@
 import { ArmyOption } from '../models/army';
 import type { Unit } from '../models/unit';
-import { findFirstByTagAndAttrs } from '../util';
+import { findAllByTagAndAttrs, findFirstByTagAndAttrs } from '../util';
+import { parseBattleProfileCategories } from './parseBattleProfile';
 import type { ICategory } from './parseCommon';
 
 // armies of renown are parsed as normal armies
 // this file contains functions for parsing special additional rules or properties that
 // generally only apply to armies of renown
 
-export function parseArmyOptions(root: any, armyCategories: Map<string, ICategory>, units: Map<string, Unit>): ArmyOption[] {
+export function parseArmyOptions(root: any, armyCategories: Map<string, ICategory>, units: Map<string, Unit>, armyKeyword: string): ArmyOption[] {
   const options: ArmyOption[] = [];
+  const bpCategories = parseBattleProfileCategories(root, armyKeyword);
+
   const mustBeIncluded = parseMustBeIncluded(root, armyCategories);
   if (mustBeIncluded.length > 0) {
     options.push(...mustBeIncluded);
@@ -21,7 +24,33 @@ export function parseArmyOptions(root: any, armyCategories: Map<string, ICategor
   if (mustBeGeneralIfIncluded) {
     options.push(mustBeGeneralIfIncluded);
   }
-  return options;
+
+  // unit constraints 
+  for (const cat of bpCategories.values()) {
+    if (cat.rosterMax > 0) {
+      options.push(new ArmyOption({
+        min: 0,
+        max: cat.rosterMax,
+        units: [cat.name],
+        type: 'mustBeIncluded',
+      }));
+    }
+  }
+
+  // deduplicate unitConstraints
+  const uniqueOptions = new Map<string, ArmyOption>();
+  for (const option of options) {
+    if (option.type === 'mustBeIncluded') {
+      const key = option.units.join(',');
+      if (!uniqueOptions.has(key)) {
+        uniqueOptions.set(key, option);
+      }
+    } else {
+      uniqueOptions.set(option.type, option);
+    }
+  }
+
+  return Array.from(uniqueOptions.values());
 }
 
 export function parseMustBeIncluded(
@@ -151,18 +180,18 @@ export function parseMustBeGeneralIfIncluded(
       field: 'category',
     });
 
-    const mustBeGeneralCondition = findFirstByTagAndAttrs(restrictGeneralMod, 'condition', {
+    const mustBeGeneralConditions = findAllByTagAndAttrs(restrictGeneralMod, 'condition', {
       type: 'atLeast',
       value: '1',
       field: 'selections',
       scope: 'roster',
     });
-    if (mustBeGeneralCondition) {
-      const generalId = mustBeGeneralCondition['@_childId'];
+    mustBeGeneralConditions.forEach((condition) => {
+      const generalId = condition['@_childId'];
       if (generalId) {
         mustBeGeneralIfIncludedId.add(generalId);
       }
-    }
+    });
   });
 
   const generals = Array.from(mustBeGeneralIfIncludedId)
