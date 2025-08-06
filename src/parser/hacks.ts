@@ -1,8 +1,8 @@
 // this file contains hacks for the parsing process
 // basically accounting for exceptions that are too complex/annoying to handle generically in the main parser logic
 
-import { ArmyOption } from "./models/army";
-import { BattleProfile } from "./models/battleProfile";
+import { Army, ArmyOption } from "./models/army";
+import { BattleProfile, RegimentOption } from "./models/battleProfile";
 import type { Game } from "./models/game";
 
 type ParserHack = (game: Game) => void;
@@ -16,6 +16,8 @@ export const parserHacks: ParserHack[] = [
 	removeTruebladeDescription,
 	addSteelhelmsNotes,
 	fixEnhancementTableKeywords,
+	fixDrekkiFlyntRegimentOptions,
+	fixRabbleRowzaRegimentOptions,
 ];
 
 function markBigWaaaghAsArmyOfRenown(game: Game) {
@@ -164,4 +166,57 @@ function fixEnhancementTableKeywords(game: Game) {
 			table.keywords = ['SLAVES TO DARKNESS', 'INFANTRY or CAVALRY', 'STANDARD BEARER'];
 		}
 	}
+}
+
+function fixDrekkiFlyntRegimentOptions(game: Game) {
+	const allArmies: Army[] = []
+	const ko = game.armies.get('Kharadron Overlords');
+	if (ko) {
+		allArmies.push(ko);
+	}
+
+	// add to an aors
+	const aorNames = ko?.armiesOfRenown || [];
+	for (const aorName of aorNames) {
+		const aor = game.armies.get(aorName);
+		if (!aor) continue;
+		allArmies.push(aor);
+	}
+
+	allArmies.forEach(army => {
+		const drekki = army.battleProfiles.get('Drekki Flynt');
+		if (drekki) {
+			// find frigate ro
+			const frigateOption = drekki.regimentOptions.find((opt: RegimentOption) => opt.unitNames.includes('Arkanaut Frigate'));
+			if (frigateOption) {
+				frigateOption.max = 1;
+			}
+		}
+	});
+}
+
+function fixRabbleRowzaRegimentOptions(game: Game) {
+	const allArmies: Army[] = [];
+	const gsg = game.armies.get('Gloomspite Gitz');
+	if (gsg) {
+		allArmies.push(gsg);
+	}
+
+	// add to an aors
+	const aorNames = gsg?.armiesOfRenown || [];
+	for (const aorName of aorNames) {
+		const aor = game.armies.get(aorName);
+		if (!aor) continue;
+		allArmies.push(aor);
+	}
+
+	allArmies.forEach(army => {
+		const rabbleRowza = army.battleProfiles.get('Rabble-Rowza');
+		if (rabbleRowza) {
+			const monsterOpt = rabbleRowza.regimentOptions.find((opt: RegimentOption) => opt.keywords.includes('MONSTER'));
+			if (monsterOpt) {
+				monsterOpt.max = 1;
+			}
+		}
+	});
 }
