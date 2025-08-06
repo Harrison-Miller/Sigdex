@@ -68,7 +68,7 @@ export interface IGame {
   // weapon ability to the rule description
   weaponAbilityDescriptions: Map<string, string>;
   // some keywords grant abilities like fly, ward.
-  keywordAbility: Map<string, Ability>;
+  keywordAbilities: Map<string, Ability>;
 
   units: Map<string, Unit>;
   universalManifestationLores: Map<string, Lore>;
@@ -82,7 +82,7 @@ export interface IGame {
 export class Game implements IGame {
   battleTacticCards: BattleTacticCard[] = [];
   weaponAbilityDescriptions: Map<string, string> = new Map();
-  keywordAbility: Map<string, Ability> = new Map();
+  keywordAbilities: Map<string, Ability> = new Map();
 
   units: Map<string, Unit> = new Map();
   universalManifestationLores: Map<string, Lore> = new Map();

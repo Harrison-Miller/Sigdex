@@ -1,3 +1,4 @@
+import type { Ability } from '../models/ability';
 import { type IBattleTacticCard, BattleTacticCard } from '../models/game';
 import { Lore } from '../models/lore';
 import { findFirstByTagAndAttrs, mapTextNodesByName } from '../util';
@@ -78,4 +79,30 @@ export function parseLores(root: any): Map<string, Lore> {
   });
 
   return loresMap;
+}
+
+export function parseWeaponAbilities(root: any): Map<string, string> {
+  const weaponAbilities = new Map<string, string>();
+  const ruleNodes = root?.sharedRules.rule || [];
+  ruleNodes.forEach((rule: any) => {
+    const name = rule['@_name'] || '';
+    const description = (typeof rule?.description === 'string' ? rule.description : rule?.description?.['#text']) || '';
+    if (description) {
+      weaponAbilities.set(name, description.trim());
+    }
+  });
+  return weaponAbilities;
+}
+
+export function parseKeywordAbilities(root: any): Map<string, Ability> {
+  const keywordAbilities = new Map<string, Ability>();
+  const keywordNodes = root?.sharedProfiles?.profile || [];
+  keywordNodes.forEach((keyword: any) => {
+    const name = keyword['@_name'] || '';
+    const ability = parseAbility(keyword);
+    if (ability.name) {
+      keywordAbilities.set(name, ability);
+    }
+  });
+  return keywordAbilities;
 }
