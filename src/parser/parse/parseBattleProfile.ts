@@ -306,6 +306,7 @@ export function parseRegimentOptions(
         let errorCondition: IErrorCondition | undefined;
         for (const error of errorConditions) {
           if (error.errorCategory !== category.name) continue;
+
           if (error.conditionUnitName && error.conditionUnitName !== name) {
             continue; // skip if the error condition is for a different unit
           }
@@ -473,7 +474,11 @@ export function parseErrorConditions(
         }
 
         if (category) {
-          const max = parseInt(error?.conditions?.condition[0]?.['@_value'] || '0', 10);
+          const max = parseInt(error.conditions?.condition?.[0]?.['@_value'] || error.localConditionGroups?.localConditionGroup?.[0]?.['@_value'] || '0', 10);
+          if (max == 0) {
+            console.warn(`Error condition for category "${category}" has max 0, this is likely a bug in the data: `, error, ` node was: `, node['@_name']);
+            continue;
+          }
           const conditionCategories =
             findAllByTagAndAttrs(group, 'condition', {
               type: 'instanceOf',
