@@ -110,6 +110,22 @@ const { army, loading, error } = useArmy(armyName);
 
 useTitle(`${armyName}`);
 
+// watch(army, (newArmy: Army | undefined) => {
+//   if (newArmy && !isAor.value) {
+//     console.log(`${armyName} - BATTLE PROFILES`);
+//     newArmy.battleProfiles.forEach((profile) => {
+//       if (!profile.keywords.includes('HERO')) {
+//         return;
+//       }
+
+//       console.log(`${profile.name} - ${profile.regimentTags.join(', ')}`);
+//       profile.regimentOptions.forEach((option) => {
+//         console.log(`  - ${option.toString()}`);
+//       });
+//     });
+//   }
+// }, { immediate: true });
+
 const filteredUnits = (units: any[]) => {
   let filtered = units;
   if (showFavorites.value) {

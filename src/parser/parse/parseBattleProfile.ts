@@ -423,16 +423,16 @@ function setOptionValues(cat: ICategory, option: RegimentOption, armyCategories:
     });
 
 
-
-    if (nonKeywords.length === 0 && keywords.length === 0) {
-      // if no keywords or non-keywords, just add the category name
-      option.subheroCategories.push(cat.name);
-      return;
-    } else {
+    // if we got some keywords and consumed the whole category then treat this as compound keyword otherwise subher category
+    if ((nonKeywords.length > 0 || keywords.length > 0) && compoundKeyword.trim() === '') {
       // sort keywords and non-keywords each by index they appear in the original string
       compoundKeyword = cat.name.toUpperCase(); // reset to original for index lookup
       option.keywords = keywords.sort((a, b) => compoundKeyword.indexOf(a) - compoundKeyword.indexOf(b));
       option.nonKeywords = nonKeywords.sort((a, b) => compoundKeyword.indexOf(a) - compoundKeyword.indexOf(b));
+      return;
+    } else {
+      // if no keywords or non-keywords, just add the category name
+      option.subheroCategories.push(cat.name);
       return;
     }
   }
