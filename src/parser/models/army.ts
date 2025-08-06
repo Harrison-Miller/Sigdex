@@ -69,13 +69,14 @@ export interface IUnitListItem {
   keywords: string[];
 }
 
-export type ArmyOptionType = 'mustBeIncluded' | 'requiredGeneral' | 'generalIfIncluded' | 'unitConstraint';
+export type ArmyOptionType = 'mustBeIncluded' | 'requiredGeneral' | 'generalIfIncluded' | 'custom';
 
 export interface IArmyOption {
   min: number;
   max: number;
   units: string[];
   type: ArmyOptionType;
+  note: string; // optional note for the army option
 }
 
 export class ArmyOption implements IArmyOption {
@@ -83,11 +84,13 @@ export class ArmyOption implements IArmyOption {
   max: number;
   units: string[];
   type: ArmyOptionType;
+  note: string; // optional note for the army option
   constructor(data?: Partial<IArmyOption>) {
     this.min = data?.min ?? 0;
     this.max = data?.max ?? 0;
     this.units = data?.units ?? [];
     this.type = data?.type ?? 'mustBeIncluded'; // default to 'mustBeIncluded'
+    this.note = data?.note ?? '';
   }
 }
 

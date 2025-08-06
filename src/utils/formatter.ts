@@ -222,6 +222,11 @@ export function formatArmyOptions(options: ArmyOption[]): string {
       case 'mustBeIncluded':
         out += formatMustBeIncluded(option);
         break;
+      case 'custom':
+        if (option.note) {
+          out += option.note;
+        }
+        break;
       default:
         out += `Unknown army option type: ${option.type}`;
     }

@@ -1,6 +1,7 @@
 // this file contains hacks for the parsing process
 // basically accounting for exceptions that are too complex/annoying to handle generically in the main parser logic
 
+import { ArmyOption } from "./models/army";
 import { BattleProfile } from "./models/battleProfile";
 import type { Game } from "./models/game";
 
@@ -21,6 +22,14 @@ function markBigWaaaghAsArmyOfRenown(game: Game) {
 	const bigWaaagh = game.armies.get('Big Waaagh!');
 	if (bigWaaagh) {
 		bigWaaagh.isArmyOfRenown = true;
+		bigWaaagh.options.push(new ArmyOption({
+			type: 'custom',
+			note: 'For each regiment you include in a <b>Big Waaagh!</b> Army of Renown that is led by an <b>IRONJAWZ HERO</b>, you must include a regiment that is led by a <b>KRULEBOYZ HERO</b> and vice versa.'
+		}))
+		bigWaaagh.options.push(new ArmyOption({
+			type: 'custom',
+			note: 'If your army includes <b>Kragnos, the End of Empires</b>, he can include either <b>KRULEBOYZ</b> units or <b>IRONJAWZ</b> units in his regiment (but not both), and he counts as a Hero from that faction.'
+		}));
 	}
 }
 
