@@ -39,9 +39,9 @@ function validateRegimentOptions(regiment: ListRegiment, army: Army): string[] {
     const bp = army.battleProfiles.get(unit.name);
     if (!bp) continue; // skip if unit not found in army
     if (bp.category === 'HERO') {
-      const allowedByName = leaderUnit.regimentOptions.some((opt) => opt.names.includes(bp.name));
+      const allowedByName = leaderUnit.regimentOptions.some((opt) => opt.unitNames.includes(bp.name));
       const allowedByTags = leaderUnit.regimentOptions.some((opt) =>
-        bp.regimentTags.some((tag) => opt.names.includes(tag))
+        bp.regimentTags.some((tag) => opt.subheroCategories.includes(tag))
       );
       if (!allowedByName && !allowedByTags) {
         errors.push(
@@ -56,7 +56,7 @@ function validateRegimentOptions(regiment: ListRegiment, army: Army): string[] {
     const bp = army.battleProfiles.get(unit.name) as BattleProfile;
     if (!bp) continue; // skip if unit not found in army
     if (bp.category === 'HERO') continue; // heroes already validated above
-    const matches = leaderUnit.regimentOptions.some((opt) => bp.matchesRegimentOption(opt.names));
+    const matches = leaderUnit.regimentOptions.some((opt) => bp.matchesRegimentOption(opt));
     if (!matches) {
       errors.push(
         `Unit '${bp.name}' does not match any regiment option in regiment led by '${regiment.leader.name}'.`
@@ -73,18 +73,18 @@ function validateRegimentOptions(regiment: ListRegiment, army: Army): string[] {
     for (const unit of regiment.units) {
       const bp = army.battleProfiles.get(unit.name) as BattleProfile;
       if (!bp) continue; // skip if unit not found in army
-      if (bp.matchesRegimentOption(opt.names)) {
+      if (bp.matchesRegimentOption(opt)) {
         count++;
       }
     }
 
     if (count < opt.min) {
       errors.push(
-        `Not enough units matching option '${opt.optNames()}' (min ${opt.min}) in regiment led by '${regiment.leader.name}'.`
+        `Not enough units matching option '${opt.toString()}' in regiment led by '${regiment.leader.name}'.`
       );
     } else if (count > opt.max) {
       errors.push(
-        `Too many units matching option '${opt.optNames()}' (max ${opt.max}) in regiment led by '${regiment.leader.name}'.`
+        `Too many units matching option '${opt.toString()}' in regiment led by '${regiment.leader.name}'.`
       );
     }
   }

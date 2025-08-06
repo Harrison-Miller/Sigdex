@@ -106,7 +106,7 @@ export function parseCategory(node: any): Map<string, ICategory> {
     field: 'selections',
     scope: 'roster',
 
-  })?.['@_value'] || '-1', 10);
+  })?.['@_value'] || '0', 10);
   const rosterMax = parseInt(findFirstByTagAndAttrs(node, 'constraint', {
     type: 'max',
     field: 'selections',

@@ -12,7 +12,6 @@ export function filterBattleProfilesByRegimentOptions(
   companionUnits: string[]
 ): BattleProfile[] {
   if (!options || options.length === 0) return units;
-  const optionNames = options.flatMap((opt) => opt.names.map((name) => name.toLowerCase()));
 
   // 1. Filter out Faction Terrain and Manifestations
   let filtered = units.filter((unit) => {
@@ -24,10 +23,8 @@ export function filterBattleProfilesByRegimentOptions(
   filtered = filtered.filter((unit) => {
     const category = unit.category?.toLowerCase() || '';
     if (category === 'hero') {
-      const name = unit.name?.toLowerCase() || '';
-      const tags = (unit.regimentTags || []).map((t) => t.toLowerCase());
       // Only keep hero if regiment option is exact name or exact sub_hero_tag
-      return optionNames.some((optName) => name === optName || tags.includes(optName));
+      return options.some((opt) => opt.unitNames.includes(unit.name) || unit.regimentTags.some((tag) => opt.subheroCategories.includes(tag)));
     }
     return true;
   });
@@ -36,22 +33,7 @@ export function filterBattleProfilesByRegimentOptions(
   filtered = filtered.filter((unit) => {
     const category = unit.category?.toLowerCase() || '';
     if (category === 'hero') return true; // already handled
-    const name = unit.name?.toLowerCase() || '';
-    const keywords = (unit.keywords || []).map((k) => k.toLowerCase());
-    // Compound option support: if option is multiple words, require all to be present in keywords
-    return optionNames.some((optName) => {
-      if (optName.includes(' ')) {
-        const parts = optName.split(/\s+/);
-        if (parts.every((part) => keywords.includes(part))) {
-          return true;
-        }
-      }
-      return (
-        name.includes(optName) ||
-        category.includes(optName) ||
-        keywords.some((kw) => kw.includes(optName))
-      );
-    });
+    return options.some((opt) => unit.matchesRegimentOption(opt));
   });
 
   // Readd companion units always - make sure not duplicated

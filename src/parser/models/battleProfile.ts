@@ -1,26 +1,92 @@
 import type { UnitCategory } from './unit';
 
 export interface IRegimentOption {
-  // the keywords, categories or names of a thing that can be taken in the regiment
-  // if multiple are present they mutually exclusive of each other
-  names: string[];
-  max: number; // the maximum number of this option that can be taken in the regiment (0 means any)
   min: number; // the minimum number of this option that must be taken in the regiment (0 means none required)
+  max: number; // the maximum number of this option that can be taken in the regiment (-1 means any)
+  keywords: string[];
+  nonKeywords: string[];
+  subheroCategories: string[]; // categories that this option can be used as a sub-hero for.
+  unitNames: string[]; // the names of the units that this option can be used for.
 }
 
 export class RegimentOption implements IRegimentOption {
-  names: string[];
-  max: number;
   min: number;
+  max: number;
+  keywords: string[];
+  nonKeywords: string[];
+  subheroCategories: string[];
+  unitNames: string[];
 
   constructor(data?: Partial<IRegimentOption>) {
-    this.names = data?.names?.sort() ?? [];
-    this.max = data?.max ?? 0;
     this.min = data?.min ?? 0;
+    this.max = data?.max ?? 0;
+    this.keywords = data?.keywords ?? [];
+    this.nonKeywords = data?.nonKeywords ?? [];
+    this.subheroCategories = data?.subheroCategories ?? [];
+    this.unitNames = data?.unitNames ?? [];
   }
 
-  optNames(): string {
-    return this.names.join(', ');
+  toString(htmlFormatting: boolean = false): string {
+    let amount = '';
+    if (this.max === -1) {
+      amount = 'Any'
+    } else if (this.min === this.max) {
+      amount = `${this.min}`;
+    } else {
+      amount = `${this.min}-${this.max}`;
+    }
+
+    const descriptions = [];
+
+    const smallCapsFormatter = (text: string) => {
+      if (!htmlFormatting) return text;
+      return `<b><span style="font-variant: small-caps;">${text}</span></b>`;
+    };
+
+    const boldFormatter = (text: string) => {
+      if (!htmlFormatting) return text;
+      return `<b>${text}</b>`;
+    };
+
+    const keywordDescriptions: string[] = [];
+    this.nonKeywords.forEach((kw) => {
+      keywordDescriptions.push(`non-${smallCapsFormatter(kw)}`);
+    });
+    this.keywords.forEach((kw) => {
+      keywordDescriptions.push(smallCapsFormatter(kw));
+    });
+
+    if (keywordDescriptions.length > 0) {
+      descriptions.push(`${keywordDescriptions.join(' ')}`);
+    }
+
+    this.subheroCategories.forEach((cat) => {
+      descriptions.push(boldFormatter(cat));
+    });
+
+    this.unitNames.forEach((name) => {
+      descriptions.push(boldFormatter(name));
+    });
+
+    if (htmlFormatting) {
+      return `<i>${amount} ${descriptions.join(' or ')}</i>`;
+    }
+
+    return `${amount} ${descriptions.join(' or ')}`;
+  }
+
+  equals(other: RegimentOption) {
+    if (!other) return false;
+    const arraysEqual = (a: string[], b: string[]) =>
+      a.length === b.length && a.every((v) => b.includes(v));
+    return (
+      this.min === other.min &&
+      this.max === other.max &&
+      arraysEqual(this.keywords, other.keywords) &&
+      arraysEqual(this.nonKeywords, other.nonKeywords) &&
+      arraysEqual(this.subheroCategories, other.subheroCategories) &&
+      arraysEqual(this.unitNames, other.unitNames)
+    );
   }
 }
 
@@ -95,29 +161,15 @@ export class BattleProfile implements IBattleProfile {
     return this.keywords.some((k) => k.toLowerCase() === keyword.toLowerCase());
   }
 
-  matchesRegimentOption(optNames: string[]): boolean {
-    const lOptNames = optNames.map((n) => n.toLowerCase());
-    const name = this.name.toLowerCase();
-    const category = this.category.toLowerCase();
-    const keywords = (this.keywords || []).map((k) => k.toLowerCase());
-    const tags = (this.regimentTags || []).map((t) => t.toLowerCase());
-
-    for (const lOptName of lOptNames) {
-      // special case where optName is a multi keyword
-      if (lOptName.includes(' ')) {
-        const parts = lOptName.split(/\s+/);
-        if (parts.every((part: string) => keywords.includes(part))) return true;
-      }
-      if (
-        name === lOptName ||
-        category === lOptName ||
-        keywords.some((kw) => kw === lOptName) ||
-        tags.some((tag) => tag === lOptName)
-      ) {
-        return true;
-      }
-    }
-    return false;
+  matchesRegimentOption(opts: RegimentOption): boolean {
+    if (!opts) return false;
+    const hasAllKeywords = opts.keywords.every((kw) => this.hasKeyword(kw)) && opts.keywords.length > 0;
+    const hasSomeNonKeywords = opts.nonKeywords.some((kw) => this.hasKeyword(kw));
+    const hasSomeSubheroCategory = opts.subheroCategories.some((cat) =>
+      this.regimentTags.includes(cat)
+    );
+    const hasSomeUnitName = opts.unitNames.includes(this.name);
+    return (hasAllKeywords || hasSomeSubheroCategory || hasSomeUnitName) && !hasSomeNonKeywords;
   }
 
   // Many things by default aren't reinforceable, we want to differentiate those from things that are explicitly not reinforceable.

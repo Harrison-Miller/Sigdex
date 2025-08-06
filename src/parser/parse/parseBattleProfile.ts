@@ -2,7 +2,6 @@ import {
   BattleProfile,
   RegimentOption,
   type IBattleProfile,
-  type IRegimentOption,
 } from '../models/battleProfile';
 import { Model } from '../models/model';
 import { Unit, type IUnit } from '../models/unit';
@@ -20,6 +19,7 @@ import { parseCompanionUnitLeader } from './parseCompanionUnits';
 export function parseBattleProfiles(
   root: any,
   units: Map<string, Unit>,
+  keywordCategories: Map<string, ICategory>,
   categories: Map<string, ICategory>,
   armyCategories: Map<string, ICategory>,
   armyKeyword: string,
@@ -43,12 +43,11 @@ export function parseBattleProfiles(
     if (
       name == '' ||
       name.includes('battle traits') ||
-      name.includes('apotheosis') ||
-      name.includes('khul')
+      name.includes('apotheosis')
     )
       continue;
 
-    const profile = parseBattleProfile(node, units, allCategories, armyCategories, errorConditions, armyKeyword);
+    const profile = parseBattleProfile(node, units, keywordCategories, allCategories, bpCategories, armyCategories, errorConditions, armyKeyword);
 
     // skip units without a category, we no longer skip legends units we will filter them out in the UI
     if (profile.category === 'OTHER') continue;
@@ -58,9 +57,9 @@ export function parseBattleProfiles(
       const existingProfile = bpMap.get(profile.name);
       if (existingProfile) {
         // add non-duplicate regiment options
-        const existingOptions = new Set(existingProfile.regimentOptions.map((o) => o.optNames()));
+        const existingOptions = new Set(existingProfile.regimentOptions.map((o) => o.toString()));
         for (const option of profile.regimentOptions) {
-          if (!existingOptions.has(option.optNames())) {
+          if (!existingOptions.has(option.toString())) {
             existingProfile.regimentOptions.push(option);
           }
         }
@@ -93,7 +92,7 @@ export function parseBattleProfiles(
       leaderBp.companionUnits.push(...companions);
       // modify regiment options to make companions required
       leaderBp.regimentOptions = leaderBp.regimentOptions.map((option: RegimentOption) => {
-        if (companions.some((c) => option.names.includes(c))) {
+        if (companions.some((c) => option.unitNames.includes(c))) {
           return new RegimentOption({
             ...option,
             min: 1, // companions are always required
@@ -107,9 +106,10 @@ export function parseBattleProfiles(
 
   // cap regiment options of heroes to 1 per regiment
   // TODO: mark specific units that are legends as legends regiment options so they don't show or have a badge
+  // TODO: not sure if this is correct still, do we actually need this?
   for (const bp of bpMap.values()) {
     bp.regimentOptions = bp.regimentOptions.map((option: RegimentOption) => {
-      const hasHero = option.names.some((name) => {
+      const hasHero = option.unitNames.some((name) => {
         const unit = bpMap.get(name);
         return unit && unit.category === 'HERO';
       });
@@ -151,7 +151,9 @@ export function parseBattleProfileCategories(root: any, armyKeyword: string): Ma
 export function parseBattleProfile(
   bpNode: any,
   units: Map<string, Unit>,
+  keywordCategories: Map<string, ICategory>,
   allCategories: Map<string, ICategory>,
+  bpCategories: Map<string, ICategory>,
   armyCategories: Map<string, ICategory>,
   errorConditions: IErrorCondition[],
   armyKeyword: string,
@@ -162,7 +164,7 @@ export function parseBattleProfile(
     reinforceable: parseReinforceable(bpNode),
     enhancementTables: parseAllowedEnhancementTables(bpNode),
     regimentTags: parseRegimentTags(bpNode, armyCategories, armyKeyword),
-    regimentOptions: parseRegimentOptions(bpNode, allCategories, armyCategories, errorConditions),
+    regimentOptions: parseRegimentOptions(bpNode, keywordCategories, allCategories, bpCategories, armyCategories, errorConditions),
     companionLeader: parseCompanionUnitLeader(bpNode, allCategories),
   };
 
@@ -253,7 +255,9 @@ export function parseRegimentTags(bpNode: any, armyCategories: Map<string, ICate
 
 export function parseRegimentOptions(
   bpNode: any,
+  keywordCategories: Map<string, ICategory>,
   allCategories: Map<string, ICategory>,
+  bpCategories: Map<string, ICategory>,
   armyCategories: Map<string, ICategory>,
   errorConditions: IErrorCondition[],
 ): RegimentOption[] {
@@ -267,12 +271,9 @@ export function parseRegimentOptions(
     // Categories that have a reference to this bp, mean this bp can take this category.
     const catModifier = getCategoryModifierForCondition(category, name, id, targetId);
     if (catModifier) {
-      const option: IRegimentOption = {
-        names: [category.name],
-        max: catModifier.max || 1,
-        min: 0,
-      };
-      options.push(new RegimentOption(option));
+      const ro = new RegimentOption({ max: catModifier.max || 1, min: 0 });
+      setOptionValues(category, ro, armyCategories, bpCategories, keywordCategories);
+      options.push(ro);
       continue; // skip if the category is already added
     }
 
@@ -283,7 +284,9 @@ export function parseRegimentOptions(
       affects: `self.entries.recursive.${category.id}`,
     });
     if (modifier) {
-      options.push(new RegimentOption({ names: [category.name] }));
+      const ro = new RegimentOption({ max: -1, min: 0 });
+      setOptionValues(category, ro, armyCategories, bpCategories, keywordCategories);
+      options.push(ro);
     }
   }
 
@@ -321,12 +324,9 @@ export function parseRegimentOptions(
           max = errorCondition.max; // use the max from the error condition if it exists
         }
 
-        const option: IRegimentOption = {
-          names: [category.name],
-          max: max, // use max from error condition, or 0 (any amount)
-          min: 0,
-        };
-        options.push(new RegimentOption(option));
+        const ro = new RegimentOption({ max: max, min: 0 });
+        setOptionValues(category, ro, armyCategories, bpCategories, keywordCategories);
+        options.push(ro);
       }
     }
   });
@@ -335,39 +335,38 @@ export function parseRegimentOptions(
   // if we have a regiment option for a category and one of it's notChildConditionIds we replaces it with an xor option
   const xorOptions: RegimentOption[] = [];
   for (const option of options) {
-    const category = allCategories.get(option.names[0]) || armyCategories.get(option.names[0]);
+    const category = armyCategories.get(option.subheroCategories[0] || '') || bpCategories.get(option.unitNames[0] || '');
     if (category && category.notChildConditionIds.length > 0) {
-      const xorOptNames = [category.name];
+      const xorOptCategories = [category];
       for (const notId of category.notChildConditionIds) {
         const notCategory = allCategories.get(notId) || armyCategories.get(notId);
         if (
           notCategory &&
-          options.some((opt) => opt.names.includes(notCategory.name))
+          options.some((opt) => opt.subheroCategories.includes(notCategory.name) || opt.unitNames.includes(notCategory.name))
         ) {
-          xorOptNames.push(notCategory.name);
+          xorOptCategories.push(notCategory);
         }
       }
-      if (xorOptNames.length < 2) continue; // no xor options to create
+      if (xorOptCategories.length < 2) continue; // no xor options to create
 
-      // skip if xor option with both names already exists
-      if (xorOptions.some((opt) => opt.names.length === xorOptNames.length && opt.names.every((name) => xorOptNames.includes(name)))) {
-        continue;
+      const newXorOpt = new RegimentOption({ max: 1, min: 0 });
+      xorOptCategories.forEach((cat) => {
+        setOptionValues(cat, newXorOpt, armyCategories, bpCategories, keywordCategories);
+      });
+
+      if (xorOptions.some((opt) => opt.equals(newXorOpt))) {
+        continue; // skip if xor option with same values already exists
       }
 
-      // create a new xor option
-      const xorOption: IRegimentOption = {
-        names: xorOptNames,
-        max: 1, // I think this is currnetly only ever used for 0-1
-        min: 0.
-      };
-      xorOptions.push(new RegimentOption(xorOption));
+      xorOptions.push(newXorOpt);
     }
   }
 
   // remove original options that have xor options
   for (const xorOption of xorOptions) {
     const optsToRemove = options.filter((opt) =>
-      opt.names.some((name) => xorOption.names.includes(name))
+      opt.unitNames.some((name) => xorOption.unitNames.includes(name)) ||
+      opt.subheroCategories.some((cat) => xorOption.subheroCategories.includes(cat))
     );
     if (optsToRemove.length > 0) {
       optsToRemove.forEach(opt => {
@@ -380,20 +379,69 @@ export function parseRegimentOptions(
   }
 
   if (xorOptions.length > 0) {
-    // add xor options to
-    options.push(...xorOptions); // add xor options to the list
+    // add xor options to the list
+    options.push(...xorOptions);
   }
 
   // deduplicate options by name
   const uniqueOptions = new Map<string, RegimentOption>();
   for (const option of options) {
-    uniqueOptions.set(option.optNames(), option);
+    uniqueOptions.set(option.toString(), option);
   }
 
   return Array.from(uniqueOptions.values()).map(
     (option) => new RegimentOption(option)
   );
 }
+
+function setOptionValues(cat: ICategory, option: RegimentOption, armyCategories: Map<string, ICategory>, bpCategories: Map<string, ICategory>, keywordCategories: Map<string, ICategory> = new Map()): void {
+  // unit names first
+  if (bpCategories.has(cat.id)) {
+    option.unitNames.push(cat.name);
+    return;
+  }
+
+  const possibleKeywords = Array.from(new Set(Array.from(keywordCategories.values()).map(c => c.name.toUpperCase()))).sort((a, b) => b.length - a.length); // sort by length desc to match longest first
+
+  // sub hero categories
+  if (armyCategories.has(cat.id)) {
+    const nonKeywords: string[] = [];
+    const keywords: string[] = [];
+
+    // check if this is a compound keyword
+    let compoundKeyword = cat.name.toUpperCase();
+    possibleKeywords.forEach((kw) => {
+      // check non-keywords first
+      if (compoundKeyword.includes(`NON-${kw}`)) {
+        compoundKeyword = compoundKeyword.replace(`NON-${kw}`, '').trim();
+        nonKeywords.push(kw);
+      } else if (compoundKeyword.includes(kw)) {
+        compoundKeyword = compoundKeyword.replace(kw, '').trim();
+        keywords.push(kw);
+      }
+    });
+
+
+
+    if (nonKeywords.length === 0 && keywords.length === 0) {
+      // if no keywords or non-keywords, just add the category name
+      option.subheroCategories.push(cat.name);
+      return;
+    } else {
+      // sort keywords and non-keywords each by index they appear in the original string
+      compoundKeyword = cat.name.toUpperCase(); // reset to original for index lookup
+      option.keywords = keywords.sort((a, b) => compoundKeyword.indexOf(a) - compoundKeyword.indexOf(b));
+      option.nonKeywords = nonKeywords.sort((a, b) => compoundKeyword.indexOf(a) - compoundKeyword.indexOf(b));
+      return;
+    }
+  }
+
+  // keywords
+  if (keywordCategories.has(cat.id)) {
+    option.keywords.push(cat.name.toUpperCase());
+  }
+}
+
 
 export interface IErrorCondition {
   errorCategory: string;

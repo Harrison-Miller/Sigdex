@@ -182,20 +182,7 @@ export function formatRegimentOptions(options: RegimentOption[]): string {
   const formatItems = (opts: RegimentOption[]) =>
     opts
       .map((opt) => {
-        if (opt.names.length > 1) {
-          const optNames = opt.names.map((name) => `<b>${name}</b>`).join(' or ');
-          return `<li><i>${opt.min}-${opt.max} ${optNames}</i></li>`;
-        } else if (opt.names.length === 1) {
-          if (opt.min > 0 && opt.max == opt.min) {
-            return `<li><i>${opt.min} <b>${opt.names[0]}</b> (required)</i></li>`;
-          } else if (opt.min > 0 && opt.max > 0) {
-            return `<li><i>${opt.min}-${opt.max} <b>${opt.names[0]}</b></i></li>`;
-          } else if (opt.min === 0 && opt.max > 0) {
-            return `<li><i>0-${opt.max} <b>${opt.names[0]}</b></i></li>`;
-          } else {
-            return `<li><i>any <b>${opt.names[0]}</b></i></li>`;
-          }
-        }
+        return `<li>${opt.toString(true)}</li>`;
       })
       .join('');
 

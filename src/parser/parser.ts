@@ -114,11 +114,12 @@ export class Parser {
     });
 
     // parse armies and assign their lores
+    const keywordCategories = new Map<string, ICategory>(this.categories);
     [...this.armyFiles.entries()]
       .sort((a, b) => a[0].length - b[0].length)
       .map(([_, xml]) => xml)
       .forEach((xml) => {
-        const army = parseArmy(xml, this.units, this.categories);
+        const army = parseArmy(xml, this.units, keywordCategories, this.categories);
         if (
           !army ||
           army.name === '' ||

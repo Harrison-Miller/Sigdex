@@ -11,6 +11,7 @@ import { calculateCommonKeywords, filterIgnoredEnhancementTables, parseCategorie
 export function parseArmy(
   root: any,
   units: Map<string, Unit>,
+  keywordCategories: Map<string, ICategory>,
   categories: Map<string, ICategory>
 ): Army {
   const catalogue = root?.catalogue;
@@ -48,7 +49,7 @@ export function parseArmy(
     spellLores: parseLoresByGroup(catalogue, 'Spell Lores'),
     prayerLores: parseLoresByGroup(catalogue, 'Prayer Lores'),
     manifestationLores: parseLoresByGroup(catalogue, 'Manifestation Lores'),
-    battleProfiles: parseBattleProfiles(catalogue, units, categories, armyCategories, armyKeyword),
+    battleProfiles: parseBattleProfiles(catalogue, units, keywordCategories, categories, armyCategories, armyKeyword),
     armyKeyword: armyKeyword,
     options: parseArmyOptions(catalogue, armyCategories, units, armyKeyword),
   };
