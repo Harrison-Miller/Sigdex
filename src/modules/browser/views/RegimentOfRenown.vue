@@ -32,7 +32,7 @@
           <span>{{ count }} × {{ unit }}</span>
         </li>
       </ul>
-      <div class="unit-list-btns" v-if="game">
+      <div  v-if="game" class="unit-list-btns">
         <ListButton
           v-for="[unit] in unitList"
           :key="unit"

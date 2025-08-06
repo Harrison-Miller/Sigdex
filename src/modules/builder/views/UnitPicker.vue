@@ -7,9 +7,10 @@
       class="regiment-options-bar"
       v-html="formattedRegimentOptions"
     />
-    <ToggleBox v-if="showMultiAdd"
-    style="margin-bottom: 0.5em;"
+    <ToggleBox
+      v-if="showMultiAdd"
       v-model="multiAdd"
+      style="margin-bottom: 0.5em;"
       :mini="true"
     > Multi-Add </ToggleBox>
     <FilterBar

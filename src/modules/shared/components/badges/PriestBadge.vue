@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import PillBadge from '../../../core/components/PillBadge.vue';
-const { big, keywords } = defineProps<{
+const { big, keywords = [] } = defineProps<{
   big?: boolean;
   keywords?: string[];
 }>();

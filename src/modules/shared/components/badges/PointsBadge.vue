@@ -5,7 +5,7 @@
 </template>
 <script setup lang="ts">
 import PillBadge from '../../../core/components/PillBadge.vue';
-const { big, points } = defineProps<{
+const { big, points = undefined } = defineProps<{
   big?: boolean;
   points?: number;
 }>();
