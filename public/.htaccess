@@ -16,6 +16,10 @@
 # SPA history mode support: rewrite all non-file, non-dir requests to index.html
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  # Do not rewrite requests to /cpanel or its subpaths
+  RewriteCond %{REQUEST_URI} ^/cpanel [NC]
+  RewriteRule ^ - [L]
+
   # Only rewrite if the requested file or directory does not exist
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
