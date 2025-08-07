@@ -22,7 +22,7 @@ jobs:
       - name: Check devVariant
         id: check-dev-variant
         run: |
-          DEV_VARIANT=$(grep "export const devVariantName" vite.config.ts | sed "s/.*= '\(.*\)';/\1/")
+          DEV_VARIANT=$(grep "const devVariantName" vite.config.ts | sed "s/.*= '\(.*\)';/\1/")
           echo "devVariant is: $DEV_VARIANT"
           if [ "$DEV_VARIANT" != "" ]; then
             echo "::error::devVariant is set ('$DEV_VARIANT'). Deployment cancelled."
