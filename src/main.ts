@@ -30,7 +30,8 @@ import {
   faCircleExclamation,
   faGear,
   faArrowDown19,
-  faArrowDownAZ
+  faArrowDownAZ,
+  faCamera,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -67,6 +68,7 @@ library.add(
   faGear,
   faArrowDown19,
   faArrowDownAZ,
+  faCamera
 );
 
 useDark();

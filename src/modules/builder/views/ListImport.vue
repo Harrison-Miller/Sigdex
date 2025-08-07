@@ -1,5 +1,11 @@
 <template>
   <div class="list-import-wrapper">
+    <CircleIconButton
+      icon="camera"
+      :size="36"
+      class="floating-camera-btn"
+      @click="triggerImageInput"
+    />
     <div class="list-import-view">
       <div class="import-header">
         <h1>Import List</h1>
@@ -20,12 +26,22 @@
           >
             Import
           </button>
+        <input
+          ref="imageInput"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style="display: none;"
+          @change="handleImageUpload"
+        />
         </div>
-        <div
-          v-if="error"
-          class="import-error"
-        >
-          {{ error }}
+        <div v-if="error" class="import-error">
+          <template v-if="error === 'Processing image...'">
+            <span class="spinner"></span> Processing image...
+          </template>
+          <template v-else>
+            {{ error }}
+          </template>
         </div>
       </div>
     </div>
@@ -63,6 +79,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { Tesseract } from 'tesseract.ts';
+import CircleIconButton from '../../core/components/CircleIconButton.vue';
 import { useRouter } from 'vue-router';
 import { importList } from '../importList';
 import { useGame } from '../../shared/composables/useGame';
@@ -82,6 +100,36 @@ const canImport = computed(
 const showCreateModal = ref(false);
 const importedList = ref<any>(null);
 const createName = ref('');
+
+const imageInput = ref<HTMLInputElement | null>(null);
+
+function triggerImageInput() {
+  imageInput.value?.click();
+}
+
+function handleImageUpload(event: Event) {
+  const files = (event.target as HTMLInputElement).files;
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  // Stub OCR: simulate extracting text from image
+  stubOcrFromImage(file);
+}
+
+async function stubOcrFromImage(file: File) {
+  try {
+    error.value = 'Processing image...';
+    const imageUrl = URL.createObjectURL(file);
+    const result = await Tesseract.recognize(imageUrl).catch((err: any) => { throw err; });
+    console.log('OCR Result:', result);
+    console.log('Extracted Text:', result.text);
+    importText.value = result.text || '';
+    error.value = null;
+    handleImport();
+    URL.revokeObjectURL(imageUrl);
+  } catch (err: any) {
+    error.value = 'OCR failed: ' + (err.message || err);
+  }
+}
 
 function handleImport() {
   if (!game.value) {
@@ -113,6 +161,14 @@ function handleCreate() {
 .list-import-wrapper {
   position: relative;
   height: 100vh;
+}
+.floating-camera-btn {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  background: var(--bg-main);
 }
 .list-import-view {
   padding: 20px 10px;
@@ -193,6 +249,21 @@ function handleCreate() {
 .import-error {
   color: var(--danger);
   font-weight: bold;
+}
+.spinner {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  border: 2px solid var(--text-muted);
+  border-top: 2px solid var(--success);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 .import-summary {
   margin-bottom: 1em;

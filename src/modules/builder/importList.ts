@@ -2,13 +2,28 @@ import { List } from '../../list/models/list';
 import { ListUnit } from '../../list/models/unit';
 import type { Army } from '../../parser/models/army';
 import type { Game } from '../../parser/models/game';
+import { bestStringMatch, bestLineMatch } from '../../utils/stringSimilarity';
+
+const similarityThreshold = 0.5;
+
+// TODO: split regiment chunk more permissively
+// TODO: add some logic, that prevents non-heroes from being regiment leaders
 
 const alternateUnitNames: Map<string, string[]> = new Map([
   ['Kruleboyz Monsta-killaz', ['Monsta-Killaz']],
 ]);
 
 export function importList(text: string, game: Game): List {
-  const listText = text.toLowerCase().replace('```', '').trim();
+  let listText = text.toLowerCase().replace('```', '').trim();
+  // normalize text to all ascii
+  listText = listText.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // em dash to dash
+  listText = listText.replace(/–/g, '-');
+  // fancy quotes to normal quotes
+  listText = listText.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
+  // remove this —
+  listText = listText.replace(/—/g, '-');
+
   // search the text for the name of a faction
   const army = findArmy(listText, game);
   if (!army) {
@@ -89,6 +104,22 @@ function findArmy(text: string, game: Game): Army | null {
       return army;
     }
   }
+
+  // all army names in an array
+  const armyNames = Array.from(game.armies.values()).flatMap(army => {
+    const names = [army.name];
+    for (const aor of army.armiesOfRenown) {
+      names.push(`${army.name} - ${aor}`);
+    }
+    return names;
+  }).sort((a, b) => b.length - a.length); // longest first
+
+  console.log('Searching for best match army name in text');
+  const bestMatch = bestLineMatch(text, armyNames, similarityThreshold);
+  if (bestMatch) {
+    const army = game.armies.get(bestMatch);
+    if (army) return army;
+  }
   return null;
 }
 
@@ -98,6 +129,10 @@ function findFormationOrFirst(text: string, army: Army): string {
       return formation;
     }
   }
+
+  console.log('No specific formation found, using best match or first available.');
+  const bestMatch = bestLineMatch(text, Array.from(army.formations.keys()), similarityThreshold);
+  if (bestMatch) return bestMatch;
   return army.formations.keys().next().value || '';
 }
 
@@ -121,12 +156,27 @@ function findNameAndPointsCap(text: string): { name: string; points: number } {
 }
 
 function findBattleTacticCards(text: string, game: Game): { card1: string, card2: string } {
-  const cards: string[] = [];
+  let cards: string[] = [];
   for (const card of game.battleTacticCards) {
     if (text.toLowerCase().includes(card.name.toLowerCase())) {
       cards.push(card.name);
     }
   }
+  if (cards.length === 2) {
+    return { card1: cards[0] || '', card2: cards[1] || '' };
+  }
+
+  console.log('No specific battle tactic cards found, using best match');
+  const cardNames = game.battleTacticCards.map(card => card.name);
+  const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+  for (const line of lines) {
+    const match = bestStringMatch(line, cardNames, similarityThreshold);
+    if (match) {
+      cards.push(match);
+    }
+  }
+
+  cards = Array.from(new Set(cards));
   return { card1: cards[0] || '', card2: cards[1] || '' };
 }
 
@@ -136,6 +186,11 @@ function findFactionTerrain(text: string, army: Army): string | undefined {
       return unit.name;
     }
   }
+
+  console.log('No specific faction terrain found, using best match');
+  const names = Array.from(army.unitList.get('FACTION TERRAIN') || []).map(unit => unit.name);
+  const bestMatch = bestLineMatch(text, names, similarityThreshold);
+  if (bestMatch) return bestMatch;
   return undefined;
 }
 
@@ -145,6 +200,12 @@ function findSpellLore(text: string, army: Army): string | undefined {
       return lore;
     }
   }
+
+  console.log('No specific spell lore found, using best match');
+  const names = Array.from(army.spellLores.keys()).map(lore => lore);
+  const bestMatch = bestLineMatch(text, names, similarityThreshold);
+  if (bestMatch) return bestMatch;
+
   return undefined;
 }
 
@@ -154,6 +215,12 @@ function findPrayerLore(text: string, army: Army): string | undefined {
       return lore;
     }
   }
+
+  console.log('No specific prayer lore found, using best match');
+  const names = Array.from(army.prayerLores.keys()).map(lore => lore);
+  const bestMatch = bestLineMatch(text, names, similarityThreshold);
+  if (bestMatch) return bestMatch;
+
   return undefined;
 }
 
@@ -172,6 +239,12 @@ function findManifestationLore(
       return lore;
     }
   }
+
+  console.log('No specific manifestation lore found, using best match');
+  const names = Array.from(army.manifestationLores.keys()).concat(universalManifestationLores);
+  const bestMatch = bestLineMatch(text, names, similarityThreshold);
+  if (bestMatch) return bestMatch;
+
   return undefined;
 }
 
@@ -259,6 +332,18 @@ function parseUnits(text: string, army: Army, game: Game): ListUnit[] {
       currentUnit = {
         name: bp.name,
       };
+    } else {
+      // try to find unit name by similarity
+      const unitNames = filteredArmyBPs.map(bp => bp.name);
+      const match = bestStringMatch(line, unitNames, similarityThreshold);
+      if (match) {
+        if (currentUnit) {
+          units.push(new ListUnit(currentUnit));
+        }
+        currentUnit = {
+          name: match,
+        };
+      }
     }
 
     // check for anything that looks like anything

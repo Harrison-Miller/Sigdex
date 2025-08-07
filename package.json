@@ -18,7 +18,10 @@
     "fast-xml-parser": "^5.2.5",
     "lz-string": "^1.5.0",
     "pluralize": "^8.0.0",
+    "string-similarity": "^4.0.4",
     "superjson": "^2.2.2",
+    "tesseract.js": "^1.0.19",
+    "tesseract.ts": "^1.1.2",
     "vue": "^3.5.13"
   },
   "devDependencies": {
