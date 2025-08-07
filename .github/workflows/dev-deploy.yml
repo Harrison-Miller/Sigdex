@@ -1,12 +1,12 @@
-name: Build and Deploy Sigdex
+name: Build and Deploy Sigdex Dev
 
 on:
   push:
-    branches:
+    branches-ignore:
       - main
 
 jobs:
-  build-and-deploy:
+  dev-deploy:
     runs-on: ubuntu-latest
     environment: prod
     steps:
@@ -18,16 +18,16 @@ jobs:
         with:
           node-version: 20
 
-
-      - name: Check devVariant
-        id: check-dev-variant
+      - name: Check devVariantName is set
+        id: check-dev-variant-dev
         run: |
           DEV_VARIANT=$(grep "export const devVariantName" src/version.ts | sed "s/.*= '\(.*\)';/\1/")
           echo "devVariant is: $DEV_VARIANT"
-          if [ "$DEV_VARIANT" != "" ]; then
-            echo "::error::devVariant is set ('$DEV_VARIANT'). Deployment cancelled."
+          if [ "$DEV_VARIANT" = "" ]; then
+            echo "::error::devVariantName is not set. Dev deploy cancelled."
             exit 1
           fi
+          echo "dev_variant=$DEV_VARIANT" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: npm ci
@@ -38,12 +38,12 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Deploy to FTP server
+      - name: Deploy to FTP server (dev)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ftp.sigdex.io
           username: github@sigdex.io
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
-          server-dir: ./
+          server-dir: ./${{ env.dev_variant }}.sigdex.io/
           log-level: standard
