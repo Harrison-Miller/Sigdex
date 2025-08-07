@@ -96,6 +96,7 @@ import { clearAllLists } from '../../../list/manage';
 import { UNIT_SETTINGS_KEY } from '../../shared/composables/useUnitSettings';
 import { useDark, useStorage } from '@vueuse/core';
 import SupporterBanner from '../components/SupporterBanner.vue';
+import { clearFAQCache } from '../../shared/composables/useFAQ';
 
 const isDark = useDark();
 const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
@@ -106,6 +107,7 @@ const githubBranch = useStorage(GITHUB_BRANCH_KEY, DEFAULT_GITHUB_BRANCH);
 
 function clearBSDataHandler() {
   clearGameCache();
+  clearFAQCache();
 }
 
 function clearFavorites() {

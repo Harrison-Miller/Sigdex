@@ -8,7 +8,7 @@ import { FAVORITES_KEY } from '../../../favorites';
  * @param key The unique key for the favorite item
  * @returns { isFavorited, toggleFavorite }
  */
-export function useFavorite(type: 'army' | 'unit', key: string) {
+export function useFavorite(type: 'army' | 'unit' | 'faq', key: string) {
 	const isFavorited = useStorage(
 		FAVORITES_KEY,
 		false,
@@ -59,7 +59,7 @@ export function useFavorite(type: 'army' | 'unit', key: string) {
  * @param type The type of favorite (e.g., 'army' | 'unit')
  * @returns { favorites }
  */
-export function useFavorites(type: 'army' | 'unit') {
+export function useFavorites(type: 'army' | 'unit' | 'faq') {
 	const favorites = useStorage<string[]>(
 		FAVORITES_KEY, [], localStorage,
 		{

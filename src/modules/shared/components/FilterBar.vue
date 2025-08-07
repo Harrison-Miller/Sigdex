@@ -4,6 +4,7 @@
 		:model-value="searchQuery"
 		placeholder="Search..."
 		class="search-input"
+    :show-clear-button="true"
 		@update:model-value="(value) => searchQuery = value"
 	/>
 	<button

@@ -3,6 +3,8 @@ import vue from '@vitejs/plugin-vue';
 import pkg from './package.json';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const devVariantName = 'dev';
+
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
   plugins: [
@@ -10,8 +12,8 @@ export default defineConfig(({ command }) => ({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Sigdex',
-        short_name: 'Sigdex',
+        name: devVariantName ? `Sigdex - ${devVariantName}` : 'Sigdex',
+        short_name: devVariantName ? `Sigdex - ${devVariantName}` : 'Sigdex',
         background_color: '#000000',
         theme_color: '#a10000',
         icons: [
@@ -93,11 +95,21 @@ export default defineConfig(({ command }) => ({
     }),
   ],
   base: command === 'build' ? '/' : '/',
+  server: {
+    proxy: {
+      '/api/faq': {
+        target: 'https://pdfdata.sigdex.io',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/faq/, '/data/faq.json')
+      }
+    }
+  },
   test: {
     setupFiles: ['vitest-localstorage-mock'],
     mockReset: false,
   },
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
+    __DEV_VARIANT_NAME__: JSON.stringify(devVariantName),
   },
 }));

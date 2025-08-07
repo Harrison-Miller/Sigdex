@@ -8,6 +8,7 @@ import { useDark, useToggle } from '@vueuse/core';
 import { SIGDEX_VERSION } from './version';
 import BackToTop from './modules/core/components/BackToTop.vue';
 import BackButton from './modules/core/components/BackButton.vue';
+import { clearFAQCache } from './modules/shared/composables/useFAQ';
 
 const showNotice = ref(false);
 const currentNotice = ref<Notice | null>(null);
@@ -35,6 +36,7 @@ function handleClearBSDataShortcut(e: KeyboardEvent) {
     // Only trigger on Cmd+Shift+B (or Ctrl+Shift+B)
     e.preventDefault();
     clearGameCache();
+    clearFAQCache();
     useGame();
     router.push({ name: 'Armies' });
   }

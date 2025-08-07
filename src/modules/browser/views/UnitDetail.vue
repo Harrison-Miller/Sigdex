@@ -23,6 +23,9 @@ import FavoritesToggle from '../../shared/components/FavoritesToggle.vue';
 import BadgeRow from '../../shared/components/badges/BadgeRow.vue';
 import WizardBadge from '../../shared/components/badges/WizardBadge.vue';
 import PriestBadge from '../../shared/components/badges/PriestBadge.vue';
+import FAQSection from '../../shared/faq/FAQSection.vue';
+import { useFAQ } from '../../shared/composables/useFAQ';
+import { useFAQSearch } from '../../shared/composables/useFAQSearch';
 
 function formatCompanionUnits(unitName: string, companionLeader: string): string {
   const bold = (name: string) => `<b>${name}</b>`;
@@ -59,6 +62,29 @@ const displaySubLabel = computed(() => {
 const { army } = useArmy(armyName ?? '');
 const { unit, battleProfile } = useUnit(armyName ?? '', unitName ?? '');
 const unitSettings = useUnitSettings(unit);
+
+// Load FAQ data
+const { faq: faqData, loading: faqLoading, error: faqError } = useFAQ();
+
+// Create search queries for unit and abilities
+const faqSearchQueries = computed(() => {
+  const queries = [withoutSoG.value.trim()]; // Start with the unit name
+  
+  // Add all ability names
+  unit.value.abilities.forEach(ability => {
+    queries.push(ability.name);
+  });
+  
+  // Add summoning spell name if it exists
+  if (unit.value.summoningSpell) {
+    queries.push(unit.value.summoningSpell.name);
+  }
+  
+  return queries.filter(q => q && q.trim()); // Filter out empty queries
+});
+
+// Filter FAQ data by unit and ability names
+const unitFAQData = useFAQSearch(faqData, faqSearchQueries);
 
 const unitKeywords = computed(() => {
   const keywords = new Set<string>(unit.value.keywords);
@@ -250,6 +276,25 @@ useTitle(`${unitName}`);
           title="Default Weapon Options"
           :default-collapsed="true"
         />
+        
+        <!-- FAQ Section -->
+        <Section
+          v-if="unitFAQData && unitFAQData.data && unitFAQData.data.length > 0"
+          :default-collapsed="true"
+          collapse-key="unit-faq"
+        >
+          <template #title>FAQ</template>
+          <div v-if="faqLoading">Loading FAQ...</div>
+          <div v-else-if="faqError" class="error">{{ faqError }}</div>
+          <div v-else-if="unitFAQData">
+            <FAQSection
+              v-for="(section, i) in unitFAQData.data"
+              :key="'unit-faq-section-' + i"
+              :section="section"
+            />
+          </div>
+        </Section>
+        
           <ReportErrorButton 
     :unit-name="unitName"
     :army-name="armyName"
@@ -302,6 +347,12 @@ useTitle(`${unitName}`);
 }
 .dark .champion-icon {
   filter: invert(1) brightness(1.6);
+}
+
+.error {
+  color: #c00;
+  text-align: center;
+  margin-top: 1rem;
 }
 </style>
 

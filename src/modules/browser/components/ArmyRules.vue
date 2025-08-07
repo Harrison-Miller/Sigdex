@@ -1,5 +1,23 @@
 <template>
   <div>
+    <!-- FAQ Section -->
+    <Section
+      v-if="armyFAQData && armyFAQData.data && armyFAQData.data.length > 0"
+      :default-collapsed="true"
+      collapse-key="army-faq"
+    >
+      <template #title>FAQ</template>
+      <div v-if="faqLoading">Loading FAQ...</div>
+      <div v-else-if="faqError" class="error">{{ faqError }}</div>
+      <div v-else-if="armyFAQData">
+        <FAQSection
+          v-for="(section, i) in armyFAQData.data"
+          :key="'army-faq-section-' + i"
+          :section="section"
+        />
+      </div>
+    </Section>
+    
     <Section
       v-if="army.hasDetails()"
       collapse-key="details"
@@ -208,7 +226,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import OptionSelect from '../../core/components/OptionSelect.vue';
 import type { Army } from '../../../parser/models/army';
 import AbilityCard from '../../shared/components/AbilityCard.vue';
@@ -218,8 +236,24 @@ import ReportErrorButton from '../../shared/components/ReportErrorButton.vue';
 import PointsBadge from '../../shared/components/badges/PointsBadge.vue';
 import SoGBadge from '../../shared/components/badges/SoGBadge.vue';
 import BadgeRow from '../../shared/components/badges/BadgeRow.vue';
+import FAQSection from '../../shared/faq/FAQSection.vue';
+import { useFAQ } from '../../shared/composables/useFAQ';
+import { useFAQSearch } from '../../shared/composables/useFAQSearch';
 
 const props = defineProps<{ army: Army }>();
+
+// Load FAQ data
+const { faq: faqData, loading: faqLoading, error: faqError } = useFAQ();
+
+// Use baseArmyName if available (for Army of Renown), otherwise use the army name
+const searchQueries = computed(() => {
+  const aorName = props.army.name.split(' - ')[1];
+  if (aorName) return [props.army.baseArmyName, aorName];
+  return [props.army.baseArmyName];
+});
+
+// Filter FAQ data by army name
+const armyFAQData = useFAQSearch(faqData, searchQueries);
 
 function formatArmyKeywordText(keyword: string): string {
   return formatText(`All units in this army gain the **^^${keyword}^^** keyword.`);
@@ -272,5 +306,10 @@ watch(
 }
 .section-subheader {
   text-align: left;
+}
+.error {
+  color: #c00;
+  text-align: center;
+  margin-top: 1rem;
 }
 </style>

@@ -23,6 +23,22 @@
           @update="onFilterBarUpdate"
         />
         <Section
+          v-if="filteredFAQData && filteredFAQData.data && filteredFAQData.data.length > 0"
+          :default-collapsed="true"
+          :collapse-key="'faq'"
+        >
+          <template #title>FAQ</template>
+          <div v-if="faqLoading">Loading FAQ...</div>
+          <div v-else-if="faqError" class="error">{{ faqError }}</div>
+          <div v-else-if="filteredFAQData">
+            <FAQSection
+              v-for="(section, i) in filteredFAQData.data"
+              :key="'faq-section-' + i"
+              :section="section"
+            />
+          </div>
+        </Section>
+        <Section
           v-if="filteredManifestationLores && filteredManifestationLores.length > 0"
           :default-collapsed="true"
           :collapse-key="'universal-manifestations'"
@@ -131,12 +147,14 @@ v-if="(showLegends && army.legends) || !army.legends"
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useGame } from '../../shared/composables/useGame';
+import { useFAQ } from '../../shared/composables/useFAQ';
 import ListButton from '../../shared/components/ListButton.vue';
 import SettingsButton from '../../core/components/SettingsButton.vue'
 import Section from '../../core/components/ContentSection.vue';
 import ListList from '../components/ListList.vue';
 import TwoTab from '../../core/components/TwoTab.vue';
 import ListButtonSection from '../../shared/components/ListButtonSection.vue';
+import FAQSection from '../../shared/faq/FAQSection.vue';
 import {
   SHOW_LEGENDS_KEY,
 } from '../../../favorites';
@@ -145,9 +163,11 @@ import type { ArmyListItem } from '../../../parser/models/game';
 import FilterBar from '../../shared/components/FilterBar.vue';
 import { useFilterBar } from '../../shared/composables/useFilterBar';
 import { useFavorites } from '../../core/composables/useFavorite';
+import { useFAQSearch } from '../../shared/composables/useFAQSearch';
 
 const router = useRouter();
 const { favorites } = useFavorites('army');
+const { favorites: faqFavorites } = useFavorites('faq');
 const leftActive = ref(true);
 
 useTitle('Sigdex');
@@ -156,7 +176,16 @@ const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
 // Load game data (reactive, not awaited)
 const { game, loading, error } = useGame();
 
+// Load FAQ data
+const { faq: faqData, loading: faqLoading, error: faqError } = useFAQ();
+
 const { searchQuery, showFavorites, sortMode, onFilterBarUpdate } = useFilterBar();
+
+// Filter FAQ data based on search query and favorites
+const filteredFAQData = useFAQSearch(faqData, searchQuery, {
+  showFavorites,
+  favorites: faqFavorites
+});
 
 function hasAoRsToShow(army: ArmyListItem): boolean {
   return army.armiesOfRenown && army.armiesOfRenown.filter((aor) => {
