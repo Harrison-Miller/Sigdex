@@ -111,18 +111,22 @@ const confirmDeleteLists = useStorage('listDeleteDontShowAgain', false);
 function clearBSDataHandler() {
   clearGameCache();
   clearFAQCache();
+  window.$toast?.('Cleared!');
 }
 
 function clearFavorites() {
   clearAllFavorites();
+  window.$toast?.('Cleared!');
 }
 
 function clearUnitDefaultSettings() {
   localStorage.removeItem(UNIT_SETTINGS_KEY);
+  window.$toast?.('Cleared!');
 }
 
 function clearLists() {
   clearAllLists();
+  window.$toast?.('Cleared!');
 }
 </script>
 <style scoped>

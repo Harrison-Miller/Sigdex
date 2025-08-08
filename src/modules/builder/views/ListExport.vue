@@ -61,6 +61,7 @@ const copyToClipboard = async () => {
     await navigator.clipboard.writeText(exportedText.value);
     // You could add a toast notification here
     console.log('List copied to clipboard');
+    window.$toast?.('Copied!')
   } catch (err) {
     console.error('Failed to copy to clipboard:', err);
     // Fallback for older browsers

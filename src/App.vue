@@ -9,6 +9,7 @@ import { SIGDEX_VERSION } from './version';
 import BackToTop from './modules/core/components/BackToTop.vue';
 import BackButton from './modules/core/components/BackButton.vue';
 import { clearFAQCache } from './modules/shared/composables/useFAQ';
+import ToastSystem from './modules/core/components/ToastSystem.vue';
 
 const showNotice = ref(false);
 const currentNotice = ref<Notice | null>(null);
@@ -72,6 +73,7 @@ onUnmounted(() => {
   <BackButton />
   <RouterView />
   <BackToTop />
+  <ToastSystem />
   <div class="sigdex-version">
     <div>Sigdex v{{ SIGDEX_VERSION }}</div>
     <div v-if="commit">BSData Commit: {{ commit }}</div>

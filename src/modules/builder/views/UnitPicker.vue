@@ -291,6 +291,12 @@ function goToDetail(item: UnitPickerListItem) {
   }
 }
 
+function toastAddedUnit(unitName: string) {
+  if (multiAdd.value) {
+    window.$toast?.(`+ ${unitName}`);
+  }
+}
+
 
 function returnToList() {
   if (multiAdd.value && showMultiAdd.value) {
@@ -332,6 +338,7 @@ function addUnitToRegiment(item: UnitPickerListItem) {
         weaponOptions: unitSettings.value.weaponOptions,
       })
     );
+    toastAddedUnit(unit.name);
     returnToList();
     return;
   }
@@ -349,6 +356,7 @@ function addUnitToRegiment(item: UnitPickerListItem) {
         weaponOptions: unitSettings.value.weaponOptions,
       })
     );
+    toastAddedUnit(unit.name);
   }
 
   // --- Companion auto-add logic ---
