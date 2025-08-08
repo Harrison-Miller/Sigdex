@@ -8,13 +8,13 @@
 
 .floating-header-buttons {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 0.5em;
+  right: 0.5em;
   display: flex;
   align-items: center;
   gap: 8px;
   z-index: 10;
-  padding: 0.3em 0.3em 0 0;
+  padding: 0 0 0 0;
 }
 
 .settings-btn {

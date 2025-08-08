@@ -3,8 +3,7 @@
     v-if="!loading"
     class="list-builder-view"
   >
-    <div class="header-bar">
-      <div class="floating-header-buttons">
+        <div class="floating-header-buttons">
         <CircleIconButton
           class="export-btn"
           :size="36"
@@ -17,7 +16,6 @@
           @click="openSettings"
         />
       </div>
-    </div>
     <h1
       v-if="list"
       class="list-title"
