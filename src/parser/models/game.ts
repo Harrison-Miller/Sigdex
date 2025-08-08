@@ -66,7 +66,7 @@ export class ArmyListItem {
 export interface IGame {
   battleTacticCards: BattleTacticCard[];
   // weapon ability to the rule description
-  weaponAbilityDescriptions: Map<string, string>;
+  sharedAbilityDescriptions: Map<string, string>;
   // some keywords grant abilities like fly, ward.
   keywordAbilities: Map<string, Ability>;
 
@@ -81,7 +81,7 @@ export interface IGame {
 
 export class Game implements IGame {
   battleTacticCards: BattleTacticCard[] = [];
-  weaponAbilityDescriptions: Map<string, string> = new Map();
+  sharedAbilityDescriptions: Map<string, string> = new Map();
   keywordAbilities: Map<string, Ability> = new Map();
 
   units: Map<string, Unit> = new Map();

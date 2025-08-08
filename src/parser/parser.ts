@@ -2,7 +2,7 @@ import { parseUnits } from './parse/parseUnit';
 import { loadRepoFiles } from './load';
 import { ArmyOfRenownListItem, type BattleTacticCard, type Game, type IArmyListItem } from './models/game';
 import type { Unit } from './models/unit';
-import { parseBattleTacticCards, parseKeywordAbilities, parseLores, parseWeaponAbilities } from './parse/parseGame';
+import { parseBattleTacticCards, parseKeywordAbilities, parseLores, parseSharedAbilityDescriptions } from './parse/parseGame';
 import type { Lore } from './models/lore';
 import type { Ability } from './models/ability';
 import type { Army, GrandAlliance } from './models/army';
@@ -47,7 +47,7 @@ export class Parser {
   private armies: Map<string, Army> = new Map();
   private regimentsOfRenown: Map<string, RegimentOfRenown> = new Map();
 
-  private weaponAbilityDescriptions: Map<string, string> = new Map();
+  private sharedAbilityDescriptions: Map<string, string> = new Map();
   private keywordAbilities: Map<string, Ability> = new Map();
 
   async parse(): Promise<Game> {
@@ -228,7 +228,7 @@ export class Parser {
 
     const game: Game = {
       battleTacticCards: this.battleTacticCards,
-      weaponAbilityDescriptions: this.weaponAbilityDescriptions,
+      sharedAbilityDescriptions: this.sharedAbilityDescriptions,
       keywordAbilities: this.keywordAbilities,
       units: this.units,
       universalManifestationLores: universalManifestationLores,
@@ -317,7 +317,7 @@ export class Parser {
     this.battleTacticCards = parseBattleTacticCards(this.gameFile);
     this.categories = parseCategories(this.gameFile.gameSystem);
     this.allLores = parseLores(this.loreFile.catalogue);
-    this.weaponAbilityDescriptions = parseWeaponAbilities(this.gameFile.gameSystem)
+    this.sharedAbilityDescriptions = parseSharedAbilityDescriptions(this.gameFile.gameSystem)
     this.keywordAbilities = parseKeywordAbilities(this.gameFile.gameSystem);
   }
 }

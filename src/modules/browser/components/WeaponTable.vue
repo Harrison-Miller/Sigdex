@@ -23,13 +23,21 @@
               v-if="w.abilities && w.abilities.filter((a) => a && a !== '-').length"
               class="weapon-abilities"
             >
-              <span
+              <template
                 v-for="(a, i) in w.abilities.filter((a) => a && a !== '-')"
                 :key="i"
               >
-                <span v-html="formatText(a)" />
+                <PopOver placement="top">
+                  <template #trigger>
+                    <span class="weapon-ability-trigger" v-html="formatText(a)" />
+                  </template>
+                  <div class="weapon-ability-popover">
+                    <h4>{{ a }}</h4>
+                    <p>{{ getAbilityDescription(a) }}</p>
+                  </div>
+                </PopOver>
                 <span v-if="i < w.abilities.filter((a) => a && a !== '-').length - 1">, </span>
-              </span>
+              </template>
             </div>
           </td>
           <td v-if="hasRange">{{ w.range || '-' }}</td>
@@ -46,6 +54,9 @@
 <script setup lang="ts">
 import { formatText } from '../../../utils/formatter';
 import type { Weapon } from '../../../parser/models/weapon';
+import PopOver from '../../shared/components/PopOver.vue';
+import { useGame } from '../../shared/composables/useGame';
+
 const props = defineProps<{
   weapons: Weapon[];
   shortHeaders?: boolean;
@@ -56,6 +67,21 @@ function displayRend(rend: string | undefined | null): string {
 }
 
 const hasRange = props.weapons.some((w) => w.range && w.range !== '');
+
+const { game } = useGame();
+
+function getAbilityDescription(abilityName: string): string {
+  if (!game.value?.sharedAbilityDescriptions) return '';
+  // Direct match
+  const desc = game.value.sharedAbilityDescriptions.get(abilityName);
+  if (desc) return desc;
+  // Fallback for Anti-X (+1 Rend)
+  if (abilityName.startsWith('Anti-')) {
+    const antiDesc = game.value.sharedAbilityDescriptions.get('Anti-X (+1 Rend)');
+    return antiDesc || '';
+  }
+  return '';
+}
 </script>
 <style scoped>
 .weapon-table-wrapper {
@@ -84,5 +110,29 @@ const hasRange = props.weapons.some((w) => w.range && w.range !== '');
   font-size: 0.8em;
   color: var(--text-muted);
   margin-top: 2px;
+}
+
+.weapon-ability-trigger {
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.weapon-ability-trigger:hover {
+  color: var(--text-main);
+}
+
+.weapon-ability-popover h4 {
+  margin: 0 0 0.5em 0;
+  font-size: 1em;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.weapon-ability-popover p {
+  margin: 0;
+  font-size: 0.9em;
+  line-height: 1.4;
+  color: var(--text-muted);
 }
 </style>

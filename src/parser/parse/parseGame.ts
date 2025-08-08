@@ -81,17 +81,17 @@ export function parseLores(root: any): Map<string, Lore> {
   return loresMap;
 }
 
-export function parseWeaponAbilities(root: any): Map<string, string> {
-  const weaponAbilities = new Map<string, string>();
+export function parseSharedAbilityDescriptions(root: any): Map<string, string> {
+  const sharedAbilities = new Map<string, string>();
   const ruleNodes = root?.sharedRules.rule || [];
   ruleNodes.forEach((rule: any) => {
     const name = rule['@_name'] || '';
     const description = (typeof rule?.description === 'string' ? rule.description : rule?.description?.['#text']) || '';
     if (description) {
-      weaponAbilities.set(name, description.trim());
+      sharedAbilities.set(name, description.trim());
     }
   });
-  return weaponAbilities;
+  return sharedAbilities;
 }
 
 export function parseKeywordAbilities(root: any): Map<string, Ability> {
