@@ -51,6 +51,8 @@ import { LIST_NAME_MAX_LENGTH } from '../../../list/manage';
 import { useGame } from '../../shared/composables/useGame';
 import { createList } from '../../../list/manage';
 import { setDefaultArmyOptions } from '../../../list/models/list';
+import { SHOW_LEGENDS_KEY } from '../../../favorites';
+import { useStorage } from '@vueuse/core';
 
 const router = useRouter();
 const initialArmy = 'Cities of Sigmar';
@@ -74,6 +76,8 @@ const nameError = computed(() => {
   return '';
 });
 
+const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
+
 // Only armies (no AoRs) for the first dropdown
 const armyOptions = computed(() => {
   const list: Map<string, string[]> = new Map();
@@ -83,6 +87,7 @@ const armyOptions = computed(() => {
   }
   game.value.armyList.forEach((armies, alliance) => {
     armies.forEach((army) => {
+      if (!showLegends.value && army.legends) return;
       list.get(alliance)?.push(army.name);
     });
   });
@@ -97,6 +102,9 @@ const aorOptions = computed(() => {
   const options = [army.name];
   if (army.armiesOfRenown && army.armiesOfRenown.length > 0) {
     army.armiesOfRenown.forEach((aor) => {
+      const aorData = game.value?.armies.get(`${army.name} - ${aor}`);
+      if (!aorData) return;
+      if (!showLegends.value && aorData.legends) return;
       options.push(`${army.name} - ${aor}`);
     });
   }
