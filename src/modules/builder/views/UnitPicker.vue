@@ -14,6 +14,7 @@
       :mini="true"
     > Multi-Add </ToggleBox>
     <FilterBar
+      placeholder="Name or keyword1, keyword2..."
       @update="onFilterBarUpdate"
     />
     <template
@@ -120,7 +121,8 @@ const availableRoRs = computed<UnitPickerListItem[]>(() => {
     return {
       name,
       points: ror?.points ?? 0,
-      legends: false
+      legends: false,
+      keywords: [],
     };
   }).filter(r => r.points > 0);
 });
@@ -200,6 +202,7 @@ interface UnitPickerListItem {
   name: string;
   points: number;
   legends: boolean;
+  keywords: string[];
 };
 
 const categorizeListItems = computed(() => {
@@ -209,10 +212,12 @@ const categorizeListItems = computed(() => {
     if (showFavorites.value) {
       items = items.filter((u) => armyFavorites.value.includes(u.name));
     }
-    if (searchQuery.value) {
-      const query = searchQuery.value.toLowerCase();
-      items = items.filter((u) => u.name.toLowerCase().includes(query));
-    }
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    items = items.filter((x) => {
+      return x.name.toLowerCase().includes(query);
+    });
+  }
     // sort by points or name
     if (sortMode.value === 'points') {
       items = items.sort((a, b) => {
@@ -236,7 +241,15 @@ const categorizeListItems = computed(() => {
   }
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    items = items.filter((u) => u.name.toLowerCase().includes(query));
+    items = items.filter((x) => {
+      const nameIncludes = x.name.toLowerCase().includes(query);
+      const parts = query.split(',');
+      const keywordIncludes = parts.every((part) => {
+        const trimmed = part.trim();
+        return trimmed && x.keywords.some((k: string) => k.toLowerCase().includes(trimmed));
+      });
+      return nameIncludes || keywordIncludes;
+    });
   }
 
   const cats: Map<string, UnitPickerListItem[]> = new Map();
@@ -247,6 +260,7 @@ const categorizeListItems = computed(() => {
       name: bp.name,
       points: bp.points,
       legends: bp.legends,
+      keywords: bp.keywords,
     });
   }
   // Sort bps within each category by selected mode

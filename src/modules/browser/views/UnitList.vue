@@ -25,6 +25,7 @@
     >
       <template #left>
           <FilterBar
+            placeholder="Name or keyword1, keyword2..."
             @update="onFilterBarUpdate"
           />
         <template

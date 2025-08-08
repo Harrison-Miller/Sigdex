@@ -2,7 +2,7 @@
   <div class="filters-bar">
 	<TextInput
 		:model-value="searchQuery"
-		placeholder="Search..."
+		:placeholder="placeholder"
 		class="search-input"
     :show-clear-button="true"
 		@update:model-value="(value) => searchQuery = value"
@@ -29,6 +29,10 @@ import { computed, watch, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import TextInput from '../../core/components/TextInput.vue';
 import { useFilterBarState } from '../composables/useFilterBarState';
+
+const { placeholder = 'Search...' } = defineProps<{
+  placeholder?: string;
+}>();
 
 const emit = defineEmits(['update']);
 
