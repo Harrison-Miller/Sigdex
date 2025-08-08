@@ -14,8 +14,8 @@
         v-if="showClearButton && modelValue"
         type="button"
         class="clear-button"
-        @click="clearInput"
         aria-label="Clear input"
+        @click="clearInput"
       >
         ×
       </button>

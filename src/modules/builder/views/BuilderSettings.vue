@@ -57,6 +57,12 @@
     >
       Delete List
     </button>
+    <ModalListDeleteConfirmation
+      :model-value="showDeleteModal"
+      :list-name="listName"
+      @close="showDeleteModal = false"
+      @confirm="actuallyDeleteList"
+    />
   </div>
 </template>
 <script setup lang="ts">
@@ -71,6 +77,8 @@ import { VALIDATOR_NAMES } from '../../../validation/run';
 import { List } from '../../../list/models/list';
 import CircleIconButton from '../../core/components/CircleIconButton.vue';
 import { useTitle } from '@vueuse/core';
+import ModalListDeleteConfirmation from '../components/ModalListDeleteConfirmation.vue';
+import { useStorage } from '@vueuse/core';
 
 
 const route = useRoute();
@@ -125,7 +133,18 @@ watch(list, (val) => {
 });
 const router = useRouter();
 
+const showDeleteModal = ref(false);
+const dontShowAgain = useStorage('listDeleteDontShowAgain', false);
+
 function deleteCurrentList() {
+  if (dontShowAgain.value) {
+    actuallyDeleteList();
+  } else {
+    showDeleteModal.value = true;
+  }
+}
+
+function actuallyDeleteList() {
   deleteList(listId);
   router.push({ path: '/' });
 }

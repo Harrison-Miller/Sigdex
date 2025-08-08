@@ -54,7 +54,7 @@ import { setDefaultArmyOptions } from '../../../list/models/list';
 
 const router = useRouter();
 const initialArmy = 'Cities of Sigmar';
-const name = ref('');
+const name = ref('New List');
 const selectedArmy = ref(initialArmy);
 const faction = ref(initialArmy);
 
