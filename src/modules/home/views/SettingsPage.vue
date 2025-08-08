@@ -99,6 +99,7 @@ import { UNIT_SETTINGS_KEY } from '../../shared/composables/useUnitSettings';
 import { useDark, useStorage } from '@vueuse/core';
 import SupporterBanner from '../components/SupporterBanner.vue';
 import { clearFAQCache } from '../../shared/composables/useFAQ';
+import { computed } from 'vue';
 
 const isDark = useDark();
 const showLegends = useStorage(SHOW_LEGENDS_KEY, false);
@@ -106,7 +107,15 @@ const fancyText = useStorage('fancyText', true);
 
 const githubRepo = useStorage(GITHUB_REPO_KEY, DEFAULT_GITHUB_REPO);
 const githubBranch = useStorage(GITHUB_BRANCH_KEY, DEFAULT_GITHUB_BRANCH);
-const confirmDeleteLists = useStorage('listDeleteDontShowAgain', false);
+const confirmDeleteListsStorage = useStorage('listDeleteDontShowAgain', false);
+const confirmDeleteLists = computed({
+  get() {
+    return !confirmDeleteListsStorage.value;
+  },
+  set(val: boolean) {
+    confirmDeleteListsStorage.value = !val;
+  }
+});
 
 function clearBSDataHandler() {
   clearGameCache();

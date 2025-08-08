@@ -252,7 +252,8 @@ onUnmounted(() => {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  max-width: 300px;
+  max-width: 600px;
+  margin-right: 0.5em;
   word-wrap: break-word;
 }
 

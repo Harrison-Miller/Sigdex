@@ -62,7 +62,7 @@ function confirmDelete() {
   color: var(--text-main, #222);
 }
 .btn-yes {
-  background: var(--danger, #e53e3e);
+  background: var(--primary, #e53e3e);
   color: #fff;
 }
 .btn-no:hover {

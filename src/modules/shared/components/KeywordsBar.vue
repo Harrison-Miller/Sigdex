@@ -54,7 +54,7 @@ const keywordAbilityMap = computed(() => {
       :key="kw"
       class="keyword"
     >
-      <template v-if="keywordAbilityMap[kw]">
+      <template v-if="keywordAbilityMap[kw] && !(kw.toLowerCase() === 'hero' && props.keywords?.some(k => k.toLowerCase() === 'monster'))">
         <PopOver>
           <template #trigger>
             <span class="keyword-ability-underline">{{ kw }}</span>
@@ -98,7 +98,7 @@ const keywordAbilityMap = computed(() => {
   text-decoration: underline dotted;
   cursor: pointer;
   text-underline-offset: 2px;
-  color: var(--accent-color, #3b82f6);
+  color: inherit;
 }
 
 .champion-icon {

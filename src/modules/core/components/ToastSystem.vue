@@ -86,7 +86,7 @@ if (!window.$toast) {
   color: var(--text-main, #fff);
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-  padding: 1em 1.5em 1em 1em;
+  padding: 0.75em 1.5em 0.75em 0.75em;
   font-size: 1.08em;
   font-weight: 500;
   display: flex;
@@ -95,6 +95,7 @@ if (!window.$toast) {
   pointer-events: auto;
   transition: opacity 0.5s, transform 0.2s;
   opacity: 1;
+  border: 1px solid var(--border-color, #444);
 }
 .toast-fade-enter-active, .toast-fade-leave-active {
   transition: opacity 0.5s;
@@ -103,7 +104,7 @@ if (!window.$toast) {
   opacity: 0;
 }
  .toast.normal {
-  background: var(--bg-selected, #22c55e);
+  background: var(--bg-head, #22c55e);
   color: var(--text-main, #fff);
 }
 .toast.success {

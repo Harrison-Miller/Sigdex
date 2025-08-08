@@ -56,7 +56,7 @@ import { useStorage } from '@vueuse/core';
 
 const router = useRouter();
 const initialArmy = 'Cities of Sigmar';
-const name = ref('New List');
+const name = ref(`New List ${new Date().toLocaleDateString('en-US')}`);
 const selectedArmy = ref(initialArmy);
 const faction = ref(initialArmy);
 

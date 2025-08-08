@@ -32,7 +32,7 @@
                     <span class="weapon-ability-trigger" v-html="formatText(a)" />
                   </template>
                   <div class="weapon-ability-popover">
-                    <h4>{{ a }}</h4>
+                    <h4 v-html="formatText(a)"></h4>
                     <p>{{ getAbilityDescription(a) }}</p>
                   </div>
                 </PopOver>
@@ -124,14 +124,14 @@ function getAbilityDescription(abilityName: string): string {
 
 .weapon-ability-popover h4 {
   margin: 0 0 0.5em 0;
-  font-size: 1em;
+  font-size: 1.2em;
   font-weight: 600;
   color: var(--text-main);
 }
 
 .weapon-ability-popover p {
   margin: 0;
-  font-size: 0.9em;
+  font-size: 1em;
   line-height: 1.4;
   color: var(--text-muted);
 }
