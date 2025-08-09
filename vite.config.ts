@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue';
 import pkg from './package.json';
 import { VitePWA } from 'vite-plugin-pwa';
 
-const devVariantName = 'dev';
+const devVariantName = '';
 
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
