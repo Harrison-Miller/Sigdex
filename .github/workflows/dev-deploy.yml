@@ -2,8 +2,9 @@ name: Build and Deploy Sigdex Dev
 
 on:
   push:
-    branches-ignore:
-      - main
+    branches:
+      - '*' # Run on all branches except main
+      - '!main' # Explicitly exclude main
 
 jobs:
   dev-deploy:
