@@ -321,6 +321,7 @@ useTitle(`${unitName}`);
           <div v-if="faqLoading">Loading FAQ...</div>
           <div v-else-if="faqError" class="error">{{ faqError }}</div>
           <div v-else-if="unitFAQData">
+            <i class="faq-warning">Only FAQs that directly references this unit appear here, it may not be all relevant FAQs.</i>
             <FAQSection
               v-for="(section, i) in unitFAQData.data"
               :key="'unit-faq-section-' + i"
@@ -394,6 +395,12 @@ useTitle(`${unitName}`);
   cursor: pointer;
   text-underline-offset: 2px;
   color: inherit;
+}
+.faq-warning {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  margin-top: 0.5em;
+  display: block;
 }
 </style>
 

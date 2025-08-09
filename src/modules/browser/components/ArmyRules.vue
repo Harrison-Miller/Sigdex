@@ -10,6 +10,7 @@
       <div v-if="faqLoading">Loading FAQ...</div>
       <div v-else-if="faqError" class="error">{{ faqError }}</div>
       <div v-else-if="armyFAQData">
+        <i class="faq-warning">Only FAQs that directly references this army appear here, it may not be all relevant FAQs.</i>
         <FAQSection
           v-for="(section, i) in armyFAQData.data"
           :key="'army-faq-section-' + i"
@@ -311,5 +312,11 @@ watch(
   color: #c00;
   text-align: center;
   margin-top: 1rem;
+}
+.faq-warning {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  margin-top: 0.5em;
+  display: block;
 }
 </style>
