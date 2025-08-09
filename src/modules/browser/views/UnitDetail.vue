@@ -12,7 +12,7 @@ import {
   formatRegimentOptions,
   formatText,
 } from '../../../utils/formatter';
-import { useArmy, useUnit } from '../../shared/composables/useGame';
+import { useArmy, useUnit, useGame } from '../../shared/composables/useGame';
 import { useUnitSettings } from '../../shared/composables/useUnitSettings';
 import WeaponOptionsSelection from '../../builder/components/WeaponOptionsSelection.vue';
 import ReportErrorButton from '../../shared/components/ReportErrorButton.vue';
@@ -26,6 +26,7 @@ import PriestBadge from '../../shared/components/badges/PriestBadge.vue';
 import FAQSection from '../../shared/faq/FAQSection.vue';
 import { useFAQ } from '../../shared/composables/useFAQ';
 import { useFAQSearch } from '../../shared/composables/useFAQSearch';
+import PopOver from '../../shared/components/PopOver.vue';
 
 function formatCompanionUnits(unitName: string, companionLeader: string): string {
   const bold = (name: string) => `<b>${name}</b>`;
@@ -61,6 +62,7 @@ const displaySubLabel = computed(() => {
 
 const { army } = useArmy(armyName ?? '');
 const { unit, battleProfile } = useUnit(armyName ?? '', unitName ?? '');
+const { game } = useGame();
 const unitSettings = useUnitSettings(unit);
 
 // Load FAQ data
@@ -93,6 +95,22 @@ const unitKeywords = computed(() => {
   }
   return Array.from(keywords).sort();
 })
+
+const possibleTerrainAbilities = ['Cover', 'Impassable', 'Obscuring', 'Unstable'];
+const terrainAbilities = computed(() => {
+  // check unit.descriptions for terrain abilities
+  const descriptions = unit.value.descriptions || [];
+  const abilities = descriptions.flatMap(desc => {
+    return possibleTerrainAbilities.filter(ability => desc.includes(ability));
+  });
+  return abilities;
+});
+
+function sharedAbilityText(ability: string): string {
+  // Pull description from game.sharedAbilityDescriptions (Map<string, string>)
+  const map = game.value?.sharedAbilityDescriptions;
+  return map?.get(ability) || '';
+}
 
 useTitle(`${unitName}`);
 
@@ -206,9 +224,25 @@ useTitle(`${unitName}`);
       <div
         class="unit-detail"
       >
-        <template v-if="unit.descriptions.length">
+        <template v-if="unit.descriptions.length && terrainAbilities.length === 0">
           <div v-for="(desc, index) in unit.descriptions" :key="`desc-${index}`" class="unit-detail-section">
             <span v-html="formatText(desc)" />
+          </div>
+        </template>
+        <template v-if="terrainAbilities.length > 0">
+          <div class="unit-detail-section">
+            <span v-html="`<i>This unit has the following terrain abilities: </i>`" />
+            <ul>
+              <li v-for="(ability, index) in terrainAbilities" :key="`terrain-ability-${index}`">
+                <PopOver>
+                  <template #trigger>
+                    <span class="terrain-ability-underline">{{ ability }}</span>
+                  </template>
+                  <h4>{{ ability }}</h4>
+                  <span v-html="formatText(sharedAbilityText(ability))" />
+                </PopOver>
+              </li>
+            </ul>
           </div>
         </template>
         <div
@@ -353,6 +387,13 @@ useTitle(`${unitName}`);
   color: #c00;
   text-align: center;
   margin-top: 1rem;
+}
+
+.terrain-ability-underline {
+  text-decoration: underline dotted;
+  cursor: pointer;
+  text-underline-offset: 2px;
+  color: inherit;
 }
 </style>
 

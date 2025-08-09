@@ -131,7 +131,7 @@ function getAbilityDescription(abilityName: string): string {
 
 .weapon-ability-popover p {
   margin: 0;
-  font-size: 1em;
+  font-size: 1.2em;
   line-height: 1.4;
   color: var(--text-muted);
 }
